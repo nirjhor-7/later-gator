@@ -229,8 +229,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function timeAgo(dateString) {
-        const date = new Date(dateString);
-        const seconds = Math.floor((new Date() - new Date(dateString + 'Z')) / 1000);
+        let date = new Date(dateString);
+        
+        // Safari fallback for timestamp without timezone
+        if (isNaN(date.getTime()) && !dateString.includes('Z') && !dateString.includes('+')) {
+            date = new Date(dateString.replace(' ', 'T') + 'Z');
+        }
+
+        const seconds = Math.floor((new Date() - date) / 1000);
+        
+        if (isNaN(seconds)) return 'some time ago';
         
         if (seconds < 60) return 'just now';
         
