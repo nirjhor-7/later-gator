@@ -117,9 +117,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Generate a unique session ID for this tab to track active users
+    let sessionId = sessionStorage.getItem('later_gator_session');
+    if (!sessionId) {
+        sessionId = Math.random().toString(36).substring(2, 15);
+        sessionStorage.setItem('later_gator_session', sessionId);
+    }
+
     const fetchStats = async () => {
         try {
-            const response = await fetch('/api/stats');
+            const response = await fetch(`/api/stats?session=${sessionId}`);
             if (response.ok) {
                 const stats = await response.json();
                 statCurrent.textContent = stats.currentlyProcrastinating.toLocaleString();

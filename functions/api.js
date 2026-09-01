@@ -35,18 +35,30 @@ app.get('/api/tasks', async (req, res) => {
 // Get statistics
 app.get('/api/stats', async (req, res) => {
   try {
-    const { count, error } = await supabase
+    const sessionId = req.query.session;
+
+    // 1. If we have a session, log them as active right now
+    if (sessionId) {
+        await supabase
+            .from('active_users')
+            .upsert({ session_id: sessionId, last_seen: new Date().toISOString() });
+    }
+
+    // 2. Count total postponed tasks
+    const { count: totalTasks } = await supabase
         .from('tasks')
         .select('*', { count: 'exact', head: true });
         
-    if (error) throw error;
-    
-    const total = count || 0;
-    const currentlyProcrastinating = Math.max(0, Math.floor(total * 1.5) + Math.floor(Math.random() * 50) - 25);
+    // 3. Count active users (last seen within 20 seconds)
+    const twentySecondsAgo = new Date(Date.now() - 20000).toISOString();
+    const { count: activeCount } = await supabase
+        .from('active_users')
+        .select('*', { count: 'exact', head: true })
+        .gte('last_seen', twentySecondsAgo);
     
     res.json({
-      totalPostponed: total,
-      currentlyProcrastinating: currentlyProcrastinating
+      totalPostponed: totalTasks || 0,
+      currentlyProcrastinating: activeCount || 1 // Always show at least 1 (the current user)
     });
   } catch (err) {
     console.error(err);
