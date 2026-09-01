@@ -307,7 +307,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const quoteElement = document.getElementById('footer-quote');
     if (quoteElement) {
-        quoteElement.textContent = '"' + footerQuotes[Math.floor(Math.random() * footerQuotes.length)] + '"';
+        const updateQuote = () => {
+            quoteElement.textContent = '"' + footerQuotes[Math.floor(Math.random() * footerQuotes.length)] + '"';
+        };
+        updateQuote();
+        setInterval(updateQuote, 5000);
     }
 
     fetchAll();
