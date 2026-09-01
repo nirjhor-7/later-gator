@@ -11,68 +11,22 @@ let supabase = null;
 
 if (supabaseUrl && supabaseKey) {
     supabase = createClient(supabaseUrl, supabaseKey);
-} else {
-    console.warn("⚠️ SUPABASE_URL or SUPABASE_KEY is missing from environment variables.");
 }
 
-const router = express.Router();
-
-// Get recent tasks (public feed)
-router.get('/tasks', async (req, res) => {
-  try {
-    const { data: tasks, error } = await supabase
-        .from('tasks')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
-        
-    if (error) throw error;
-    res.json(tasks);
-  } catch (err) {
+// Helper to catch errors
+const sendError = (res, err) => {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Get statistics
-router.get('/stats', async (req, res) => {
-  try {
-    const sessionId = req.query.session;
-
-    if (sessionId) {
-        await supabase
-            .from('active_users')
-            .upsert({ session_id: sessionId, last_seen: new Date().toISOString() });
-    }
-
-    const { count: totalTasks } = await supabase
-        .from('tasks')
-        .select('*', { count: 'exact', head: true });
-        
-    const twentySecondsAgo = new Date(Date.now() - 20000).toISOString();
-    const { count: activeCount } = await supabase
-        .from('active_users')
-        .select('*', { count: 'exact', head: true })
-        .gte('last_seen', twentySecondsAgo);
-        
-    const { count: totalVisitors } = await supabase
-        .from('active_users')
-        .select('*', { count: 'exact', head: true });
-    
-    res.json({
-      totalPostponed: totalTasks || 0,
-      currentlyProcrastinating: activeCount || 1,
-      totalVisitors: totalVisitors || 1
+    res.status(500).json({ 
+        error: 'Internal server error', 
+        details: err.message,
+        supabase_connected: supabase !== null
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+};
 
-// Get weekly most neglected task
-router.get('/stats/weekly', async (req, res) => {
+// 1. Get weekly most neglected task (MUST BE BEFORE */stats)
+app.get('*/stats/weekly', async (req, res) => {
   try {
+    if (!supabase) throw new Error("Supabase is not initialized. Check Env Vars.");
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     const dateStr = sevenDaysAgo.toISOString();
@@ -94,7 +48,6 @@ router.get('/stats/weekly', async (req, res) => {
     tasks.forEach(task => {
         const normalized = task.text.toLowerCase().trim();
         counts[normalized] = (counts[normalized] || 0) + 1;
-        
         if (counts[normalized] > maxTask.count) {
             maxTask = { text: task.text, count: counts[normalized] }; 
         }
@@ -102,31 +55,72 @@ router.get('/stats/weekly', async (req, res) => {
 
     res.json(maxTask);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    sendError(res, err);
   }
 });
 
-// Submit a new task
-router.post('/tasks', async (req, res) => {
-  const { text, name, country } = req.body;
-  
-  if (!text || text.trim() === '') {
-    return res.status(400).json({ error: 'Task text is required' });
-  }
-  
-  if (text.length > 200) {
-    return res.status(400).json({ error: 'Task text is too long' });
-  }
-  
-  if (name && name.length > 50) {
-    return res.status(400).json({ error: 'Name is too long' });
-  }
-
-  const finalName = (name && name.trim() !== '') ? name.trim() : 'Anonymous';
-  const finalCountry = (country && country !== 'Unknown') ? country : 'Parts Unknown';
-
+// 2. Get statistics
+app.get('*/stats', async (req, res) => {
   try {
+    if (!supabase) throw new Error("Supabase is not initialized. Check Env Vars.");
+    const sessionId = req.query.session;
+
+    if (sessionId) {
+        await supabase
+            .from('active_users')
+            .upsert({ session_id: sessionId, last_seen: new Date().toISOString() });
+    }
+
+    const { count: totalTasks } = await supabase.from('tasks').select('*', { count: 'exact', head: true });
+        
+    const twentySecondsAgo = new Date(Date.now() - 20000).toISOString();
+    const { count: activeCount } = await supabase
+        .from('active_users')
+        .select('*', { count: 'exact', head: true })
+        .gte('last_seen', twentySecondsAgo);
+        
+    const { count: totalVisitors } = await supabase.from('active_users').select('*', { count: 'exact', head: true });
+    
+    res.json({
+      totalPostponed: totalTasks || 0,
+      currentlyProcrastinating: activeCount || 1,
+      totalVisitors: totalVisitors || 1
+    });
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+// 3. Get recent tasks (public feed)
+app.get('*/tasks', async (req, res) => {
+  try {
+    if (!supabase) throw new Error("Supabase is not initialized. Check Env Vars.");
+    const { data: tasks, error } = await supabase
+        .from('tasks')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+        
+    if (error) throw error;
+    res.json(tasks);
+  } catch (err) {
+    sendError(res, err);
+  }
+});
+
+// 4. Submit a new task
+app.post('*/tasks', async (req, res) => {
+  try {
+    if (!supabase) throw new Error("Supabase is not initialized. Check Env Vars.");
+    const { text, name, country } = req.body;
+    
+    if (!text || text.trim() === '') return res.status(400).json({ error: 'Task text is required' });
+    if (text.length > 200) return res.status(400).json({ error: 'Task text is too long' });
+    if (name && name.length > 50) return res.status(400).json({ error: 'Name is too long' });
+
+    const finalName = (name && name.trim() !== '') ? name.trim() : 'Anonymous';
+    const finalCountry = (country && country !== 'Unknown') ? country : 'Parts Unknown';
+
     const { data: newTask, error } = await supabase
         .from('tasks')
         .insert([{ text: text.trim(), city: finalName, country: finalCountry }])
@@ -134,15 +128,10 @@ router.post('/tasks', async (req, res) => {
         .single();
         
     if (error) throw error;
-    
     res.status(201).json(newTask);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    sendError(res, err);
   }
 });
-
-// Mount the router on the path Netlify expects
-app.use('/.netlify/functions/api', router);
 
 module.exports.handler = serverless(app);
