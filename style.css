@@ -381,25 +381,45 @@ button {
 }
 
 .site-footer {
+    position: relative;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
     border-top: 2px solid var(--ink);
     margin-top: 40px;
-    padding-top: 20px;
+    padding: 20px 0;
     text-transform: uppercase;
-    gap: 12px;
-    text-align: center;
 }
 
 .footer-quote {
     font-size: 0.9rem;
     font-weight: 700;
+    text-align: center;
+    max-width: 60%;
 }
 
 .footer-credit {
-    font-size: 0.7rem;
+    position: absolute;
+    right: 0;
+    font-size: 0.65rem;
     font-weight: 400;
     opacity: 0.6;
     letter-spacing: 1px;
+    max-width: 180px;
+    text-align: right;
+}
+
+@media (max-width: 768px) {
+    .site-footer {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .footer-quote {
+        max-width: 100%;
+    }
+    .footer-credit {
+        position: static;
+        text-align: center;
+        max-width: 100%;
+    }
 }
