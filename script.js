@@ -299,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const quoteElement = document.getElementById('footer-quote');
     if (quoteElement) {
-        quoteElement.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+        quoteElement.textContent = '"' + footerQuotes[Math.floor(Math.random() * footerQuotes.length)] + '"';
     }
 
     fetchAll();
