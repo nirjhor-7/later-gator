@@ -15,8 +15,10 @@ if (supabaseUrl && supabaseKey) {
     console.warn("⚠️ SUPABASE_URL or SUPABASE_KEY is missing from environment variables.");
 }
 
+const router = express.Router();
+
 // Get recent tasks (public feed)
-app.get('/api/tasks', async (req, res) => {
+router.get('/tasks', async (req, res) => {
   try {
     const { data: tasks, error } = await supabase
         .from('tasks')
@@ -33,30 +35,26 @@ app.get('/api/tasks', async (req, res) => {
 });
 
 // Get statistics
-app.get('/api/stats', async (req, res) => {
+router.get('/stats', async (req, res) => {
   try {
     const sessionId = req.query.session;
 
-    // 1. If we have a session, log them as active right now
     if (sessionId) {
         await supabase
             .from('active_users')
             .upsert({ session_id: sessionId, last_seen: new Date().toISOString() });
     }
 
-    // 2. Count total postponed tasks
     const { count: totalTasks } = await supabase
         .from('tasks')
         .select('*', { count: 'exact', head: true });
         
-    // 3. Count active users (last seen within 20 seconds)
     const twentySecondsAgo = new Date(Date.now() - 20000).toISOString();
     const { count: activeCount } = await supabase
         .from('active_users')
         .select('*', { count: 'exact', head: true })
         .gte('last_seen', twentySecondsAgo);
         
-    // 4. Count TOTAL unique visitors ever
     const { count: totalVisitors } = await supabase
         .from('active_users')
         .select('*', { count: 'exact', head: true });
@@ -73,7 +71,7 @@ app.get('/api/stats', async (req, res) => {
 });
 
 // Get weekly most neglected task
-app.get('/api/stats/weekly', async (req, res) => {
+router.get('/stats/weekly', async (req, res) => {
   try {
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
@@ -110,7 +108,7 @@ app.get('/api/stats/weekly', async (req, res) => {
 });
 
 // Submit a new task
-app.post('/api/tasks', async (req, res) => {
+router.post('/tasks', async (req, res) => {
   const { text, name, country } = req.body;
   
   if (!text || text.trim() === '') {
@@ -144,5 +142,7 @@ app.post('/api/tasks', async (req, res) => {
   }
 });
 
-// Wrap the Express app for Netlify Functions
+// Mount the router on the path Netlify expects
+app.use('/.netlify/functions/api', router);
+
 module.exports.handler = serverless(app);
