@@ -378,12 +378,38 @@ button {
 }
 
 .site-footer {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     border-top: 2px solid var(--ink);
     margin-top: 30px;
     padding-top: 15px;
-    font-size: 0.8rem;
-    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    gap: 20px;
+}
+
+.footer-quote {
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+.footer-credit {
+    font-size: 0.6rem;
+    font-weight: 400;
+    text-align: right;
+    max-width: 250px;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .site-footer {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 10px;
+    }
+    .footer-credit {
+        text-align: center;
+    }
 }

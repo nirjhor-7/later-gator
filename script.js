@@ -240,6 +240,64 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${days} day${days !== 1 ? 's' : ''} ago`;
     }
 
+    const footerQuotes = [
+        "Tomorrow is a mystical land where 99% of all human productivity is stored.",
+        "I'll stop procrastinating... tomorrow.",
+        "Procrastination is the art of keeping up with yesterday.",
+        "Why do today what you can put off until tomorrow?",
+        "I put the 'pro' in procrastination.",
+        "Hard work pays off after time, but laziness pays off now.",
+        "I'm not procrastinating. I'm actively delaying.",
+        "My to-do list is actually just a 'to-ignore' list.",
+        "I will rule the world! ...Right after this nap.",
+        "Nothing is impossible, but I do nothing every day.",
+        "I meant to behave, but there were too many other options.",
+        "I'm on energy-saving mode.",
+        "Procrastinator? No, I'm a deadline connoisseur.",
+        "Due tomorrow? Do tomorrow.",
+        "I can't adult today. Please don't make me.",
+        "I love deadlines. I love the whooshing noise they make.",
+        "If at first you don't succeed, wait until the last minute.",
+        "I'm not lazy, I'm just highly motivated to do nothing.",
+        "The early bird can have the worm. I want to sleep.",
+        "I am a person who wants to do a lot of things trapped in a body that doesn't.",
+        "Someday is not a day of the week.",
+        "Procrastination: because doing it now is too mainstream.",
+        "I'll do it later. (Narrator: He did not do it later.)",
+        "Currently experiencing a severe lack of motivation.",
+        "I need a 6 month holiday, twice a year.",
+        "I'm not running away from my problems, I'm walking away very slowly.",
+        "My brain has too many tabs open.",
+        "I'm busy doing nothing.",
+        "I plan to be spontaneous tomorrow.",
+        "I'm not procrastinating, I'm doing side quests.",
+        "Why rush? We're all headed to the same grave.",
+        "I am in a committed relationship with my bed.",
+        "My favorite childhood memory is not paying bills.",
+        "I'll get around to it... eventually.",
+        "Procrastination is like a credit card: it's fun until you get the bill.",
+        "I am currently under construction. Thank you for your patience.",
+        "I put the 'later' in 'later gator'.",
+        "I'll think about that tomorrow. Tomorrow is another day.",
+        "My level of procrastination is so high, I haven't even started procrastinating yet.",
+        "I'm currently unsupervised. I know, it freaks me out too.",
+        "I am not early, I am not late. I arrive precisely when I intend to.",
+        "I’ll do it when the stars align.",
+        "My spirit animal is a sloth on a Sunday.",
+        "I'm waiting for the panic monster to show up.",
+        "I'm taking a proactive approach to doing nothing.",
+        "My motivation went out for milk and never came back.",
+        "I'm not delaying, I'm marinating.",
+        "I excel at finding completely unrelated tasks to do.",
+        "I'm allergic to deadlines.",
+        "I'll finish this quote lat"
+    ];
+
+    const quoteElement = document.getElementById('footer-quote');
+    if (quoteElement) {
+        quoteElement.textContent = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+    }
+
     fetchAll();
     setInterval(fetchAll, 10000);
 });
