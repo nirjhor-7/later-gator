@@ -302,7 +302,11 @@ button {
 }
 
 .visitor-counter {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
     border: 2px solid var(--ink);
     padding: 10px 15px;
     font-family: 'Space Mono', monospace;
@@ -314,7 +318,6 @@ button {
     background: var(--ink);
     color: var(--paper);
     padding: 4px 10px;
-    margin-left: 10px;
     font-size: 1.1rem;
     letter-spacing: 2px;
 }
