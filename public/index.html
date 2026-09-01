@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LATER, GATOR</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="page-border">
+        
+        <header class="masthead">
+            <div class="masthead-meta">
+                <span>VOL. 1 — No. 42</span>
+                <span>GLOBAL PROCRASTINATION JOURNAL</span>
+                <span id="current-date">Today</span>
+            </div>
+            <h1>LATER, GATOR</h1>
+            <div class="masthead-sub">PUBLISHED DAILY (EVENTUALLY)</div>
+        </header>
+
+        <main class="newspaper-grid">
+            
+            <!-- Left Column: Controls & Stats -->
+            <section class="left-col">
+                
+                <div class="article-box">
+                    <h2 class="section-title">WHAT ARE YOU PUTTING OFF?</h2>
+                    <div class="input-section">
+                        <div class="user-details">
+                            <input type="text" id="user-name" placeholder="Name (optional)" maxlength="30">
+                            <select id="user-country">
+                                <option value="Unknown">Select Country...</option>
+                            </select>
+                        </div>
+                        <textarea id="task-input" placeholder="Declare your intent to procrastinate here..." maxlength="150"></textarea>
+                        
+                        <div class="action-buttons">
+                            <button id="later-btn" class="btn-heavy">PUBLISH LATER</button>
+                            <button id="panic-btn" class="btn-outline">PANIC</button>
+                        </div>
+                        <div id="status-message" class="status-msg"></div>
+                    </div>
+                </div>
+
+                <div class="article-box">
+                    <h2 class="section-title">LIVE STATISTICS</h2>
+                    <div class="stats-section">
+                        <div class="stat-group">
+                            <div class="stat-value" id="stat-current">...</div>
+                            <div class="stat-label">Individuals Currently Avoiding Responsibility</div>
+                        </div>
+                        <div class="stat-group">
+                            <div class="stat-value" id="stat-total">...</div>
+                            <div class="stat-label">Total Tasks Postponed Globally</div>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Right Column: The Feed & Shame -->
+            <section class="right-col">
+                
+                <div class="hall-of-shame" id="hall-of-shame" style="display: none;">
+                    <div class="shame-badge">THIS WEEK'S MOST NEGLECTED</div>
+                    <div class="shame-task" id="shame-task">...</div>
+                    <div class="shame-meta">Abandoned <span id="shame-count">0</span> times by the general public.</div>
+                </div>
+
+                <h2 class="section-title">THE PUBLIC WIRE</h2>
+                <div class="feed-container" id="feed-container">
+                    <div class="loading">Awaiting transmissions...</div>
+                </div>
+
+            </section>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+    </script>
+</body>
+</html>

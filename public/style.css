@@ -1,0 +1,352 @@
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+    --paper: #FFFFFF;
+    --ink: #111111;
+    --ink-light: #666666;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, html {
+    margin: 0;
+    padding: 0;
+    background-color: #F0F0F0;
+    color: var(--ink);
+    overflow-x: hidden;
+}
+
+.page-border {
+    background-color: var(--paper);
+    border: 4px solid var(--ink);
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+    max-width: 900px;
+    margin: 60px auto;
+    padding: 40px;
+    box-shadow: 16px 16px 0px var(--ink);
+}
+
+/* Typography */
+h1 {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 6.5rem; /* Slightly larger to compensate for condensed width */
+    font-weight: 900;
+    margin: 0;
+    line-height: 1;
+    letter-spacing: 1px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+body, input, textarea, button, .feed-item-text, .masthead-sub, .btn-outline, .shame-meta, .stat-label {
+    font-family: 'Space Mono', monospace;
+}
+
+h2, h3, .btn-heavy, .shame-task, .stat-value {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-weight: 900;
+}
+
+.subtitle {
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    padding: 5px 0;
+    margin-bottom: 30px;
+    font-weight: 700;
+    font-size: 0.9rem;
+}
+
+/* Masthead */
+.masthead {
+    text-align: center;
+    border-bottom: 4px double var(--ink);
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+}
+
+.masthead-meta {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 4px 0;
+    margin-bottom: 15px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.masthead-sub {
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-top: 10px;
+    letter-spacing: 1px;
+}
+
+/* Grid Layout */
+.newspaper-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 2fr;
+    gap: 30px;
+}
+
+.right-col {
+    border-left: 2px solid var(--ink);
+    padding-left: 30px;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 15px;
+}
+
+/* Left Column Elements */
+.article-box {
+    margin-bottom: 40px;
+}
+
+.user-details {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.user-details input, .user-details select {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 1px solid var(--ink);
+    padding: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    text-overflow: ellipsis;
+}
+
+.user-details input:focus, .user-details select:focus {
+    background: rgba(23, 23, 23, 0.05);
+}
+
+textarea {
+    width: 100%;
+    box-sizing: border-box;
+    height: 80px;
+    background: transparent;
+    border: 1px solid var(--ink);
+    padding: 10px;
+    font-size: 1rem;
+    resize: none;
+    outline: none;
+}
+
+textarea:focus {
+    background: rgba(23, 23, 23, 0.05);
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+button {
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 1.2rem;
+    padding: 12px;
+    transition: all 0.15s ease;
+    border: 2px solid var(--ink);
+}
+
+.btn-heavy {
+    background: var(--ink);
+    color: var(--paper);
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
+.btn-heavy:hover {
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.btn-heavy:active {
+    transform: translate(2px, 2px);
+}
+
+.btn-outline {
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: bold;
+}
+
+.btn-outline:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.btn-outline:active {
+    transform: translate(2px, 2px);
+}
+
+.status-msg {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    min-height: 1.2em;
+    text-align: center;
+}
+
+.stats-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stat-group {
+    text-align: center;
+    border: 1px solid var(--ink);
+    padding: 15px;
+}
+
+.stat-value {
+    font-size: 3rem;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+/* Hall of Shame */
+.hall-of-shame {
+    border: 4px double var(--ink);
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.shame-badge {
+    background: var(--ink);
+    color: var(--paper);
+    display: inline-block;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.shame-task {
+    font-size: 2.5rem;
+    line-height: 1.1;
+    margin-bottom: 10px;
+}
+
+.shame-meta {
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Feed */
+.feed-container {
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 15px;
+    border: 2px solid var(--ink);
+    scrollbar-width: thin;
+    scrollbar-color: var(--ink) var(--paper);
+}
+
+.feed-item {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--ink);
+}
+
+.feed-item-meta {
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.feed-item-text {
+    font-size: 1.2rem;
+    line-height: 1.4;
+}
+
+.feed-item-time {
+    font-size: 0.75rem;
+    color: var(--ink-light);
+    margin-top: 5px;
+    display: block;
+}
+
+/* Animations */
+@keyframes slide-pop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.98);
+    }
+    60% {
+        opacity: 1;
+        transform: translateY(2px) scale(1.01);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.slide-in {
+    animation: slide-pop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    /* Optional: a quick background flash to highlight it */
+    animation-name: slide-pop, flash-bg;
+    animation-duration: 0.4s, 1.5s;
+}
+
+@keyframes flash-bg {
+    0%, 100% { background-color: transparent; }
+    10% { background-color: rgba(17, 17, 17, 0.05); }
+}
+
+/* Responsive Alignment Fixes */
+@media (max-width: 768px) {
+    .page-border {
+        margin: 20px 10px;
+        padding: 20px;
+        box-shadow: 8px 8px 0px var(--ink);
+        outline-offset: 2px;
+    }
+
+    .newspaper-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .right-col {
+        border-left: none;
+        border-top: 2px solid var(--ink);
+        padding-left: 0;
+        padding-top: 30px;
+    }
+    
+    .user-details {
+        flex-direction: column;
+    }
+    
+    h1 {
+        font-size: 3rem;
+    }
+}
