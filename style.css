@@ -71,7 +71,7 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
 
 .masthead-meta {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     border-top: 1px solid var(--ink);
     border-bottom: 1px solid var(--ink);
     padding: 4px 0;
