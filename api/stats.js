@@ -13,7 +13,17 @@ export default async function handler(req, res) {
         const sessionId = req.query.session;
         
         if (sessionId) {
-            await supabase.from('active_users').upsert({ session_id: sessionId, last_seen: new Date().toISOString() });
+            // Try to update first
+            const { data } = await supabase
+                .from('active_users')
+                .update({ last_seen: new Date().toISOString() })
+                .eq('session_id', sessionId)
+                .select();
+                
+            // If it didn't exist, insert it
+            if (!data || data.length === 0) {
+                await supabase.from('active_users').insert({ session_id: sessionId, last_seen: new Date().toISOString() });
+            }
         }
 
         const { count: totalTasks } = await supabase.from('tasks').select('*', { count: 'exact', head: true });
