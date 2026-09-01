@@ -11,21 +11,23 @@ export default async function handler(req, res) {
 
     try {
         const sessionId = req.query.session;
+        let dbLog = "No session tracking";
         
         if (sessionId && req.query.dev !== 'true') {
-            // Check if it exists first
-            const { data: existing } = await supabase
+            const { data: existing, error: selErr } = await supabase
                 .from('active_users')
                 .select('session_id')
                 .eq('session_id', sessionId)
                 .limit(1);
                 
-            if (existing && existing.length > 0) {
-                // It exists, just update it
-                await supabase.from('active_users').update({ last_seen: new Date().toISOString() }).eq('session_id', sessionId);
+            if (selErr) {
+                dbLog = "Select Error: " + selErr.message;
+            } else if (existing && existing.length > 0) {
+                const { error: updErr } = await supabase.from('active_users').update({ last_seen: new Date().toISOString() }).eq('session_id', sessionId);
+                dbLog = updErr ? "Update Error: " + updErr.message : "Updated existing";
             } else {
-                // It doesn't exist, insert it
-                await supabase.from('active_users').insert({ session_id: sessionId, last_seen: new Date().toISOString() });
+                const { error: insErr } = await supabase.from('active_users').insert({ session_id: sessionId, last_seen: new Date().toISOString() });
+                dbLog = insErr ? "Insert Error: " + insErr.message : "Inserted new";
             }
         }
 
@@ -39,7 +41,8 @@ export default async function handler(req, res) {
         return res.status(200).json({
             totalPostponed: totalTasks || 0,
             currentlyProcrastinating: activeCount || 1,
-            totalVisitors: totalVisitors || 1
+            totalVisitors: totalVisitors || 1,
+            debugLog: dbLog
         });
     } catch (err) {
         return res.status(500).json({ error: err.message });
