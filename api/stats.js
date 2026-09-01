@@ -13,15 +13,18 @@ export default async function handler(req, res) {
         const sessionId = req.query.session;
         
         if (sessionId) {
-            // Try to update first
-            const { data } = await supabase
+            // Check if it exists first
+            const { data: existing } = await supabase
                 .from('active_users')
-                .update({ last_seen: new Date().toISOString() })
+                .select('session_id')
                 .eq('session_id', sessionId)
-                .select();
+                .limit(1);
                 
-            // If it didn't exist, insert it
-            if (!data || data.length === 0) {
+            if (existing && existing.length > 0) {
+                // It exists, just update it
+                await supabase.from('active_users').update({ last_seen: new Date().toISOString() }).eq('session_id', sessionId);
+            } else {
+                // It doesn't exist, insert it
                 await supabase.from('active_users').insert({ session_id: sessionId, last_seen: new Date().toISOString() });
             }
         }
