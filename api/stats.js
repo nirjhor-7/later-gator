@@ -12,7 +12,7 @@ export default async function handler(req, res) {
     try {
         const sessionId = req.query.session;
         
-        if (sessionId) {
+        if (sessionId && req.query.dev !== 'true') {
             // Check if it exists first
             const { data: existing } = await supabase
                 .from('active_users')

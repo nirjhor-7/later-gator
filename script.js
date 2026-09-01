@@ -118,6 +118,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Check if the user has set the secret developer flag
+    const isDeveloper = localStorage.getItem('is_nirjhor') === 'true';
+
     // Use localStorage so the visitor is tracked forever, not just for one tab session
     let sessionId = localStorage.getItem('later_gator_visitor');
     if (!sessionId) {
@@ -127,11 +130,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchStats = async () => {
         try {
-            const response = await fetch(`/api/stats?session=${sessionId}`);
+            const devQuery = isDeveloper ? '&dev=true' : '';
+            const response = await fetch(`/api/stats?session=${sessionId}${devQuery}`);
             if (response.ok) {
                 const stats = await response.json();
-                statCurrent.textContent = stats.currentlyProcrastinating.toLocaleString();
-                statTotal.textContent = stats.totalPostponed.toLocaleString();
+                if (statCurrent) statCurrent.textContent = stats.currentlyProcrastinating.toLocaleString();
+                if (statTotal) statTotal.textContent = stats.totalPostponed.toLocaleString();
                 if (statVisitors && stats.totalVisitors) {
                     statVisitors.textContent = stats.totalVisitors.toString().padStart(4, '0');
                 }
