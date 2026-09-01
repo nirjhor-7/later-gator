@@ -376,3 +376,14 @@ button {
         font-size: 3rem;
     }
 }
+
+.site-footer {
+    text-align: center;
+    border-top: 2px solid var(--ink);
+    margin-top: 30px;
+    padding-top: 15px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
