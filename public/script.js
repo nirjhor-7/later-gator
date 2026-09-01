@@ -6,6 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const feedContainer = document.getElementById('feed-container');
     const statCurrent = document.getElementById('stat-current');
     const statTotal = document.getElementById('stat-total');
+    const statVisitors = document.getElementById('stat-visitors');
     const countrySelect = document.getElementById('user-country');
     
     // Hall of shame elements
@@ -117,11 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Generate a unique session ID for this tab to track active users
-    let sessionId = sessionStorage.getItem('later_gator_session');
+    // Use localStorage so the visitor is tracked forever, not just for one tab session
+    let sessionId = localStorage.getItem('later_gator_visitor');
     if (!sessionId) {
         sessionId = Math.random().toString(36).substring(2, 15);
-        sessionStorage.setItem('later_gator_session', sessionId);
+        localStorage.setItem('later_gator_visitor', sessionId);
     }
 
     const fetchStats = async () => {
@@ -131,6 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stats = await response.json();
                 statCurrent.textContent = stats.currentlyProcrastinating.toLocaleString();
                 statTotal.textContent = stats.totalPostponed.toLocaleString();
+                if (statVisitors && stats.totalVisitors) {
+                    statVisitors.textContent = stats.totalVisitors.toString().padStart(4, '0');
+                }
             }
         } catch (error) {
             console.error('Failed to fetch stats:', error);

@@ -293,6 +293,32 @@ button {
     display: block;
 }
 
+/* Footer / Visitor Counter */
+.site-footer {
+    border-top: 4px double var(--ink);
+    margin-top: 40px;
+    padding-top: 25px;
+    text-align: center;
+}
+
+.visitor-counter {
+    display: inline-block;
+    border: 2px solid var(--ink);
+    padding: 10px 15px;
+    font-family: 'Space Mono', monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.counter-value {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 4px 10px;
+    margin-left: 10px;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+}
+
 /* Animations */
 @keyframes slide-pop {
     0% {

@@ -55,10 +55,16 @@ app.get('/api/stats', async (req, res) => {
         .from('active_users')
         .select('*', { count: 'exact', head: true })
         .gte('last_seen', twentySecondsAgo);
+        
+    // 4. Count TOTAL unique visitors ever
+    const { count: totalVisitors } = await supabase
+        .from('active_users')
+        .select('*', { count: 'exact', head: true });
     
     res.json({
       totalPostponed: totalTasks || 0,
-      currentlyProcrastinating: activeCount || 1 // Always show at least 1 (the current user)
+      currentlyProcrastinating: activeCount || 1,
+      totalVisitors: totalVisitors || 1
     });
   } catch (err) {
     console.error(err);
