@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchTasks = async () => {
         try {
-            const response = await fetch('/.netlify/functions/api?action=getTasks');
+            const response = await fetch('/api/tasks');
             if (response.ok) {
                 const tasks = await response.json();
                 renderFeed(tasks);
@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchStats = async () => {
         try {
-            const response = await fetch(`/.netlify/functions/api?action=getStats&session=${sessionId}`);
+            const response = await fetch(`/api/stats?session=${sessionId}`);
             if (response.ok) {
                 const stats = await response.json();
                 statCurrent.textContent = stats.currentlyProcrastinating.toLocaleString();
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchWeeklyStats = async () => {
         try {
-            const response = await fetch('/.netlify/functions/api?action=getWeekly');
+            const response = await fetch('/api/weekly');
             if (response.ok) {
                 const data = await response.json();
                 if (data.count > 0) {
@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('/.netlify/functions/api?action=postTask', {
+            const response = await fetch('/api/tasks', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text, name, country })
