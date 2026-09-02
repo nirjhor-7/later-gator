@@ -36,7 +36,33 @@ export default async function handler(req, res) {
 
             const clientIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
 
-            // Rate Limiting: Max 5 posts per minute per IP
+            // 1. Check if they are already permanently banned
+            if (clientIp !== 'unknown') {
+                const { data: isBanned } = await supabase.from('banned_ips').select('ip').eq('ip', clientIp).limit(1);
+                if (isBanned && isBanned.length > 0) {
+                    return res.status(403).json({ error: "Your IP has been permanently banned from this sector." });
+                }
+            }
+
+            // 2. Strict Input Validation & Auto-Ban Content Triggers
+            const cleanText = (text || '').trim();
+            const cleanName = (name || '').trim();
+            
+            if (!cleanText) return res.status(400).json({ error: 'Task required' });
+            if (cleanText.length > 150 || cleanName.length > 50) return res.status(400).json({ error: 'Input too long' });
+
+            const spamCheck = (cleanText + cleanName).toLowerCase();
+            const containsLinks = /(http|https|www\.)/.test(spamCheck);
+            const containsBotSig = spamCheck.includes('gyxubo');
+
+            if (containsLinks || containsBotSig) {
+                if (clientIp !== 'unknown') {
+                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Content violation (links or bot signature)' });
+                }
+                return res.status(403).json({ error: "Malicious input detected. IP Banned." });
+            }
+
+            // 3. Velocity Auto-Ban (Max 10 per minute)
             if (clientIp !== 'unknown') {
                 const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
                 const { count } = await supabase
@@ -45,25 +71,22 @@ export default async function handler(req, res) {
                     .eq('ip_address', clientIp)
                     .gte('created_at', oneMinuteAgo);
                     
-                if (count >= 5) {
+                if (count >= 10) {
+                    // They spammed too fast, permanently ban them
+                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Velocity violation (>10/min)' });
+                    return res.status(429).json({ error: "Rate limit severely exceeded. IP Banned." });
+                } else if (count >= 5) {
+                    // Soft rate limit
                     return res.status(429).json({ error: "Rate limit exceeded. Chill out." });
                 }
             }
-
-            // Hard ban for specific bot
-            const spamCheck = (text + (name || '')).toLowerCase();
-            if (spamCheck.includes('gyxubo')) {
-                return res.status(403).json({ error: "IP Banned." });
-            }
-
-            if (!text || text.trim() === '') return res.status(400).json({ error: 'Task required' });
             
-            const finalName = (name && name.trim() !== '') ? name.trim() : 'Anonymous';
+            const finalName = cleanName !== '' ? cleanName : 'Anonymous';
             const finalCountry = (country && country !== 'Unknown') ? country : 'Parts Unknown';
-
+            
             const { data: newTask, error } = await supabase
                 .from('tasks')
-                .insert([{ text: text.trim(), city: finalName, country: finalCountry, ip_address: clientIp }])
+                .insert([{ text: cleanText, city: finalName, country: finalCountry, ip_address: clientIp }])
                 .select()
                 .single();
                 
