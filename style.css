@@ -98,6 +98,8 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
 .right-col {
     border-left: 2px solid var(--ink);
     padding-left: 30px;
+    display: flex;
+    flex-direction: column;
 }
 
 .section-title {
@@ -425,7 +427,8 @@ button {
 
 /* Feed */
 .feed-container {
-    max-height: 600px;
+    flex: 1 1 auto;
+    min-height: 450px;
     overflow-y: auto;
     padding: 15px;
     border: 2px solid var(--ink);
@@ -567,6 +570,10 @@ button {
     
     h1 {
         font-size: 3rem;
+    }
+
+    .feed-container {
+        max-height: 550px;
     }
 }
 
