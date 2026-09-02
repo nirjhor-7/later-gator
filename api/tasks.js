@@ -29,6 +29,11 @@ export default async function handler(req, res) {
         try {
             const { text, name, country } = req.body;
             
+            // Anti-bot honeypot
+            if (req.headers['x-gator-token'] !== 'chomp-chomp') {
+                return res.status(403).json({ error: "No gators allowed." });
+            }
+
             if (!text || text.trim() === '') return res.status(400).json({ error: 'Task required' });
             
             const finalName = (name && name.trim() !== '') ? name.trim() : 'Anonymous';

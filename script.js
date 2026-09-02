@@ -203,7 +203,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/tasks', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Gator-Token': 'chomp-chomp'
+                },
                 body: JSON.stringify({ text, name, country })
             });
 
