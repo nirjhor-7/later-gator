@@ -489,9 +489,34 @@ button {
     align-items: center;
     border-top: 2px solid var(--ink);
     margin-top: 40px;
-    padding: 20px 0;
+    padding: 25px 0 20px 0;
     text-transform: uppercase;
     gap: 15px;
+}
+
+.footer-share-btn {
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--ink);
+    padding: 10px 22px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: background 0.15s, color 0.15s, transform 0.05s;
+    text-align: center;
+    box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.15);
+}
+
+.footer-share-btn:hover {
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.footer-share-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.15);
 }
 
 .footer-quote {

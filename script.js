@@ -423,6 +423,38 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateQuote, 5000);
     }
 
+    // Footer "Partners in Crime" Share Button
+    const footerShareBtn = document.getElementById('footer-share-btn');
+    if (footerShareBtn) {
+        footerShareBtn.addEventListener('click', async () => {
+            const shareUrl = getShareUrl();
+            const shareData = {
+                title: 'LATER, GATOR — Global Procrastination Journal',
+                text: 'What are you putting off today? Join the worldwide procrastination broadcast on Later, Gator.',
+                url: shareUrl
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    // User dismissed share
+                }
+            } else {
+                try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    const originalText = footerShareBtn.textContent;
+                    footerShareBtn.textContent = '[ LINK COPIED — GO DISTRACT THEM! ]';
+                    setTimeout(() => {
+                        footerShareBtn.textContent = originalText;
+                    }, 2500);
+                } catch (err) {
+                    prompt('Copy this link to distract your friends:', shareUrl);
+                }
+            }
+        });
+    }
+
     fetchAll();
     setInterval(fetchAll, 10000);
 });
