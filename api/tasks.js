@@ -102,7 +102,18 @@ export default async function handler(req, res) {
             }
             
             const finalName = cleanName !== '' ? cleanName : 'Anonymous';
-            const finalCountry = (country && country !== 'Unknown') ? country : 'Parts Unknown';
+            
+            // Auto-detect country from Vercel headers
+            let finalCountry = 'Parts Unknown';
+            const countryCode = req.headers['x-vercel-ip-country'];
+            if (countryCode) {
+                try {
+                    const regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
+                    finalCountry = regionNames.of(countryCode);
+                } catch(e) {
+                    finalCountry = countryCode;
+                }
+            }
             
             const { data: newTask, error } = await supabase
                 .from('tasks')

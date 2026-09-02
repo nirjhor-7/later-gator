@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const statCurrent = document.getElementById('stat-current');
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
-    const countrySelect = document.getElementById('user-country');
 
     const updateStat = (id, newValue) => {
         const el = document.getElementById(id);
@@ -199,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
         const name = document.getElementById('user-name').value.trim();
-        const country = document.getElementById('user-country').value;
         
         if (!text) {
             statusMessage.textContent = "PLEASE SPECIFY A TASK.";
@@ -217,7 +215,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                     'X-Gator-Token': 'chomp-chomp'
                 },
-                body: JSON.stringify({ text, name, country })
+                body: JSON.stringify({ text, name })
             });
 
             if (response.ok) {
@@ -241,7 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
     panicBtn.addEventListener('click', () => submitTask(true));
     
     taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             submitTask(false);
         }
     });
