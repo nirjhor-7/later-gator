@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (isPanic) {
                 const verbIndex = task.id % panicVerbs.length;
                 verb = panicVerbs[verbIndex];
-                badge = '<span style="color: #ff3b30;" title="They actually did it...">🔥</span> ';
+                badge = '<span style="background: var(--ink); color: var(--bg); padding: 0 5px; margin-right: 5px;">PANIC</span>';
             } else {
                 const verbIndex = task.id % evasionVerbs.length;
                 verb = evasionVerbs[verbIndex];
@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     void taskInput.offsetWidth;
                     taskInput.classList.add('fly-off');
                     
-                    laterBtn.textContent = "POSTPONED ✓";
+                    laterBtn.textContent = "POSTPONED";
                     statusMessage.textContent = "SUCCESSFULLY EVADED.";
                     
                     setTimeout(() => {
