@@ -49,11 +49,11 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const panicVerbs = [
-        "IS IN EMERGENCY TACKLING",
+        "IS IN EMERGENCY MODE FOR",
         "IS SCREAMING WHILE DOING",
         "IS DESPERATELY ATTEMPTING",
-        "HAS FINALLY STARTED",
-        "IS PANICKING ABOUT"
+        "HAS FINALLY BEGUN",
+        "IS PANICKING OVER"
     ];
 
     let lastTopTaskId = null;
@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
             <div class="feed-item ${animationClass}">
-                <div class="feed-item-meta">${locationString} ${verb}</div>
+                <div class="feed-item-meta">${locationString} ${verb}:</div>
                 <div class="feed-item-text">${escapeHtml(rawText)}</div>
                 <span class="feed-item-time">${timeAgo(task.created_at)}</span>
             </div>
