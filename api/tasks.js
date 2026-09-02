@@ -34,6 +34,12 @@ export default async function handler(req, res) {
                 return res.status(403).json({ error: "No gators allowed." });
             }
 
+            // Hard ban for specific bot
+            const spamCheck = (text + (name || '')).toLowerCase();
+            if (spamCheck.includes('gyxubo')) {
+                return res.status(403).json({ error: "IP Banned." });
+            }
+
             if (!text || text.trim() === '') return res.status(400).json({ error: 'Task required' });
             
             const finalName = (name && name.trim() !== '') ? name.trim() : 'Anonymous';
