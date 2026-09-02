@@ -306,6 +306,67 @@ button {
     text-transform: uppercase;
 }
 
+/* Global Procrastination Index */
+.leaderboard-meta {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 5px;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+}
+
+.leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.leaderboard-row {
+    display: flex;
+    align-items: baseline;
+    font-size: 0.8rem;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+}
+
+.leaderboard-rank {
+    width: 26px;
+    opacity: 0.6;
+    font-size: 0.75rem;
+}
+
+.leaderboard-country {
+    text-transform: uppercase;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.leaderboard-dots {
+    flex-grow: 1;
+    border-bottom: 1px dotted var(--ink);
+    margin: 0 6px;
+    height: 1px;
+    opacity: 0.5;
+}
+
+.leaderboard-count {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    font-size: 0.8rem;
+}
+
+.leaderboard-empty {
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.7;
+    text-align: center;
+    padding: 10px 0;
+}
+
 /* Hall of Shame */
 .hall-of-shame {
     border: 4px double var(--ink);

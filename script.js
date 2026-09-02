@@ -181,10 +181,41 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const countryLeaderboard = document.getElementById('country-leaderboard');
+
+    const fetchCountries = async () => {
+        try {
+            const response = await fetch('/api/countries');
+            if (response.ok) {
+                const countries = await response.json();
+                if (countryLeaderboard) {
+                    if (!countries || countries.length === 0) {
+                        countryLeaderboard.innerHTML = '<div class="leaderboard-empty">Global sloth compiling...</div>';
+                        return;
+                    }
+                    countryLeaderboard.innerHTML = countries.map((c, index) => {
+                        const rank = String(index + 1).padStart(2, '0');
+                        return `
+                        <div class="leaderboard-row">
+                            <span class="leaderboard-rank">${rank}.</span>
+                            <span class="leaderboard-country" title="${escapeHtml(c.country)}">${escapeHtml(c.country)}</span>
+                            <span class="leaderboard-dots"></span>
+                            <span class="leaderboard-count">${c.count}</span>
+                        </div>
+                        `;
+                    }).join('');
+                }
+            }
+        } catch (error) {
+            console.error('Failed to fetch country leaderboard:', error);
+        }
+    };
+
     const fetchAll = () => {
         fetchTasks();
         fetchStats();
         fetchWeeklyStats();
+        fetchCountries();
     };
 
     const submitTask = async (isPanic = false) => {
