@@ -94,11 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Pick a random verb based on the task ID
             let verb = "";
-            let badge = "";
             if (isPanic) {
                 const verbIndex = task.id % panicVerbs.length;
                 verb = panicVerbs[verbIndex];
-                badge = '<span style="background: var(--ink); color: var(--bg); padding: 0 5px; margin-right: 5px;">PANIC</span>';
             } else {
                 const verbIndex = task.id % evasionVerbs.length;
                 verb = evasionVerbs[verbIndex];
@@ -110,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
             <div class="feed-item ${animationClass}">
-                <div class="feed-item-meta">${badge}${locationString} ${verb}:</div>
+                <div class="feed-item-meta">${locationString} ${verb}:</div>
                 <div class="feed-item-text">${escapeHtml(rawText)}</div>
                 <span class="feed-item-time">${timeAgo(task.created_at)}</span>
             </div>
