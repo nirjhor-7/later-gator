@@ -102,9 +102,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Pick a random verb based on the task ID
             let verb = "";
+            let badge = "";
             if (isPanic) {
                 const verbIndex = task.id % panicVerbs.length;
                 verb = panicVerbs[verbIndex];
+                badge = '<span style="color: #ff3b30;" title="They actually did it...">🔥</span> ';
             } else {
                 const verbIndex = task.id % evasionVerbs.length;
                 verb = evasionVerbs[verbIndex];
@@ -116,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
             <div class="feed-item ${animationClass}">
-                <div class="feed-item-meta">${locationString} ${verb}:</div>
+                <div class="feed-item-meta">${badge}${locationString} ${verb}:</div>
                 <div class="feed-item-text">${escapeHtml(rawText)}</div>
                 <span class="feed-item-time">${timeAgo(task.created_at)}</span>
             </div>
@@ -219,12 +221,35 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
-                taskInput.value = '';
-                
                 if (isPanic) {
-                    statusMessage.textContent = "EMERGENCY TRANSMITTED. GOOD LUCK.";
+                    const inputSection = document.querySelector('.input-section');
+                    inputSection.classList.remove('shake');
+                    void inputSection.offsetWidth; // trigger reflow
+                    inputSection.classList.add('shake');
+                    
+                    panicBtn.textContent = "FINE. DOING IT.";
+                    statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
+                    
+                    setTimeout(() => {
+                        inputSection.classList.remove('shake');
+                        panicBtn.textContent = "DO IT NOW (PANIC)";
+                        taskInput.value = '';
+                        statusMessage.textContent = "";
+                    }, 2000);
                 } else {
-                    statusMessage.textContent = "TASK SUCCESSFULLY POSTPONED.";
+                    taskInput.classList.remove('fly-off');
+                    void taskInput.offsetWidth;
+                    taskInput.classList.add('fly-off');
+                    
+                    laterBtn.textContent = "POSTPONED ✓";
+                    statusMessage.textContent = "SUCCESSFULLY EVADED.";
+                    
+                    setTimeout(() => {
+                        taskInput.value = '';
+                        taskInput.classList.remove('fly-off');
+                        laterBtn.textContent = "NOT MY PROBLEM TODAY";
+                        statusMessage.textContent = "";
+                    }, 1000);
                 }
 
                 fetchAll();

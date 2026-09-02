@@ -352,6 +352,25 @@ button {
     animation: statPop 0.3s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+@keyframes flyOff {
+    0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+    100% { transform: translate(150px, -50px) rotate(10deg); opacity: 0; }
+}
+
+.fly-off {
+    animation: flyOff 0.4s ease-in forwards;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
 @keyframes flash-bg {
     0%, 100% { background-color: transparent; }
     10% { background-color: rgba(17, 17, 17, 0.05); }
