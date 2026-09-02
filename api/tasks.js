@@ -34,6 +34,22 @@ export default async function handler(req, res) {
                 return res.status(403).json({ error: "No gators allowed." });
             }
 
+            const clientIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+
+            // Rate Limiting: Max 5 posts per minute per IP
+            if (clientIp !== 'unknown') {
+                const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
+                const { count } = await supabase
+                    .from('tasks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('ip_address', clientIp)
+                    .gte('created_at', oneMinuteAgo);
+                    
+                if (count >= 5) {
+                    return res.status(429).json({ error: "Rate limit exceeded. Chill out." });
+                }
+            }
+
             // Hard ban for specific bot
             const spamCheck = (text + (name || '')).toLowerCase();
             if (spamCheck.includes('gyxubo')) {
@@ -47,7 +63,7 @@ export default async function handler(req, res) {
 
             const { data: newTask, error } = await supabase
                 .from('tasks')
-                .insert([{ text: text.trim(), city: finalName, country: finalCountry }])
+                .insert([{ text: text.trim(), city: finalName, country: finalCountry, ip_address: clientIp }])
                 .select()
                 .single();
                 
