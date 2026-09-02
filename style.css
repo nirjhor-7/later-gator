@@ -252,6 +252,33 @@ button {
     color: var(--ink);
 }
 
+.share-btn-cert {
+    width: 100%;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--ink);
+    padding: 10px 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+    margin-bottom: 10px;
+    transition: background 0.15s, color 0.15s, transform 0.05s;
+    box-shadow: 2px 2px 0px rgba(17, 17, 17, 0.2);
+}
+
+.share-btn-cert:hover {
+    background: var(--paper);
+    color: var(--ink);
+}
+
+.share-btn-cert:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px rgba(17, 17, 17, 0.2);
+}
+
 .share-card-actions {
     display: flex;
     flex-wrap: wrap;

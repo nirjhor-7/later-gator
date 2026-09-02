@@ -243,6 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (response.ok) {
                 const submittedText = isPanic ? text.replace('[PANIC] ', '') : text;
+                currentRawTask = submittedText;
+                currentIsPanic = isPanic;
+                currentSubmittedName = name;
                 showShareSlip(submittedText, isPanic);
 
                 if (isPanic) {
@@ -284,17 +287,133 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Share Card Slip Logic
+    // Share Card Slip & Certificate Logic
     const shareCard = document.getElementById('share-card');
     const shareCardTask = document.getElementById('share-card-task');
     const shareCloseBtn = document.getElementById('share-close-btn');
+    const shareCertBtn = document.getElementById('share-cert-btn');
     const shareXBtn = document.getElementById('share-x-btn');
     const shareFbBtn = document.getElementById('share-fb-btn');
     const shareWaBtn = document.getElementById('share-wa-btn');
     const shareCopyBtn = document.getElementById('share-copy-btn');
 
     let currentShareText = "";
+    let currentRawTask = "";
+    let currentIsPanic = false;
+    let currentSubmittedName = "";
     const getShareUrl = () => window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://later-gator.vercel.app';
+
+    const generateCertificateImage = (taskText, isPanicMode, holderName) => {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1200;
+        canvas.height = 800;
+        const ctx = canvas.getContext('2d');
+
+        // Background: Crisp newsprint paper
+        ctx.fillStyle = '#FAF9F6';
+        ctx.fillRect(0, 0, 1200, 800);
+
+        // Heavy Double Border
+        ctx.strokeStyle = '#111111';
+        ctx.lineWidth = 8;
+        ctx.strokeRect(30, 30, 1140, 740);
+
+        ctx.lineWidth = 2;
+        ctx.strokeRect(44, 44, 1112, 712);
+
+        // Corner squares
+        ctx.lineWidth = 2;
+        [[50, 50], [1130, 50], [50, 730], [1130, 730]].forEach(([x, y]) => {
+            ctx.strokeRect(x, y, 20, 20);
+        });
+
+        // Header
+        ctx.fillStyle = '#111111';
+        ctx.textAlign = 'center';
+        ctx.font = '700 20px "Space Mono", monospace';
+        ctx.fillText('LATER, GATOR  //  GLOBAL PROCRASTINATION JOURNAL', 600, 105);
+
+        ctx.font = '900 44px "Big Shoulders Display", sans-serif';
+        const certTitle = isPanicMode ? 'EMERGENCY DISPATCH OF RELUCTANT ACTION' : 'OFFICIAL CERTIFICATE OF POSTPONEMENT';
+        ctx.fillText(certTitle, 600, 160);
+
+        // Lines
+        ctx.beginPath();
+        ctx.moveTo(100, 185);
+        ctx.lineTo(1100, 185);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(100, 191);
+        ctx.lineTo(1100, 191);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Metadata
+        ctx.font = '700 15px "Space Mono", monospace';
+        ctx.textAlign = 'left';
+        const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
+        ctx.fillText(`DATE: ${dateStr}`, 100, 225);
+        ctx.textAlign = 'right';
+        const refId = 'REF: LG-' + Math.floor(100000 + Math.random() * 900000);
+        ctx.fillText(refId, 1100, 225);
+
+        // Declaration
+        ctx.textAlign = 'center';
+        ctx.font = '400 17px "Space Mono", monospace';
+        const holder = (holderName && holderName.trim() !== '') ? holderName.trim().toUpperCase() : 'ANONYMOUS PROCRASTINATOR';
+        ctx.fillText('THIS INSTRUMENT CONFIRMS THAT THE BEARER:', 600, 280);
+
+        ctx.font = '900 24px "Space Mono", monospace';
+        ctx.fillText(`[ ${holder} ]`, 600, 320);
+
+        ctx.font = '400 17px "Space Mono", monospace';
+        const verbDeclaration = isPanicMode ? 'HAS BROKEN DOWN AND UNDERTAKEN EMERGENCY EFFORTS ON:' : 'HAS OFFICIALLY AND LAWFULLY DODGED THE OBLIGATION DECLARED BELOW:';
+        ctx.fillText(verbDeclaration, 600, 365);
+
+        // Task Box
+        ctx.fillStyle = '#EBEBEB';
+        ctx.fillRect(140, 400, 920, 100);
+        ctx.strokeStyle = '#111111';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(140, 400, 920, 100);
+
+        ctx.fillStyle = '#111111';
+        ctx.font = '900 28px "Space Mono", monospace';
+        let safeTask = `"${taskText.trim()}"`;
+        if (safeTask.length > 50) safeTask = safeTask.substring(0, 47) + '..."';
+        ctx.fillText(safeTask, 600, 460);
+
+        // Legal Clause
+        ctx.font = '400 14px "Space Mono", monospace';
+        const statuteText = isPanicMode ? 'STATUTE 911: IMMEDIATE CRISIS MODE IN EFFECT.' : 'STATUTE 404: "NOT MY PROBLEM TODAY".';
+        ctx.fillText(statuteText, 600, 545);
+        ctx.fillText('ALL RESPONSIBILITY AND GUILT ARE TRANSFERRED TO TOMORROW.', 600, 570);
+        ctx.fillText('ANY ATTEMPTS TO ENFORCE ACTION SHALL BE MET WITH DELAY TACTICS.', 600, 592);
+
+        // Bottom Seals
+        ctx.strokeStyle = '#111111';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(140, 640, 220, 60);
+        ctx.font = '700 13px "Space Mono", monospace';
+        ctx.fillText('OFFICIAL BUREAU SEAL', 250, 665);
+        ctx.font = '400 11px "Space Mono", monospace';
+        ctx.fillText('VERIFIED INACTION', 250, 685);
+
+        ctx.textAlign = 'right';
+        ctx.font = '700 15px "Space Mono", monospace';
+        ctx.fillText('Dr. Gator, Chief Delayer', 1060, 665);
+        ctx.beginPath();
+        ctx.moveTo(820, 675);
+        ctx.lineTo(1060, 675);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.font = '400 12px "Space Mono", monospace';
+        ctx.fillText('AUTHORIZED SIGNATURE // LATER-GATOR', 1060, 693);
+
+        return canvas;
+    };
 
     const showShareSlip = (task, isPanicMode) => {
         if (!shareCard) return;
@@ -307,6 +426,23 @@ document.addEventListener('DOMContentLoaded', () => {
         
         shareCard.style.display = 'block';
     };
+
+    if (shareCertBtn) {
+        shareCertBtn.addEventListener('click', () => {
+            if (!currentRawTask) return;
+            const canvas = generateCertificateImage(currentRawTask, currentIsPanic, currentSubmittedName);
+            const link = document.createElement('a');
+            link.download = `official-postponement-certificate-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+
+            const orig = shareCertBtn.textContent;
+            shareCertBtn.textContent = '[ CERTIFICATE DOWNLOADED ✓ ]';
+            setTimeout(() => {
+                shareCertBtn.textContent = orig;
+            }, 2500);
+        });
+    }
 
     if (shareCloseBtn) {
         shareCloseBtn.addEventListener('click', () => {
