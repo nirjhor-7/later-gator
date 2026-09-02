@@ -8,6 +8,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
     const countrySelect = document.getElementById('user-country');
+
+    const updateStat = (id, newValue) => {
+        const el = document.getElementById(id);
+        if (el && el.textContent !== String(newValue)) {
+            el.textContent = newValue;
+            el.classList.remove('stat-pop');
+            void el.offsetWidth; // Trigger reflow
+            el.classList.add('stat-pop');
+        }
+    };
     
     // Hall of shame elements
     const shameContainer = document.getElementById('hall-of-shame');
@@ -148,10 +158,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`/api/stats?session=${sessionId}${devQuery}`);
             if (response.ok) {
                 const stats = await response.json();
-                if (statCurrent) statCurrent.textContent = stats.currentlyProcrastinating.toLocaleString();
-                if (statTotal) statTotal.textContent = stats.totalPostponed.toLocaleString();
+                if (statCurrent) updateStat('stat-current', stats.currentlyProcrastinating.toLocaleString());
+                if (statTotal) updateStat('stat-total', stats.totalPostponed.toLocaleString());
                 if (statVisitors && stats.totalVisitors) {
-                    statVisitors.textContent = stats.totalVisitors.toString().padStart(4, '0');
+                    updateStat('stat-visitors', stats.totalVisitors.toString().padStart(4, '0'));
                 }
             }
         } catch (error) {
