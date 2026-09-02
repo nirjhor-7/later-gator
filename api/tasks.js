@@ -58,6 +58,7 @@ export default async function handler(req, res) {
             if (containsLinks || containsBotSig) {
                 if (clientIp !== 'unknown') {
                     await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Content violation (links or bot signature)' });
+                    await supabase.from('tasks').delete().eq('ip_address', clientIp); // Vaporize their previous posts
                 }
                 return res.status(403).json({ error: "Malicious input detected. IP Banned." });
             }
@@ -72,12 +73,31 @@ export default async function handler(req, res) {
                     .gte('created_at', oneMinuteAgo);
                     
                 if (count >= 10) {
-                    // They spammed too fast, permanently ban them
+                    // They spammed too fast, permanently ban them and vaporize their posts
                     await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Velocity violation (>10/min)' });
+                    await supabase.from('tasks').delete().eq('ip_address', clientIp);
                     return res.status(429).json({ error: "Rate limit severely exceeded. IP Banned." });
                 } else if (count >= 5) {
                     // Soft rate limit
                     return res.status(429).json({ error: "Rate limit exceeded. Chill out." });
+                }
+            }
+            
+            // 4. Duplicate Spam Auto-Ban (Posting exact same text 4 times)
+            if (clientIp !== 'unknown') {
+                const { data: recentTasks } = await supabase
+                    .from('tasks')
+                    .select('text')
+                    .eq('ip_address', clientIp)
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+                
+                if (recentTasks && recentTasks.length === 3) {
+                    if (recentTasks[0].text === cleanText && recentTasks[1].text === cleanText && recentTasks[2].text === cleanText) {
+                        await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Duplicate spam' });
+                        await supabase.from('tasks').delete().eq('ip_address', clientIp);
+                        return res.status(429).json({ error: "Spam detected. IP Banned." });
+                    }
                 }
             }
             
