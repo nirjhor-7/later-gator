@@ -211,6 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (response.ok) {
+                const submittedText = isPanic ? text.replace('[PANIC] ', '') : text;
+                showShareSlip(submittedText, isPanic);
+
                 if (isPanic) {
                     const inputSection = document.querySelector('.input-section');
                     inputSection.classList.remove('shake');
@@ -249,6 +252,63 @@ document.addEventListener('DOMContentLoaded', () => {
             statusMessage.textContent = "SYSTEM ERROR. YOU MUST DO IT NOW.";
         }
     };
+
+    // Share Card Slip Logic
+    const shareCard = document.getElementById('share-card');
+    const shareCardTask = document.getElementById('share-card-task');
+    const shareCloseBtn = document.getElementById('share-close-btn');
+    const shareXBtn = document.getElementById('share-x-btn');
+    const shareWaBtn = document.getElementById('share-wa-btn');
+    const shareCopyBtn = document.getElementById('share-copy-btn');
+
+    let currentShareText = "";
+    const getShareUrl = () => window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://later-gator.vercel.app';
+
+    const showShareSlip = (task, isPanicMode) => {
+        if (!shareCard) return;
+        const clean = task.trim();
+        shareCardTask.textContent = `"${clean}"`;
+        
+        const actionVerb = isPanicMode ? "am officially panicking about" : "just postponed";
+        const punchline = isPanicMode ? "Wish me luck." : "Not my problem today.";
+        currentShareText = `I ${actionVerb} "${clean}" on Later, Gator alongside the rest of the world. ${punchline}`;
+        
+        shareCard.style.display = 'block';
+    };
+
+    if (shareCloseBtn) {
+        shareCloseBtn.addEventListener('click', () => {
+            if (shareCard) shareCard.style.display = 'none';
+        });
+    }
+
+    if (shareXBtn) {
+        shareXBtn.addEventListener('click', () => {
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentShareText)}&url=${encodeURIComponent(getShareUrl())}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (shareWaBtn) {
+        shareWaBtn.addEventListener('click', () => {
+            const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(currentShareText + ' ' + getShareUrl())}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (shareCopyBtn) {
+        shareCopyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(`${currentShareText} ${getShareUrl()}`);
+                shareCopyBtn.textContent = "COPIED! ✓";
+                setTimeout(() => {
+                    shareCopyBtn.textContent = "COPY";
+                }, 2000);
+            } catch (err) {
+                shareCopyBtn.textContent = "COPIED";
+            }
+        });
+    }
 
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));

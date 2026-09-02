@@ -6,6 +6,17 @@
     <title>LATER, GATOR</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="stylesheet" href="style.css">
+
+    <!-- Social Preview & OpenGraph Tags -->
+    <meta name="description" content="The Global Procrastination Journal. What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
+    <meta property="og:title" content="LATER, GATOR — Global Procrastination Journal">
+    <meta property="og:description" content="What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="/favicon.png">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="LATER, GATOR — Global Procrastination Journal">
+    <meta name="twitter:description" content="What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
+    <meta name="twitter:image" content="/favicon.png">
 </head>
 <body>
     <div class="page-border">
@@ -38,6 +49,20 @@
                             <button id="panic-btn" class="btn-outline">DO IT NOW (PANIC)</button>
                         </div>
                         <div id="status-message" class="status-msg"></div>
+
+                        <!-- Post-Submission Share Slip -->
+                        <div id="share-card" class="share-card" style="display: none;">
+                            <div class="share-card-header">
+                                <span>OFFICIAL PROCRASTINATION NOTICE</span>
+                                <button type="button" id="share-close-btn" class="share-close-btn" aria-label="Close">&times;</button>
+                            </div>
+                            <div class="share-card-task" id="share-card-task"></div>
+                            <div class="share-card-actions">
+                                <button type="button" id="share-x-btn" class="share-btn">POST ON X</button>
+                                <button type="button" id="share-wa-btn" class="share-btn">WHATSAPP</button>
+                                <button type="button" id="share-copy-btn" class="share-btn">COPY</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

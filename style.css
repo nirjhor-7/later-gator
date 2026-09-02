@@ -206,6 +206,82 @@ button {
     text-align: center;
 }
 
+/* Post-Submission Share Card */
+.share-card {
+    margin-top: 15px;
+    border: 2px dashed var(--ink);
+    padding: 12px 14px;
+    background-color: #FAFAFA;
+    animation: slideIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.share-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 6px;
+    margin-bottom: 8px;
+}
+
+.share-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--ink);
+    padding: 0 4px;
+    font-family: monospace;
+}
+
+.share-close-btn:hover {
+    font-weight: 900;
+}
+
+.share-card-task {
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-style: italic;
+    margin-bottom: 12px;
+    word-break: break-word;
+    color: var(--ink);
+}
+
+.share-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.share-btn {
+    flex: 1 1 80px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    padding: 8px 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, color 0.15s, transform 0.05s;
+    font-family: 'Space Mono', monospace;
+    text-align: center;
+}
+
+.share-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.share-btn:active {
+    transform: translate(1px, 1px);
+}
+
 .stats-section {
     display: flex;
     flex-direction: column;
