@@ -258,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const shareCardTask = document.getElementById('share-card-task');
     const shareCloseBtn = document.getElementById('share-close-btn');
     const shareXBtn = document.getElementById('share-x-btn');
+    const shareFbBtn = document.getElementById('share-fb-btn');
     const shareWaBtn = document.getElementById('share-wa-btn');
     const shareCopyBtn = document.getElementById('share-copy-btn');
 
@@ -286,6 +287,13 @@ document.addEventListener('DOMContentLoaded', () => {
         shareXBtn.addEventListener('click', () => {
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentShareText)}&url=${encodeURIComponent(getShareUrl())}`;
             window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (shareFbBtn) {
+        shareFbBtn.addEventListener('click', () => {
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getShareUrl())}&quote=${encodeURIComponent(currentShareText)}`;
+            window.open(url, '_blank', 'noopener,noreferrer,width=600,height=450');
         });
     }
 
