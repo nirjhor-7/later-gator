@@ -1,4 +1,5 @@
 const { createClient } = require('@supabase/supabase-js');
+const geoip = require('geoip-lite');
 
 let supabase = null;
 if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
@@ -34,7 +35,8 @@ export default async function handler(req, res) {
                 return res.status(403).json({ error: "No gators allowed." });
             }
 
-            const clientIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || 'unknown';
+            const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
+            const clientIp = rawIp.split(',')[0].trim() || 'unknown';
 
             // 1. Check if they are already permanently banned
             if (clientIp !== 'unknown') {
@@ -103,13 +105,20 @@ export default async function handler(req, res) {
             
             const finalName = cleanName !== '' ? cleanName : 'Anonymous';
             
-            // Auto-detect country from Vercel headers
+            // Auto-detect country: 1. Vercel edge header, 2. geoip-lite fallback
+            let countryCode = req.headers['x-vercel-ip-country'];
+            if (!countryCode && clientIp !== 'unknown') {
+                try {
+                    const geo = geoip.lookup(clientIp);
+                    if (geo && geo.country) countryCode = geo.country;
+                } catch (e) {}
+            }
+
             let finalCountry = 'Parts Unknown';
-            const countryCode = req.headers['x-vercel-ip-country'];
             if (countryCode) {
                 try {
-                    const regionNames = new Intl.DisplayNames(['en'], {type: 'region'});
-                    finalCountry = regionNames.of(countryCode);
+                    const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+                    finalCountry = regionNames.of(countryCode) || countryCode;
                 } catch(e) {
                     finalCountry = countryCode;
                 }
