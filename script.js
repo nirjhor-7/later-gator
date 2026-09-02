@@ -45,7 +45,21 @@ document.addEventListener('DOMContentLoaded', () => {
         "PUSHED TO TOMORROW",
         "SUCCESSFULLY AVOIDED",
         "SHELVED",
-        "PROCRASTINATED ON"
+        "PROCRASTINATED ON",
+        "IS ACTIVELY IGNORING",
+        "GHOSTED",
+        "IS PRETENDING NOT TO SEE",
+        "DECIDED NOT TO CARE ABOUT",
+        "KICKED THE CAN DOWN THE ROAD ON",
+        "SWIPED LEFT ON",
+        "SAID 'MAYBE LATER' TO",
+        "IS IN DENIAL ABOUT",
+        "NOPED OUT OF",
+        "IS RUNNING AWAY FROM",
+        "ABANDONED ALL HOPE FOR",
+        "HIT SNOOZE ON",
+        "IS STRATEGICALLY DELAYING",
+        "REFUSED TO ACKNOWLEDGE"
     ];
 
     const panicVerbs = [
