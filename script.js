@@ -120,43 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Breaking News Wire Ticker
-    const breakingTicker = document.getElementById('breaking-ticker');
-    const tickerText = document.getElementById('ticker-text');
-    const tickerCloseBtn = document.getElementById('ticker-close-btn');
-    let lastSeenPanicId = null;
-
-    const showBreakingTicker = (task) => {
-        if (!breakingTicker || !tickerText || !task) return;
-        const citizen = (task.city && task.city !== 'Anonymous') ? task.city.toUpperCase() : 'CITIZEN';
-        const country = (task.country && task.country !== 'Unknown' && task.country !== 'Parts Unknown') ? task.country.toUpperCase() : 'EARTH';
-        const raw = (task.text || '').replace('[PANIC] ', '').trim();
-
-        tickerText.textContent = `${citizen} IN ${country} HAS BROKEN DOWN AND IS CURRENTLY ATTEMPTING: "${raw.toUpperCase()}". REMAIN CALM.`;
-        breakingTicker.style.display = 'flex';
-    };
-
-    if (tickerCloseBtn) {
-        tickerCloseBtn.addEventListener('click', () => {
-            if (breakingTicker) breakingTicker.style.display = 'none';
-        });
-    }
-
     const fetchTasks = async () => {
         try {
             const response = await fetch('/api/tasks');
             if (response.ok) {
                 const tasks = await response.json();
                 renderFeed(tasks);
-
-                // Check for most recent panic transmission
-                if (tasks && tasks.length > 0) {
-                    const latestPanic = tasks.find(t => (t.text || '').startsWith('[PANIC] '));
-                    if (latestPanic && latestPanic.id !== lastSeenPanicId) {
-                        lastSeenPanicId = latestPanic.id;
-                        showBreakingTicker(latestPanic);
-                    }
-                }
             }
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
@@ -280,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 showShareSlip(submittedText, isPanic);
 
                 if (isPanic) {
-                    showBreakingTicker({ city: name || 'YOU', country: 'YOUR REGION', text: `[PANIC] ${submittedText}` });
                     const inputSection = document.querySelector('.input-section');
                     inputSection.classList.remove('shake');
                     void inputSection.offsetWidth; // trigger reflow
