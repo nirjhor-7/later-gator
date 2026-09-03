@@ -710,6 +710,54 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Quick Chips (Preset Tasks & Random Excuse Generator)
+    const RANDOM_EXCUSES = [
+        "Reorganizing desktop icons by color",
+        "Researching the history of the fork",
+        "Waiting for planetary alignment to wash dishes",
+        "Mentally preparing to open my inbox",
+        "Contemplating the finite nature of time",
+        "Watching paint dry on the wall",
+        "Staring blankly at the ceiling fan",
+        "Drafting a strongly worded unsent email",
+        "Reflecting on poor life decisions",
+        "Waiting until the clock hits an even hour",
+        "Sharpening all pencils in the house",
+        "Practicing elevator etiquette in an empty room",
+        "Re-reading the terms and conditions",
+        "Calculating how much sleep I get if I sleep now",
+        "Wondering who invented homework",
+        "Checking the fridge for the fifth time",
+        "Looking up average salaries in Antarctica"
+    ];
+
+    document.querySelectorAll('.chip-btn[data-task]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const val = btn.getAttribute('data-task');
+            if (taskInput) {
+                taskInput.value = val;
+                taskInput.focus();
+                taskInput.style.transition = 'background 0.2s';
+                taskInput.style.background = 'rgba(17, 17, 17, 0.08)';
+                setTimeout(() => { taskInput.style.background = ''; }, 300);
+            }
+        });
+    });
+
+    const chipRandomBtn = document.getElementById('chip-random-btn');
+    if (chipRandomBtn) {
+        chipRandomBtn.addEventListener('click', () => {
+            const randomExcuse = RANDOM_EXCUSES[Math.floor(Math.random() * RANDOM_EXCUSES.length)];
+            if (taskInput) {
+                taskInput.value = randomExcuse;
+                taskInput.focus();
+                taskInput.style.transition = 'background 0.2s';
+                taskInput.style.background = 'rgba(17, 17, 17, 0.08)';
+                setTimeout(() => { taskInput.style.background = ''; }, 300);
+            }
+        });
+    }
+
     fetchAll();
     setInterval(fetchAll, 10000);
 });
