@@ -5,9 +5,33 @@ const HARDCODED_BANNED_IPS = new Set([
     '119.40.93.246',
 ]);
 
-function containsHateSpeech(str) {
+const FUNNY_CENSOR_MESSAGES = [
+    "THE EDITOR-IN-CHIEF REFUSES TO PRINT SUCH SCANDALOUS LANGUAGE.",
+    "REDACTED BY THE DEPARTMENT OF DECENCY: KEEP IT CIVIL, CITIZEN.",
+    "OUR TYPESETTERS ARE BLUSHING. MIND YOUR MANNERS.",
+    "TRANSMISSION REJECTED: THIS IS A RESPECTABLE PROCRASTINATION JOURNAL.",
+    "CENSORSHIP NOTICE: WASH YOUR KEYBOARD OUT WITH SOAP."
+];
+
+function containsInappropriate(str) {
     if (!str) return false;
     const lower = str.toLowerCase();
+
+    // 1. Direct word boundary check for vulgar words
+    const vulgarWords = [
+        /\b(fuck|fucking|fucker|fck|fuk|f\*ck)\b/i,
+        /\b(bitch|bitches|b!tch)\b/i,
+        /\b(cunt|cunts)\b/i,
+        /\b(pussy|pussies)\b/i,
+        /\b(dick|dicks)\b/i,
+        /\b(asshole|assholes)\b/i,
+        /\b(whore|whores|slut|sluts)\b/i
+    ];
+    for (const rx of vulgarWords) {
+        if (rx.test(lower)) return true;
+    }
+
+    // 2. Anti-obfuscation for slurs & severe profanity
     const collapsed = lower.replace(/[^a-z0-9]/g, '');
     const normalized = collapsed
         .replace(/[1!|]/g, 'i')
@@ -20,7 +44,7 @@ function containsHateSpeech(str) {
 
     const deDuplicated = normalized.replace(/(.)\1+/g, '$1');
 
-    const hatePatterns = [
+    const severePatterns = [
         /n+[i1l]+[g9]+[e3a4r]+/i,
         /n+i+g+[ae]+/i,
         /f+a+g+[o0e3]*t?/i,
@@ -28,10 +52,13 @@ function containsHateSpeech(str) {
         /c+h+i+n+k/i,
         /s+p+i+c/i,
         /r+e+t+a+r+d/i,
+        /f+u+c+k/i,
+        /b+i+t+c+h/i,
+        /c+u+n+t/i
     ];
 
-    for (const pattern of hatePatterns) {
-        if (pattern.test(lower) || pattern.test(normalized) || pattern.test(deDuplicated)) {
+    for (const rx of severePatterns) {
+        if (rx.test(lower) || rx.test(normalized) || rx.test(deDuplicated)) {
             return true;
         }
     }
@@ -58,11 +85,11 @@ export default async function handler(req, res) {
                 
             if (error) throw error;
 
-            // Instantly purge any banned IP tasks or hate speech from the public feed
+            // Instantly purge any banned IP tasks or inappropriate language from the public feed
             const cleanTasks = (tasks || []).filter(t => 
                 !HARDCODED_BANNED_IPS.has(t.ip_address) && 
-                !containsHateSpeech(t.text) && 
-                !containsHateSpeech(t.city)
+                !containsInappropriate(t.text) && 
+                !containsInappropriate(t.city)
             );
 
             return res.status(200).json(cleanTasks);
@@ -122,13 +149,10 @@ export default async function handler(req, res) {
                 return res.status(403).json({ error: "Malicious input detected. IP Banned." });
             }
 
-            // Hate speech & slur detection
-            if (containsHateSpeech(cleanText) || containsHateSpeech(cleanName)) {
-                if (clientIp !== 'unknown') {
-                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Hate speech violation' });
-                    await supabase.from('tasks').delete().eq('ip_address', clientIp);
-                }
-                return res.status(400).json({ error: "Inappropriate language or hate speech is strictly prohibited." });
+            // Inappropriate language & profanity filter (NO BAN - Just reject with witty broadsheet refusal)
+            if (containsInappropriate(cleanText) || containsInappropriate(cleanName)) {
+                const funnyError = FUNNY_CENSOR_MESSAGES[Math.floor(Math.random() * FUNNY_CENSOR_MESSAGES.length)];
+                return res.status(400).json({ error: funnyError });
             }
 
             // 3. Multi-Tier Velocity & Cooldown Limiting

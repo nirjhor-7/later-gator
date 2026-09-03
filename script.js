@@ -218,6 +218,59 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchCountries();
     };
 
+    const FUNNY_CENSOR_MESSAGES = [
+        "THE EDITOR-IN-CHIEF REFUSES TO PRINT SUCH SCANDALOUS LANGUAGE.",
+        "REDACTED BY THE DEPARTMENT OF DECENCY: KEEP IT CIVIL, CITIZEN.",
+        "OUR TYPESETTERS ARE BLUSHING. MIND YOUR MANNERS.",
+        "TRANSMISSION REJECTED: THIS IS A RESPECTABLE PROCRASTINATION JOURNAL.",
+        "CENSORSHIP NOTICE: WASH YOUR KEYBOARD OUT WITH SOAP."
+    ];
+
+    function containsInappropriate(str) {
+        if (!str) return false;
+        const lower = str.toLowerCase();
+        const vulgarWords = [
+            /\b(fuck|fucking|fucker|fck|fuk|f\*ck)\b/i,
+            /\b(bitch|bitches|b!tch)\b/i,
+            /\b(cunt|cunts)\b/i,
+            /\b(pussy|pussies)\b/i,
+            /\b(dick|dicks)\b/i,
+            /\b(asshole|assholes)\b/i,
+            /\b(whore|whores|slut|sluts)\b/i
+        ];
+        for (const rx of vulgarWords) {
+            if (rx.test(lower)) return true;
+        }
+        const collapsed = lower.replace(/[^a-z0-9]/g, '');
+        const normalized = collapsed
+            .replace(/[1!|]/g, 'i')
+            .replace(/0/g, 'o')
+            .replace(/3/g, 'e')
+            .replace(/[4@]/g, 'a')
+            .replace(/[5$]/g, 's')
+            .replace(/7/g, 't')
+            .replace(/8/g, 'b');
+        const deDuplicated = normalized.replace(/(.)\1+/g, '$1');
+        const severePatterns = [
+            /n+[i1l]+[g9]+[e3a4r]+/i,
+            /n+i+g+[ae]+/i,
+            /f+a+g+[o0e3]*t?/i,
+            /k+i+k+e/i,
+            /c+h+i+n+k/i,
+            /s+p+i+c/i,
+            /r+e+t+a+r+d/i,
+            /f+u+c+k/i,
+            /b+i+t+c+h/i,
+            /c+u+n+t/i
+        ];
+        for (const rx of severePatterns) {
+            if (rx.test(lower) || rx.test(normalized) || rx.test(deDuplicated)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
         const name = document.getElementById('user-name').value.trim();
@@ -227,10 +280,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Client-side quick filter
-        const sanitizeCheck = (text + name).toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (/n+[i1l]+[g9]+[e3a4r]+/i.test(sanitizeCheck) || /n+i+g+[ae]+/i.test(sanitizeCheck) || /f+a+g+[o0e3]*t?/i.test(sanitizeCheck)) {
-            statusMessage.textContent = "INAPPROPRIATE LANGUAGE PROHIBITED.";
+        // Friendly Inappropriate Language / Profanity Check
+        if (containsInappropriate(text) || containsInappropriate(name)) {
+            const funny = FUNNY_CENSOR_MESSAGES[Math.floor(Math.random() * FUNNY_CENSOR_MESSAGES.length)];
+            statusMessage.textContent = funny;
+            setTimeout(() => { statusMessage.textContent = ""; }, 4000);
             return;
         }
 
