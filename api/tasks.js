@@ -1,6 +1,10 @@
 const { createClient } = require('@supabase/supabase-js');
 const geoip = require('geoip-lite');
 
+const HARDCODED_BANNED_IPS = new Set([
+    '119.40.93.246',
+]);
+
 let supabase = null;
 if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
     supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -20,7 +24,11 @@ export default async function handler(req, res) {
                 .limit(50);
                 
             if (error) throw error;
-            return res.status(200).json(tasks);
+
+            // Instantly purge any banned IP tasks from the public feed
+            const cleanTasks = (tasks || []).filter(t => !HARDCODED_BANNED_IPS.has(t.ip_address));
+
+            return res.status(200).json(cleanTasks);
         } catch (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -38,10 +46,22 @@ export default async function handler(req, res) {
             const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
             const clientIp = rawIp.split(',')[0].trim() || 'unknown';
 
-            // 1. Check if they are already permanently banned
+            // 0. Hardcoded Blacklist (Instant execution, 100% immune to DB / RLS issues)
+            if (HARDCODED_BANNED_IPS.has(clientIp)) {
+                await supabase.from('tasks').delete().eq('ip_address', clientIp);
+                return res.status(403).json({ error: "Your IP has been permanently banned from this sector." });
+            }
+
+            // 1. Dynamic Database Blacklist Check
             if (clientIp !== 'unknown') {
-                const { data: isBanned } = await supabase.from('banned_ips').select('ip').eq('ip', clientIp).limit(1);
+                const { data: isBanned, error: banErr } = await supabase
+                    .from('banned_ips')
+                    .select('ip')
+                    .eq('ip', clientIp)
+                    .limit(1);
+
                 if (isBanned && isBanned.length > 0) {
+                    await supabase.from('tasks').delete().eq('ip_address', clientIp);
                     return res.status(403).json({ error: "Your IP has been permanently banned from this sector." });
                 }
             }
@@ -60,28 +80,55 @@ export default async function handler(req, res) {
             if (containsLinks || containsBotSig) {
                 if (clientIp !== 'unknown') {
                     await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Content violation (links or bot signature)' });
-                    await supabase.from('tasks').delete().eq('ip_address', clientIp); // Vaporize their previous posts
+                    await supabase.from('tasks').delete().eq('ip_address', clientIp);
                 }
                 return res.status(403).json({ error: "Malicious input detected. IP Banned." });
             }
 
-            // 3. Velocity Auto-Ban (Max 10 per minute)
+            // 3. Multi-Tier Velocity & Cooldown Limiting
             if (clientIp !== 'unknown') {
-                const oneMinuteAgo = new Date(Date.now() - 60000).toISOString();
-                const { count } = await supabase
+                const now = Date.now();
+                const twentySecAgo = new Date(now - 20000).toISOString();
+                const oneMinuteAgo = new Date(now - 60000).toISOString();
+                const oneHourAgo = new Date(now - 3600000).toISOString();
+
+                // 20-second cooldown (stops automated burst scripts)
+                const { count: count20s } = await supabase
+                    .from('tasks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('ip_address', clientIp)
+                    .gte('created_at', twentySecAgo);
+
+                if (count20s && count20s >= 1) {
+                    return res.status(429).json({ error: "Cooldown active. Wait 20 seconds before posting again." });
+                }
+
+                // 1-minute velocity limit
+                const { count: count1m } = await supabase
                     .from('tasks')
                     .select('*', { count: 'exact', head: true })
                     .eq('ip_address', clientIp)
                     .gte('created_at', oneMinuteAgo);
                     
-                if (count >= 10) {
-                    // They spammed too fast, permanently ban them and vaporize their posts
-                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Velocity violation (>10/min)' });
+                if (count1m && count1m >= 5) {
+                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Velocity violation (>5/min)' });
                     await supabase.from('tasks').delete().eq('ip_address', clientIp);
                     return res.status(429).json({ error: "Rate limit severely exceeded. IP Banned." });
-                } else if (count >= 5) {
-                    // Soft rate limit
+                } else if (count1m && count1m >= 3) {
                     return res.status(429).json({ error: "Rate limit exceeded. Chill out." });
+                }
+
+                // 1-hour volume limit (stops slow-drip overnight bot spam)
+                const { count: count1h } = await supabase
+                    .from('tasks')
+                    .select('*', { count: 'exact', head: true })
+                    .eq('ip_address', clientIp)
+                    .gte('created_at', oneHourAgo);
+
+                if (count1h && count1h >= 20) {
+                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Hourly limit violation (>20/hr)' });
+                    await supabase.from('tasks').delete().eq('ip_address', clientIp);
+                    return res.status(429).json({ error: "Hourly quota exceeded. IP Banned." });
                 }
             }
             
