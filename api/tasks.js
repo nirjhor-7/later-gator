@@ -5,6 +5,39 @@ const HARDCODED_BANNED_IPS = new Set([
     '119.40.93.246',
 ]);
 
+function containsHateSpeech(str) {
+    if (!str) return false;
+    const lower = str.toLowerCase();
+    const collapsed = lower.replace(/[^a-z0-9]/g, '');
+    const normalized = collapsed
+        .replace(/[1!|]/g, 'i')
+        .replace(/0/g, 'o')
+        .replace(/3/g, 'e')
+        .replace(/[4@]/g, 'a')
+        .replace(/[5$]/g, 's')
+        .replace(/7/g, 't')
+        .replace(/8/g, 'b');
+
+    const deDuplicated = normalized.replace(/(.)\1+/g, '$1');
+
+    const hatePatterns = [
+        /n+[i1l]+[g9]+[e3a4r]+/i,
+        /n+i+g+[ae]+/i,
+        /f+a+g+[o0e3]*t?/i,
+        /k+i+k+e/i,
+        /c+h+i+n+k/i,
+        /s+p+i+c/i,
+        /r+e+t+a+r+d/i,
+    ];
+
+    for (const pattern of hatePatterns) {
+        if (pattern.test(lower) || pattern.test(normalized) || pattern.test(deDuplicated)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 let supabase = null;
 if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
     supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -25,8 +58,12 @@ export default async function handler(req, res) {
                 
             if (error) throw error;
 
-            // Instantly purge any banned IP tasks from the public feed
-            const cleanTasks = (tasks || []).filter(t => !HARDCODED_BANNED_IPS.has(t.ip_address));
+            // Instantly purge any banned IP tasks or hate speech from the public feed
+            const cleanTasks = (tasks || []).filter(t => 
+                !HARDCODED_BANNED_IPS.has(t.ip_address) && 
+                !containsHateSpeech(t.text) && 
+                !containsHateSpeech(t.city)
+            );
 
             return res.status(200).json(cleanTasks);
         } catch (err) {
@@ -83,6 +120,15 @@ export default async function handler(req, res) {
                     await supabase.from('tasks').delete().eq('ip_address', clientIp);
                 }
                 return res.status(403).json({ error: "Malicious input detected. IP Banned." });
+            }
+
+            // Hate speech & slur detection
+            if (containsHateSpeech(cleanText) || containsHateSpeech(cleanName)) {
+                if (clientIp !== 'unknown') {
+                    await supabase.from('banned_ips').insert({ ip: clientIp, reason: 'Hate speech violation' });
+                    await supabase.from('tasks').delete().eq('ip_address', clientIp);
+                }
+                return res.status(400).json({ error: "Inappropriate language or hate speech is strictly prohibited." });
             }
 
             // 3. Multi-Tier Velocity & Cooldown Limiting

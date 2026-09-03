@@ -227,6 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Client-side quick filter
+        const sanitizeCheck = (text + name).toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (/n+[i1l]+[g9]+[e3a4r]+/i.test(sanitizeCheck) || /n+i+g+[ae]+/i.test(sanitizeCheck) || /f+a+g+[o0e3]*t?/i.test(sanitizeCheck)) {
+            statusMessage.textContent = "INAPPROPRIATE LANGUAGE PROHIBITED.";
+            return;
+        }
+
         if (isPanic) {
             text = `[PANIC] ${text}`;
         }
@@ -280,6 +287,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 fetchAll();
+            } else {
+                const errData = await response.json().catch(() => ({}));
+                statusMessage.textContent = (errData.error || "TRANSMISSION REJECTED.").toUpperCase();
+                setTimeout(() => { statusMessage.textContent = ""; }, 4000);
             }
         } catch (error) {
             console.error('Failed to submit task:', error);
