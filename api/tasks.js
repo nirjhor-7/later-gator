@@ -65,6 +65,41 @@ function containsInappropriate(str) {
     return false;
 }
 
+function isGibberish(text) {
+    if (!text) return true;
+    const clean = text.trim();
+    if (clean.length < 3) return true;
+
+    // 4+ identical characters in a row: "asdwwww", "aaaaa", "zzzz"
+    if (/(.)\1{3,}/i.test(clean)) return true;
+
+    // Common keyboard row mashes
+    const mashes = [
+        /asdf/i, /sdfg/i, /dfgh/i, /ghjk/i, /hjkl/i,
+        /qwerty/i, /werty/i, /ertyu/i, /rtyui/i,
+        /zxcv/i, /xcvb/i, /cvbn/i,
+        /asdww/i, /qweasd/i, /asdasd/i
+    ];
+    for (const m of mashes) {
+        if (m.test(clean)) return true;
+    }
+
+    // Check words: 5+ letters with no vowels or all consonants
+    const words = clean.split(/\s+/);
+    for (const w of words) {
+        const lettersOnly = w.replace(/[^a-z]/gi, '');
+        if (lettersOnly.length >= 5 && !/[aeiouy]/i.test(lettersOnly)) {
+            return true;
+        }
+        if (lettersOnly.length >= 7) {
+            const vowels = (lettersOnly.match(/[aeiouy]/gi) || []).length;
+            if (vowels / lettersOnly.length < 0.15) return true;
+        }
+    }
+
+    return false;
+}
+
 let supabase = null;
 if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
     supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
@@ -85,11 +120,12 @@ export default async function handler(req, res) {
                 
             if (error) throw error;
 
-            // Instantly purge any banned IP tasks or inappropriate language from the public feed
+            // Instantly purge any banned IP tasks, inappropriate language, or gibberish from the public feed
             const cleanTasks = (tasks || []).filter(t => 
                 !HARDCODED_BANNED_IPS.has(t.ip_address) && 
                 !containsInappropriate(t.text) && 
-                !containsInappropriate(t.city)
+                !containsInappropriate(t.city) &&
+                !isGibberish((t.text || '').replace('[PANIC] ', ''))
             );
 
             return res.status(200).json(cleanTasks);
@@ -153,6 +189,25 @@ export default async function handler(req, res) {
             if (containsInappropriate(cleanText) || containsInappropriate(cleanName)) {
                 const funnyError = FUNNY_CENSOR_MESSAGES[Math.floor(Math.random() * FUNNY_CENSOR_MESSAGES.length)];
                 return res.status(400).json({ error: funnyError });
+            }
+
+            // Gibberish & keyboard mash detection with suggestion
+            const TASK_SUGGESTIONS = [
+                "Sleep",
+                "Study",
+                "Replying to emails",
+                "Doing laundry",
+                "Going to gym",
+                "My life choices",
+                "Too tired to type"
+            ];
+
+            if (isGibberish(cleanText)) {
+                const suggestion = TASK_SUGGESTIONS[Math.floor(Math.random() * TASK_SUGGESTIONS.length)];
+                return res.status(400).json({ 
+                    error: `KEYBOARD SMASH DETECTED. DID YOU MEAN: "${suggestion.toUpperCase()}"?`,
+                    suggestion: suggestion
+                });
             }
 
             // 3. Multi-Tier Velocity & Cooldown Limiting

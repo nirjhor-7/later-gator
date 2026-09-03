@@ -294,6 +294,38 @@ document.addEventListener('DOMContentLoaded', () => {
         return false;
     }
 
+    function isGibberish(text) {
+        if (!text) return true;
+        const clean = text.trim();
+        if (clean.length < 3) return true;
+
+        if (/(.)\1{3,}/i.test(clean)) return true;
+
+        const mashes = [
+            /asdf/i, /sdfg/i, /dfgh/i, /ghjk/i, /hjkl/i,
+            /qwerty/i, /werty/i, /ertyu/i, /rtyui/i,
+            /zxcv/i, /xcvb/i, /cvbn/i,
+            /asdww/i, /qweasd/i, /asdasd/i
+        ];
+        for (const m of mashes) {
+            if (m.test(clean)) return true;
+        }
+
+        const words = clean.split(/\s+/);
+        for (const w of words) {
+            const lettersOnly = w.replace(/[^a-z]/gi, '');
+            if (lettersOnly.length >= 5 && !/[aeiouy]/i.test(lettersOnly)) {
+                return true;
+            }
+            if (lettersOnly.length >= 7) {
+                const vowels = (lettersOnly.match(/[aeiouy]/gi) || []).length;
+                if (vowels / lettersOnly.length < 0.15) return true;
+            }
+        }
+
+        return false;
+    }
+
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
         const name = document.getElementById('user-name').value.trim();
@@ -308,6 +340,33 @@ document.addEventListener('DOMContentLoaded', () => {
             const funny = FUNNY_CENSOR_MESSAGES[Math.floor(Math.random() * FUNNY_CENSOR_MESSAGES.length)];
             statusMessage.textContent = funny;
             setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+            return;
+        }
+
+        // Gibberish & Keyboard Smash Detection with Interactive Suggestion
+        const TASK_SUGGESTIONS = [
+            "Sleep",
+            "Study",
+            "Replying to emails",
+            "Doing laundry",
+            "Going to gym",
+            "My life choices",
+            "Too tired to type"
+        ];
+
+        if (isGibberish(text)) {
+            const suggestion = TASK_SUGGESTIONS[Math.floor(Math.random() * TASK_SUGGESTIONS.length)];
+            statusMessage.innerHTML = `KEYBOARD SMASH DETECTED. DID YOU MEAN: <span class="suggestion-link" style="text-decoration: underline; cursor: pointer; font-weight: bold;">"${suggestion.toUpperCase()}"</span>?`;
+            
+            const link = statusMessage.querySelector('.suggestion-link');
+            if (link) {
+                link.addEventListener('click', () => {
+                    taskInput.value = suggestion;
+                    taskInput.focus();
+                    statusMessage.textContent = "SUGGESTION APPLIED. HIT POSTPONE!";
+                    setTimeout(() => { statusMessage.textContent = ""; }, 3000);
+                });
+            }
             return;
         }
 
