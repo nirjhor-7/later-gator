@@ -81,7 +81,7 @@ export default async function handler(req, res) {
                 .from('tasks')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(50);
+                .limit(2000);
                 
             if (error) throw error;
 

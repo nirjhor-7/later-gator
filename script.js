@@ -72,14 +72,24 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     let lastTopTaskId = null;
+    let renderedTopId = null;
+    let renderedCount = 0;
 
     const renderFeed = (tasks) => {
-        if (tasks.length === 0) {
+        if (!tasks || tasks.length === 0) {
             feedContainer.innerHTML = '<div class="feed-item">No transmissions received yet.</div>';
             return;
         }
 
-        feedContainer.innerHTML = tasks.map(task => {
+        // Avoid re-rendering if data is identical (prevents scroll jumps while reading)
+        if (renderedTopId === tasks[0].id && renderedCount === tasks.length) {
+            return;
+        }
+
+        const prevScrollTop = feedContainer.scrollTop;
+        const isScrolled = prevScrollTop > 20;
+
+        const feedHtml = tasks.map(task => {
             const userName = task.city || 'Anonymous';
             const userCountry = task.country || 'Parts Unknown';
             const locationString = `REPORT: ${escapeHtml(userName).toUpperCase()} IN ${escapeHtml(userCountry).toUpperCase()}`;
@@ -113,8 +123,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="feed-item-time">${timeAgo(task.created_at)}</span>
             </div>
             `;
-        }).join('');
+        }).join('') + `
+            <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
+                // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
+            </div>
+        `;
 
+        feedContainer.innerHTML = feedHtml;
+
+        // Preserve user scroll position if they were browsing history
+        if (isScrolled) {
+            feedContainer.scrollTop = prevScrollTop;
+        }
+
+        renderedTopId = tasks[0].id;
+        renderedCount = tasks.length;
         if (tasks.length > 0) {
             lastTopTaskId = Math.max(lastTopTaskId || 0, tasks[0].id);
         }
