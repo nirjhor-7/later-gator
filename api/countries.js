@@ -22,8 +22,9 @@ export default async function handler(req, res) {
         if (tasks) {
             tasks.forEach(t => {
                 const c = (t.country || '').trim();
-                if (c && c !== 'Unknown' && c !== 'Parts Unknown') {
-                    counts[c] = (counts[c] || 0) + 1;
+                if (c && c.toLowerCase() !== 'unknown' && c.toLowerCase() !== 'parts unknown') {
+                    const norm = c.toUpperCase();
+                    counts[norm] = (counts[norm] || 0) + 1;
                 }
             });
         }
