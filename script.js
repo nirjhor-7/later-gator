@@ -299,31 +299,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const clean = text.trim();
         if (clean.length < 3) return true;
 
-        if (/(.)\1{3,}/i.test(clean)) return true;
+        // Normalizing expressive elongation:
+        // e.g. "studyiiiiiiing" -> "studying", "sleeeeeep" -> "sleep"
+        const deElongated = clean.replace(/(.)\1{2,}/gi, "$1");
 
+        // Common keyboard home-row / sequential key walks (pure smash)
         const mashes = [
             /asdf/i, /sdfg/i, /dfgh/i, /ghjk/i, /hjkl/i,
             /qwerty/i, /werty/i, /ertyu/i, /rtyui/i,
             /zxcv/i, /xcvb/i, /cvbn/i,
-            /asdww/i, /qweasd/i, /asdasd/i
+            /asdw/i, /qweasd/i, /asdasd/i, /dsad/i, /fdsa/i,
+            /lkjh/i, /poiu/i, /mnbv/i
         ];
         for (const m of mashes) {
-            if (m.test(clean)) return true;
+            if (m.test(clean) || m.test(deElongated)) return true;
         }
 
-        const words = clean.split(/\s+/);
+        // Only flag repeated characters if there is NO other substantial word (e.g. "aaaaa", "zzzzzz")
+        if (/^(.)\1+$/i.test(clean.replace(/\s+/g, ""))) return true;
+
+        // Check individual words
+        const words = deElongated.split(/\s+/);
+        let validWords = 0;
+
         for (const w of words) {
-            const lettersOnly = w.replace(/[^a-z]/gi, '');
-            if (lettersOnly.length >= 5 && !/[aeiouy]/i.test(lettersOnly)) {
+            const lettersOnly = w.replace(/[^a-z]/gi, "");
+            if (!lettersOnly) continue;
+
+            // Expressive conversational procrastination words
+            if (["no", "so", "ugh", "ah", "ha", "eh"].includes(lettersOnly.toLowerCase())) {
+                validWords++;
+                continue;
+            }
+
+            // Must have vowels if length >= 4
+            if (lettersOnly.length >= 4 && !/[aeiouy]/i.test(lettersOnly)) {
                 return true;
             }
+
             if (lettersOnly.length >= 7) {
                 const vowels = (lettersOnly.match(/[aeiouy]/gi) || []).length;
                 if (vowels / lettersOnly.length < 0.15) return true;
             }
+
+            validWords++;
         }
 
-        return false;
+        return validWords === 0;
     }
 
     const submitTask = async (isPanic = false) => {
