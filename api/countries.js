@@ -12,27 +12,40 @@ export default async function handler(req, res) {
     try {
         const { data: tasks, error } = await supabase
             .from('tasks')
-            .select('country')
+            .select('country, created_at')
             .not('country', 'is', null)
+            .order('created_at', { ascending: false })
             .limit(2000);
 
         if (error) throw error;
 
-        const counts = {};
+        const countryMap = {};
         if (tasks) {
             tasks.forEach(t => {
                 const c = (t.country || '').trim();
                 if (c && c.toLowerCase() !== 'unknown' && c.toLowerCase() !== 'parts unknown') {
                     const norm = c.toUpperCase();
-                    counts[norm] = (counts[norm] || 0) + 1;
+                    if (!countryMap[norm]) {
+                        countryMap[norm] = {
+                            country: norm,
+                            count: 0,
+                            latest: new Date(t.created_at).getTime() || 0
+                        };
+                    }
+                    countryMap[norm].count += 1;
                 }
             });
         }
 
-        const sorted = Object.entries(counts)
-            .map(([country, count]) => ({ country, count }))
-            .sort((a, b) => b.count - a.count)
-            .slice(0, 5);
+        const sorted = Object.values(countryMap)
+            .sort((a, b) => {
+                if (b.count !== a.count) {
+                    return b.count - a.count;
+                }
+                return b.latest - a.latest;
+            })
+            .slice(0, 7)
+            .map(({ country, count }) => ({ country, count }));
 
         return res.status(200).json(sorted);
     } catch (err) {
