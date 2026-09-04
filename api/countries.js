@@ -44,7 +44,7 @@ export default async function handler(req, res) {
                 }
                 return b.latest - a.latest;
             })
-            .slice(0, 7)
+            .slice(0, 10)
             .map(({ country, count }) => ({ country, count }));
 
         return res.status(200).json(sorted);
