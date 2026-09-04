@@ -118,8 +118,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return `
             <div class="feed-item ${animationClass}">
-                <div class="feed-item-meta">${locationString} ${verb}:</div>
-                <div class="feed-item-text">${escapeHtml(rawText)}</div>
+                <div class="feed-item-meta">${censorNsfwHtml(locationString)} ${verb}:</div>
+                <div class="feed-item-text">${censorNsfwHtml(escapeHtml(rawText))}</div>
                 <span class="feed-item-time">${timeAgo(task.created_at)}</span>
             </div>
             `;
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (taskName.startsWith('[PANIC] ')) taskName = taskName.replace('[PANIC] ', '');
                     
                     shameContainer.style.display = 'block';
-                    shameTask.textContent = `"${escapeHtml(taskName)}"`;
+                    shameTask.innerHTML = `"${censorNsfwHtml(escapeHtml(taskName))}"`;
                     shameCount.textContent = data.count;
                 } else {
                     shameContainer.style.display = 'none';
@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.fillStyle = '#111111';
         ctx.font = '900 28px "Space Mono", monospace';
-        let safeTask = `"${taskText.trim()}"`;
+        let safeTask = `"${censorNsfwText(taskText.trim())}"`;
         if (safeTask.length > 50) safeTask = safeTask.substring(0, 47) + '..."';
         ctx.fillText(safeTask, 600, 460);
 
@@ -587,11 +587,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const showShareSlip = (task, isPanicMode) => {
         if (!shareCard) return;
         const clean = task.trim();
-        shareCardTask.textContent = `"${clean}"`;
+        shareCardTask.innerHTML = `"${censorNsfwHtml(escapeHtml(clean))}"`;
         
+        const plainCensored = censorNsfwText(clean);
         const actionVerb = isPanicMode ? "am officially panicking about" : "just postponed";
         const punchline = isPanicMode ? "Wish me luck." : "Not my problem today.";
-        currentShareText = `I ${actionVerb} "${clean}" on Later, Gator alongside the rest of the world. ${punchline}`;
+        currentShareText = `I ${actionVerb} "${plainCensored}" on Later, Gator alongside the rest of the world. ${punchline}`;
         
         shareCard.style.display = 'block';
     };
@@ -671,6 +672,29 @@ document.addEventListener('DOMContentLoaded', () => {
              .replace(/>/g, "&gt;")
              .replace(/"/g, "&quot;")
              .replace(/'/g, "&#039;");
+    }
+
+    const NSFW_REGEX = /\b(sex|porn|porno|nude|nudes|boob|boobs|tit|tits|penis|dick|dicks|vagina|pussy|pussies|masturbat\w*|horny|orgasm|orgasms|ass|asshole|assholes|blowjob|blowjobs|handjob|handjobs|cum|cumming|onlyfans|fuck\w*|bitch\w*|cunt\w*|whore\w*|slut\w*|dildo\w*)\b/gi;
+
+    function censorNsfwHtml(str) {
+        if (!str) return str;
+        return str.replace(NSFW_REGEX, (match) => {
+            if (match.length <= 2) return match;
+            const first = match[0];
+            const last = match[match.length - 1];
+            const middle = match.slice(1, -1);
+            return `${first}<span class="nsfw-censor" title="CENSORED BY EDITORIAL BOARD">${middle}</span>${last}`;
+        });
+    }
+
+    function censorNsfwText(str) {
+        if (!str) return str;
+        return str.replace(NSFW_REGEX, (match) => {
+            if (match.length <= 2) return match;
+            const first = match[0];
+            const last = match[match.length - 1];
+            return `${first}${"█".repeat(match.length - 2)}${last}`;
+        });
     }
 
     function timeAgo(dateString) {
