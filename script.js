@@ -679,21 +679,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function censorNsfwHtml(str) {
         if (!str) return str;
         return str.replace(NSFW_REGEX, (match) => {
-            if (match.length <= 2) return match;
+            if (match.length <= 1) return match;
             const first = match[0];
-            const last = match[match.length - 1];
-            const middle = match.slice(1, -1);
-            return `${first}<span class="nsfw-censor" title="CENSORED BY EDITORIAL BOARD">${middle}</span>${last}`;
+            const rest = match.slice(1);
+            return `${first}<span class="nsfw-censor" title="CENSORED BY EDITORIAL BOARD">${rest}</span>`;
         });
     }
 
     function censorNsfwText(str) {
         if (!str) return str;
         return str.replace(NSFW_REGEX, (match) => {
-            if (match.length <= 2) return match;
+            if (match.length <= 1) return match;
             const first = match[0];
-            const last = match[match.length - 1];
-            return `${first}${"█".repeat(match.length - 2)}${last}`;
+            return `${first}${"█".repeat(match.length - 1)}`;
         });
     }
 
