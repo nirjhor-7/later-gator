@@ -401,6 +401,59 @@ document.addEventListener('DOMContentLoaded', () => {
         return validWords === 0;
     }
 
+    function triggerRubberStamp(isPanicMode = false) {
+        if (!stampOverlay || !rubberStamp) return;
+
+        playRubberStampSound();
+
+        const permitNum = Math.floor(1000 + Math.random() * 9000);
+        if (isPanicMode) {
+            if (stampHeader) stampHeader.textContent = "⚠ EMERGENCY DIRECTIVE ⚠";
+            if (stampTitle) stampTitle.textContent = "PANIC MANDATE";
+            if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
+            if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
+            rubberStamp.className = "rubber-stamp stamped-panic";
+        } else {
+            if (stampHeader) stampHeader.textContent = "★ OFFICIAL DISPATCH ★";
+            if (stampTitle) stampTitle.textContent = "APPROVED FOR DELAY";
+            if (stampSub) stampSub.textContent = "BUREAU OF PROCRASTINATION";
+            if (stampMeta) stampMeta.textContent = `PERMIT #${permitNum} • VALID TODAY ONLY`;
+            rubberStamp.className = "rubber-stamp stamped-delay";
+        }
+
+        // Show overlay first
+        stampOverlay.style.display = "flex";
+
+        // Trigger reflow to restart CSS animation cleanly
+        void rubberStamp.offsetWidth;
+        rubberStamp.classList.add('stamp-anim-slam');
+
+        // Trigger physical desk shockwave
+        const inputSection = document.querySelector('.input-section');
+        if (inputSection) {
+            inputSection.classList.remove('desk-impact');
+            void inputSection.offsetWidth;
+            inputSection.classList.add('desk-impact');
+        }
+    }
+
+    function dismissRubberStamp(callback) {
+        if (!rubberStamp || !stampOverlay) {
+            if (callback) callback();
+            return;
+        }
+
+        rubberStamp.classList.remove('stamp-anim-slam');
+        void rubberStamp.offsetWidth;
+        rubberStamp.classList.add('stamp-anim-fade');
+
+        setTimeout(() => {
+            stampOverlay.style.display = "none";
+            rubberStamp.className = "rubber-stamp";
+            if (callback) callback();
+        }, 320);
+    }
+
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
         const name = document.getElementById('user-name').value.trim();
@@ -445,102 +498,67 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (isPanic) {
-            text = `[PANIC] ${text}`;
-        }
-
+        const submittedText = text;
         const activeBtn = isPanic ? panicBtn : laterBtn;
         const origBtnText = isPanic ? "DO IT NOW (PANIC)" : "NOT MY PROBLEM TODAY";
         activeBtn.disabled = true;
 
-        try {
-            const response = await fetch('/api/tasks', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Gator-Token': 'chomp-chomp'
-                },
-                body: JSON.stringify({ text, name })
+        if (isPanic) {
+            text = `[PANIC] ${text}`;
+        }
+
+        currentRawTask = submittedText;
+        currentIsPanic = isPanic;
+        currentSubmittedName = name;
+
+        // 1. INSTANT STAMP SLAM & DESK SHOCKWAVE (Zero latency!)
+        triggerRubberStamp(isPanic);
+
+        if (isPanic) {
+            activeBtn.textContent = "FINE. DOING IT.";
+            statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
+        } else {
+            activeBtn.textContent = "POSTPONED ✓";
+            statusMessage.textContent = "SUCCESSFULLY EVADED.";
+        }
+
+        // 2. Dispatch network request in parallel
+        const postPromise = fetch('/api/tasks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Gator-Token': 'chomp-chomp'
+            },
+            body: JSON.stringify({ text, name })
+        }).catch(err => ({ ok: false, error: err }));
+
+        // 3. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
+        setTimeout(async () => {
+            dismissRubberStamp(() => {
+                taskInput.value = '';
+                activeBtn.textContent = origBtnText;
+                activeBtn.disabled = false;
+                statusMessage.textContent = "";
+
+                // Reveal official share slip & certificate
+                showShareSlip(submittedText, isPanic);
             });
 
-            if (response.ok) {
-                const submittedText = isPanic ? text.replace('[PANIC] ', '') : text;
-                currentRawTask = submittedText;
-                currentIsPanic = isPanic;
-                currentSubmittedName = name;
-
-                // 1. Play tactile rubber stamp strike sound
-                playRubberStampSound();
-
-                // 2. Configure stamp content & styling
-                const permitNum = Math.floor(1000 + Math.random() * 9000);
-                if (isPanic) {
-                    if (stampHeader) stampHeader.textContent = "⚠ EMERGENCY DIRECTIVE ⚠";
-                    if (stampTitle) stampTitle.textContent = "PANIC MANDATE";
-                    if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
-                    if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
-                    if (rubberStamp) rubberStamp.className = "rubber-stamp stamped-panic stamp-anim-slam";
-                } else {
-                    if (stampHeader) stampHeader.textContent = "★ OFFICIAL DISPATCH ★";
-                    if (stampTitle) stampTitle.textContent = "APPROVED FOR DELAY";
-                    if (stampSub) stampSub.textContent = "BUREAU OF PROCRASTINATION";
-                    if (stampMeta) stampMeta.textContent = `PERMIT #${permitNum} • VALID TODAY ONLY`;
-                    if (rubberStamp) rubberStamp.className = "rubber-stamp stamped-delay stamp-anim-slam";
-                }
-
-                // 3. Show stamp overlay & trigger desk impact shockwave
-                if (stampOverlay) stampOverlay.style.display = "flex";
-                const inputSection = document.querySelector('.input-section');
-                if (inputSection) {
-                    inputSection.classList.remove('desk-impact');
-                    void inputSection.offsetWidth; // trigger reflow
-                    inputSection.classList.add('desk-impact');
-                }
-
-                // 4. Update status feedback and button
-                if (isPanic) {
-                    activeBtn.textContent = "FINE. DOING IT.";
-                    statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
-                } else {
-                    activeBtn.textContent = "POSTPONED ✓";
-                    statusMessage.textContent = "SUCCESSFULLY EVADED.";
-                }
-
-                // 5. Hold the stamp for dramatic visual satisfaction (~1100ms)
-                setTimeout(() => {
-                    // Start smooth stamp dissolve
-                    if (rubberStamp) {
-                        rubberStamp.className = isPanic 
-                            ? "rubber-stamp stamped-panic stamp-anim-fade" 
-                            : "rubber-stamp stamped-delay stamp-anim-fade";
+            try {
+                const response = await postPromise;
+                if (response && response.ok) {
+                    fetchAll();
+                } else if (response && response.json) {
+                    const errData = await response.json().catch(() => ({}));
+                    if (errData.error) {
+                        statusMessage.textContent = errData.error.toUpperCase();
+                        setTimeout(() => { statusMessage.textContent = ""; }, 4000);
                     }
-
-                    setTimeout(() => {
-                        if (stampOverlay) stampOverlay.style.display = "none";
-                        if (rubberStamp) rubberStamp.className = "rubber-stamp";
-                        taskInput.value = '';
-                        activeBtn.textContent = origBtnText;
-                        activeBtn.disabled = false;
-                        statusMessage.textContent = "";
-
-                        // Reveal share slip with official notice & certificate download!
-                        showShareSlip(submittedText, isPanic);
-                    }, 350);
-                }, 1100);
-
-                fetchAll();
-            } else {
-                activeBtn.disabled = false;
-                const errData = await response.json().catch(() => ({}));
-                statusMessage.textContent = (errData.error || "TRANSMISSION REJECTED.").toUpperCase();
-                setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+                }
+            } catch (e) {
+                // Background refresh error handled
             }
-        } catch (error) {
-            console.error('Failed to submit task:', error);
-            activeBtn.disabled = false;
-            statusMessage.textContent = "SYSTEM ERROR. YOU MUST DO IT NOW.";
-            setTimeout(() => { statusMessage.textContent = ""; }, 4000);
-        }
+        }, 1100);
     };
 
     // Share Card Slip & Certificate Logic
