@@ -98,8 +98,6 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
 .right-col {
     border-left: 2px solid var(--ink);
     padding-left: 30px;
-    display: flex;
-    flex-direction: column;
 }
 
 .section-title {
@@ -642,13 +640,26 @@ button {
 
 /* Feed */
 .feed-container {
-    flex: 1;
-    min-height: 420px;
+    height: 560px;
+    max-height: 560px;
     overflow-y: auto;
     padding: 15px;
     border: 2px solid var(--ink);
     scrollbar-width: thin;
     scrollbar-color: var(--ink) var(--paper);
+}
+
+.feed-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feed-container::-webkit-scrollbar-track {
+    background: var(--paper);
+    border-left: 1px solid var(--ink);
+}
+
+.feed-container::-webkit-scrollbar-thumb {
+    background: var(--ink);
 }
 
 .feed-item {
