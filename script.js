@@ -145,7 +145,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const feedHtml = tasks.map(task => {
             const userName = task.city || 'Anonymous';
             const userCountry = task.country || 'Parts Unknown';
-            const locationString = `REPORT: ${escapeHtml(userName).toUpperCase()} IN ${escapeHtml(userCountry).toUpperCase()}`;
+            
+            let displayName = userName;
+            let rankFlairHtml = '';
+            const flairMatch = userName.match(/^\[(.*?)\]\s*(.*)$/);
+            if (flairMatch) {
+                rankFlairHtml = `<span class="feed-rank-flair">${escapeHtml(flairMatch[1])}</span> `;
+                displayName = flairMatch[2] || 'Anonymous';
+            }
+
+            const locationString = `REPORT: ${rankFlairHtml}${escapeHtml(displayName).toUpperCase()} IN ${escapeHtml(userCountry).toUpperCase()}`;
 
             let isPanic = false;
             let rawText = task.text;
@@ -413,6 +422,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
             if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
             rubberStamp.className = "rubber-stamp stamped-panic";
+        } else if (clickerCount >= 100) {
+            if (stampHeader) stampHeader.textContent = "★ SUPREME DIPLOMATIC IMMUNITY ★";
+            if (stampTitle) stampTitle.textContent = "LABOR EXEMPTION GRANTED";
+            if (stampSub) stampSub.textContent = "BUREAU OF IDLENESS • GRAND MASTER";
+            if (stampMeta) stampMeta.textContent = `PERMIT #${permitNum} • EXEMPT FROM ALL WORK`;
+            rubberStamp.className = "rubber-stamp stamped-delay";
         } else {
             if (stampHeader) stampHeader.textContent = "★ OFFICIAL DISPATCH ★";
             if (stampTitle) stampTitle.textContent = "APPROVED FOR DELAY";
@@ -507,9 +522,17 @@ document.addEventListener('DOMContentLoaded', () => {
             text = `[PANIC] ${text}`;
         }
 
+        // Automatically attach rank flair to author name if unlocked (Rank 10+)
+        let submittedAuthorName = name;
+        if (clickerCount >= 10) {
+            const rawRank = getClickerRank(clickerCount).replace('RANK: ', '').trim();
+            const cleanAuthor = name ? name : 'Anonymous';
+            submittedAuthorName = `[${rawRank}] ${cleanAuthor}`;
+        }
+
         currentRawTask = submittedText;
         currentIsPanic = isPanic;
-        currentSubmittedName = name;
+        currentSubmittedName = name; // Certificate keeps original base name
 
         // 1. INSTANT STAMP SLAM & DESK SHOCKWAVE (Zero latency!)
         triggerRubberStamp(isPanic);
@@ -529,7 +552,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
                 'X-Gator-Token': 'chomp-chomp'
             },
-            body: JSON.stringify({ text, name })
+            body: JSON.stringify({ text, name: submittedAuthorName })
         }).catch(err => ({ ok: false, error: err }));
 
         // 3. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
@@ -1205,6 +1228,44 @@ document.addEventListener('DOMContentLoaded', () => {
             const qIdx = Math.floor(clickerCount / 4) % CLICKER_QUOTES.length;
             clickerQuoteEl.textContent = CLICKER_QUOTES[qIdx];
         }
+
+        checkUnlockables();
+    };
+
+    // --- Progressive Unlockables & Slacker Perks ---
+    const claimPassBtn = document.getElementById('claim-pass-btn');
+    const sepiaToggleBtn = document.getElementById('sepia-toggle-btn');
+    const camoSection = document.getElementById('camo-section');
+    const camoTypingBtn = document.getElementById('camo-typing-btn');
+    const camoSighBtn = document.getElementById('camo-sigh-btn');
+    const camoStopBtn = document.getElementById('camo-stop-btn');
+    const secretColumn = document.getElementById('secret-column');
+
+    const credentialModal = document.getElementById('credential-modal');
+    const credentialBackdrop = document.getElementById('credential-backdrop');
+    const credentialCloseBtn = document.getElementById('credential-close-btn');
+    const credentialCanvas = document.getElementById('credential-canvas');
+    const credentialDownloadBtn = document.getElementById('credential-download-btn');
+    const credentialXBtn = document.getElementById('credential-x-btn');
+    const credentialCopyBtn = document.getElementById('credential-copy-btn');
+
+    const checkUnlockables = () => {
+        // Rank 10+ (>= 10 clicks): Press Pass claim button
+        if (claimPassBtn) {
+            claimPassBtn.style.display = (clickerCount >= 10) ? 'inline-block' : 'none';
+        }
+        // Rank 25+ (>= 25 clicks): Office Sound Camouflage
+        if (camoSection) {
+            camoSection.style.display = (clickerCount >= 25) ? 'flex' : 'none';
+        }
+        // Rank 50+ (>= 50 clicks): 1890s Newsprint Sepia Edition
+        if (sepiaToggleBtn) {
+            sepiaToggleBtn.style.display = (clickerCount >= 50) ? 'inline-block' : 'none';
+        }
+        // Rank 200+ (>= 200 clicks): Secret Gossip Column
+        if (secretColumn) {
+            secretColumn.style.display = (clickerCount >= 200) ? 'block' : 'none';
+        }
     };
 
     updateClickerUI();
@@ -1230,6 +1291,424 @@ document.addEventListener('DOMContentLoaded', () => {
                 try { localStorage.setItem('lg_clicker_count', '0'); } catch (e) {}
                 prevRank = getClickerRank(0);
                 updateClickerUI();
+            }
+        });
+    }
+
+    // --- Perk 1: 1890s Sepia Newsprint Edition ---
+    const restoreSepiaMode = () => {
+        try {
+            const isSepia = localStorage.getItem('lg_sepia_mode') === 'true';
+            if (isSepia) {
+                document.body.classList.add('sepia-edition');
+                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: ON ]';
+            }
+        } catch (e) {}
+    };
+    restoreSepiaMode();
+
+    if (sepiaToggleBtn) {
+        sepiaToggleBtn.addEventListener('click', () => {
+            const isSepia = document.body.classList.toggle('sepia-edition');
+            sepiaToggleBtn.textContent = isSepia ? '[ 📜 1890s PRINT: ON ]' : '[ 📜 1890s PRINT: OFF ]';
+            try {
+                localStorage.setItem('lg_sepia_mode', isSepia ? 'true' : 'false');
+            } catch (e) {}
+        });
+    }
+
+    // --- Perk 2: Office Sound Camouflage (Web Audio API) ---
+    let camoAudioCtx = null;
+    let typingTimeout = null;
+    let isTypingCamoActive = false;
+
+    const getCamoAudioContext = () => {
+        if (!camoAudioCtx) {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) camoAudioCtx = new AudioCtx();
+        }
+        if (camoAudioCtx && camoAudioCtx.state === 'suspended') {
+            camoAudioCtx.resume();
+        }
+        return camoAudioCtx;
+    };
+
+    const playKeyClick = (isReturnOrSpace = false) => {
+        try {
+            const ctx = getCamoAudioContext();
+            if (!ctx) return;
+
+            const now = ctx.currentTime;
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            const filter = ctx.createBiquadFilter();
+
+            filter.type = 'bandpass';
+            if (isReturnOrSpace) {
+                filter.frequency.setValueAtTime(320, now);
+                filter.Q.setValueAtTime(2.2, now);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.exponentialRampToValueAtTime(45, now + 0.05);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else {
+                const baseFreq = 750 + Math.random() * 850;
+                filter.frequency.setValueAtTime(baseFreq, now);
+                filter.Q.setValueAtTime(3.0, now);
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(baseFreq, now);
+                osc.frequency.exponentialRampToValueAtTime(180, now + 0.024);
+                const volume = 0.04 + Math.random() * 0.04;
+                gain.gain.setValueAtTime(volume, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.024);
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.024);
+            }
+        } catch (e) {}
+    };
+
+    const scheduleNextKeystroke = () => {
+        if (!isTypingCamoActive) return;
+
+        const rand = Math.random();
+        let delay = 65 + Math.random() * 140;
+        let isReturn = false;
+
+        if (rand < 0.05) {
+            // Natural thinking pause
+            delay = 600 + Math.random() * 650;
+        } else if (rand < 0.16) {
+            // Spacebar / return key
+            isReturn = true;
+            delay = 180 + Math.random() * 120;
+        }
+
+        playKeyClick(isReturn);
+        typingTimeout = setTimeout(scheduleNextKeystroke, delay);
+    };
+
+    const startTypingCamouflage = () => {
+        if (isTypingCamoActive) {
+            stopCamouflage();
+            return;
+        }
+        getCamoAudioContext();
+        isTypingCamoActive = true;
+        if (camoTypingBtn) {
+            camoTypingBtn.classList.add('playing');
+            camoTypingBtn.textContent = '⌨ TYPING...';
+        }
+        if (camoStopBtn) camoStopBtn.style.display = 'inline-block';
+        scheduleNextKeystroke();
+    };
+
+    const stopCamouflage = () => {
+        isTypingCamoActive = false;
+        if (typingTimeout) {
+            clearTimeout(typingTimeout);
+            typingTimeout = null;
+        }
+        if (camoTypingBtn) {
+            camoTypingBtn.classList.remove('playing');
+            camoTypingBtn.textContent = '⌨ FAKE TYPING';
+        }
+        if (camoStopBtn) camoStopBtn.style.display = 'none';
+    };
+
+    const playExhaustedSigh = () => {
+        try {
+            const ctx = getCamoAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const duration = 1.9;
+
+            const bufferSize = Math.floor(ctx.sampleRate * duration);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(850, now);
+            filter.frequency.exponentialRampToValueAtTime(170, now + duration);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.001, now);
+            gain.gain.linearRampToValueAtTime(0.09, now + 0.35);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            noiseSource.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            noiseSource.start(now);
+            noiseSource.stop(now + duration);
+
+            if (camoSighBtn) {
+                const orig = camoSighBtn.textContent;
+                camoSighBtn.textContent = '☕ *SIGH*';
+                camoSighBtn.classList.add('playing');
+                setTimeout(() => {
+                    camoSighBtn.textContent = orig;
+                    camoSighBtn.classList.remove('playing');
+                }, duration * 1000);
+            }
+        } catch (e) {}
+    };
+
+    if (camoTypingBtn) camoTypingBtn.addEventListener('click', startTypingCamouflage);
+    if (camoSighBtn) camoSighBtn.addEventListener('click', playExhaustedSigh);
+    if (camoStopBtn) camoStopBtn.addEventListener('click', stopCamouflage);
+
+    // --- Perk 3: Official Sloth Credential & Press Pass ---
+    const generateCredentialCard = (targetCanvas, holderName, rankName, clicks, timeStr) => {
+        const canvas = targetCanvas || document.createElement('canvas');
+        canvas.width = 1000;
+        canvas.height = 620;
+        const ctx = canvas.getContext('2d');
+
+        // Background: Newsprint parchment
+        const isSepia = document.body.classList.contains('sepia-edition');
+        ctx.fillStyle = isSepia ? '#F6EED9' : '#FAF8F5';
+        ctx.fillRect(0, 0, 1000, 620);
+
+        // Heavy Broadsheet Border
+        ctx.strokeStyle = '#111111';
+        ctx.lineWidth = 7;
+        ctx.strokeRect(18, 18, 964, 584);
+
+        ctx.lineWidth = 2;
+        ctx.strokeRect(28, 28, 944, 564);
+
+        // Corner Ornaments
+        ctx.fillStyle = '#111111';
+        [[32, 32], [952, 32], [32, 572], [952, 572]].forEach(([x, y]) => {
+            ctx.fillRect(x, y, 16, 16);
+        });
+
+        // Dashed inner rule
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.strokeRect(36, 36, 928, 548);
+        ctx.setLineDash([]);
+
+        // Header section
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#111111';
+        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.fillText('★ BUREAU OF STRATEGIC PROCRASTINATION & INACTION ★', 500, 68);
+
+        ctx.font = '900 38px "Big Shoulders Display", sans-serif';
+        ctx.fillText('OFFICIAL SLOTH CREDENTIAL & PRESS PASS', 500, 110);
+
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillText('INTERNATIONAL DISPATCH // DIPLOMATIC IMMUNITY FROM ALL LABOR', 500, 134);
+
+        // Double rule
+        ctx.beginPath();
+        ctx.moveTo(45, 146);
+        ctx.lineTo(955, 146);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(45, 151);
+        ctx.lineTo(955, 151);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // Left Column: Operative Dossier
+        ctx.textAlign = 'left';
+        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.fillText('CREDENTIAL DOSSIER // CLASSIFIED IDLE', 60, 182);
+
+        ctx.beginPath();
+        ctx.moveTo(60, 188);
+        ctx.lineTo(360, 188);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Field 1: OPERATIVE / HOLDER
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillStyle = '#555555';
+        ctx.fillText('OPERATIVE / ACCREDITED HOLDER:', 60, 214);
+        ctx.font = '900 18px "Space Mono", monospace';
+        ctx.fillStyle = '#111111';
+        const cleanHolder = (holderName || 'ANONYMOUS SLACKER').trim().toUpperCase();
+        ctx.fillText(cleanHolder.length > 28 ? cleanHolder.substring(0, 26) + '...' : cleanHolder, 60, 236);
+
+        // Field 2: SLACKER RANK
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillStyle = '#555555';
+        ctx.fillText('ACCREDITED SLACKER RANK:', 60, 270);
+        ctx.font = '900 16px "Space Mono", monospace';
+        ctx.fillStyle = '#111111';
+        ctx.fillText(rankName.toUpperCase(), 60, 292);
+
+        // Field 3: DELAY RECORD
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillStyle = '#555555';
+        ctx.fillText('RECORD OF NON-PERFORMANCE:', 60, 326);
+        ctx.font = '700 14px "Space Mono", monospace';
+        ctx.fillStyle = '#111111';
+        ctx.fillText(`${clicks} TASKS EVADED ${timeStr} • STRATEGIC NON-ACTION`, 60, 348);
+
+        // Field 4: IDENTIFIER & DATE
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillStyle = '#555555';
+        ctx.fillText('CLEARANCE CODE & ISSUE DATE:', 60, 382);
+        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.fillStyle = '#111111';
+        const certCode = `SLOTH-${Math.abs((clicks * 7919) ^ 0xABCD).toString(16).toUpperCase().padStart(8, '0')}`;
+        const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
+        ctx.fillText(`${certCode} • ISSUED ${dateStr}`, 60, 404);
+
+        // Legal Mandate Box
+        ctx.fillStyle = 'rgba(17, 17, 17, 0.04)';
+        ctx.fillRect(60, 430, 550, 95);
+        ctx.strokeStyle = '#111111';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(60, 430, 550, 95);
+
+        ctx.fillStyle = '#111111';
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillText('LEGAL EXEMPTION CLAUSE // ARTICLE 404:', 72, 452);
+        ctx.font = '400 9.5px "Space Mono", monospace';
+        ctx.fillText('The bearer of this press pass is certified in strategic procrastination.', 72, 472);
+        ctx.fillText('All superiors, urgent Slack pings, and calendar invites are legally voided.', 72, 488);
+        ctx.fillText('Attempting to force productivity violates the 1890 Inaction Treaty.', 72, 504);
+
+        // Right Column: Distressed Red Rubber Stamp + Signature + Barcode
+        ctx.save();
+        ctx.translate(775, 260);
+        ctx.rotate(-8 * Math.PI / 180);
+        const stampColor = '#b91c1c';
+        ctx.strokeStyle = stampColor;
+        ctx.lineWidth = 3.5;
+        ctx.strokeRect(-140, -52, 280, 104);
+
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 3]);
+        ctx.strokeRect(-133, -45, 266, 90);
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = stampColor;
+        ctx.textAlign = 'center';
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillText('★ BUREAU OF IDLENESS ★', 0, -22);
+        ctx.font = '900 19px "Space Mono", monospace';
+        ctx.fillText('DIPLOMATIC IMMUNITY', 0, 4);
+        ctx.font = '700 9.5px "Space Mono", monospace';
+        ctx.fillText('CERTIFIED SLACKER // FULL EXEMPTION', 0, 24);
+        ctx.restore();
+
+        // Signature line
+        ctx.textAlign = 'center';
+        ctx.font = '700 14px "Space Mono", monospace';
+        ctx.fillStyle = '#111111';
+        ctx.fillText('Dr. Gator', 775, 365);
+        ctx.beginPath();
+        ctx.moveTo(660, 375);
+        ctx.lineTo(890, 375);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.font = '700 9px "Space Mono", monospace';
+        ctx.fillText('HIGH CHANCELLOR OF DELAY', 775, 390);
+
+        // Barcode simulation
+        const barStartX = 660;
+        const barY = 430;
+        const barHeight = 45;
+        const barPattern = [3, 1, 4, 1, 2, 3, 1, 4, 2, 1, 3, 2, 4, 1, 2, 3, 1, 4, 1, 2, 3, 2, 1, 4, 2, 1, 3, 1, 4];
+        let curX = barStartX;
+        ctx.fillStyle = '#111111';
+        barPattern.forEach((w, idx) => {
+            if (idx % 2 === 0) {
+                ctx.fillRect(curX, barY, w * 1.8, barHeight);
+            }
+            curX += w * 1.8 + 2.5;
+        });
+        ctx.font = '700 9px "Space Mono", monospace';
+        ctx.fillText(`* LG-${certCode} *`, 775, 495);
+
+        // Footer note
+        ctx.textAlign = 'center';
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillText('LATER, GATOR // THE INDEPENDENT PROCRASTINATION JOURNAL // LATERGATOR.WORLD', 500, 555);
+
+        return canvas;
+    };
+
+    const openCredentialModal = () => {
+        if (!credentialModal || !credentialCanvas) return;
+        const userNameInput = document.getElementById('user-name');
+        const authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '') || 'Anonymous Slacker';
+        const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
+        const timeStr = formatWastedTime(clickerCount);
+
+        generateCredentialCard(credentialCanvas, authorName, rankText, clickerCount, timeStr);
+        credentialModal.style.display = 'flex';
+    };
+
+    const closeCredentialModal = () => {
+        if (credentialModal) credentialModal.style.display = 'none';
+    };
+
+    if (claimPassBtn) claimPassBtn.addEventListener('click', openCredentialModal);
+    if (credentialCloseBtn) credentialCloseBtn.addEventListener('click', closeCredentialModal);
+    if (credentialBackdrop) credentialBackdrop.addEventListener('click', closeCredentialModal);
+
+    if (credentialDownloadBtn && credentialCanvas) {
+        credentialDownloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = `official-sloth-press-pass-${Date.now()}.png`;
+            link.href = credentialCanvas.toDataURL('image/png');
+            link.click();
+
+            const orig = credentialDownloadBtn.textContent;
+            credentialDownloadBtn.textContent = '[ PRESS PASS DOWNLOADED ✓ ]';
+            setTimeout(() => {
+                credentialDownloadBtn.textContent = orig;
+            }, 2500);
+        });
+    }
+
+    if (credentialXBtn) {
+        credentialXBtn.addEventListener('click', () => {
+            const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
+            const text = `I have been officially certified as "${rankText}" with ${clickerCount} tasks evaded on @LaterGator. My diplomatic immunity is legally binding.`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (credentialCopyBtn) {
+        credentialCopyBtn.addEventListener('click', async () => {
+            const userNameInput = document.getElementById('user-name');
+            const authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '') || 'Anonymous Slacker';
+            const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
+            const timeStr = formatWastedTime(clickerCount);
+            const summary = `★ OFFICIAL SLOTH CREDENTIAL // BUREAU OF IDLENESS ★\nBEARER: ${authorName.toUpperCase()}\nRANK: ${rankText}\nDIRECTIVES EVADED: ${clickerCount} ${timeStr}\nSTATUS: FULL DIPLOMATIC IMMUNITY FROM WORK\nVERIFY: ${getShareUrl()}`;
+            try {
+                await navigator.clipboard.writeText(summary);
+                credentialCopyBtn.textContent = "COPIED! ✓";
+                setTimeout(() => { credentialCopyBtn.textContent = "COPY SUMMARY"; }, 2000);
+            } catch (e) {
+                credentialCopyBtn.textContent = "COPIED";
             }
         });
     }

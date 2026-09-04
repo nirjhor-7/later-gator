@@ -1113,34 +1113,183 @@ button {
     letter-spacing: 0.5px;
 }
 
-/* Responsive Alignment Fixes */
-@media (max-width: 768px) {
-    .page-border {
-        margin: 20px 10px;
-        padding: 20px;
-        box-shadow: 8px 8px 0px var(--ink);
-        outline-offset: 2px;
-    }
+/* Feed Rank Flair */
+.feed-rank-flair {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.62rem;
+    font-weight: 700;
+    padding: 1px 5px;
+    letter-spacing: 0.5px;
+    margin-right: 5px;
+    vertical-align: baseline;
+    border: 1px solid var(--ink);
+    text-transform: uppercase;
+}
 
-    .newspaper-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-    
-    .right-col {
-        border-left: none;
-        border-top: 2px solid var(--ink);
-        padding-left: 0;
-        padding-top: 30px;
-    }
-    
-    .user-details {
-        flex-direction: column;
-    }
-    
-    h1 {
-        font-size: 3rem;
-    }
+/* Sepia 1890s Newsprint Edition */
+body.sepia-edition {
+    background-color: #E2D7BE !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition .page-border {
+    background-color: #F6EED9 !important;
+    border-color: #21150A !important;
+    outline-color: #21150A !important;
+    box-shadow: 16px 16px 0px #21150A !important;
+}
+
+body.sepia-edition .rubber-stamp {
+    background-color: #F6EED9 !important;
+}
+
+/* Unlockables styles */
+.clicker-perks-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+}
+
+.claim-pass-btn {
+    background: var(--ink);
+    color: var(--paper);
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.02); box-shadow: 0 0 6px rgba(17, 17, 17, 0.4); }
+}
+
+.camo-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(17, 17, 17, 0.25);
+    flex-wrap: wrap;
+}
+
+.camo-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--ink-light);
+}
+
+.camo-btn {
+    background: transparent;
+    border: 1px solid var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 3px 7px;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+}
+
+.camo-btn:hover, .camo-btn.playing {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.secret-column {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: rgba(17, 17, 17, 0.05);
+    border: 1px dashed var(--ink);
+    font-size: 0.7rem;
+    line-height: 1.35;
+}
+
+.secret-column-header {
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #b91c1c;
+    letter-spacing: 0.5px;
+}
+
+/* Credential Modal */
+.credential-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.credential-modal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(17, 17, 17, 0.75);
+    backdrop-filter: blur(3px);
+}
+
+.credential-modal-dialog {
+    position: relative;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    outline: 2px solid var(--ink);
+    outline-offset: 3px;
+    box-shadow: 12px 12px 0px var(--ink);
+    max-width: 650px;
+    width: 100%;
+    padding: 20px;
+    z-index: 1001;
+    box-sizing: border-box;
+    font-family: 'Space Mono', monospace;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.credential-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    font-weight: 700;
+    font-size: 0.85rem;
+}
+
+.credential-preview-wrapper {
+    width: 100%;
+    margin-bottom: 15px;
+    border: 2px solid var(--ink);
+    background: #FAF8F5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.credential-canvas {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.credential-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.credential-sub-actions {
+    display: flex;
+    gap: 8px;
 }
 
 .site-footer {
@@ -1195,17 +1344,172 @@ button {
     text-align: center;
 }
 
+/* ==========================================
+   ROCK-SOLID RESPONSIVE MOBILE OVERHAUL
+   ========================================== */
 @media (max-width: 768px) {
+    body, html {
+        overflow-x: hidden;
+    }
+
+    .page-border {
+        margin: 12px 6px;
+        padding: 16px 10px;
+        box-shadow: 5px 5px 0px var(--ink);
+        outline-offset: 2px;
+        max-width: 100%;
+        box-sizing: border-box;
+    }
+
+    .masthead-meta {
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        text-align: center;
+        font-size: 0.68rem;
+        padding: 6px 0;
+    }
+
+    h1 {
+        font-size: 3.2rem;
+        letter-spacing: 0.5px;
+        line-height: 0.95;
+    }
+
+    .subtitle {
+        font-size: 0.78rem;
+        padding: 4px 0;
+        margin-bottom: 20px;
+    }
+
+    .newspaper-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .right-col {
+        border-left: none;
+        border-top: 2px solid var(--ink);
+        padding-left: 0;
+        padding-top: 25px;
+    }
+    
+    .user-details {
+        flex-direction: column;
+    }
+
+    .quick-chips {
+        gap: 5px;
+    }
+
+    .chip-btn {
+        font-size: 0.66rem;
+        padding: 5px 6px;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .action-buttons button {
+        font-size: 1.05rem;
+        padding: 11px 8px;
+    }
+
+    .visitor-counter {
+        width: 100%;
+        padding: 8px 10px;
+        box-sizing: border-box;
+        font-size: 0.75rem;
+        justify-content: center;
+    }
+
+    .counter-label {
+        font-size: 0.68rem;
+        text-align: center;
+    }
+
+    .counter-value {
+        font-size: 0.95rem;
+    }
+
+    .diversion-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+    }
+
+    .diversion-label {
+        text-align: center;
+        font-size: 1.15rem;
+    }
+
+    .diversion-tabs {
+        width: 100%;
+        display: flex;
+    }
+
+    .div-tab {
+        flex: 1;
+        text-align: center;
+        padding: 6px 2px;
+        font-size: 0.62rem;
+    }
+
+    .clicker-body {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+    }
+
+    .clicker-btn {
+        width: 100%;
+        text-align: center;
+        font-size: 0.78rem;
+        padding: 10px 8px;
+    }
+
+    .clicker-stats {
+        text-align: center;
+    }
+
+    .clicker-count-line {
+        justify-content: center;
+    }
+
+    .clicker-rank-row {
+        justify-content: center;
+        gap: 10px;
+    }
+
     .site-footer {
         flex-direction: column;
-        gap: 15px;
+        gap: 12px;
+        margin-top: 30px;
+        padding: 20px 0 15px 0;
     }
+
+    .footer-share-btn {
+        width: 100%;
+        box-sizing: border-box;
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+
     .footer-quote {
+        font-size: 0.8rem;
         max-width: 100%;
     }
+
     .footer-credit {
         position: static;
         text-align: center;
         max-width: 100%;
+    }
+
+    .credential-modal {
+        padding: 10px;
+    }
+
+    .credential-modal-dialog {
+        padding: 14px 10px;
     }
 }

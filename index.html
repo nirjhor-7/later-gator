@@ -189,6 +189,35 @@
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Progressive Unlockables Row -->
+                        <div class="clicker-perks-row">
+                            <button type="button" id="claim-pass-btn" class="div-action-btn claim-pass-btn" style="display: none;">
+                                [ 📜 CLAIM OFFICIAL PRESS PASS ]
+                            </button>
+                            <button type="button" id="sepia-toggle-btn" class="div-action-btn" style="display: none;">
+                                [ 📜 1890s PRINT: OFF ]
+                            </button>
+                        </div>
+
+                        <!-- Office Sound Camouflage (Unlocked at Rank 25+) -->
+                        <div id="camo-section" class="camo-controls" style="display: none;">
+                            <span class="camo-label">CAMOUFLAGE:</span>
+                            <button type="button" id="camo-typing-btn" class="camo-btn">⌨ FAKE TYPING</button>
+                            <button type="button" id="camo-sigh-btn" class="camo-btn">☕ SIGH</button>
+                            <button type="button" id="camo-stop-btn" class="camo-btn" style="display: none;">⏹ STOP</button>
+                        </div>
+
+                        <!-- Secret Gossip Column (Unlocked at Rank 200+) -->
+                        <div id="secret-column" class="secret-column" style="display: none;">
+                            <div class="secret-column-header">
+                                <span>★ CONFIDENTIAL DISPATCH: THE 5 AM FRAUD ★</span>
+                            </div>
+                            <div class="secret-column-body">
+                                "An undercover investigation reveals waking up at 5:00 AM does not make you a billionaire. It merely ensures you are profoundly exhausted by 9:15 AM."
+                            </div>
+                        </div>
+
                         <div class="clicker-quote" id="clicker-quote">
                             "Every click is another responsibility successfully dodged."
                         </div>
@@ -243,6 +272,29 @@
             <div id="footer-quote" class="footer-quote">Loading wisdom...</div>
             <div class="footer-credit">// BUILT BY NIRJHOR INSTEAD OF SLEEPING</div>
         </footer>
+    </div>
+
+    <!-- Official Sloth Credential Modal -->
+    <div id="credential-modal" class="credential-modal" style="display: none;">
+        <div class="credential-modal-backdrop" id="credential-backdrop"></div>
+        <div class="credential-modal-dialog">
+            <div class="credential-modal-header">
+                <span>OFFICIAL SLOTH CREDENTIAL // BUREAU OF IDLENESS</span>
+                <button type="button" id="credential-close-btn" class="share-close-btn" aria-label="Close">&times;</button>
+            </div>
+            <div class="credential-preview-wrapper">
+                <canvas id="credential-canvas" width="1000" height="620" class="credential-canvas"></canvas>
+            </div>
+            <div class="credential-actions">
+                <button type="button" id="credential-download-btn" class="share-btn-cert">
+                    [ DOWNLOAD OFFICIAL PRESS PASS (.PNG) ]
+                </button>
+                <div class="credential-sub-actions">
+                    <button type="button" id="credential-x-btn" class="share-btn">POST ON X</button>
+                    <button type="button" id="credential-copy-btn" class="share-btn">COPY SUMMARY</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script type="module">
