@@ -81,50 +81,15 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Separate classified ads from public wire tasks
-        const communityAds = [];
-        const wireTasks = [];
-
-        tasks.forEach(task => {
-            if (task.text && task.text.startsWith('[AD] ')) {
-                const raw = task.text.replace('[AD] ', '');
-                const colonIdx = raw.indexOf(':');
-                let cat = 'NOTICE';
-                let body = raw;
-                if (colonIdx !== -1) {
-                    cat = raw.substring(0, colonIdx).trim().toUpperCase();
-                    body = raw.substring(colonIdx + 1).trim();
-                }
-                const name = (task.city || 'ANONYMOUS').toUpperCase();
-                const country = (task.country || 'PARTS UNKNOWN').toUpperCase();
-                communityAds.push({
-                    category: cat,
-                    text: body,
-                    byline: `${name}, ${country}`
-                });
-            } else {
-                wireTasks.push(task);
-            }
-        });
-
-        if (communityAds.length > 0 && typeof updateClassifiedsData === 'function') {
-            updateClassifiedsData(communityAds);
-        }
-
-        if (wireTasks.length === 0) {
-            feedContainer.innerHTML = '<div class="feed-item">No transmissions received yet.</div>';
-            return;
-        }
-
         // Avoid re-rendering if data is identical (prevents scroll jumps while reading)
-        if (renderedTopId === wireTasks[0].id && renderedCount === wireTasks.length) {
+        if (renderedTopId === tasks[0].id && renderedCount === tasks.length) {
             return;
         }
 
         const prevScrollTop = feedContainer.scrollTop;
         const isScrolled = prevScrollTop > 20;
 
-        const feedHtml = wireTasks.map(task => {
+        const feedHtml = tasks.map(task => {
             const userName = task.city || 'Anonymous';
             const userCountry = task.country || 'Parts Unknown';
             const locationString = `REPORT: ${escapeHtml(userName).toUpperCase()} IN ${escapeHtml(userCountry).toUpperCase()}`;
@@ -943,164 +908,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
-    // The Classifieds Component
-    const DEFAULT_CLASSIFIEDS = [
-        { category: "WANTED", text: "2 grams of willpower. Missing since 9:00 AM. Generous reward of eternal gratitude.", byline: "ANONYMOUS, UNITED STATES" },
-        { category: "FOR SALE", text: "Unused gym membership. Mint condition. Never witnessed a single drop of human sweat.", byline: "ALEX, UNITED KINGDOM" },
-        { category: "LOST", text: "4 hours of life. Last seen watching street food videos on YouTube.", byline: "SARA, GERMANY" },
-        { category: "SEEKING", text: "Someone to fold one single fitted sheet in exchange for a cool rock.", byline: "SAM, CANADA" },
-        { category: "NOTICE", text: "All tasks scheduled for today have been officially postponed until further notice.", byline: "BUREAU OF SLOTH, BANGLADESH" },
-        { category: "WANTED", text: "Motivation to open my 84 open browser tabs. Willing to trade my dignity.", byline: "CHRIS, SINGAPORE" },
-        { category: "FOR SALE", text: "Completely unread textbook. Perfect for propping up a computer monitor.", byline: "STUDENT, MALTA" },
-        { category: "SERVICES", text: "Professional staring into the void. 0 years experience. $0/hr.", byline: "DAVID, AUSTRALIA" },
-        { category: "FOUND", text: "Sudden burst of ambition at 2:45 AM. Already vanished into thin air.", byline: "NIGHT OWL, BELARUS" },
-        { category: "WANTED", text: "An adultier adult to handle whatever adult situation this is.", byline: "EMMA, FRANCE" },
-        { category: "SEEKING", text: "Coffee strong enough to wake up my ancestors.", byline: "TIRED CITIZEN, INDONESIA" },
-        { category: "NOTICE", text: "Due to a severe lack of interest, tomorrow has been canceled.", byline: "THE MANAGEMENT, GLOBAL" },
-        { category: "LOST", text: "The plot. If found, please return to my desk immediately.", byline: "CONFUSED, UNITED STATES" },
-        { category: "FOR SALE", text: "Unopened planner for 2026. Crisp pages, zero accomplishments recorded.", byline: "OPTIMIST, GERMANY" },
-        { category: "WANTED", text: "A nap so deep it resets my entire life trajectory.", byline: "SLEEPY, BANGLADESH" }
-    ];
-
-    let allClassifieds = [...DEFAULT_CLASSIFIEDS];
-    let classifiedsOffset = 0;
-    const classifiedsList = document.getElementById('classifieds-list');
-    const classifiedsShuffleBtn = document.getElementById('classifieds-shuffle-btn');
-    const classifiedsToggleBtn = document.getElementById('classifieds-toggle-form-btn');
-    const classifiedsFormWrapper = document.getElementById('classifieds-form-wrapper');
-    const classifiedsCloseForm = document.getElementById('classifieds-close-form');
-    const classifiedSubmitBtn = document.getElementById('classified-submit-btn');
-    const classifiedCategory = document.getElementById('classified-category');
-    const classifiedName = document.getElementById('classified-name');
-    const classifiedText = document.getElementById('classified-text');
-    const classifiedStatus = document.getElementById('classified-status');
-
-    function updateClassifiedsData(communityAds) {
-        if (!communityAds || communityAds.length === 0) return;
-        allClassifieds = [...communityAds, ...DEFAULT_CLASSIFIEDS];
-        renderClassifieds();
-    }
-
-    function renderClassifieds() {
-        if (!classifiedsList) return;
-        if (allClassifieds.length === 0) {
-            classifiedsList.innerHTML = '<div class="classified-item">No dispatches currently listed.</div>';
-            return;
-        }
-
-        const visibleAds = [];
-        for (let i = 0; i < 3; i++) {
-            const idx = (classifiedsOffset + i) % allClassifieds.length;
-            visibleAds.push(allClassifieds[idx]);
-        }
-
-        classifiedsList.innerHTML = visibleAds.map(ad => {
-            const tag = escapeHtml(ad.category || 'NOTICE').toUpperCase();
-            const body = censorNsfwHtml(escapeHtml(ad.text || ''));
-            const byline = censorNsfwHtml(escapeHtml(ad.byline || 'ANONYMOUS, GLOBAL').toUpperCase());
-
-            return `
-            <div class="classified-item">
-                <div class="classified-body">
-                    <span class="classified-tag">${tag}:</span> ${body}
-                </div>
-                <div class="classified-byline">— ${byline}</div>
-            </div>
-            `;
-        }).join('');
-    }
-
-    if (classifiedsShuffleBtn) {
-        classifiedsShuffleBtn.addEventListener('click', () => {
-            classifiedsOffset = (classifiedsOffset + 3) % allClassifieds.length;
-            if (classifiedsList) {
-                classifiedsList.style.opacity = '0.3';
-                setTimeout(() => {
-                    renderClassifieds();
-                    classifiedsList.style.opacity = '1';
-                }, 120);
-            } else {
-                renderClassifieds();
-            }
-        });
-    }
-
-    if (classifiedsToggleBtn && classifiedsFormWrapper) {
-        classifiedsToggleBtn.addEventListener('click', () => {
-            const isHidden = classifiedsFormWrapper.style.display === 'none';
-            classifiedsFormWrapper.style.display = isHidden ? 'block' : 'none';
-            if (isHidden && classifiedText) classifiedText.focus();
-        });
-    }
-
-    if (classifiedsCloseForm && classifiedsFormWrapper) {
-        classifiedsCloseForm.addEventListener('click', () => {
-            classifiedsFormWrapper.style.display = 'none';
-        });
-    }
-
-    if (classifiedSubmitBtn) {
-        classifiedSubmitBtn.addEventListener('click', async () => {
-            const cat = (classifiedCategory ? classifiedCategory.value : 'NOTICE').trim();
-            const text = (classifiedText ? classifiedText.value : '').trim();
-            const name = (classifiedName ? classifiedName.value : '').trim();
-
-            if (!text || text.length < 5) {
-                if (classifiedStatus) classifiedStatus.textContent = "DISPATCH TOO BRIEF (MIN 5 CHARS).";
-                return;
-            }
-
-            if (containsInappropriate(text) || containsInappropriate(name)) {
-                if (classifiedStatus) classifiedStatus.textContent = "CLASSIFIED REJECTED BY DECENCY BOARD.";
-                setTimeout(() => { if (classifiedStatus) classifiedStatus.textContent = ""; }, 3000);
-                return;
-            }
-
-            if (classifiedStatus) classifiedStatus.textContent = "TRANSMITTING NOTICE...";
-
-            try {
-                const response = await fetch('/api/tasks', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Gator-Token': 'chomp-chomp'
-                    },
-                    body: JSON.stringify({
-                        text: `[AD] ${cat}: ${text}`,
-                        name: name
-                    })
-                });
-
-                if (response.ok) {
-                    if (classifiedStatus) classifiedStatus.textContent = "NOTICE PUBLISHED TO CLASSIFIEDS!";
-                    if (classifiedText) classifiedText.value = '';
-                    
-                    const authorName = name !== '' ? name : 'Anonymous';
-                    allClassifieds.unshift({
-                        category: cat,
-                        text: text,
-                        byline: `${authorName.toUpperCase()}, BROADCAST`
-                    });
-                    classifiedsOffset = 0;
-                    renderClassifieds();
-
-                    setTimeout(() => {
-                        if (classifiedStatus) classifiedStatus.textContent = "";
-                        if (classifiedsFormWrapper) classifiedsFormWrapper.style.display = 'none';
-                    }, 2000);
-                    fetchAll();
-                } else {
-                    const errData = await response.json().catch(() => ({}));
-                    if (classifiedStatus) classifiedStatus.textContent = (errData.error || "TRANSMISSION FAILED.").toUpperCase();
-                }
-            } catch (err) {
-                if (classifiedStatus) classifiedStatus.textContent = "TRANSMISSION ERROR.";
-            }
-        });
-    }
-
-    renderClassifieds();
 
     fetchAll();
     setInterval(fetchAll, 10000);
