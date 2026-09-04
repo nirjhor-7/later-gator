@@ -8,6 +8,59 @@ document.addEventListener('DOMContentLoaded', () => {
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
 
+    // Rubber Stamp Elements
+    const stampOverlay = document.getElementById('stamp-overlay');
+    const rubberStamp = document.getElementById('rubber-stamp');
+    const stampHeader = document.getElementById('stamp-header');
+    const stampTitle = document.getElementById('stamp-title');
+    const stampSub = document.getElementById('stamp-sub');
+    const stampMeta = document.getElementById('stamp-meta');
+    const shareStampBadge = document.getElementById('share-stamp-badge');
+
+    // Tactile Rubber Stamp Sound Generator (Synthesized Web Audio API)
+    function playRubberStampSound() {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const now = ctx.currentTime;
+            // Low thud / rubber stamp mechanical strike
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(160, now);
+            osc.frequency.exponentialRampToValueAtTime(28, now + 0.12);
+
+            gain.gain.setValueAtTime(0.35, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.15);
+
+            // Paper slap / impact noise burst
+            const bufLen = Math.floor(ctx.sampleRate * 0.04);
+            const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+            const data = buf.getChannelData(0);
+            for (let i = 0; i < bufLen; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.15;
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buf;
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.2, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+            noise.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(now);
+        } catch (e) {
+            // Audio optional, fail silently
+        }
+    }
+
     const updateStat = (id, newValue) => {
         const el = document.getElementById(id);
         if (el && el.textContent !== String(newValue)) {
@@ -396,6 +449,10 @@ document.addEventListener('DOMContentLoaded', () => {
             text = `[PANIC] ${text}`;
         }
 
+        const activeBtn = isPanic ? panicBtn : laterBtn;
+        const origBtnText = isPanic ? "DO IT NOW (PANIC)" : "NOT MY PROBLEM TODAY";
+        activeBtn.disabled = true;
+
         try {
             const response = await fetch('/api/tasks', {
                 method: 'POST',
@@ -411,48 +468,78 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentRawTask = submittedText;
                 currentIsPanic = isPanic;
                 currentSubmittedName = name;
-                showShareSlip(submittedText, isPanic);
 
+                // 1. Play tactile rubber stamp strike sound
+                playRubberStampSound();
+
+                // 2. Configure stamp content & styling
+                const permitNum = Math.floor(1000 + Math.random() * 9000);
                 if (isPanic) {
-                    const inputSection = document.querySelector('.input-section');
-                    inputSection.classList.remove('shake');
-                    void inputSection.offsetWidth; // trigger reflow
-                    inputSection.classList.add('shake');
-                    
-                    panicBtn.textContent = "FINE. DOING IT.";
-                    statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
-                    
-                    setTimeout(() => {
-                        inputSection.classList.remove('shake');
-                        panicBtn.textContent = "DO IT NOW (PANIC)";
-                        taskInput.value = '';
-                        statusMessage.textContent = "";
-                    }, 2000);
+                    if (stampHeader) stampHeader.textContent = "⚠ EMERGENCY DIRECTIVE ⚠";
+                    if (stampTitle) stampTitle.textContent = "PANIC MANDATE";
+                    if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
+                    if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
+                    if (rubberStamp) rubberStamp.className = "rubber-stamp stamped-panic stamp-anim-slam";
                 } else {
-                    taskInput.classList.remove('fly-off');
-                    void taskInput.offsetWidth;
-                    taskInput.classList.add('fly-off');
-                    
-                    laterBtn.textContent = "POSTPONED";
-                    statusMessage.textContent = "SUCCESSFULLY EVADED.";
-                    
-                    setTimeout(() => {
-                        taskInput.value = '';
-                        taskInput.classList.remove('fly-off');
-                        laterBtn.textContent = "NOT MY PROBLEM TODAY";
-                        statusMessage.textContent = "";
-                    }, 1000);
+                    if (stampHeader) stampHeader.textContent = "★ OFFICIAL DISPATCH ★";
+                    if (stampTitle) stampTitle.textContent = "APPROVED FOR DELAY";
+                    if (stampSub) stampSub.textContent = "BUREAU OF PROCRASTINATION";
+                    if (stampMeta) stampMeta.textContent = `PERMIT #${permitNum} • VALID TODAY ONLY`;
+                    if (rubberStamp) rubberStamp.className = "rubber-stamp stamped-delay stamp-anim-slam";
                 }
+
+                // 3. Show stamp overlay & trigger desk impact shockwave
+                if (stampOverlay) stampOverlay.style.display = "flex";
+                const inputSection = document.querySelector('.input-section');
+                if (inputSection) {
+                    inputSection.classList.remove('desk-impact');
+                    void inputSection.offsetWidth; // trigger reflow
+                    inputSection.classList.add('desk-impact');
+                }
+
+                // 4. Update status feedback and button
+                if (isPanic) {
+                    activeBtn.textContent = "FINE. DOING IT.";
+                    statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
+                } else {
+                    activeBtn.textContent = "POSTPONED ✓";
+                    statusMessage.textContent = "SUCCESSFULLY EVADED.";
+                }
+
+                // 5. Hold the stamp for dramatic visual satisfaction (~1100ms)
+                setTimeout(() => {
+                    // Start smooth stamp dissolve
+                    if (rubberStamp) {
+                        rubberStamp.className = isPanic 
+                            ? "rubber-stamp stamped-panic stamp-anim-fade" 
+                            : "rubber-stamp stamped-delay stamp-anim-fade";
+                    }
+
+                    setTimeout(() => {
+                        if (stampOverlay) stampOverlay.style.display = "none";
+                        if (rubberStamp) rubberStamp.className = "rubber-stamp";
+                        taskInput.value = '';
+                        activeBtn.textContent = origBtnText;
+                        activeBtn.disabled = false;
+                        statusMessage.textContent = "";
+
+                        // Reveal share slip with official notice & certificate download!
+                        showShareSlip(submittedText, isPanic);
+                    }, 350);
+                }, 1100);
 
                 fetchAll();
             } else {
+                activeBtn.disabled = false;
                 const errData = await response.json().catch(() => ({}));
                 statusMessage.textContent = (errData.error || "TRANSMISSION REJECTED.").toUpperCase();
                 setTimeout(() => { statusMessage.textContent = ""; }, 4000);
             }
         } catch (error) {
             console.error('Failed to submit task:', error);
+            activeBtn.disabled = false;
             statusMessage.textContent = "SYSTEM ERROR. YOU MUST DO IT NOW.";
+            setTimeout(() => { statusMessage.textContent = ""; }, 4000);
         }
     };
 
@@ -579,7 +666,33 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineWidth = 2;
         ctx.stroke();
         ctx.font = '400 12px "Space Mono", monospace';
-        ctx.fillText('AUTHORIZED SIGNATURE // LATER-GATOR', 1060, 693);
+        // Distressed Red Rubber Stamp on Certificate
+        ctx.save();
+        ctx.translate(920, 520);
+        ctx.rotate(-11 * Math.PI / 180);
+        const stampColor = isPanicMode ? '#b43403' : '#b91c1c';
+
+        // Outer heavy border
+        ctx.strokeStyle = stampColor;
+        ctx.lineWidth = 4;
+        ctx.strokeRect(-160, -42, 320, 84);
+
+        // Inner dashed border
+        ctx.lineWidth = 2;
+        ctx.setLineDash([6, 4]);
+        ctx.strokeRect(-153, -35, 306, 70);
+        ctx.setLineDash([]);
+
+        // Stamp Text
+        ctx.fillStyle = stampColor;
+        ctx.textAlign = 'center';
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillText(isPanicMode ? '⚠ EMERGENCY DIRECTIVE ⚠' : '★ OFFICIAL DISPATCH ★', 0, -15);
+        ctx.font = '900 20px "Space Mono", monospace';
+        ctx.fillText(isPanicMode ? 'PANIC MANDATE' : 'APPROVED FOR DELAY', 0, 7);
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillText('BUREAU OF PROCRASTINATION // VALID', 0, 24);
+        ctx.restore();
 
         return canvas;
     };
@@ -589,6 +702,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const clean = task.trim();
         shareCardTask.innerHTML = `"${censorNsfwHtml(escapeHtml(clean))}"`;
         
+        if (shareStampBadge) {
+            if (isPanicMode) {
+                shareStampBadge.textContent = "⚠ PANIC MANDATE ISSUED";
+                shareStampBadge.style.color = "#b43403";
+                shareStampBadge.style.borderColor = "#b43403";
+                shareStampBadge.style.outlineColor = "#b43403";
+            } else {
+                shareStampBadge.textContent = "★ APPROVED FOR DELAY";
+                shareStampBadge.style.color = "#b91c1c";
+                shareStampBadge.style.borderColor = "#b91c1c";
+                shareStampBadge.style.outlineColor = "#b91c1c";
+            }
+        }
+
         const plainCensored = censorNsfwText(clean);
         const actionVerb = isPanicMode ? "am officially panicking about" : "just postponed";
         const punchline = isPanicMode ? "Wish me luck." : "Not my problem today.";

@@ -114,6 +114,11 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
     margin-bottom: 40px;
 }
 
+.input-section {
+    position: relative;
+    transform-origin: center center;
+}
+
 .user-details {
     display: flex;
     gap: 10px;
@@ -263,6 +268,143 @@ button {
     text-align: center;
 }
 
+/* Distressed Red Rubber Stamp Overlay */
+.stamp-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 200;
+}
+
+.rubber-stamp {
+    display: inline-block;
+    padding: 5px;
+    border: 4px solid #b91c1c;
+    border-radius: 4px;
+    background: rgba(254, 252, 248, 0.94);
+    box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.25), inset 0 0 0 1px rgba(185, 28, 28, 0.35);
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    text-transform: uppercase;
+    transform-origin: center center;
+    max-width: 92%;
+    mix-blend-mode: multiply;
+    user-select: none;
+}
+
+.rubber-stamp.stamped-delay {
+    color: #b91c1c;
+    border-color: #b91c1c;
+}
+
+.rubber-stamp.stamped-panic {
+    color: #b43403;
+    border-color: #b43403;
+}
+
+.stamp-border {
+    border: 2px dashed currentColor;
+    padding: 8px 14px;
+}
+
+.stamp-header {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 2px;
+    opacity: 0.88;
+}
+
+.stamp-title {
+    font-size: 1.35rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+    line-height: 1.15;
+    margin: 3px 0;
+    text-shadow: 0 0 0.5px currentColor;
+}
+
+.stamp-sub {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+    opacity: 0.92;
+}
+
+.stamp-meta {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-top: 5px;
+    border-top: 1px solid currentColor;
+    padding-top: 3px;
+    opacity: 0.82;
+}
+
+/* Rubber Stamp Slam Animation (Impact, bounce & settle) */
+.stamp-anim-slam {
+    animation: stampSlam 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.stamp-anim-fade {
+    animation: stampFadeOut 0.35s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes stampSlam {
+    0% {
+        opacity: 0;
+        transform: scale(3.5) rotate(-28deg);
+        filter: blur(5px);
+    }
+    40% {
+        opacity: 0.92;
+        transform: scale(0.92) rotate(-8deg);
+        filter: blur(0);
+    }
+    65% {
+        opacity: 1;
+        transform: scale(1.05) rotate(-10deg);
+    }
+    85% {
+        transform: scale(0.98) rotate(-8.8deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(-9deg);
+    }
+}
+
+@keyframes stampFadeOut {
+    0% {
+        opacity: 1;
+        transform: scale(1) rotate(-9deg);
+    }
+    100% {
+        opacity: 0;
+        transform: scale(0.94) translateY(12px) rotate(-7deg);
+    }
+}
+
+/* Physical Desk Shockwave on Rubber Stamp Impact */
+.desk-impact {
+    animation: deskJolt 0.32s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@keyframes deskJolt {
+    0% { transform: translateY(0); }
+    25% { transform: translateY(4px) rotate(0.4deg); }
+    50% { transform: translateY(-3px) rotate(-0.3deg); }
+    75% { transform: translateY(1.5px) rotate(0.1deg); }
+    100% { transform: translateY(0) rotate(0); }
+}
+
 /* Post-Submission Share Card */
 .share-card {
     margin-top: 15px;
@@ -270,6 +412,23 @@ button {
     padding: 12px 14px;
     background-color: #FAFAFA;
     animation: slideIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.share-stamp-badge {
+    display: inline-block;
+    color: #b91c1c;
+    border: 2px solid #b91c1c;
+    outline: 1px dashed #b91c1c;
+    outline-offset: -3px;
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    transform: rotate(-3deg);
+    background: rgba(185, 28, 28, 0.05);
+    mix-blend-mode: multiply;
 }
 
 .share-card-header {
