@@ -110,6 +110,43 @@
                     </div>
                 </div>
 
+                <!-- The Classifieds Section -->
+                <div class="article-box classifieds-box">
+                    <h2 class="section-title">THE CLASSIFIEDS</h2>
+                    <div class="classifieds-meta">WANTED • FOR SALE • DESPERATE MEASURES</div>
+                    
+                    <div class="classifieds-list" id="classifieds-list">
+                        <!-- Loaded via script.js -->
+                    </div>
+
+                    <div class="classifieds-actions">
+                        <button type="button" class="classifieds-btn" id="classifieds-shuffle-btn">[?] SHUFFLE</button>
+                        <button type="button" class="classifieds-btn" id="classifieds-toggle-form-btn">[+] POST AN AD</button>
+                    </div>
+
+                    <!-- Inline Classified Ad Submission Slip -->
+                    <div class="classifieds-form-wrapper" id="classifieds-form-wrapper" style="display: none;">
+                        <div class="classifieds-form-header">
+                            <span>DISPATCH REGISTRATION</span>
+                            <button type="button" id="classifieds-close-form" class="classifieds-close-btn">&times;</button>
+                        </div>
+                        <div class="classifieds-form-row">
+                            <select id="classified-category">
+                                <option value="WANTED">WANTED:</option>
+                                <option value="FOR SALE">FOR SALE:</option>
+                                <option value="LOST">LOST:</option>
+                                <option value="SEEKING">SEEKING:</option>
+                                <option value="SERVICES">SERVICES:</option>
+                                <option value="NOTICE">NOTICE:</option>
+                            </select>
+                            <input type="text" id="classified-name" placeholder="Name (optional)" maxlength="25">
+                        </div>
+                        <textarea id="classified-text" placeholder="State your micro-dispatch (max 100 chars)..." maxlength="100"></textarea>
+                        <button type="button" id="classified-submit-btn" class="classified-submit-btn">PUBLISH CLASSIFIED</button>
+                        <div id="classified-status" class="classified-status"></div>
+                    </div>
+                </div>
+
                 <div class="visitor-footer" style="text-align: center; margin-top: 30px;">
                     <div class="visitor-counter">
                         <span class="counter-label">TOTAL UNIQUE PROCRASTINATORS OBSERVED:</span>
