@@ -837,9 +837,8 @@ button {
     justify-content: space-between;
     align-items: center;
     border-bottom: 2px solid var(--ink);
-    padding-bottom: 8px;
+    padding-bottom: 6px;
     margin-bottom: 10px;
-    flex-wrap: wrap;
     gap: 8px;
 }
 
@@ -854,20 +853,26 @@ button {
 
 .diversion-tabs {
     display: flex;
-    gap: 4px;
+    gap: 0;
 }
 
 .div-tab {
     background: transparent;
     color: var(--ink);
     border: 1px solid var(--ink);
-    padding: 4px 7px;
+    margin-left: -1px;
+    padding: 4px 8px;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.5px;
     cursor: pointer;
     font-family: 'Space Mono', monospace;
     transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.div-tab:first-child {
+    margin-left: 0;
 }
 
 .div-tab:hover {
@@ -921,6 +926,10 @@ button {
 
 .clicker-count-line {
     font-weight: 700;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
 }
 
 .clicker-num {
@@ -933,12 +942,52 @@ button {
     transition: transform 0.1s ease;
 }
 
+.clicker-time {
+    font-size: 0.7rem;
+    font-weight: 400;
+    color: var(--ink-light);
+}
+
+.clicker-rank-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 3px;
+    gap: 6px;
+}
+
 .clicker-rank {
     font-size: 0.7rem;
     color: #b91c1c;
     font-weight: 700;
-    margin-top: 3px;
     text-transform: uppercase;
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.rank-promoted {
+    animation: rankPulse 0.4s ease;
+}
+
+@keyframes rankPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); color: #dc2626; }
+}
+
+.clicker-reset-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--ink-light);
+    text-decoration: underline;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: color 0.15s ease;
+}
+
+.clicker-reset-btn:hover {
+    color: #b91c1c;
 }
 
 .clicker-quote {

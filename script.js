@@ -1103,8 +1103,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Option 2: The Do-Nothing Clicker ---
     const clickerBtn = document.getElementById('clicker-btn');
     const clickerCountEl = document.getElementById('clicker-count');
+    const clickerTimeEl = document.getElementById('clicker-time');
     const clickerRankEl = document.getElementById('clicker-rank');
     const clickerQuoteEl = document.getElementById('clicker-quote');
+    const clickerResetBtn = document.getElementById('clicker-reset-btn');
 
     let clickerCount = (() => {
         try { return parseInt(localStorage.getItem('lg_clicker_count') || '0', 10); } catch (e) { return 0; }
@@ -1118,8 +1120,51 @@ document.addEventListener('DOMContentLoaded', () => {
         "\"Look at that momentum. Absolutely zero progress made.\"",
         "\"A masterclass in strategic unproductivity.\"",
         "\"Your boss is probably crying somewhere.\"",
-        "\"Tomorrow is looking very busy at this rate.\""
+        "\"Tomorrow is looking very busy at this rate.\"",
+        "\"Due today? Sounds like a tomorrow problem.\"",
+        "\"Hard work pays off in the future. Slacking pays off right now.\"",
+        "\"You are single-handedly stabilizing the global sloth economy.\"",
+        "\"Just tell them you are waiting on email replies.\"",
+        "\"If at first you don't succeed, do what you're doing right now.\"",
+        "\"Deadlines are merely helpful suggestions from the universe.\"",
+        "\"Look at you go. Achieving absolutely nothing with great gusto.\"",
+        "\"The art of doing nothing requires incredible commitment.\"",
+        "\"A task postponed is a task that might solve itself.\"",
+        "\"Currently operating at peak non-performance.\"",
+        "\"A true master of the art of delay.\"",
+        "\"Legend says you were once productive. A vicious rumor.\""
     ];
+
+    const getClickerBtnText = (count) => {
+        if (count >= 500) return "[ TRANSCENDENT SLOTH ]";
+        if (count >= 200) return "[ DEFYING DEADLINES ]";
+        if (count >= 100) return "[ UNSTOPPABLE SLACKER ]";
+        if (count >= 50) return "[ ESCALATE AVOIDANCE ]";
+        if (count >= 25) return "[ KEEP DODGING WORK ]";
+        if (count >= 10) return "[ AVOID RESPONSIBILITY ]";
+        return "[ CLICK TO DO NOTHING ]";
+    };
+
+    const getClickerRank = (count) => {
+        if (count >= 1000) return "RANK: TRANSCENDENT VOID DWELLER ✦";
+        if (count >= 500) return "RANK: SUPREME TIME BENDER ★★★";
+        if (count >= 200) return "RANK: ARCHBISHOP OF APATHY ★★";
+        if (count >= 100) return "RANK: GRAND MASTER OF DELAY ★";
+        if (count >= 50) return "RANK: EXECUTIVE SLOTH";
+        if (count >= 25) return "RANK: PROFESSIONAL TIME BANDIT";
+        if (count >= 10) return "RANK: CERTIFIED PROCRASTINATOR";
+        if (count >= 1) return "RANK: NOVICE DODGER";
+        return "RANK: CASUAL SLACKER";
+    };
+
+    const formatWastedTime = (clicks) => {
+        const secs = Math.round(clicks * 1.5);
+        if (secs < 60) return `(~${secs}s)`;
+        const mins = (secs / 60).toFixed(1);
+        return `(~${mins}m)`;
+    };
+
+    let prevRank = getClickerRank(clickerCount);
 
     const playClickerSound = () => {
         try {
@@ -1128,37 +1173,36 @@ document.addEventListener('DOMContentLoaded', () => {
             const ctx = new AudioCtx();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.04);
-            gain.gain.setValueAtTime(0.08, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(520, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.035);
+            gain.gain.setValueAtTime(0.09, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start();
-            osc.stop(ctx.currentTime + 0.04);
+            osc.stop(ctx.currentTime + 0.035);
         } catch (e) {}
     };
 
     const updateClickerUI = () => {
         if (clickerCountEl) clickerCountEl.textContent = clickerCount;
+        if (clickerTimeEl) clickerTimeEl.textContent = formatWastedTime(clickerCount);
+        if (clickerBtn) clickerBtn.textContent = getClickerBtnText(clickerCount);
+
+        const currentRank = getClickerRank(clickerCount);
         if (clickerRankEl) {
-            if (clickerCount >= 100) {
-                clickerRankEl.textContent = "RANK: GRAND MASTER OF DELAY ★";
-            } else if (clickerCount >= 50) {
-                clickerRankEl.textContent = "RANK: EXECUTIVE SLOTH";
-            } else if (clickerCount >= 25) {
-                clickerRankEl.textContent = "RANK: PROFESSIONAL TIME BANDIT";
-            } else if (clickerCount >= 10) {
-                clickerRankEl.textContent = "RANK: CERTIFIED PROCRASTINATOR";
-            } else if (clickerCount >= 1) {
-                clickerRankEl.textContent = "RANK: NOVICE DODGER";
-            } else {
-                clickerRankEl.textContent = "RANK: CASUAL SLACKER";
+            clickerRankEl.textContent = currentRank;
+            if (currentRank !== prevRank) {
+                clickerRankEl.classList.remove('rank-promoted');
+                void clickerRankEl.offsetWidth;
+                clickerRankEl.classList.add('rank-promoted');
+                prevRank = currentRank;
             }
         }
+
         if (clickerQuoteEl) {
-            const qIdx = Math.floor(clickerCount / 5) % CLICKER_QUOTES.length;
+            const qIdx = Math.floor(clickerCount / 4) % CLICKER_QUOTES.length;
             clickerQuoteEl.textContent = CLICKER_QUOTES[qIdx];
         }
     };
@@ -1171,10 +1215,22 @@ document.addEventListener('DOMContentLoaded', () => {
             try { localStorage.setItem('lg_clicker_count', clickerCount.toString()); } catch (e) {}
             playClickerSound();
             if (clickerCountEl) {
-                clickerCountEl.style.transform = 'scale(1.3)';
+                clickerCountEl.style.transform = 'scale(1.25)';
                 setTimeout(() => { clickerCountEl.style.transform = 'scale(1)'; }, 100);
             }
             updateClickerUI();
+        });
+    }
+
+    if (clickerResetBtn) {
+        clickerResetBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm("Reset your wasted clicks tally back to zero?")) {
+                clickerCount = 0;
+                try { localStorage.setItem('lg_clicker_count', '0'); } catch (e) {}
+                prevRank = getClickerRank(0);
+                updateClickerUI();
+            }
         });
     }
 
@@ -1232,6 +1288,14 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             ascii: "     (•_•)\n    /(   )\\   \"Why do today what\n      | |      can wait until next fiscal\n               quarter?\"",
             caption: "\"The Gator contemplating all the milestones he won't be reaching today.\""
+        },
+        {
+            ascii: "   (•_•)     \"I am not procrastinating.\n  <)  )╯      I am giving my great ideas\n   /   \\      time to properly marinate.\"",
+            caption: "\"Culinary theory applied to severe work avoidance.\""
+        },
+        {
+            ascii: "  [ 11:59 PM ]\n     (⊙_⊙)    \"The deadline has arrived.\n    /(   )\\    Suddenly I am operating at\n      | |      10,000% efficiency.\"",
+            caption: "\"Panic mode: Nature's ultimate performance-enhancing drug.\""
         }
     ];
 

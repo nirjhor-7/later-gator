@@ -167,9 +167,9 @@
                     <div class="diversion-header">
                         <span class="diversion-label">DAILY DIVERSIONS</span>
                         <div class="diversion-tabs" role="tablist">
-                            <button type="button" class="div-tab active" data-tab="clicker" role="tab" aria-selected="true">🕹 DO NOTHING</button>
-                            <button type="button" class="div-tab" data-tab="weather" role="tab" aria-selected="false">☁ WEATHER</button>
-                            <button type="button" class="div-tab" data-tab="comic" role="tab" aria-selected="false">📰 COMIC</button>
+                            <button type="button" class="div-tab active" data-tab="clicker" role="tab" aria-selected="true">★ DO NOTHING</button>
+                            <button type="button" class="div-tab" data-tab="weather" role="tab" aria-selected="false">☼ WEATHER</button>
+                            <button type="button" class="div-tab" data-tab="comic" role="tab" aria-selected="false">✂ COMIC</button>
                         </div>
                     </div>
 
@@ -181,9 +181,12 @@
                             </button>
                             <div class="clicker-stats">
                                 <div class="clicker-count-line">
-                                    TIME WASTED: <span id="clicker-count" class="clicker-num">0</span> CLICKS
+                                    TIME WASTED: <span id="clicker-count" class="clicker-num">0</span> <span id="clicker-time" class="clicker-time"></span>
                                 </div>
-                                <div class="clicker-rank" id="clicker-rank">RANK: CASUAL SLACKER</div>
+                                <div class="clicker-rank-row">
+                                    <div class="clicker-rank" id="clicker-rank">RANK: CASUAL SLACKER</div>
+                                    <button type="button" id="clicker-reset-btn" class="clicker-reset-btn" title="Reset tally">RESET</button>
+                                </div>
                             </div>
                         </div>
                         <div class="clicker-quote" id="clicker-quote">
@@ -201,7 +204,7 @@
                             <div class="weather-row">
                                 <span class="weather-k">TEMP:</span>
                                 <span class="weather-v" id="weather-temp">98°F IN DENIAL</span>
-                                <span class="weather-k" style="margin-left: 10px;">HUMIDITY:</span>
+                                <span class="weather-k" style="margin-left: 8px;">HUMIDITY:</span>
                                 <span class="weather-v" id="weather-humidity">100% AVOIDANCE</span>
                             </div>
                             <div class="weather-forecast-line" id="weather-forecast">
@@ -223,7 +226,7 @@
                         </div>
                         <div class="comic-controls">
                             <button type="button" id="comic-prev-btn" class="comic-nav-btn">◄ PREV</button>
-                            <span class="comic-page-num" id="comic-page-num">STRIP 1 OF 5</span>
+                            <span class="comic-page-num" id="comic-page-num">STRIP 1 OF 7</span>
                             <button type="button" id="comic-next-btn" class="comic-nav-btn">NEXT ►</button>
                         </div>
                     </div>
