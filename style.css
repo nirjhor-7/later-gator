@@ -822,9 +822,246 @@ button {
     animation: shake 0.4s;
 }
 
-@keyframes flash-bg {
-    0%, 100% { background-color: transparent; }
-    10% { background-color: rgba(17, 17, 17, 0.05); }
+/* Daily Diversions (Options 2, 4, 5) */
+.diversion-box {
+    margin-top: 25px;
+    margin-bottom: 0;
+    border: 2px solid var(--ink);
+    padding: 12px 14px;
+    background: var(--paper);
+    font-family: 'Space Mono', monospace;
+}
+
+.diversion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.diversion-label {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.diversion-tabs {
+    display: flex;
+    gap: 4px;
+}
+
+.div-tab {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    padding: 4px 7px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    font-family: 'Space Mono', monospace;
+    transition: all 0.15s ease;
+}
+
+.div-tab:hover {
+    background: rgba(17, 17, 17, 0.08);
+}
+
+.div-tab.active {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.tab-panel {
+    min-height: 105px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+/* Clicker styles */
+.clicker-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.clicker-btn {
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 10px 12px;
+    cursor: pointer;
+    box-shadow: 3px 3px 0px var(--ink);
+    transition: transform 0.05s, box-shadow 0.05s;
+    white-space: nowrap;
+}
+
+.clicker-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0px var(--ink);
+}
+
+.clicker-stats {
+    flex: 1;
+    font-size: 0.75rem;
+    line-height: 1.35;
+}
+
+.clicker-count-line {
+    font-weight: 700;
+}
+
+.clicker-num {
+    display: inline-block;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 1px 6px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: transform 0.1s ease;
+}
+
+.clicker-rank {
+    font-size: 0.7rem;
+    color: #b91c1c;
+    font-weight: 700;
+    margin-top: 3px;
+    text-transform: uppercase;
+}
+
+.clicker-quote {
+    font-size: 0.7rem;
+    font-style: italic;
+    color: var(--ink-light);
+    border-top: 1px dashed rgba(17, 17, 17, 0.25);
+    padding-top: 6px;
+}
+
+/* Weather styles */
+.weather-grid {
+    font-size: 0.75rem;
+    line-height: 1.45;
+}
+
+.weather-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+}
+
+.weather-k {
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-right: 6px;
+}
+
+.weather-v {
+    background: rgba(17, 17, 17, 0.06);
+    padding: 1px 6px;
+    border: 1px solid rgba(17, 17, 17, 0.2);
+}
+
+.weather-forecast-line {
+    font-size: 0.72rem;
+    font-style: italic;
+    margin-top: 6px;
+    padding-top: 4px;
+    border-top: 1px dashed rgba(17, 17, 17, 0.25);
+    min-height: 2.2em;
+}
+
+.weather-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 4px;
+}
+
+.div-action-btn {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.div-action-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+/* Comic styles */
+.comic-display {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 70px;
+}
+
+.comic-ascii {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    line-height: 1.15;
+    margin: 0;
+    white-space: pre;
+    color: var(--ink);
+    background: rgba(17, 17, 17, 0.03);
+    padding: 4px 6px;
+    border: 1px solid rgba(17, 17, 17, 0.15);
+    flex-shrink: 0;
+}
+
+.comic-caption {
+    font-size: 0.72rem;
+    line-height: 1.3;
+    font-style: italic;
+}
+
+.comic-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px dashed rgba(17, 17, 17, 0.25);
+    padding-top: 6px;
+    margin-top: 6px;
+}
+
+.comic-nav-btn {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    cursor: pointer;
+}
+
+.comic-nav-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.comic-page-num {
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 /* Responsive Alignment Fixes */

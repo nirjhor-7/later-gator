@@ -1054,6 +1054,218 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==========================================
+    // DAILY DIVERSIONS (Options 2, 4, 5)
+    // ==========================================
+    
+    // Tab Switching
+    const divTabs = document.querySelectorAll('.div-tab');
+    const tabPanels = {
+        clicker: document.getElementById('tab-clicker'),
+        weather: document.getElementById('tab-weather'),
+        comic: document.getElementById('tab-comic')
+    };
+
+    const switchTab = (tabName) => {
+        divTabs.forEach(t => {
+            const isActive = t.getAttribute('data-tab') === tabName;
+            t.classList.toggle('active', isActive);
+            t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+        });
+        Object.keys(tabPanels).forEach(key => {
+            if (tabPanels[key]) {
+                if (key === tabName) {
+                    tabPanels[key].style.display = 'flex';
+                    tabPanels[key].classList.add('active');
+                } else {
+                    tabPanels[key].style.display = 'none';
+                    tabPanels[key].classList.remove('active');
+                }
+            }
+        });
+        try { localStorage.setItem('lg_active_tab', tabName); } catch (e) {}
+    };
+
+    divTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const tabName = tab.getAttribute('data-tab');
+            if (tabName) switchTab(tabName);
+        });
+    });
+
+    const savedTab = (() => {
+        try { return localStorage.getItem('lg_active_tab'); } catch (e) { return null; }
+    })();
+    if (savedTab && tabPanels[savedTab]) {
+        switchTab(savedTab);
+    }
+
+    // --- Option 2: The Do-Nothing Clicker ---
+    const clickerBtn = document.getElementById('clicker-btn');
+    const clickerCountEl = document.getElementById('clicker-count');
+    const clickerRankEl = document.getElementById('clicker-rank');
+    const clickerQuoteEl = document.getElementById('clicker-quote');
+
+    let clickerCount = (() => {
+        try { return parseInt(localStorage.getItem('lg_clicker_count') || '0', 10); } catch (e) { return 0; }
+    })();
+
+    const CLICKER_QUOTES = [
+        "\"Every click is another responsibility successfully dodged.\"",
+        "\"Your to-do list is trembling in existential fear.\"",
+        "\"Productivity has officially left the premises.\"",
+        "\"They can't ask you to work if you are busy clicking this.\"",
+        "\"Look at that momentum. Absolutely zero progress made.\"",
+        "\"A masterclass in strategic unproductivity.\"",
+        "\"Your boss is probably crying somewhere.\"",
+        "\"Tomorrow is looking very busy at this rate.\""
+    ];
+
+    const playClickerSound = () => {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(440, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(220, ctx.currentTime + 0.04);
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.04);
+        } catch (e) {}
+    };
+
+    const updateClickerUI = () => {
+        if (clickerCountEl) clickerCountEl.textContent = clickerCount;
+        if (clickerRankEl) {
+            if (clickerCount >= 100) {
+                clickerRankEl.textContent = "RANK: GRAND MASTER OF DELAY ★";
+            } else if (clickerCount >= 50) {
+                clickerRankEl.textContent = "RANK: EXECUTIVE SLOTH";
+            } else if (clickerCount >= 25) {
+                clickerRankEl.textContent = "RANK: PROFESSIONAL TIME BANDIT";
+            } else if (clickerCount >= 10) {
+                clickerRankEl.textContent = "RANK: CERTIFIED PROCRASTINATOR";
+            } else if (clickerCount >= 1) {
+                clickerRankEl.textContent = "RANK: NOVICE DODGER";
+            } else {
+                clickerRankEl.textContent = "RANK: CASUAL SLACKER";
+            }
+        }
+        if (clickerQuoteEl) {
+            const qIdx = Math.floor(clickerCount / 5) % CLICKER_QUOTES.length;
+            clickerQuoteEl.textContent = CLICKER_QUOTES[qIdx];
+        }
+    };
+
+    updateClickerUI();
+
+    if (clickerBtn) {
+        clickerBtn.addEventListener('click', () => {
+            clickerCount++;
+            try { localStorage.setItem('lg_clicker_count', clickerCount.toString()); } catch (e) {}
+            playClickerSound();
+            if (clickerCountEl) {
+                clickerCountEl.style.transform = 'scale(1.3)';
+                setTimeout(() => { clickerCountEl.style.transform = 'scale(1)'; }, 100);
+            }
+            updateClickerUI();
+        });
+    }
+
+    // --- Option 4: Meteorological Outlook ---
+    const WEATHER_REPORTS = [
+        { condition: "HEAVY BRAIN FOG", temp: "98°F IN DENIAL", humidity: "100% AVOIDANCE", forecast: "Forecast: Scattered excuses turning into crippling guilt by midnight." },
+        { condition: "SPARSE MOTIVATION", temp: "72°F ROOM TEMPERATURE", humidity: "88% LETHARGY", forecast: "Forecast: 100% chance of telling everyone 'I will start fresh on Monday'." },
+        { condition: "COLD DEADLINE FRONT", temp: "34°F CHILLING APATHY", humidity: "95% DISTRACTION", forecast: "Forecast: Approaching deadline front moving at 0.0001 MPH. Bunker down with tea." },
+        { condition: "PRESSURE COLLAPSE", temp: "84°F COMFORT ZONE", humidity: "92% RATIONALIZATION", forecast: "Forecast: Severe low-pressure system over personal willpower. Stay in bed." },
+        { condition: "PRECIPITATION WARNING", temp: "77°F COFFEE JITTERS", humidity: "99% COGNITIVE EVASION", forecast: "Forecast: Heavy downpour of 4-hour YouTube rabbit holes on medieval castle doors." },
+        { condition: "SOLAR FLARE ADVISORY", temp: "104°F PANIC SOUP", humidity: "100% RELUCTANCE", forecast: "Forecast: Astral interference detected. All productive work legally grounded." }
+    ];
+
+    let weatherIdx = 0;
+    const weatherConditionEl = document.getElementById('weather-condition');
+    const weatherTempEl = document.getElementById('weather-temp');
+    const weatherHumidityEl = document.getElementById('weather-humidity');
+    const weatherForecastEl = document.getElementById('weather-forecast');
+    const weatherNextBtn = document.getElementById('weather-next-btn');
+
+    const renderWeather = (idx) => {
+        const item = WEATHER_REPORTS[idx];
+        if (!item) return;
+        if (weatherConditionEl) weatherConditionEl.textContent = item.condition;
+        if (weatherTempEl) weatherTempEl.textContent = item.temp;
+        if (weatherHumidityEl) weatherHumidityEl.textContent = item.humidity;
+        if (weatherForecastEl) weatherForecastEl.textContent = item.forecast;
+    };
+
+    if (weatherNextBtn) {
+        weatherNextBtn.addEventListener('click', () => {
+            weatherIdx = (weatherIdx + 1) % WEATHER_REPORTS.length;
+            renderWeather(weatherIdx);
+        });
+    }
+
+    // --- Option 5: Front-Page Editorial ASCII Comic Strip ---
+    const COMIC_STRIPS = [
+        {
+            ascii: "  _.~\"~._.~\"~._\n (   (•_•)     )\n  \\  <)  )╯   /\n   `~-.__.-~'",
+            caption: "\"The early bird gets the worm. The second mouse gets the cheese. I am going back to sleep.\""
+        },
+        {
+            ascii: "   \\   |   /\n     (•_•)  )\n     (  (\n    /    \\",
+            caption: "\"[DEADLINE APPROACHING] If I don't look directly at it, it can't legally see me.\""
+        },
+        {
+            ascii: " [ 2:00 PM: 5-MIN BREAK ]\n      ( -_-) zzz\n       (   )\n      /     \\",
+            caption: "\"I planned to start at 2:05. It is now 2:06. Routine ruined. Must wait until 3:00.\""
+        },
+        {
+            ascii: " ┌────────────┐\n │ TO-DO LIST │   (•_•)\n │ 1. [✓]LIST │   /)  )\n └────────────┘   /   \\",
+            caption: "\"Step 1: Write to-do list. Step 2: Rest for 4 hours from the exertion of Step 1.\""
+        },
+        {
+            ascii: "     (•_•)\n    /(   )\\   \"Why do today what\n      | |      can wait until next fiscal\n               quarter?\"",
+            caption: "\"The Gator contemplating all the milestones he won't be reaching today.\""
+        }
+    ];
+
+    let comicIdx = 0;
+    const comicAsciiEl = document.getElementById('comic-ascii');
+    const comicCaptionEl = document.getElementById('comic-caption');
+    const comicPageNumEl = document.getElementById('comic-page-num');
+    const comicPrevBtn = document.getElementById('comic-prev-btn');
+    const comicNextBtn = document.getElementById('comic-next-btn');
+
+    const renderComic = (idx) => {
+        const item = COMIC_STRIPS[idx];
+        if (!item) return;
+        if (comicAsciiEl) comicAsciiEl.textContent = item.ascii;
+        if (comicCaptionEl) comicCaptionEl.textContent = item.caption;
+        if (comicPageNumEl) comicPageNumEl.textContent = `STRIP ${idx + 1} OF ${COMIC_STRIPS.length}`;
+    };
+
+    renderComic(comicIdx);
+
+    if (comicPrevBtn) {
+        comicPrevBtn.addEventListener('click', () => {
+            comicIdx = (comicIdx - 1 + COMIC_STRIPS.length) % COMIC_STRIPS.length;
+            renderComic(comicIdx);
+        });
+    }
+
+    if (comicNextBtn) {
+        comicNextBtn.addEventListener('click', () => {
+            comicIdx = (comicIdx + 1) % COMIC_STRIPS.length;
+            renderComic(comicIdx);
+        });
+    }
+
     fetchAll();
     setInterval(fetchAll, 10000);
 });
