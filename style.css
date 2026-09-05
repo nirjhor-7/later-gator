@@ -343,6 +343,60 @@ textarea:focus {
     margin-top: 20px;
 }
 
+.primary-action-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+}
+
+.primary-action-row .btn-heavy {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#later-btn-text,
+#panic-btn-text {
+    display: inline-block;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.btn-dice {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    cursor: pointer;
+    font-size: 1.25rem;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.btn-dice:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.btn-dice:active {
+    transform: translate(2px, 2px);
+}
+
+.btn-dice.spinning .dice-icon {
+    animation: diceSpin 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes diceSpin {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.25); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
 button {
     cursor: pointer;
     text-transform: uppercase;
@@ -1558,6 +1612,11 @@ body.sepia-edition .rubber-stamp {
     .action-buttons button {
         font-size: 1.05rem;
         padding: 11px 8px;
+    }
+
+    .btn-dice {
+        padding: 0 10px;
+        font-size: 1.15rem;
     }
 
     .visitor-counter {

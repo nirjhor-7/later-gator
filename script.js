@@ -4,11 +4,230 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskCharCount = document.getElementById('task-char-count');
     const laterBtn = document.getElementById('later-btn');
     const panicBtn = document.getElementById('panic-btn');
+    const laterBtnText = document.getElementById('later-btn-text');
+    const panicBtnText = document.getElementById('panic-btn-text');
+    const shufflePhraseBtn = document.getElementById('shuffle-phrase-btn');
     const statusMessage = document.getElementById('status-message');
     const feedContainer = document.getElementById('feed-container');
     const statCurrent = document.getElementById('stat-current');
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
+
+    // Slacker Rank & Clicks (Global Local State)
+    let clickerCount = (() => {
+        try { return parseInt(localStorage.getItem('lg_clicker_count') || '0', 10); } catch (e) { return 0; }
+    })();
+
+    const getClickerRank = (count) => {
+        if (count >= 1000) return "RANK: TRANSCENDENT VOID DWELLER ✦";
+        if (count >= 500) return "RANK: SUPREME TIME BENDER ★★★";
+        if (count >= 200) return "RANK: ARCHBISHOP OF APATHY ★★";
+        if (count >= 100) return "RANK: GRAND MASTER OF DELAY ★";
+        if (count >= 50) return "RANK: EXECUTIVE SLOTH";
+        if (count >= 25) return "RANK: PROFESSIONAL TIME BANDIT";
+        if (count >= 10) return "RANK: CERTIFIED PROCRASTINATOR";
+        if (count >= 1) return "RANK: NOVICE DODGER";
+        return "RANK: CASUAL SLACKER";
+    };
+
+    const formatWastedTime = (clicks) => {
+        const secs = Math.round(clicks * 1.5);
+        if (secs < 60) return `(~${secs}s)`;
+        const mins = (secs / 60).toFixed(1);
+        return `(~${mins}m)`;
+    };
+
+    // ==========================================
+    // THE EVASION ENGINE (DYNAMIC SUBMIT BUTTON & TASK-REACTIVE SYSTEM)
+    // ==========================================
+    const STARTER_EVASION_PHRASES = [
+        "NOT MY PROBLEM TODAY",
+        "REFER TO FUTURE ME",
+        "A PROBLEM FOR MONDAY",
+        "TABLE FOR TOMORROW",
+        "DECREE AN EMERGENCY NAP",
+        "CONSULT THE CEILING FIRST",
+        "SLEEP ON IT INDEFINITELY",
+        "SWEPT UNDER THE RUG",
+        "COMMENCE PROCRASTINATION",
+        "ABSOLUTELY NOT",
+        "FORWARD TO THE VOID",
+        "LET FATE DECIDE",
+        "FILE UNDER 'LATER'",
+        "DISMISS WITH PREJUDICE",
+        "TAKE TO MY FAINTING COUCH",
+        "I RESPECTFULLY DECLINE",
+        "MAYBE IN ANOTHER LIFE",
+        "LET THE UNIVERSE HANDLE IT"
+    ];
+
+    const RANK_10_PRESTIGE_PHRASES = [
+        "OFFICIALLY DEFER",
+        "PUNT INTO NEXT WEEK",
+        "BANISH TO NEXT QUARTER",
+        "SOLEMNLY POSTPONE"
+    ];
+
+    const RANK_25_PRESTIGE_PHRASES = [
+        "POSTPONE SINE DIE",
+        "EXECUTIVE ORDER: DELAY",
+        "STRATEGIC INACTION",
+        "AUTHORIZE TACTICAL SLOTH"
+    ];
+
+    const RANK_50_PRESTIGE_PHRASES = [
+        "BY ROYAL DECREE: NO",
+        "DECLARE A NATIONAL HOLIDAY",
+        "DIPLOMATIC IMMUNITY INVOKED",
+        "STATE-SPONSORED DAWDLING"
+    ];
+
+    const RANK_100_PRESTIGE_PHRASES = [
+        "SUPREME INACTION DECLARED",
+        "TRANSCENDENT SLOTH ACHIEVED",
+        "SOVEREIGN RIGHT TO DO NOTHING",
+        "APPOINTED AMBASSADOR OF DELAY"
+    ];
+
+    const TASK_REACTIVE_PAIRS = [
+        {
+            keywords: ['email', 'inbox', 'reply', 'mail'],
+            later: "MARK AS UNREAD FOREVER",
+            panic: "SEND TYPO-RIDDEN REPLY"
+        },
+        {
+            keywords: ['study', 'exam', 'homework', 'thesis', 'reading', 'read', 'assignment'],
+            later: "CLOSE BOOK RESPECTFULLY",
+            panic: "CRAM AT 3:00 AM"
+        },
+        {
+            keywords: ['laundry', 'clothes', 'fold', 'wash'],
+            later: "THE CHAIR IS MY CLOSET",
+            panic: "WEAR IT INSIDE OUT"
+        },
+        {
+            keywords: ['gym', 'workout', 'exercise', 'run', 'cardio', 'weights'],
+            later: "DECLARE A REST CENTURY",
+            panic: "DO 1 PUSHUP AND QUIT"
+        },
+        {
+            keywords: ['sleep', 'nap', 'bed', 'rest', 'tired'],
+            later: "COMMENCE UNCONSCIOUSNESS",
+            panic: "JUST ONE MORE REEL"
+        },
+        {
+            keywords: ['exist', 'existing', 'life choices', 'alive', 'life'],
+            later: "PAUSE REALITY FOR 5 MIN",
+            panic: "EXISTENTIAL DREAD"
+        },
+        {
+            keywords: ['work', 'project', 'client', 'spreadsheet', 'excel', 'bug', 'code', 'deploy'],
+            later: "BANISH TO NEXT SPRINT",
+            panic: "TYPE VERY FAST AND PRAY"
+        },
+        {
+            keywords: ['clean', 'dishes', 'room', 'trash', 'chores'],
+            later: "STRATEGIC DUST ACCUMULATION",
+            panic: "SHOVE UNDER BED"
+        }
+    ];
+
+    let currentActiveEvasionPhrase = "NOT MY PROBLEM TODAY";
+    let isTaskReactiveActive = false;
+
+    const getAvailableEvasionPool = () => {
+        let pool = [...STARTER_EVASION_PHRASES];
+        if (clickerCount >= 10) pool = pool.concat(RANK_10_PRESTIGE_PHRASES);
+        if (clickerCount >= 25) pool = pool.concat(RANK_25_PRESTIGE_PHRASES);
+        if (clickerCount >= 50) pool = pool.concat(RANK_50_PRESTIGE_PHRASES);
+        if (clickerCount >= 100) pool = pool.concat(RANK_100_PRESTIGE_PHRASES);
+        return pool;
+    };
+
+    const setButtonLabels = (laterText, panicText = "DO IT NOW (PANIC)") => {
+        if (laterBtnText) {
+            laterBtnText.style.opacity = '0';
+            laterBtnText.style.transform = 'translateY(-2px)';
+            setTimeout(() => {
+                laterBtnText.textContent = laterText;
+                laterBtnText.style.opacity = '1';
+                laterBtnText.style.transform = 'translateY(0)';
+            }, 100);
+        } else if (laterBtn) {
+            laterBtn.textContent = laterText;
+        }
+
+        if (panicBtnText) {
+            panicBtnText.textContent = panicText;
+        } else if (panicBtn) {
+            panicBtn.textContent = panicText;
+        }
+    };
+
+    const rollEvasionPhrase = (isUserInitiated = false) => {
+        const pool = getAvailableEvasionPool();
+        const candidates = pool.filter(p => p !== currentActiveEvasionPhrase);
+        const selected = candidates.length > 0
+            ? candidates[Math.floor(Math.random() * candidates.length)]
+            : pool[0];
+
+        currentActiveEvasionPhrase = selected;
+        isTaskReactiveActive = false;
+        setButtonLabels(selected, "DO IT NOW (PANIC)");
+
+        if (isUserInitiated && shufflePhraseBtn) {
+            shufflePhraseBtn.classList.remove('spinning');
+            void shufflePhraseBtn.offsetWidth;
+            shufflePhraseBtn.classList.add('spinning');
+            setTimeout(() => {
+                shufflePhraseBtn.classList.remove('spinning');
+            }, 450);
+        }
+    };
+
+    const updateTaskReactiveButtons = (rawText) => {
+        if (!rawText || rawText.trim().length === 0) {
+            if (isTaskReactiveActive) {
+                setButtonLabels(currentActiveEvasionPhrase, "DO IT NOW (PANIC)");
+                isTaskReactiveActive = false;
+            }
+            return;
+        }
+
+        const lower = rawText.toLowerCase().trim();
+        let matched = null;
+
+        for (const item of TASK_REACTIVE_PAIRS) {
+            for (const kw of item.keywords) {
+                if (lower.includes(kw)) {
+                    matched = item;
+                    break;
+                }
+            }
+            if (matched) break;
+        }
+
+        if (matched) {
+            isTaskReactiveActive = true;
+            setButtonLabels(matched.later, matched.panic);
+        } else if (isTaskReactiveActive) {
+            setButtonLabels(currentActiveEvasionPhrase, "DO IT NOW (PANIC)");
+            isTaskReactiveActive = false;
+        }
+    };
+
+    // Roll initial starter phrase on page load
+    rollEvasionPhrase(false);
+
+    if (shufflePhraseBtn) {
+        shufflePhraseBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            rollEvasionPhrase(true);
+            if (navigator.vibrate) {
+                try { navigator.vibrate(10); } catch (e) {}
+            }
+        });
+    }
 
     // Local Alias Auto-Retention (Permanent local identity)
     if (userNameInput) {
@@ -33,7 +252,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     if (taskInput) {
-        taskInput.addEventListener('input', updateCharCount);
+        taskInput.addEventListener('input', () => {
+            updateCharCount();
+            updateTaskReactiveButtons(taskInput.value);
+        });
         updateCharCount();
     }
 
@@ -635,7 +857,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const submittedText = text;
         const activeBtn = isPanic ? panicBtn : laterBtn;
-        const origBtnText = isPanic ? "DO IT NOW (PANIC)" : "NOT MY PROBLEM TODAY";
         activeBtn.disabled = true;
 
         if (isPanic) {
@@ -658,10 +879,12 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerRubberStamp(isPanic);
 
         if (isPanic) {
-            activeBtn.textContent = "FINE. DOING IT.";
+            if (panicBtnText) panicBtnText.textContent = "FINE. DOING IT.";
+            else panicBtn.textContent = "FINE. DOING IT.";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            activeBtn.textContent = "POSTPONED ✓";
+            if (laterBtnText) laterBtnText.textContent = "EVADED ✓";
+            else laterBtn.textContent = "POSTPONED ✓";
             statusMessage.textContent = "SUCCESSFULLY EVADED.";
         }
 
@@ -680,9 +903,11 @@ document.addEventListener('DOMContentLoaded', () => {
             dismissRubberStamp(() => {
                 taskInput.value = '';
                 updateCharCount();
-                activeBtn.textContent = origBtnText;
                 activeBtn.disabled = false;
                 statusMessage.textContent = "";
+
+                // Roll a fresh evasion phrase for the next task!
+                rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate
                 showShareSlip(submittedText, isPanic);
@@ -978,7 +1203,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Global keyboard shortcuts (Esc to dismiss open dialogs)
+    // Global keyboard shortcuts (Esc to dismiss open dialogs, R to roll fresh evasion phrase)
     window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             const credModal = document.getElementById('credential-modal');
@@ -987,6 +1212,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (shareCard && shareCard.style.display !== 'none') {
                 shareCard.style.display = 'none';
+            }
+        } else if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey) {
+            const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
+            if (activeTag !== 'input' && activeTag !== 'textarea') {
+                e.preventDefault();
+                rollEvasionPhrase(true);
             }
         }
     });
@@ -1215,6 +1446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskInput.value = val;
                 taskInput.focus();
                 updateCharCount();
+                updateTaskReactiveButtons(taskInput.value);
                 if (navigator.vibrate) {
                     try { navigator.vibrate(8); } catch (e) {}
                 }
@@ -1233,6 +1465,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 taskInput.value = randomExcuse;
                 taskInput.focus();
                 updateCharCount();
+                updateTaskReactiveButtons(taskInput.value);
                 if (navigator.vibrate) {
                     try { navigator.vibrate(8); } catch (e) {}
                 }
@@ -1297,10 +1530,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const clickerQuoteEl = document.getElementById('clicker-quote');
     const clickerResetBtn = document.getElementById('clicker-reset-btn');
 
-    let clickerCount = (() => {
-        try { return parseInt(localStorage.getItem('lg_clicker_count') || '0', 10); } catch (e) { return 0; }
-    })();
-
     const CLICKER_QUOTES = [
         "\"Every click is another responsibility successfully dodged.\"",
         "\"Your to-do list is trembling in existential fear.\"",
@@ -1332,25 +1561,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (count >= 25) return "[ KEEP DODGING WORK ]";
         if (count >= 10) return "[ AVOID RESPONSIBILITY ]";
         return "[ CLICK TO DO NOTHING ]";
-    };
-
-    const getClickerRank = (count) => {
-        if (count >= 1000) return "RANK: TRANSCENDENT VOID DWELLER ✦";
-        if (count >= 500) return "RANK: SUPREME TIME BENDER ★★★";
-        if (count >= 200) return "RANK: ARCHBISHOP OF APATHY ★★";
-        if (count >= 100) return "RANK: GRAND MASTER OF DELAY ★";
-        if (count >= 50) return "RANK: EXECUTIVE SLOTH";
-        if (count >= 25) return "RANK: PROFESSIONAL TIME BANDIT";
-        if (count >= 10) return "RANK: CERTIFIED PROCRASTINATOR";
-        if (count >= 1) return "RANK: NOVICE DODGER";
-        return "RANK: CASUAL SLACKER";
-    };
-
-    const formatWastedTime = (clicks) => {
-        const secs = Math.round(clicks * 1.5);
-        if (secs < 60) return `(~${secs}s)`;
-        const mins = (secs / 60).toFixed(1);
-        return `(~${mins}m)`;
     };
 
     let prevRank = getClickerRank(clickerCount);
@@ -1387,6 +1597,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 void clickerRankEl.offsetWidth;
                 clickerRankEl.classList.add('rank-promoted');
                 prevRank = currentRank;
+                if (!taskInput || taskInput.value.trim() === '') {
+                    rollEvasionPhrase(false);
+                }
             }
         }
 
