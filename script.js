@@ -249,52 +249,71 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ==========================================
-    // BREAKING NEWS TELEGRAPH WIRE TICKER
+    // BREAKING NEWS TELEGRAPH WIRE TICKER (LIVE ONLY)
     // ==========================================
     const tickerTrack = document.getElementById('ticker-track');
-
-    const CURATED_TICKER_FLASHES = [
-        { tag: "FLASH", text: "LONDON DEVELOPER DEFERS MERGE CONFLICT TO CONTEMPLATE THE PASSING OF TIME" },
-        { tag: "DISPATCH", text: "TOKYO SALARYMAN INVENTED 4TH GRANDMOTHER FUNERAL TO DODGE MORNING STANDUP" },
-        { tag: "URGENT", text: "BERLIN RESIDENT POSTPONES TAX FILING FOR 9TH CONSECUTIVE MONTH IN TOTAL TRANQUILITY" },
-        { tag: "BULLETIN", text: "NEW YORK CONSULTANT REACHES 4TH CONSECUTIVE HOUR OF ALIGNING POWERPOINT BOXES" },
-        { tag: "WIRE", text: "SAN FRANCISCO FOUNDER REPLACES CRITICAL DATABASE MIGRATION WITH SILENT MEDITATION NAP" },
-        { tag: "REPORT", text: "PARIS PHILOSOPHER CONCLUDES WASHING DISHES IS EXISTENTIALLY INCOMPATIBLE WITH FREEDOM" },
-        { tag: "ALERT", text: "TORONTO ACCOUNTANT INITIATES 3-HOUR INVESTIGATION INTO AVERAGE SALARIES IN ANTARCTICA" },
-        { tag: "SPECIAL", text: "SYDNEY DEVELOPER DISCOVERS 40-MINUTE DOCUMENTARY ON MEDIEVAL SIEGE ENGINES" },
-        { tag: "DISPATCH", text: "STUDENT ACCIDENTALLY WRITES 2,000-WORD ESSAY ON ENTIRELY WRONG HISTORICAL CENTURY" },
-        { tag: "FLASH", text: "MAN STARES DIRECTLY AT PILE OF LAUNDRY UNTIL LAUNDRY GIVES UP AND FOLDS ITSELF" }
-    ];
-
     let lastTickerTasksHash = "";
 
     const renderTicker = (tasks = []) => {
         if (!tickerTrack) return;
 
-        const topId = tasks.length > 0 ? tasks[0].id : 0;
+        if (!tasks || tasks.length === 0) {
+            tickerTrack.innerHTML = `
+                <div class="ticker-item">
+                    <span class="ticker-tag">[TELEGRAPH]</span>
+                    <span class="ticker-text">AWAITING LIVE TRANSMISSIONS FROM THE WIRE...</span>
+                    <span class="ticker-bullet">•</span>
+                </div>
+            `.repeat(4);
+            return;
+        }
+
+        const topId = tasks[0].id;
         const currentHash = `${topId}_${tasks.length}`;
         if (lastTickerTasksHash === currentHash && tickerTrack.children.length > 0) {
             return;
         }
         lastTickerTasksHash = currentHash;
 
-        // Extract latest 5 submissions from Public Wire
-        const liveItems = (tasks || []).slice(0, 5).map(t => {
-            const author = (t.city || 'ANONYMOUS').toUpperCase();
+        // Extract real user submissions from the live public wire
+        const liveItems = tasks.slice(0, 20).map(t => {
+            const rawAuthor = (t.city || 'ANONYMOUS').trim();
             const country = t.country ? ` (${t.country.toUpperCase()})` : '';
-            const rawText = (t.text || '').replace(/^\[PANIC\]\s*/i, '').replace(/[\r\n]+/g, ' ').trim();
-            const cleanText = censorNsfwText(rawText);
-            const shortChore = cleanText.length > 55 ? cleanText.substring(0, 52) + '...' : cleanText;
-            const isPanic = (t.text || '').startsWith('[PANIC]');
+            
+            let displayName = rawAuthor;
+            let tag = "DISPATCH";
+
+            const flairMatch = rawAuthor.match(/^\[(.*?)\]\s*(.*)$/);
+            if (flairMatch) {
+                tag = flairMatch[1].toUpperCase();
+                displayName = flairMatch[2] || 'ANONYMOUS';
+            }
+
+            let isPanic = false;
+            let chore = (t.text || '').trim();
+            if (chore.startsWith('[PANIC] ')) {
+                isPanic = true;
+                chore = chore.replace('[PANIC] ', '');
+                if (!flairMatch) tag = "PANIC";
+            }
+
+            chore = censorNsfwText(chore.replace(/[\r\n]+/g, ' '));
+            const shortChore = chore.length > 60 ? chore.substring(0, 58) + '...' : chore;
+
             return {
-                tag: isPanic ? "PANIC" : "LIVE",
-                text: `${author}${country}: "${shortChore.toUpperCase()}"`
+                tag: tag,
+                isPanic: isPanic,
+                text: `${displayName.toUpperCase()}${country}: "${shortChore.toUpperCase()}"`
             };
         });
 
-        const allItems = [...liveItems, ...CURATED_TICKER_FLASHES];
+        // Ensure track has enough items to fill wide desktop screens before repeating
+        let fullList = [...liveItems];
+        while (fullList.length < 8 && fullList.length > 0) {
+            fullList = fullList.concat(liveItems);
+        }
 
-        const html = allItems.map(item => `
+        const html = fullList.map(item => `
             <div class="ticker-item">
                 <span class="ticker-tag">[${escapeHtml(item.tag)}]</span>
                 <span class="ticker-text">${escapeHtml(item.text)}</span>
@@ -302,11 +321,11 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `).join('');
 
-        // Duplicate the string for seamless 0% -> -50% marquee loop
+        // Duplicate the string for seamless 0% -> -50% continuous marquee loop
         tickerTrack.innerHTML = html + html;
     };
 
-    // Immediate initial render before network request completes
+    // Initial placeholder until dispatches load
     renderTicker([]);
 
     // Check if the user has set the secret developer flag

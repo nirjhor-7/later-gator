@@ -137,7 +137,7 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
     display: flex;
     white-space: nowrap;
     will-change: transform;
-    animation: tickerCrawl 50s linear infinite;
+    animation: tickerCrawl 90s linear infinite;
 }
 
 .ticker-track:hover {
@@ -1525,7 +1525,7 @@ body.sepia-edition .rubber-stamp {
     }
 
     .ticker-track {
-        animation-duration: 38s;
+        animation-duration: 75s;
     }
 
     .newspaper-grid {
