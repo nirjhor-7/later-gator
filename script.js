@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
+    const userNameInput = document.getElementById('user-name');
+    const taskCharCount = document.getElementById('task-char-count');
     const laterBtn = document.getElementById('later-btn');
     const panicBtn = document.getElementById('panic-btn');
     const statusMessage = document.getElementById('status-message');
@@ -7,6 +9,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const statCurrent = document.getElementById('stat-current');
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
+
+    // Local Alias Auto-Retention (Permanent local identity)
+    if (userNameInput) {
+        try {
+            const savedName = localStorage.getItem('lg_user_name');
+            if (savedName) userNameInput.value = savedName;
+        } catch (e) {}
+
+        userNameInput.addEventListener('input', () => {
+            try {
+                localStorage.setItem('lg_user_name', userNameInput.value.trim());
+            } catch (e) {}
+        });
+    }
+
+    // Broadsheet Character Counter
+    const updateCharCount = () => {
+        if (!taskCharCount || !taskInput) return;
+        const len = taskInput.value.length;
+        taskCharCount.textContent = `[ ${len} / 150 LETTERS ]`;
+        taskCharCount.classList.toggle('near-limit', len >= 130);
+    };
+
+    if (taskInput) {
+        taskInput.addEventListener('input', updateCharCount);
+        updateCharCount();
+    }
 
     // Rubber Stamp Elements
     const stampOverlay = document.getElementById('stamp-overlay');
@@ -415,6 +444,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         playRubberStampSound();
 
+        // Physical Haptic Feedback on Mobile
+        if (navigator.vibrate) {
+            try {
+                navigator.vibrate(isPanicMode ? [40, 60, 80] : [30, 40, 50]);
+            } catch (e) {}
+        }
+
         const permitNum = Math.floor(1000 + Math.random() * 9000);
         if (isPanicMode) {
             if (stampHeader) stampHeader.textContent = "⚠ EMERGENCY DIRECTIVE ⚠";
@@ -472,6 +508,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
         const name = document.getElementById('user-name').value.trim();
+        if (name) {
+            try { localStorage.setItem('lg_user_name', name); } catch(e) {}
+        }
         
         if (!text) {
             statusMessage.textContent = "PLEASE SPECIFY A TASK.";
@@ -559,6 +598,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(async () => {
             dismissRubberStamp(() => {
                 taskInput.value = '';
+                updateCharCount();
                 activeBtn.textContent = origBtnText;
                 activeBtn.disabled = false;
                 statusMessage.textContent = "";
@@ -762,8 +802,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const punchline = isPanicMode ? "Wish me luck." : "Not my problem today.";
         currentShareText = `I ${actionVerb} "${plainCensored}" on Later, Gator alongside the rest of the world. ${punchline}`;
         
+        const shareNativeBtn = document.getElementById('share-native-btn');
+        if (shareNativeBtn && navigator.share) {
+            shareNativeBtn.style.display = 'inline-block';
+        }
+
         shareCard.style.display = 'block';
     };
+
+    const shareNativeBtn = document.getElementById('share-native-btn');
+    if (shareNativeBtn) {
+        shareNativeBtn.addEventListener('click', async () => {
+            if (!navigator.share) return;
+            try {
+                await navigator.share({
+                    title: 'LATER, GATOR — Official Postponement Notice',
+                    text: currentShareText,
+                    url: getShareUrl()
+                });
+            } catch (e) {}
+        });
+    }
 
     if (shareCertBtn) {
         shareCertBtn.addEventListener('click', () => {
@@ -826,10 +885,28 @@ document.addEventListener('DOMContentLoaded', () => {
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));
     
-    taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            submitTask(false);
+    taskInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                submitTask(true); // Panic Mode
+            } else if (!e.shiftKey) {
+                e.preventDefault();
+                submitTask(false); // Delay Mode
+            }
+        }
+    });
+
+    // Global keyboard shortcuts (Esc to dismiss open dialogs)
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            const credModal = document.getElementById('credential-modal');
+            if (credModal && credModal.style.display !== 'none') {
+                credModal.style.display = 'none';
+            }
+            if (shareCard && shareCard.style.display !== 'none') {
+                shareCard.style.display = 'none';
+            }
         }
     });
 
@@ -1056,6 +1133,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (taskInput) {
                 taskInput.value = val;
                 taskInput.focus();
+                updateCharCount();
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(8); } catch (e) {}
+                }
                 taskInput.style.transition = 'background 0.2s';
                 taskInput.style.background = 'rgba(17, 17, 17, 0.08)';
                 setTimeout(() => { taskInput.style.background = ''; }, 300);
@@ -1070,6 +1151,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (taskInput) {
                 taskInput.value = randomExcuse;
                 taskInput.focus();
+                updateCharCount();
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(8); } catch (e) {}
+                }
                 taskInput.style.transition = 'background 0.2s';
                 taskInput.style.background = 'rgba(17, 17, 17, 0.08)';
                 setTimeout(() => { taskInput.style.background = ''; }, 300);
@@ -1275,6 +1360,9 @@ document.addEventListener('DOMContentLoaded', () => {
             clickerCount++;
             try { localStorage.setItem('lg_clicker_count', clickerCount.toString()); } catch (e) {}
             playClickerSound();
+            if (navigator.vibrate) {
+                try { navigator.vibrate(12); } catch (e) {}
+            }
             if (clickerCountEl) {
                 clickerCountEl.style.transform = 'scale(1.25)';
                 setTimeout(() => { clickerCountEl.style.transform = 'scale(1)'; }, 100);
@@ -1661,6 +1749,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeStr = formatWastedTime(clickerCount);
 
         generateCredentialCard(credentialCanvas, authorName, rankText, clickerCount, timeStr);
+
+        const credentialShareBtn = document.getElementById('credential-share-btn');
+        if (credentialShareBtn && navigator.share) {
+            credentialShareBtn.style.display = 'inline-block';
+        }
+
         credentialModal.style.display = 'flex';
     };
 
@@ -1684,6 +1778,49 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 credentialDownloadBtn.textContent = orig;
             }, 2500);
+        });
+    }
+
+    const credentialShareBtn = document.getElementById('credential-share-btn');
+    if (credentialShareBtn) {
+        credentialShareBtn.addEventListener('click', async () => {
+            if (!navigator.share) return;
+            const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
+            const shareText = `I have been officially certified as "${rankText}" with ${clickerCount} tasks evaded on Later, Gator. My diplomatic immunity is legally binding.`;
+            const shareUrl = getShareUrl();
+
+            if (credentialCanvas && credentialCanvas.toBlob && navigator.canShare) {
+                credentialCanvas.toBlob(async (blob) => {
+                    if (blob) {
+                        try {
+                            const file = new File([blob], 'official-sloth-press-pass.png', { type: 'image/png' });
+                            if (navigator.canShare({ files: [file] })) {
+                                await navigator.share({
+                                    title: 'OFFICIAL SLOTH CREDENTIAL',
+                                    text: shareText,
+                                    files: [file]
+                                });
+                                return;
+                            }
+                        } catch (e) {}
+                    }
+                    try {
+                        await navigator.share({
+                            title: 'OFFICIAL SLOTH CREDENTIAL',
+                            text: shareText,
+                            url: shareUrl
+                        });
+                    } catch (e) {}
+                }, 'image/png');
+            } else {
+                try {
+                    await navigator.share({
+                        title: 'OFFICIAL SLOTH CREDENTIAL',
+                        text: shareText,
+                        url: shareUrl
+                    });
+                } catch (e) {}
+            }
         });
     }
 
@@ -1809,6 +1946,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Smart Polling (Page Visibility API to save battery and network)
+    let pollInterval = null;
+
+    const startPolling = () => {
+        if (!pollInterval) {
+            pollInterval = setInterval(fetchAll, 10000);
+        }
+    };
+
+    const stopPolling = () => {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+        }
+    };
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+            stopPolling();
+        } else {
+            fetchAll();
+            startPolling();
+        }
+    });
+
+    // Telegraph Network Resilience (Offline / Online Status)
+    window.addEventListener('offline', () => {
+        if (statusMessage) {
+            statusMessage.textContent = "⚡ TELEGRAPH CABLE DISRUPTED // OPERATING OFFLINE";
+            setTimeout(() => {
+                if (statusMessage.textContent.includes("TELEGRAPH")) statusMessage.textContent = "";
+            }, 6000);
+        }
+    });
+
+    window.addEventListener('online', () => {
+        if (statusMessage) {
+            statusMessage.textContent = "⚡ TELEGRAPH CONNECTION RESTORED";
+            setTimeout(() => {
+                if (statusMessage.textContent.includes("RESTORED")) statusMessage.textContent = "";
+            }, 3000);
+        }
+        fetchAll();
+    });
+
     fetchAll();
-    setInterval(fetchAll, 10000);
+    startPolling();
 });
