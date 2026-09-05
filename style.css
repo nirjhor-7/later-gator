@@ -86,6 +86,103 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
     letter-spacing: 1px;
 }
 
+/* Breaking News Telegraph Wire Ticker */
+.telegraph-ticker {
+    display: flex;
+    align-items: center;
+    background: var(--paper);
+    border-top: 2px solid var(--ink);
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 22px;
+    height: 30px;
+    overflow: hidden;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    box-sizing: border-box;
+    position: relative;
+    user-select: none;
+}
+
+.ticker-badge {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 0 10px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    letter-spacing: 0.8px;
+    flex-shrink: 0;
+    border-right: 2px solid var(--ink);
+    font-size: 0.64rem;
+}
+
+.ticker-badge-short {
+    display: none;
+}
+
+.ticker-window {
+    flex-grow: 1;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    mask-image: linear-gradient(to right, transparent, black 15px, black calc(100% - 15px), transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, black 15px, black calc(100% - 15px), transparent);
+}
+
+.ticker-track {
+    display: flex;
+    white-space: nowrap;
+    will-change: transform;
+    animation: tickerCrawl 50s linear infinite;
+}
+
+.ticker-track:hover {
+    animation-play-state: paused;
+}
+
+.ticker-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 12px;
+    white-space: nowrap;
+}
+
+.ticker-tag {
+    color: #b91c1c;
+    font-weight: 900;
+    margin-right: 6px;
+    letter-spacing: 0.5px;
+}
+
+.ticker-text {
+    letter-spacing: 0.3px;
+}
+
+.ticker-bullet {
+    margin: 0 10px;
+    color: var(--ink-light);
+}
+
+@keyframes tickerCrawl {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+body.sepia-edition .telegraph-ticker {
+    background: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .ticker-badge {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
 /* Grid Layout */
 .newspaper-grid {
     display: grid;
@@ -1406,6 +1503,29 @@ body.sepia-edition .rubber-stamp {
         font-size: 0.78rem;
         padding: 4px 0;
         margin-bottom: 20px;
+    }
+
+    .telegraph-ticker {
+        height: 26px;
+        font-size: 0.62rem;
+        margin-bottom: 16px;
+    }
+
+    .ticker-badge {
+        padding: 0 6px;
+        font-size: 0.6rem;
+    }
+
+    .ticker-badge-full {
+        display: none;
+    }
+
+    .ticker-badge-short {
+        display: inline;
+    }
+
+    .ticker-track {
+        animation-duration: 38s;
     }
 
     .newspaper-grid {

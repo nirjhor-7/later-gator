@@ -240,12 +240,74 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const tasks = await response.json();
                 renderFeed(tasks);
+                renderTicker(tasks);
             }
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
             feedContainer.innerHTML = '<div class="loading">Connection severed.</div>';
         }
     };
+
+    // ==========================================
+    // BREAKING NEWS TELEGRAPH WIRE TICKER
+    // ==========================================
+    const tickerTrack = document.getElementById('ticker-track');
+
+    const CURATED_TICKER_FLASHES = [
+        { tag: "FLASH", text: "LONDON DEVELOPER DEFERS MERGE CONFLICT TO CONTEMPLATE THE PASSING OF TIME" },
+        { tag: "DISPATCH", text: "TOKYO SALARYMAN INVENTED 4TH GRANDMOTHER FUNERAL TO DODGE MORNING STANDUP" },
+        { tag: "URGENT", text: "BERLIN RESIDENT POSTPONES TAX FILING FOR 9TH CONSECUTIVE MONTH IN TOTAL TRANQUILITY" },
+        { tag: "BULLETIN", text: "NEW YORK CONSULTANT REACHES 4TH CONSECUTIVE HOUR OF ALIGNING POWERPOINT BOXES" },
+        { tag: "WIRE", text: "SAN FRANCISCO FOUNDER REPLACES CRITICAL DATABASE MIGRATION WITH SILENT MEDITATION NAP" },
+        { tag: "REPORT", text: "PARIS PHILOSOPHER CONCLUDES WASHING DISHES IS EXISTENTIALLY INCOMPATIBLE WITH FREEDOM" },
+        { tag: "ALERT", text: "TORONTO ACCOUNTANT INITIATES 3-HOUR INVESTIGATION INTO AVERAGE SALARIES IN ANTARCTICA" },
+        { tag: "SPECIAL", text: "SYDNEY DEVELOPER DISCOVERS 40-MINUTE DOCUMENTARY ON MEDIEVAL SIEGE ENGINES" },
+        { tag: "DISPATCH", text: "STUDENT ACCIDENTALLY WRITES 2,000-WORD ESSAY ON ENTIRELY WRONG HISTORICAL CENTURY" },
+        { tag: "FLASH", text: "MAN STARES DIRECTLY AT PILE OF LAUNDRY UNTIL LAUNDRY GIVES UP AND FOLDS ITSELF" }
+    ];
+
+    let lastTickerTasksHash = "";
+
+    const renderTicker = (tasks = []) => {
+        if (!tickerTrack) return;
+
+        const topId = tasks.length > 0 ? tasks[0].id : 0;
+        const currentHash = `${topId}_${tasks.length}`;
+        if (lastTickerTasksHash === currentHash && tickerTrack.children.length > 0) {
+            return;
+        }
+        lastTickerTasksHash = currentHash;
+
+        // Extract latest 5 submissions from Public Wire
+        const liveItems = (tasks || []).slice(0, 5).map(t => {
+            const author = (t.city || 'ANONYMOUS').toUpperCase();
+            const country = t.country ? ` (${t.country.toUpperCase()})` : '';
+            const rawText = (t.text || '').replace(/^\[PANIC\]\s*/i, '').replace(/[\r\n]+/g, ' ').trim();
+            const cleanText = censorNsfwText(rawText);
+            const shortChore = cleanText.length > 55 ? cleanText.substring(0, 52) + '...' : cleanText;
+            const isPanic = (t.text || '').startsWith('[PANIC]');
+            return {
+                tag: isPanic ? "PANIC" : "LIVE",
+                text: `${author}${country}: "${shortChore.toUpperCase()}"`
+            };
+        });
+
+        const allItems = [...liveItems, ...CURATED_TICKER_FLASHES];
+
+        const html = allItems.map(item => `
+            <div class="ticker-item">
+                <span class="ticker-tag">[${escapeHtml(item.tag)}]</span>
+                <span class="ticker-text">${escapeHtml(item.text)}</span>
+                <span class="ticker-bullet">•</span>
+            </div>
+        `).join('');
+
+        // Duplicate the string for seamless 0% -> -50% marquee loop
+        tickerTrack.innerHTML = html + html;
+    };
+
+    // Immediate initial render before network request completes
+    renderTicker([]);
 
     // Check if the user has set the secret developer flag
     const isDeveloper = localStorage.getItem('is_nirjhor') === 'true';
