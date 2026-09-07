@@ -881,11 +881,100 @@ button {
     text-decoration: underline dotted;
 }
 
+.feed-item-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
 .feed-item-time {
     font-size: 0.75rem;
     color: var(--ink-light);
-    margin-top: 5px;
-    display: block;
+    display: inline-block;
+}
+
+.feed-reactions {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.reaction-stamp-btn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.12s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+    border-radius: 0;
+}
+
+.reaction-stamp-btn:hover {
+    background: rgba(17, 17, 17, 0.08);
+    transform: translateY(-1px);
+}
+
+.reaction-stamp-btn:active {
+    transform: scale(0.92);
+}
+
+.reaction-stamp-btn.stamped {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.reaction-stamp-btn[data-type="same"].stamped {
+    border-color: #b91c1c;
+    background: #b91c1c;
+    color: #ffffff;
+    transform: rotate(-1.5deg);
+}
+
+.reaction-stamp-btn[data-type="valid"].stamped {
+    border-color: #047857;
+    background: #047857;
+    color: #ffffff;
+    transform: rotate(1.2deg);
+}
+
+.reaction-stamp-btn[data-type="rip"].stamped {
+    border-color: var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    transform: rotate(-1.2deg);
+}
+
+.reaction-stamp-btn.stamp-slam {
+    animation: reactionSlam 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes reactionSlam {
+    0% { transform: scale(1.35) rotate(5deg); opacity: 0.7; }
+    50% { transform: scale(0.88) rotate(-2deg); }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.reaction-count {
+    font-weight: 900;
+    opacity: 0.9;
 }
 
 /* Special Broadcast Video Box */
@@ -1617,6 +1706,15 @@ body.sepia-edition .rubber-stamp {
     .btn-dice {
         padding: 0 10px;
         font-size: 1.15rem;
+    }
+
+    .feed-item-footer {
+        gap: 6px;
+    }
+
+    .reaction-stamp-btn {
+        font-size: 0.62rem;
+        padding: 2px 6px;
     }
 
     .visitor-counter {

@@ -375,6 +375,68 @@ document.addEventListener('DOMContentLoaded', () => {
         "IS PANICKING OVER"
     ];
 
+    // ==========================================
+    // RUBBER STAMP REACTIONS (SYMPATHY STAMPS)
+    // ==========================================
+    let userStamps = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('lg_user_stamps') || '{}');
+        } catch (e) {
+            return {};
+        }
+    })();
+
+    const saveUserStamps = () => {
+        try {
+            localStorage.setItem('lg_user_stamps', JSON.stringify(userStamps));
+        } catch (e) {}
+    };
+
+    // Synthesize physical wooden rubber stamp slam sound
+    const playStampSlamSound = () => {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+
+            // 1. Low thud impact (150Hz -> 30Hz exponential pitch drop)
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(150, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.08);
+
+            gain.gain.setValueAtTime(0.45, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.085);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.085);
+
+            // 2. High snap / slap burst for tactile wood-on-paper feeling
+            const bufferSize = Math.floor(ctx.sampleRate * 0.025);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 550;
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.3, ctx.currentTime);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.025);
+
+            noise.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start();
+        } catch (e) {}
+    };
+
     let lastTopTaskId = null;
     let renderedTopId = null;
     let renderedCount = 0;
@@ -385,8 +447,21 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Avoid re-rendering if data is identical (prevents scroll jumps while reading)
+        // In-place refresh of reaction counts if tasks structure hasn't changed (prevents scroll jumps)
         if (renderedTopId === tasks[0].id && renderedCount === tasks.length) {
+            tasks.forEach(task => {
+                const reactionsEl = feedContainer.querySelector(`.feed-reactions[data-task-id="${task.id}"]`);
+                if (reactionsEl) {
+                    const myStamp = userStamps[task.id] || null;
+                    const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
+                    const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
+                    const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
+
+                    if (sameEl) sameEl.textContent = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
+                    if (validEl) validEl.textContent = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
+                    if (ripEl) ripEl.textContent = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
+                }
+            });
             return;
         }
 
@@ -415,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 rawText = rawText.replace('[PANIC] ', '');
             }
 
-            // Pick a random verb based on the task ID
             let verb = "";
             if (isPanic) {
                 const verbIndex = task.id % panicVerbs.length;
@@ -425,15 +499,33 @@ document.addEventListener('DOMContentLoaded', () => {
                 verb = evasionVerbs[verbIndex];
             }
 
-            // Check if this is a newly arrived task
             const isNew = (lastTopTaskId !== null && task.id > lastTopTaskId);
             const animationClass = isNew ? 'slide-in' : '';
+
+            // User reaction status for this dispatch
+            const myStamp = userStamps[task.id] || null;
+            const sameCount = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
+            const validCount = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
+            const ripCount = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
 
             return `
             <div class="feed-item ${animationClass}">
                 <div class="feed-item-meta">${censorNsfwHtml(locationString)} ${verb}:</div>
                 <div class="feed-item-text">${censorNsfwHtml(escapeHtml(rawText))}</div>
-                <span class="feed-item-time">${timeAgo(task.created_at)}</span>
+                <div class="feed-item-footer">
+                    <span class="feed-item-time">${timeAgo(task.created_at)}</span>
+                    <div class="feed-reactions" data-task-id="${task.id}">
+                        <button type="button" class="reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}" data-type="same" title="I am doing this right now">
+                            [ SAME <span class="reaction-count">${sameCount}</span> ]
+                        </button>
+                        <button type="button" class="reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}" data-type="valid" title="Completely justifiable excuse">
+                            [ VALID <span class="reaction-count">${validCount}</span> ]
+                        </button>
+                        <button type="button" class="reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}" data-type="rip" title="Thoughts and prayers for your deadline">
+                            [ RIP <span class="reaction-count">${ripCount}</span> ]
+                        </button>
+                    </div>
+                </div>
             </div>
             `;
         }).join('') + `
@@ -444,7 +536,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         feedContainer.innerHTML = feedHtml;
 
-        // Preserve user scroll position if they were browsing history
         if (isScrolled) {
             feedContainer.scrollTop = prevScrollTop;
         }
@@ -455,6 +546,88 @@ document.addEventListener('DOMContentLoaded', () => {
             lastTopTaskId = Math.max(lastTopTaskId || 0, tasks[0].id);
         }
     };
+
+    // Event delegation for reaction stamp buttons
+    if (feedContainer) {
+        feedContainer.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.reaction-stamp-btn');
+            if (!btn) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const reactionsContainer = btn.closest('.feed-reactions');
+            if (!reactionsContainer) return;
+
+            const taskId = parseInt(reactionsContainer.getAttribute('data-task-id'), 10);
+            const reactionType = btn.getAttribute('data-type');
+            if (!taskId || !reactionType) return;
+
+            const isAlreadyStamped = btn.classList.contains('stamped');
+            const countEl = btn.querySelector('.reaction-count');
+            let currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
+
+            // 1. Tactile sound & mobile vibration
+            playStampSlamSound();
+            if (navigator.vibrate) {
+                try { navigator.vibrate(14); } catch (err) {}
+            }
+
+            // 2. Stamp animation
+            btn.classList.remove('stamp-slam');
+            void btn.offsetWidth;
+            btn.classList.add('stamp-slam');
+
+            // 3. Toggle reaction
+            let action = 'add';
+            if (isAlreadyStamped) {
+                action = 'remove';
+                btn.classList.remove('stamped');
+                delete userStamps[taskId];
+                if (countEl) countEl.textContent = Math.max(0, currentCount - 1);
+            } else {
+                // If another stamp was active on this task, clear it
+                const prevActive = reactionsContainer.querySelector('.reaction-stamp-btn.stamped');
+                if (prevActive) {
+                    prevActive.classList.remove('stamped');
+                    const prevCountEl = prevActive.querySelector('.reaction-count');
+                    if (prevCountEl) {
+                        const prevVal = parseInt(prevCountEl.textContent, 10) || 0;
+                        prevCountEl.textContent = Math.max(0, prevVal - 1);
+                    }
+                    const prevType = prevActive.getAttribute('data-type');
+                    fetch('/api/react', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ taskId, reactionType: prevType, action: 'remove' })
+                    }).catch(() => {});
+                }
+
+                btn.classList.add('stamped');
+                userStamps[taskId] = reactionType;
+                if (countEl) countEl.textContent = currentCount + 1;
+            }
+
+            saveUserStamps();
+
+            // 4. Background sync to /api/react
+            try {
+                const res = await fetch('/api/react', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ taskId, reactionType, action })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.counts && data.counts[reactionType] != null && countEl) {
+                        countEl.textContent = data.counts[reactionType];
+                    }
+                }
+            } catch (err) {
+                // Optimistic local state remains intact
+            }
+        });
+    }
 
     const fetchTasks = async () => {
         try {
