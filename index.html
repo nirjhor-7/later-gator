@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.3.0">
+    <link rel="stylesheet" href="style.css?v=2.4.0">
 
     <!-- Social Preview & OpenGraph Tags -->
     <meta name="description" content="The Global Procrastination Journal. What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
@@ -26,12 +26,15 @@
         
         <header class="masthead">
             <div class="masthead-meta">
-                <span>VOL. 1</span>
+                <span id="masthead-vol">VOL. 1</span>
                 <span>GLOBAL PROCRASTINATION JOURNAL</span>
                 <span id="current-date">Today</span>
+                <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
+                    <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
+                </button>
             </div>
             <h1>LATER, GATOR</h1>
-            <div class="masthead-sub">PUBLISHED DAILY (EVENTUALLY)</div>
+            <div class="masthead-sub" id="masthead-sub">PUBLISHED DAILY (EVENTUALLY)</div>
         </header>
 
         <!-- Breaking News Telegraph Wire Ticker -->
@@ -44,6 +47,37 @@
                 <div class="ticker-track" id="ticker-track"></div>
             </div>
         </div>
+
+        <!-- Front Page Lead Story of the Day (Crown Dispatch) -->
+        <section class="lead-story-banner" id="lead-story-banner" aria-label="Lead Story of the Day">
+            <div class="lead-story-header">
+                <span class="lead-story-ornament">❖ ❖ ❖</span>
+                <span class="lead-story-eyebrow">★ TODAY'S CHIEF EDITORIAL TRANSGRESSION ★</span>
+                <span class="lead-story-ornament">❖ ❖ ❖</span>
+            </div>
+            <div class="lead-story-body">
+                <h2 class="lead-story-headline" id="lead-story-headline">"AWAITING TODAY'S CHIEF POSTPONEMENT FROM THE WIRE..."</h2>
+                <div class="lead-story-meta">
+                    <span class="lead-story-byline" id="lead-story-byline">DISPATCHED BY: ANONYMOUS IN PARTS UNKNOWN</span>
+                    <span class="lead-story-dot">•</span>
+                    <span class="lead-story-badge" id="lead-story-badge">🏆 #1 MOST SYMPATHIZED DISPATCH</span>
+                </div>
+                <div class="lead-story-actions">
+                    <span class="lead-stamp-prompt">CAST EDITORIAL SYMPATHY:</span>
+                    <div class="feed-reactions lead-reactions" id="lead-reactions" data-task-id="">
+                        <button type="button" class="reaction-stamp-btn" data-type="same" title="I am doing this right now">
+                            [ SAME <span class="reaction-count">0</span> ]
+                        </button>
+                        <button type="button" class="reaction-stamp-btn" data-type="valid" title="Completely justifiable postponement">
+                            [ VALID <span class="reaction-count">0</span> ]
+                        </button>
+                        <button type="button" class="reaction-stamp-btn" data-type="rip" title="Thoughts and prayers for your deadline">
+                            [ RIP <span class="reaction-count">0</span> ]
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <main class="newspaper-grid">
             
@@ -331,7 +365,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.3.0"></script>
+    <script src="script.js?v=2.4.0"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>

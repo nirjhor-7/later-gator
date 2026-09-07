@@ -547,87 +547,233 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Event delegation for reaction stamp buttons
-    if (feedContainer) {
-        feedContainer.addEventListener('click', async (e) => {
-            const btn = e.target.closest('.reaction-stamp-btn');
-            if (!btn) return;
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            const reactionsContainer = btn.closest('.feed-reactions');
-            if (!reactionsContainer) return;
-
-            const taskId = parseInt(reactionsContainer.getAttribute('data-task-id'), 10);
-            const reactionType = btn.getAttribute('data-type');
-            if (!taskId || !reactionType) return;
-
-            const isAlreadyStamped = btn.classList.contains('stamped');
-            const countEl = btn.querySelector('.reaction-count');
-            let currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
-
-            // 1. Tactile sound & mobile vibration
-            playStampSlamSound();
-            if (navigator.vibrate) {
-                try { navigator.vibrate(14); } catch (err) {}
-            }
-
-            // 2. Stamp animation
-            btn.classList.remove('stamp-slam');
-            void btn.offsetWidth;
-            btn.classList.add('stamp-slam');
-
-            // 3. Toggle reaction
-            let action = 'add';
-            if (isAlreadyStamped) {
-                action = 'remove';
-                btn.classList.remove('stamped');
-                delete userStamps[taskId];
-                if (countEl) countEl.textContent = Math.max(0, currentCount - 1);
-            } else {
-                // If another stamp was active on this task, clear it
-                const prevActive = reactionsContainer.querySelector('.reaction-stamp-btn.stamped');
-                if (prevActive) {
-                    prevActive.classList.remove('stamped');
-                    const prevCountEl = prevActive.querySelector('.reaction-count');
-                    if (prevCountEl) {
-                        const prevVal = parseInt(prevCountEl.textContent, 10) || 0;
-                        prevCountEl.textContent = Math.max(0, prevVal - 1);
-                    }
-                    const prevType = prevActive.getAttribute('data-type');
-                    fetch('/api/react', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ taskId, reactionType: prevType, action: 'remove' })
-                    }).catch(() => {});
+    // ==========================================
+    // SYNCHRONIZED REACTION STAMPS (WIRE & LEAD STORY)
+    // ==========================================
+    const syncReactionInDOM = (taskId, reactionType, isStamped, newCount, clearedType = null) => {
+        const containers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
+        containers.forEach(container => {
+            const btn = container.querySelector(`.reaction-stamp-btn[data-type="${reactionType}"]`);
+            if (btn) {
+                if (isStamped) {
+                    btn.classList.add('stamped');
+                } else {
+                    btn.classList.remove('stamped');
                 }
-
-                btn.classList.add('stamped');
-                userStamps[taskId] = reactionType;
-                if (countEl) countEl.textContent = currentCount + 1;
+                const countEl = btn.querySelector('.reaction-count');
+                if (countEl && newCount != null) {
+                    countEl.textContent = newCount;
+                }
             }
 
-            saveUserStamps();
+            if (clearedType) {
+                const prevBtn = container.querySelector(`.reaction-stamp-btn[data-type="${clearedType}"]`);
+                if (prevBtn) {
+                    prevBtn.classList.remove('stamped');
+                    const prevCountEl = prevBtn.querySelector('.reaction-count');
+                    if (prevCountEl) {
+                        const val = parseInt(prevCountEl.textContent, 10) || 0;
+                        prevCountEl.textContent = Math.max(0, val - 1);
+                    }
+                }
+            }
+        });
+    };
 
-            // 4. Background sync to /api/react
-            try {
-                const res = await fetch('/api/react', {
+    const handleReactionClick = async (btn) => {
+        const reactionsContainer = btn.closest('.feed-reactions');
+        if (!reactionsContainer) return;
+
+        const taskId = parseInt(reactionsContainer.getAttribute('data-task-id'), 10);
+        const reactionType = btn.getAttribute('data-type');
+        if (!taskId || !reactionType) return;
+
+        const isAlreadyStamped = btn.classList.contains('stamped');
+        const countEl = btn.querySelector('.reaction-count');
+        let currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
+
+        // 1. Tactile sound & mobile vibration
+        playStampSlamSound();
+        if (navigator.vibrate) {
+            try { navigator.vibrate(14); } catch (err) {}
+        }
+
+        // 2. Stamp animation
+        btn.classList.remove('stamp-slam');
+        void btn.offsetWidth;
+        btn.classList.add('stamp-slam');
+
+        // 3. Optimistic toggle
+        let action = 'add';
+        let clearedType = null;
+        let newCount = currentCount;
+
+        if (isAlreadyStamped) {
+            action = 'remove';
+            delete userStamps[taskId];
+            newCount = Math.max(0, currentCount - 1);
+            syncReactionInDOM(taskId, reactionType, false, newCount);
+        } else {
+            const prevActiveType = userStamps[taskId];
+            if (prevActiveType && prevActiveType !== reactionType) {
+                clearedType = prevActiveType;
+                fetch('/api/react', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ taskId, reactionType, action })
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.counts && data.counts[reactionType] != null && countEl) {
-                        countEl.textContent = data.counts[reactionType];
-                    }
+                    body: JSON.stringify({ taskId, reactionType: clearedType, action: 'remove' })
+                }).catch(() => {});
+            }
+
+            userStamps[taskId] = reactionType;
+            newCount = currentCount + 1;
+            syncReactionInDOM(taskId, reactionType, true, newCount, clearedType);
+        }
+
+        saveUserStamps();
+
+        // 4. Background sync to /api/react
+        try {
+            const res = await fetch('/api/react', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ taskId, reactionType, action })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.counts && data.counts[reactionType] != null) {
+                    syncReactionInDOM(taskId, reactionType, !isAlreadyStamped, data.counts[reactionType]);
                 }
-            } catch (err) {
-                // Optimistic local state remains intact
+            }
+        } catch (err) {
+            // Optimistic local state remains intact
+        }
+    };
+
+    if (feedContainer) {
+        feedContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reaction-stamp-btn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleReactionClick(btn);
             }
         });
     }
+
+    // ==========================================
+    // FRONT-PAGE LEAD STORY OF THE DAY (CROWN DISPATCH)
+    // ==========================================
+    const leadStoryBanner = document.getElementById('lead-story-banner');
+    const leadHeadline = document.getElementById('lead-story-headline');
+    const leadByline = document.getElementById('lead-story-byline');
+    const leadBadge = document.getElementById('lead-story-badge');
+    const leadReactions = document.getElementById('lead-reactions');
+
+    if (leadStoryBanner) {
+        leadStoryBanner.addEventListener('click', (e) => {
+            const btn = e.target.closest('.reaction-stamp-btn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleReactionClick(btn);
+            }
+        });
+    }
+
+    const renderLeadStory = (tasks = []) => {
+        if (!leadStoryBanner || !leadHeadline) return;
+
+        if (!tasks || tasks.length === 0) {
+            leadHeadline.textContent = '"AWAITING TODAY\'S CHIEF TRANSMISSIONS FROM THE WIRE..."';
+            leadByline.textContent = 'DISPATCHED BY: ANONYMOUS IN PARTS UNKNOWN';
+            leadBadge.textContent = '★ AWAITING TRANSMISSIONS';
+            return;
+        }
+
+        // Filter valid substantive non-link dispatches
+        const validTasks = tasks.filter(t => {
+            const raw = (t.text || '').replace(/^\[PANIC\]\s*/, '').trim();
+            return raw.length >= 4 && !/(https?:\/\/|www\.)/i.test(raw);
+        });
+
+        const pool = validTasks.length > 0 ? validTasks : tasks;
+
+        // Rank by engagement score: SAME (3x) + VALID (2x) + RIP (1x)
+        let topTask = null;
+        let highestScore = -1;
+
+        for (const t of pool) {
+            const same = t.same_count || 0;
+            const valid = t.valid_count || 0;
+            const rip = t.rip_count || 0;
+            const score = (same * 3) + (valid * 2) + (rip * 1);
+            if (score > highestScore) {
+                highestScore = score;
+                topTask = t;
+            }
+        }
+
+        // Fallback: If no tasks have stamps yet, pick the most substantial recent dispatch
+        if (highestScore <= 0 || !topTask) {
+            topTask = pool.slice(0, 15).sort((a, b) => (b.text || '').length - (a.text || '').length)[0] || pool[0];
+            highestScore = 0;
+        }
+
+        if (!topTask) return;
+
+        // Populate headline
+        let choreText = (topTask.text || '').trim();
+        choreText = choreText.replace(/^\[PANIC\]\s*/, '');
+        choreText = censorNsfwText(choreText.replace(/[\r\n]+/g, ' '));
+        leadHeadline.textContent = `"${choreText.toUpperCase()}"`;
+
+        // Populate byline
+        const rawAuthor = (topTask.city || 'Anonymous').trim();
+        const country = (topTask.country || 'Parts Unknown').toUpperCase();
+        let displayName = rawAuthor;
+        let rankFlair = '';
+        const flairMatch = rawAuthor.match(/^\[(.*?)\]\s*(.*)$/);
+        if (flairMatch) {
+            rankFlair = `[${flairMatch[1].toUpperCase()}] `;
+            displayName = flairMatch[2] || 'Anonymous';
+        }
+        leadByline.textContent = `DISPATCHED BY: ${rankFlair}${displayName.toUpperCase()} IN ${country}`;
+
+        // Populate badge
+        if (highestScore > 0) {
+            leadBadge.textContent = `🏆 ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED`;
+        } else {
+            leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION`;
+        }
+
+        // Populate reaction buttons
+        leadReactions.setAttribute('data-task-id', topTask.id);
+
+        const myStamp = userStamps[topTask.id] || null;
+        const sameCount = (topTask.same_count != null ? topTask.same_count : (myStamp === 'same' ? 1 : 0));
+        const validCount = (topTask.valid_count != null ? topTask.valid_count : (myStamp === 'valid' ? 1 : 0));
+        const ripCount = (topTask.rip_count != null ? topTask.rip_count : (myStamp === 'rip' ? 1 : 0));
+
+        const sameBtn = leadReactions.querySelector('[data-type="same"]');
+        const validBtn = leadReactions.querySelector('[data-type="valid"]');
+        const ripBtn = leadReactions.querySelector('[data-type="rip"]');
+
+        if (sameBtn) {
+            sameBtn.className = `reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}`;
+            const c = sameBtn.querySelector('.reaction-count');
+            if (c) c.textContent = sameCount;
+        }
+        if (validBtn) {
+            validBtn.className = `reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}`;
+            const c = validBtn.querySelector('.reaction-count');
+            if (c) c.textContent = validCount;
+        }
+        if (ripBtn) {
+            ripBtn.className = `reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}`;
+            const c = ripBtn.querySelector('.reaction-count');
+            if (c) c.textContent = ripCount;
+        }
+    };
 
     const fetchTasks = async () => {
         try {
@@ -636,6 +782,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const tasks = await response.json();
                 renderFeed(tasks);
                 renderTicker(tasks);
+                renderLeadStory(tasks);
             }
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
@@ -1850,11 +1997,129 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ==========================================
+    // THE MIDNIGHT EDITION (NOCTURNAL BROADSHEET)
+    // ==========================================
+    const midnightToggleBtn = document.getElementById('midnight-toggle-btn');
+    const midnightBtnText = document.getElementById('midnight-btn-text');
+    const mastheadVol = document.getElementById('masthead-vol');
+    const mastheadSub = document.getElementById('masthead-sub');
+
+    // Synthesize warm gaslight / candle ignition sound
+    const playMidnightGaslightSound = (isActivating) => {
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (!AudioCtx) return;
+            const ctx = new AudioCtx();
+
+            // 1. Soft breathy gaslight strike hiss
+            const duration = isActivating ? 0.22 : 0.14;
+            const bufferSize = Math.floor(ctx.sampleRate * duration);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(isActivating ? 320 : 440, ctx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(isActivating ? 140 : 220, ctx.currentTime + duration);
+
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.2, ctx.currentTime);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+
+            noise.connect(filter);
+            filter.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start();
+
+            // 2. Warm nocturnal resonance chime
+            const osc = ctx.createOscillator();
+            const oscGain = ctx.createGain();
+            osc.type = 'sine';
+            const freq = isActivating ? 523.25 : 392.0; // C5 or G4
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.98, ctx.currentTime + 0.35);
+
+            oscGain.gain.setValueAtTime(0.1, ctx.currentTime);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+            osc.connect(oscGain);
+            oscGain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.35);
+        } catch (e) {}
+    };
+
+    const applyMidnightMode = (enable, playSound = false) => {
+        if (enable) {
+            document.body.classList.add('midnight-edition');
+            // If sepia mode was on, turn off sepia so themes do not clash
+            if (document.body.classList.contains('sepia-edition')) {
+                document.body.classList.remove('sepia-edition');
+                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: OFF ]';
+                try { localStorage.setItem('lg_sepia_mode', 'false'); } catch (e) {}
+            }
+            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
+            if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
+            if (mastheadSub) mastheadSub.textContent = 'PRINTED UNDER GASLIGHT FOR THE PROFOUNDLY AWAKE';
+            if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('Declare your intent'))) {
+                taskInput.placeholder = "Why are you awake at this hour? Confess your midnight evasion...";
+            }
+        } else {
+            document.body.classList.remove('midnight-edition');
+            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: OFF';
+            if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
+            if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
+            if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('awake at this hour'))) {
+                taskInput.placeholder = "Declare your intent to procrastinate here...";
+            }
+        }
+
+        try {
+            localStorage.setItem('lg_midnight_mode', enable ? 'true' : 'false');
+        } catch (e) {}
+
+        if (playSound) {
+            playMidnightGaslightSound(enable);
+        }
+    };
+
+    const initMidnightMode = () => {
+        try {
+            const saved = localStorage.getItem('lg_midnight_mode');
+            if (saved !== null) {
+                applyMidnightMode(saved === 'true', false);
+            } else {
+                // Auto-detect late night: 11 PM (23:00) to 5 AM (05:00)
+                const currentHour = new Date().getHours();
+                if (currentHour >= 23 || currentHour < 5) {
+                    applyMidnightMode(true, false);
+                } else {
+                    applyMidnightMode(false, false);
+                }
+            }
+        } catch (e) {
+            applyMidnightMode(false, false);
+        }
+    };
+    initMidnightMode();
+
+    if (midnightToggleBtn) {
+        midnightToggleBtn.addEventListener('click', () => {
+            const isCurrentlyMidnight = document.body.classList.contains('midnight-edition');
+            applyMidnightMode(!isCurrentlyMidnight, true);
+        });
+    }
+
     // --- Perk 1: 1890s Sepia Newsprint Edition ---
     const restoreSepiaMode = () => {
         try {
             const isSepia = localStorage.getItem('lg_sepia_mode') === 'true';
-            if (isSepia) {
+            if (isSepia && !document.body.classList.contains('midnight-edition')) {
                 document.body.classList.add('sepia-edition');
                 if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: ON ]';
             }
@@ -1865,6 +2130,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (sepiaToggleBtn) {
         sepiaToggleBtn.addEventListener('click', () => {
             const isSepia = document.body.classList.toggle('sepia-edition');
+            if (isSepia && document.body.classList.contains('midnight-edition')) {
+                applyMidnightMode(false, false);
+            }
             sepiaToggleBtn.textContent = isSepia ? '[ 📜 1890s PRINT: ON ]' : '[ 📜 1890s PRINT: OFF ]';
             try {
                 localStorage.setItem('lg_sepia_mode', isSepia ? 'true' : 'false');
