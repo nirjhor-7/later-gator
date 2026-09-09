@@ -1264,7 +1264,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentRawTask = "";
     let currentIsPanic = false;
     let currentSubmittedName = "";
-    const getShareUrl = () => window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://later-gator.vercel.app';
+    const getShareUrl = () => window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://later-gators.vercel.app';
 
     const generateCertificateImage = (taskText, isPanicMode, holderName) => {
         const canvas = document.createElement('canvas');
