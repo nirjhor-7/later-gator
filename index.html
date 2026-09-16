@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.5.0">
+    <link rel="stylesheet" href="style.css?v=2.5.1">
 
     <!-- Social Preview & OpenGraph Tags -->
     <meta name="description" content="The Global Procrastination Journal. What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
@@ -29,7 +29,10 @@
                 <div class="meta-row-left">
                     <span id="masthead-vol">VOL. 1</span>
                     <span class="meta-sep">•</span>
-                    <span class="meta-journal-title">GLOBAL PROCRASTINATION JOURNAL</span>
+                    <span class="meta-journal-title">
+                        <span class="meta-title-full">GLOBAL PROCRASTINATION JOURNAL</span>
+                        <span class="meta-title-short">GLOBAL PROCRASTINATION</span>
+                    </span>
                 </div>
                 <div class="meta-row-right">
                     <span id="current-date">Today</span>
@@ -339,8 +342,10 @@
         </main>
         
         <footer class="site-footer">
-            <button type="button" id="footer-share-btn" class="footer-share-btn">
-                [ SHARE WITH YOUR PARTNERS IN CRIME ]
+            <button type="button" id="footer-share-btn" class="footer-share-btn" aria-label="Share Later Gator with partners in crime">
+                <span class="footer-share-full">[&nbsp;SHARE WITH YOUR PARTNERS IN CRIME&nbsp;]</span>
+                <span class="footer-share-short">[&nbsp;SHARE WITH PARTNERS IN CRIME&nbsp;]</span>
+                <span class="footer-share-mini">[&nbsp;SHARE JOURNAL&nbsp;]</span>
             </button>
             <div id="footer-quote" class="footer-quote">Loading wisdom...</div>
             <div class="footer-credit">// BUILT BY NIRJHOR INSTEAD OF SLEEPING</div>
@@ -375,7 +380,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.5.0"></script>
+    <script src="script.js?v=2.5.1"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>

@@ -1652,7 +1652,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const quoteElement = document.getElementById('footer-quote');
     if (quoteElement) {
         const updateQuote = () => {
-            quoteElement.textContent = '"' + footerQuotes[Math.floor(Math.random() * footerQuotes.length)] + '"';
+            const rawQuote = footerQuotes[Math.floor(Math.random() * footerQuotes.length)];
+            // Replace hyphens inside words with non-breaking hyphens (\u2011) so words like "to-do" or "to-ignore" never break across lines
+            const formatted = rawQuote.replace(/(\w)-(\w)/g, '$1\u2011$2');
+            quoteElement.textContent = `"${formatted}"`;
         };
         updateQuote();
         setInterval(updateQuote, 5000);
@@ -1678,10 +1681,10 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 try {
                     await navigator.clipboard.writeText(shareUrl);
-                    const originalText = footerShareBtn.textContent;
-                    footerShareBtn.textContent = '[ LINK COPIED — GO DISTRACT THEM! ]';
+                    const originalHTML = footerShareBtn.innerHTML;
+                    footerShareBtn.innerHTML = '<span class="footer-share-copied">[&nbsp;LINK COPIED — GO DISTRACT THEM!&nbsp;]</span>';
                     setTimeout(() => {
-                        footerShareBtn.textContent = originalText;
+                        footerShareBtn.innerHTML = originalHTML;
                     }, 2500);
                 } catch (err) {
                     prompt('Copy this link to distract your friends:', shareUrl);
