@@ -1518,8 +1518,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = '900 20px "Space Mono", monospace';
         ctx.fillText(isPanicMode ? 'PANIC MANDATE' : 'APPROVED FOR DELAY', 0, 7);
         ctx.font = '700 10px "Space Mono", monospace';
-        ctx.fillText('BUREAU OF PROCRASTINATION // VALID', 0, 24);
+        ctx.fillText(isPanicMode ? 'URGENT RESCHEDULING' : 'BUREAU OF PROCRASTINATION // VALID', 0, 24);
         ctx.restore();
+
+        // Footer note with live domain
+        ctx.fillStyle = '#111111';
+        ctx.textAlign = 'center';
+        ctx.font = '700 13px "Space Mono", monospace';
+        ctx.fillText('LATER, GATORS // THE GLOBAL PROCRASTINATION JOURNAL // LATERGATORS.LIVE', 600, 734);
 
         return canvas;
     };
