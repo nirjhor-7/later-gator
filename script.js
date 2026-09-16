@@ -396,6 +396,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // RUBBER STAMP REACTIONS (SYMPATHY STAMPS)
     // ==========================================
+
+    // Stable anonymous session ID — generated once, persists forever in localStorage
+    const getSessionId = () => {
+        try {
+            let sid = localStorage.getItem('lg_session_id');
+            if (!sid) {
+                sid = 'sid_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
+                localStorage.setItem('lg_session_id', sid);
+            }
+            return sid;
+        } catch (e) {
+            return 'sid_anon';
+        }
+    };
+    const SESSION_ID = getSessionId();
+
     let userStamps = (() => {
         try {
             return JSON.parse(localStorage.getItem('lg_user_stamps') || '{}');
@@ -409,6 +425,23 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('lg_user_stamps', JSON.stringify(userStamps));
         } catch (e) {}
     };
+
+    // On load, fetch this session's reactions from server and merge into userStamps
+    const syncSessionReactionsFromServer = async () => {
+        try {
+            const res = await fetch(`/api/react?sessionId=${encodeURIComponent(SESSION_ID)}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data && data.reactions && typeof data.reactions === 'object') {
+                // Merge server state into local (server is source of truth)
+                Object.assign(userStamps, data.reactions);
+                saveUserStamps();
+            }
+        } catch (e) {
+            // Fall back to localStorage silently
+        }
+    };
+    syncSessionReactionsFromServer();
 
     // Synthesize physical wooden rubber stamp slam sound
     const playStampSlamSound = () => {
@@ -638,7 +671,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch('/api/react', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ taskId, reactionType: clearedType, action: 'remove' })
+                    body: JSON.stringify({ taskId, reactionType: clearedType, action: 'remove', sessionId: SESSION_ID })
                 }).catch(() => {});
             }
 
@@ -654,7 +687,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/react', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taskId, reactionType, action })
+                body: JSON.stringify({ taskId, reactionType, action, sessionId: SESSION_ID })
             });
             if (res.ok) {
                 const data = await res.json();

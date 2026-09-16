@@ -9,16 +9,45 @@ if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
 const reactionRateMap = new Map();
 
 module.exports = async function handler(req, res) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method not allowed' });
-    }
-
     if (!supabase) {
         return res.status(500).json({ error: 'Database credentials missing' });
     }
 
+    // ── GET: Return all reactions this session has made ──────────────────────
+    if (req.method === 'GET') {
+        const sessionId = req.query.sessionId;
+        if (!sessionId) {
+            return res.status(200).json({ reactions: {} });
+        }
+        try {
+            const { data, error } = await supabase
+                .from('user_reactions')
+                .select('task_id, reaction_type')
+                .eq('session_id', sessionId);
+
+            if (error) {
+                // Table may not exist yet — return empty gracefully
+                return res.status(200).json({ reactions: {} });
+            }
+
+            // Convert array → { taskId: reactionType } map
+            const reactions = {};
+            (data || []).forEach(row => {
+                reactions[row.task_id] = row.reaction_type;
+            });
+            return res.status(200).json({ reactions });
+        } catch (err) {
+            return res.status(200).json({ reactions: {} });
+        }
+    }
+
+    // ── POST: Record / remove a reaction ─────────────────────────────────────
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
     try {
-        const { taskId, reactionType, action } = req.body || {};
+        const { taskId, reactionType, action, sessionId } = req.body || {};
 
         if (!taskId) {
             return res.status(400).json({ error: 'Task ID required' });
@@ -36,58 +65,57 @@ module.exports = async function handler(req, res) {
         const now = Date.now();
         const userHistory = reactionRateMap.get(clientIp) || [];
         const recentRequests = userHistory.filter(ts => now - ts < 10000);
-
         if (recentRequests.length >= 25) {
             return res.status(429).json({ error: 'Stamping too quickly! Relax.' });
         }
-
         recentRequests.push(now);
         reactionRateMap.set(clientIp, recentRequests);
 
-        // Map reaction type to column name
         const colName = `${reactionType}_count`;
         const delta = action === 'remove' ? -1 : 1;
 
-        // Fetch current counts from tasks table
+        // ── 1. Update global reaction counts on the task ──────────────────────
         const { data: task, error: fetchErr } = await supabase
             .from('tasks')
             .select('id, same_count, valid_count, rip_count')
             .eq('id', taskId)
             .single();
 
-        if (fetchErr) {
-            // Column may not exist yet in Supabase (if SQL migration hasn't run yet)
+        if (fetchErr || !task) {
             return res.status(200).json({
                 ok: true,
                 status: 'optimistic_fallback',
-                message: 'Recorded locally (run SQL migration to enable global sync)',
+                message: 'Recorded locally',
                 reactionType,
                 action: action || 'add'
             });
-        }
-
-        if (!task) {
-            return res.status(404).json({ error: 'Task not found' });
         }
 
         const currentVal = (task[colName] != null ? task[colName] : 0);
         const newVal = Math.max(0, currentVal + delta);
-
         const updateObj = {};
         updateObj[colName] = newVal;
 
-        const { error: updateErr } = await supabase
-            .from('tasks')
-            .update(updateObj)
-            .eq('id', taskId);
+        await supabase.from('tasks').update(updateObj).eq('id', taskId);
 
-        if (updateErr) {
-            return res.status(200).json({
-                ok: true,
-                status: 'optimistic_fallback',
-                reactionType,
-                action: action || 'add'
-            });
+        // ── 2. Update per-session reaction record ─────────────────────────────
+        if (sessionId) {
+            if (action === 'remove') {
+                // Delete the row
+                await supabase
+                    .from('user_reactions')
+                    .delete()
+                    .eq('session_id', sessionId)
+                    .eq('task_id', taskId);
+            } else {
+                // Upsert: one row per (session_id, task_id), update reaction_type if changed
+                await supabase
+                    .from('user_reactions')
+                    .upsert(
+                        { session_id: sessionId, task_id: taskId, reaction_type: reactionType },
+                        { onConflict: 'session_id,task_id' }
+                    );
+            }
         }
 
         return res.status(200).json({
