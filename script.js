@@ -1345,7 +1345,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#111111';
         ctx.textAlign = 'center';
         ctx.font = '700 20px "Space Mono", monospace';
-        ctx.fillText('LATER, GATOR  //  GLOBAL PROCRASTINATION JOURNAL', 600, 105);
+        ctx.fillText('LATER, GATORS  //  GLOBAL PROCRASTINATION JOURNAL', 600, 105);
 
         ctx.font = '900 44px "Big Shoulders Display", sans-serif';
         const certTitle = isPanicMode ? 'EMERGENCY DISPATCH OF RELUCTANT ACTION' : 'OFFICIAL CERTIFICATE OF POSTPONEMENT';
@@ -1493,7 +1493,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!navigator.share) return;
             try {
                 await navigator.share({
-                    title: 'LATER, GATOR — Official Postponement Notice',
+                    title: 'LATER, GATORS — Official Postponement Notice',
                     text: currentShareText,
                     url: getShareUrl()
                 });
@@ -1718,7 +1718,7 @@ document.addEventListener('DOMContentLoaded', () => {
         footerShareBtn.addEventListener('click', async () => {
             const shareUrl = getShareUrl();
             const shareData = {
-                title: 'LATER, GATOR — Global Procrastination Journal',
+                title: 'LATER, GATORS — Global Procrastination Journal',
                 text: 'What are you putting off today? Join the worldwide procrastination broadcast on Later, Gator.',
                 url: shareUrl
             };
@@ -2525,7 +2525,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Footer note
         ctx.textAlign = 'center';
         ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillText('LATER, GATOR // THE INDEPENDENT PROCRASTINATION JOURNAL // LATERGATORS.LIVE', 500, 556);
+        ctx.fillText('LATER, GATORS // THE INDEPENDENT PROCRASTINATION JOURNAL // LATERGATORS.LIVE', 500, 556);
 
         return canvas;
     };
