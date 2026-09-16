@@ -1017,18 +1017,51 @@ document.addEventListener('DOMContentLoaded', () => {
     function containsInappropriate(str) {
         if (!str) return false;
         const lower = str.toLowerCase();
-        const vulgarWords = [
-            /\b(fuck|fucking|fucker|fck|fuk|f\*ck)\b/i,
-            /\b(bitch|bitches|b!tch)\b/i,
-            /\b(cunt|cunts)\b/i,
-            /\b(pussy|pussies)\b/i,
-            /\b(dick|dicks)\b/i,
-            /\b(asshole|assholes)\b/i,
-            /\b(whore|whores|slut|sluts)\b/i
+
+        // 1. Direct word boundary check for explicit sexual terms, acts, anatomy & profanity
+        const explicitWords = [
+            // Sexual acts & phrases
+            /\b(sex|sexual|sexy|anal|blowjob\w*|handjob\w*|rimjob\w*|footjob\w*|titfuck\w*)\b/i,
+            /\b(deepthroat\w*|gangbang\w*|creampie\w*|pegging|pegged|fingering)\b/i,
+            /\b(masturbat\w*|wank\w*|circlejerk\w*|orgasm\w*|ejaculat\w*|bukkake)\b/i,
+            /\b(cum|cums|cumming|cumshot\w*|squirt\w*)\b/i,
+            /\b(threesome\w*|foursome\w*|orgy|orgies|gloryhole\w*|bdsm|bondage|erotic\w*)\b/i,
+            /\b(jerk\s*off|jerking\s*off|jack\s*off|jacking\s*off)\b/i,
+            
+            // Genitalia & anatomy
+            /\b(penis\w*|cock|cocks|cocksucker\w*|dick|dicks|dickhead\w*)\b/i,
+            /\b(vagina\w*|pussy|pussies|clit|clitoris|labia)\b/i,
+            /\b(tits|titties|boob|boobs|boobies|areola\w*)\b/i,
+            /\b(asshole\w*|butthole\w*|anus\w*|ballsack\w*|testicle\w*)\b/i,
+            /\b(dildo\w*|vibrator\w*|fleshlight\w*|buttplug\w*)\b/i,
+            
+            // Adult industry / pornography
+            /\b(porn|porno|pornography|hentai|xxx|onlyfans|pornhub|xvideos|redtube|xhamster)\b/i,
+            /\b(nude|nudes|naked|stripper\w*|hooker\w*|prostitute\w*|escort\w*|milf\w*|dilf\w*|horny|boner\w*)\b/i,
+            
+            // Profanity & vulgar terms
+            /\b(fuck\w*|fck|fuk|f\*ck|motherfuck\w*)\b/i,
+            /\b(bitch\w*|b!tch)\b/i,
+            /\b(cunt\w*)\b/i,
+            /\b(whore\w*|slut\w*)\b/i,
+            /\b(bastard\w*)\b/i,
+
+            // 2. Common spaced / leetspeak obfuscations with word boundaries
+            /\b(s[\s._\-*]*[3e][\s._\-*]*x+)\b/i,
+            /\b([4a][\s._\-*]*n[\s._\-*]*[4a][\s._\-*]*l)\b/i,
+            /\b(p[\s._\-*]*[0o][\s._\-*]*r[\s._\-*]*n)\b/i,
+            /\b(f[\s._\-*]*[u*][\s._\-*]*c[\s._\-*]*k+)\b/i,
+            /\b(d[\s._\-*]*[1!i][\s._\-*]*c[\s._\-*]*k+)\b/i,
+            /\b(b[\s._\-*]*[1!i][\s._\-*]*t[\s._\-*]*c[\s._\-*]*h+)\b/i,
+            /\b(c[\s._\-*]*[u*][\s._\-*]*n[\s._\-*]*t+)\b/i,
+            /\b(p[\s._\-*]*[u*][\s._\-*]*s+[\s._\-*]*[y!1])\b/i
         ];
-        for (const rx of vulgarWords) {
+
+        for (const rx of explicitWords) {
             if (rx.test(lower)) return true;
         }
+
+        // 3. Severe racial / identity slurs (checked against collapsed text)
         const collapsed = lower.replace(/[^a-z0-9]/g, '');
         const normalized = collapsed
             .replace(/[1!|]/g, 'i')
@@ -1039,23 +1072,23 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/7/g, 't')
             .replace(/8/g, 'b');
         const deDuplicated = normalized.replace(/(.)\1+/g, '$1');
-        const severePatterns = [
+
+        const severeSlurs = [
             /n+[i1l]+[g9]+[e3a4r]+/i,
             /n+i+g+[ae]+/i,
             /f+a+g+[o0e3]*t?/i,
             /k+i+k+e/i,
             /c+h+i+n+k/i,
             /s+p+i+c/i,
-            /r+e+t+a+r+d/i,
-            /f+u+c+k/i,
-            /b+i+t+c+h/i,
-            /c+u+n+t/i
+            /r+e+t+a+r+d/i
         ];
-        for (const rx of severePatterns) {
-            if (rx.test(lower) || rx.test(normalized) || rx.test(deDuplicated)) {
+
+        for (const rx of severeSlurs) {
+            if (rx.test(collapsed) || rx.test(normalized) || rx.test(deDuplicated)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -1224,11 +1257,14 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Friendly Inappropriate Language / Profanity Check
+        // Friendly Inappropriate Language / Explicit Sex Content Check
         if (containsInappropriate(text) || containsInappropriate(name)) {
             const funny = FUNNY_CENSOR_MESSAGES[Math.floor(Math.random() * FUNNY_CENSOR_MESSAGES.length)];
             statusMessage.textContent = funny;
-            setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+            taskInput.classList.remove('input-shake');
+            void taskInput.offsetWidth;
+            taskInput.classList.add('input-shake');
+            setTimeout(() => { statusMessage.textContent = ""; }, 5000);
             return;
         }
 
@@ -1635,7 +1671,7 @@ document.addEventListener('DOMContentLoaded', () => {
              .replace(/'/g, "&#039;");
     }
 
-    const NSFW_REGEX = /\b(sex|porn|porno|nude|nudes|boob|boobs|tit|tits|penis|dick|dicks|vagina|pussy|pussies|masturbat\w*|horny|orgasm|orgasms|ass|asshole|assholes|blowjob|blowjobs|handjob|handjobs|cum|cumming|onlyfans|fuck\w*|bitch\w*|cunt\w*|whore\w*|slut\w*|dildo\w*)\b/gi;
+    const NSFW_REGEX = /\b(sex|sexual|anal|porn|porno|hentai|nude|nudes|boob|boobs|tit|tits|penis|dick|dicks|cock|cocks|vagina|pussy|pussies|clit|clitoris|masturbat\w*|horny|orgasm|orgasms|ejaculat\w*|ass|asshole|assholes|butthole|anus|blowjob\w*|handjob\w*|rimjob\w*|deepthroat\w*|creampie\w*|pegging|cum|cumming|onlyfans|fuck\w*|bitch\w*|cunt\w*|whore\w*|slut\w*|dildo\w*)\b/gi;
 
     function censorNsfwHtml(str) {
         if (!str) return str;
