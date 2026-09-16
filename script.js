@@ -2386,13 +2386,13 @@ document.addEventListener('DOMContentLoaded', () => {
         // Header section
         ctx.textAlign = 'center';
         ctx.fillStyle = '#111111';
-        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.font = '700 14px "Space Mono", monospace';
         ctx.fillText('★ BUREAU OF STRATEGIC PROCRASTINATION & INACTION ★', 500, 68);
 
         ctx.font = '900 38px "Big Shoulders Display", sans-serif';
         ctx.fillText('OFFICIAL SLOTH CREDENTIAL & PRESS PASS', 500, 110);
 
-        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.font = '700 13px "Space Mono", monospace';
         ctx.fillText('INTERNATIONAL DISPATCH // DIPLOMATIC IMMUNITY FROM ALL LABOR', 500, 134);
 
         // Double rule
@@ -2410,7 +2410,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Left Column: Operative Dossier
         ctx.textAlign = 'left';
-        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.font = '700 13px "Space Mono", monospace';
         ctx.fillText('CREDENTIAL DOSSIER // CLASSIFIED IDLE', 60, 182);
 
         ctx.beginPath();
@@ -2420,7 +2420,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.stroke();
 
         // Field 1: OPERATIVE / HOLDER
-        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillStyle = '#555555';
         ctx.fillText('OPERATIVE / ACCREDITED HOLDER:', 60, 214);
         ctx.font = '900 18px "Space Mono", monospace';
@@ -2429,7 +2429,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText(cleanHolder.length > 28 ? cleanHolder.substring(0, 26) + '...' : cleanHolder, 60, 236);
 
         // Field 2: SLACKER RANK
-        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillStyle = '#555555';
         ctx.fillText('ACCREDITED SLACKER RANK:', 60, 270);
         ctx.font = '900 16px "Space Mono", monospace';
@@ -2437,7 +2437,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText(rankName.toUpperCase(), 60, 292);
 
         // Field 3: DELAY RECORD
-        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillStyle = '#555555';
         ctx.fillText('RECORD OF NON-PERFORMANCE:', 60, 326);
         ctx.font = '700 14px "Space Mono", monospace';
@@ -2445,10 +2445,10 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText(`${clicks} TASKS EVADED ${timeStr} • STRATEGIC NON-ACTION`, 60, 348);
 
         // Field 4: IDENTIFIER & DATE
-        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillStyle = '#555555';
         ctx.fillText('CLEARANCE CODE & ISSUE DATE:', 60, 382);
-        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.font = '700 13px "Space Mono", monospace';
         ctx.fillStyle = '#111111';
         const certCode = `SLOTH-${Math.abs((clicks * 7919) ^ 0xABCD).toString(16).toUpperCase().padStart(8, '0')}`;
         const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
@@ -2456,18 +2456,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Legal Mandate Box
         ctx.fillStyle = 'rgba(17, 17, 17, 0.04)';
-        ctx.fillRect(60, 430, 550, 95);
+        ctx.fillRect(60, 430, 550, 98);
         ctx.strokeStyle = '#111111';
         ctx.lineWidth = 1;
-        ctx.strokeRect(60, 430, 550, 95);
+        ctx.strokeRect(60, 430, 550, 98);
 
         ctx.fillStyle = '#111111';
-        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillText('LEGAL EXEMPTION CLAUSE // ARTICLE 404:', 72, 452);
-        ctx.font = '400 9.5px "Space Mono", monospace';
-        ctx.fillText('The bearer of this press pass is certified in strategic procrastination.', 72, 472);
-        ctx.fillText('All superiors, urgent Slack pings, and calendar invites are legally voided.', 72, 488);
-        ctx.fillText('Attempting to force productivity violates the 1890 Inaction Treaty.', 72, 504);
+        ctx.font = '400 11px "Space Mono", monospace';
+        ctx.fillText('The bearer of this press pass is certified in strategic procrastination.', 72, 471);
+        ctx.fillText('All superiors, urgent Slack pings, and calendar invites are legally voided.', 72, 487);
+        ctx.fillText('Attempting to force productivity violates the 1890 Inaction Treaty.', 72, 503);
 
         // Right Column: Distressed Red Rubber Stamp + Signature + Barcode
         ctx.save();
@@ -2485,11 +2485,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         ctx.fillStyle = stampColor;
         ctx.textAlign = 'center';
-        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillText('★ BUREAU OF IDLENESS ★', 0, -22);
         ctx.font = '900 19px "Space Mono", monospace';
         ctx.fillText('DIPLOMATIC IMMUNITY', 0, 4);
-        ctx.font = '700 9.5px "Space Mono", monospace';
+        ctx.font = '700 11px "Space Mono", monospace';
         ctx.fillText('CERTIFIED SLACKER // FULL EXEMPTION', 0, 24);
         ctx.restore();
 
@@ -2503,8 +2503,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineTo(890, 375);
         ctx.lineWidth = 1.5;
         ctx.stroke();
-        ctx.font = '700 9px "Space Mono", monospace';
-        ctx.fillText('HIGH CHANCELLOR OF DELAY', 775, 390);
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillText('HIGH CHANCELLOR OF DELAY', 775, 392);
 
         // Barcode simulation
         const barStartX = 660;
@@ -2519,13 +2519,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             curX += w * 1.8 + 2.5;
         });
-        ctx.font = '700 9px "Space Mono", monospace';
+        ctx.font = '700 11px "Space Mono", monospace';
         ctx.fillText(`* LG-${certCode} *`, 775, 495);
 
         // Footer note
         ctx.textAlign = 'center';
-        ctx.font = '700 10px "Space Mono", monospace';
-        ctx.fillText('LATER, GATOR // THE INDEPENDENT PROCRASTINATION JOURNAL // LATERGATOR.WORLD', 500, 555);
+        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.fillText('LATER, GATOR // THE INDEPENDENT PROCRASTINATION JOURNAL // LATERGATORS.LIVE', 500, 556);
 
         return canvas;
     };
