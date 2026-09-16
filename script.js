@@ -229,11 +229,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Local Alias Auto-Retention (Permanent local identity)
+    // Common task keywords used for smart detection and field auto-correction
+    const COMMON_TASK_KEYWORDS = [
+        'sleep', 'sleeping', 'study', 'studying', 'work', 'working',
+        'laundry', 'doing laundry', 'gym', 'going to gym', 'taxes',
+        'doing taxes', 'homework', 'dishes', 'doing dishes', 'emails',
+        'replying to emails', 'cleaning', 'cleaning room', 'life choices',
+        'my life choices', 'existing', 'too tired to type', 'nothing',
+        'procrastinating', 'assignment', 'paper', 'essay', 'workout'
+    ];
+
+    // Local Alias Auto-Retention (Permanent local identity with task-keyword sanitizer)
     if (userNameInput) {
         try {
             const savedName = localStorage.getItem('lg_user_name');
-            if (savedName) userNameInput.value = savedName;
+            if (savedName) {
+                // If savedName is a task keyword, purge it from local storage so the user is not permanently named "Work" or "Sleep"
+                if (COMMON_TASK_KEYWORDS.includes(savedName.toLowerCase().trim())) {
+                    localStorage.removeItem('lg_user_name');
+                    userNameInput.value = '';
+                } else {
+                    userNameInput.value = savedName;
+                }
+            }
         } catch (e) {}
 
         userNameInput.addEventListener('input', () => {
@@ -1130,13 +1148,46 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
-        const name = document.getElementById('user-name').value.trim();
+        let name = userNameInput ? userNameInput.value.trim() : (document.getElementById('user-name') ? document.getElementById('user-name').value.trim() : '');
+
+        // Smart Correction 1: If user typed their task into the byline field and left task blank
+        if (!text && name) {
+            text = name;
+            taskInput.value = text;
+            name = '';
+            if (userNameInput) userNameInput.value = '';
+            const uEl = document.getElementById('user-name');
+            if (uEl) uEl.value = '';
+        }
+
+        // Smart Correction 2: If byline is a known common task and text looks like an author name
+        if (name && COMMON_TASK_KEYWORDS.includes(name.toLowerCase().trim())) {
+            if (!text) {
+                text = name;
+                name = '';
+                taskInput.value = text;
+                if (userNameInput) userNameInput.value = '';
+                const uEl = document.getElementById('user-name');
+                if (uEl) uEl.value = '';
+            } else if (text.length <= 25 && !COMMON_TASK_KEYWORDS.includes(text.toLowerCase().trim())) {
+                // Invert: task was put in name field, and author name was put in task field
+                const temp = text;
+                text = name;
+                name = temp;
+                taskInput.value = text;
+                if (userNameInput) userNameInput.value = name;
+                const uEl = document.getElementById('user-name');
+                if (uEl) uEl.value = name;
+            }
+        }
+
         if (name) {
             try { localStorage.setItem('lg_user_name', name); } catch(e) {}
         }
         
         if (!text) {
-            statusMessage.textContent = "PLEASE SPECIFY A TASK.";
+            statusMessage.textContent = "PLEASE SPECIFY A TASK TO DELAY.";
+            taskInput.focus();
             return;
         }
 
