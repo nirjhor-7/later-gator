@@ -8,18 +8,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.6.0">
+    <link rel="stylesheet" href="style.css?v=2.6.1">
+    <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
     <meta name="description" content="The Global Procrastination Journal. What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
     <meta property="og:title" content="LATER, GATOR — Global Procrastination Journal">
     <meta property="og:description" content="What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="/og-image.png">
+    <meta property="og:url" content="https://latergators.live/">
+    <meta property="og:image" content="https://latergators.live/og-image.png">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="LATER, GATOR — Global Procrastination Journal">
     <meta name="twitter:description" content="What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
-    <meta name="twitter:image" content="/og-image.png">
+    <meta name="twitter:image" content="https://latergators.live/og-image.png">
 </head>
 <body>
     <div class="page-border">
@@ -100,8 +102,7 @@
                     <div class="input-section">
                         <!-- 1. The Avoided Task (Hero Input) -->
                         <div class="field-group task-field-group">
-                            <label for="task-input" class="field-label">★ THE AVOIDED TASK (WHAT ARE YOU AVOIDING?):</label>
-                            <textarea id="task-input" placeholder="Declare what you are putting off (e.g. studying, laundry, taxes, emails)..." maxlength="150"></textarea>
+                            <textarea id="task-input" aria-label="What are you putting off?" placeholder="Declare what you are putting off (e.g. studying, laundry, taxes, emails)..." maxlength="150"></textarea>
                             <div class="task-char-bar">
                                 <span id="task-char-count" class="task-char-count">[ 0 / 150 LETTERS ]</span>
                                 <span class="desktop-hint">ENTER ↵ TO DELAY • CTRL+ENTER TO PANIC</span>
@@ -390,7 +391,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.6.0"></script>
+    <script src="script.js?v=2.6.1"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>
