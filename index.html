@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <title>LATER, GATOR</title>
     <link rel="icon" type="image/png" href="/favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.4.0">
+    <link rel="stylesheet" href="style.css?v=2.5.0">
 
     <!-- Social Preview & OpenGraph Tags -->
     <meta name="description" content="The Global Procrastination Journal. What are you putting off today? Live transmissions of tasks being actively avoided worldwide.">
@@ -26,12 +26,17 @@
         
         <header class="masthead">
             <div class="masthead-meta">
-                <span id="masthead-vol">VOL. 1</span>
-                <span>GLOBAL PROCRASTINATION JOURNAL</span>
-                <span id="current-date">Today</span>
-                <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
-                    <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
-                </button>
+                <div class="meta-row-left">
+                    <span id="masthead-vol">VOL. 1</span>
+                    <span class="meta-sep">•</span>
+                    <span class="meta-journal-title">GLOBAL PROCRASTINATION JOURNAL</span>
+                </div>
+                <div class="meta-row-right">
+                    <span id="current-date">Today</span>
+                    <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
+                        <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
+                    </button>
+                </div>
             </div>
             <h1>LATER, GATOR</h1>
             <div class="masthead-sub" id="masthead-sub">PUBLISHED DAILY (EVENTUALLY)</div>
@@ -52,7 +57,10 @@
         <section class="lead-story-banner" id="lead-story-banner" aria-label="Lead Story of the Day">
             <div class="lead-story-header">
                 <span class="lead-story-ornament">❖ ❖ ❖</span>
-                <span class="lead-story-eyebrow">★ TODAY'S CHIEF EDITORIAL TRANSGRESSION ★</span>
+                <span class="lead-story-eyebrow">
+                    <span class="eyebrow-full">★ TODAY'S CHIEF EDITORIAL TRANSGRESSION ★</span>
+                    <span class="eyebrow-short">★ CHIEF TRANSGRESSION ★</span>
+                </span>
                 <span class="lead-story-ornament">❖ ❖ ❖</span>
             </div>
             <div class="lead-story-body">
@@ -84,7 +92,7 @@
             <!-- Left Column: Controls & Stats -->
             <section class="left-col">
                 
-                <div class="article-box">
+                <div class="article-box input-box" id="box-input">
                     <h2 class="section-title">WHAT ARE YOU PUTTING OFF?</h2>
                     <div class="input-section">
                         <div class="user-details">
@@ -165,7 +173,7 @@
                     </div>
                 </div>
 
-                <div class="article-box">
+                <div class="article-box stats-box" id="box-stats">
                     <h2 class="section-title">LIVE STATISTICS</h2>
                     <div class="stats-section">
                         <div class="stat-group">
@@ -179,7 +187,7 @@
                     </div>
                 </div>
 
-                <div class="article-box">
+                <div class="article-box index-box" id="box-index">
                     <h2 class="section-title">GLOBAL INDEX</h2>
                     <div class="leaderboard-meta">LEADING NATIONS IN SLOTH</div>
                     <div class="leaderboard-list" id="country-leaderboard">
@@ -187,7 +195,7 @@
                     </div>
                 </div>
 
-                <div class="visitor-footer" style="text-align: center; margin-top: 30px;">
+                <div class="visitor-footer" id="box-visitors" style="text-align: center; margin-top: 30px;">
                     <div class="visitor-counter">
                         <span class="counter-label">TOTAL UNIQUE PROCRASTINATORS OBSERVED:</span>
                         <span class="counter-value" id="stat-visitors">0000</span>
@@ -205,13 +213,15 @@
                     <div class="shame-meta">Abandoned <span id="shame-count">0</span> times by the general public.</div>
                 </div>
 
-                <h2 class="section-title">THE PUBLIC WIRE</h2>
-                <div class="feed-container" id="feed-container">
-                    <div class="loading">Awaiting transmissions...</div>
+                <div class="article-box wire-box" id="box-wire">
+                    <h2 class="section-title">THE PUBLIC WIRE</h2>
+                    <div class="feed-container" id="feed-container">
+                        <div class="loading">Awaiting transmissions...</div>
+                    </div>
                 </div>
 
                 <!-- Commercial Break Video Section -->
-                <div class="article-box video-box">
+                <div class="article-box video-box" id="box-video">
                     <h2 class="section-title">COMMERCIAL BREAK</h2>
                     <div class="video-wrapper">
                         <iframe 
@@ -226,7 +236,7 @@
                 </div>
 
                 <!-- Daily Diversions: Weather, Clicker, Comic -->
-                <div class="article-box diversion-box">
+                <div class="article-box diversion-box" id="box-diversions">
                     <div class="diversion-header">
                         <span class="diversion-label">DAILY DIVERSIONS</span>
                         <div class="diversion-tabs" role="tablist">
@@ -365,7 +375,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.4.0"></script>
+    <script src="script.js?v=2.5.0"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>

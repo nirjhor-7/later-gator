@@ -79,6 +79,19 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
     font-weight: bold;
     text-transform: uppercase;
 }
+.meta-row-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.meta-row-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.meta-sep {
+    color: var(--ink-light);
+}
 .midnight-toggle-btn {
     background: transparent;
     color: var(--ink);
@@ -251,6 +264,12 @@ body.sepia-edition .ticker-badge {
     letter-spacing: 1.5px;
     font-size: 0.68rem;
     font-weight: 700;
+}
+.eyebrow-full {
+    display: inline;
+}
+.eyebrow-short {
+    display: none;
 }
 
 .lead-story-body {
@@ -1783,45 +1802,98 @@ body.sepia-edition .rubber-stamp {
 /* ==========================================
    ROCK-SOLID RESPONSIVE MOBILE OVERHAUL
    ========================================== */
+/* ==========================================
+   ROCK-SOLID RESPONSIVE MOBILE OVERHAUL (v2.5.0)
+   ========================================== */
 @media (max-width: 768px) {
     body, html {
         overflow-x: hidden;
+        -webkit-text-size-adjust: 100%;
+    }
+
+    /* Fast tap & remove mobile tap highlights */
+    *, *::before, *::after {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button, input, textarea, select, a, .chip-btn, .reaction-stamp-btn {
+        touch-action: manipulation;
+    }
+
+    /* CRITICAL: Prevent iOS Safari auto-zoom by enforcing >= 16px */
+    input[type="text"],
+    textarea,
+    select {
+        font-size: 16px !important;
     }
 
     .page-border {
-        margin: 12px 6px;
-        padding: 16px 10px;
-        box-shadow: 5px 5px 0px var(--ink);
+        margin: 6px 4px;
+        padding: 12px 10px 16px 10px;
+        box-shadow: 4px 4px 0px var(--ink);
+        outline: 1.5px solid var(--ink);
         outline-offset: 2px;
         max-width: 100%;
         box-sizing: border-box;
     }
 
+    /* Compact 2-Line Masthead */
+    .masthead {
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+    }
+
     .masthead-meta {
+        display: flex;
         flex-direction: column;
+        gap: 5px;
         align-items: center;
-        gap: 3px;
         text-align: center;
         font-size: 0.68rem;
-        padding: 6px 0;
+        padding: 5px 2px;
+    }
+
+    .meta-row-left {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .meta-row-right {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .midnight-toggle-btn {
+        padding: 3px 8px;
+        font-size: 0.65rem;
+        min-height: 28px;
     }
 
     h1 {
-        font-size: 3.2rem;
+        font-size: 3.1rem;
         letter-spacing: 0.5px;
         line-height: 0.95;
+        margin: 4px 0;
     }
 
     .subtitle {
-        font-size: 0.78rem;
-        padding: 4px 0;
-        margin-bottom: 20px;
+        font-size: 0.74rem;
+        padding: 3px 0;
+        margin-bottom: 14px;
     }
 
+    /* Telegraph Wire Ticker */
     .telegraph-ticker {
         height: 26px;
         font-size: 0.62rem;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .ticker-badge {
@@ -1841,52 +1913,292 @@ body.sepia-edition .rubber-stamp {
         animation-duration: 90s;
     }
 
-    .newspaper-grid {
-        grid-template-columns: 1fr;
-        gap: 20px;
+    /* Front-Page Lead Story of the Day (Single-line Eyebrow + Touch Reactions) */
+    .lead-story-banner {
+        padding: 10px 8px 12px 8px;
+        margin-bottom: 16px;
     }
-    
-    .right-col {
-        border-left: none;
-        border-top: 2px solid var(--ink);
-        padding-left: 0;
-        padding-top: 25px;
+
+    .lead-story-header {
+        font-size: 0.62rem;
+        gap: 4px;
+        margin-bottom: 4px;
     }
-    
-    .user-details {
+
+    .lead-story-eyebrow {
+        font-size: 0.62rem;
+        padding: 2px 8px;
+        letter-spacing: 0.6px;
+        white-space: nowrap;
+    }
+
+    .eyebrow-full {
+        display: none;
+    }
+
+    .eyebrow-short {
+        display: inline;
+    }
+
+    .lead-story-headline {
+        font-size: 1.45rem;
+        line-height: 1.15;
+        margin: 5px 0 6px 0;
+    }
+
+    .lead-story-meta {
+        font-size: 0.62rem;
+        gap: 4px;
+        margin-bottom: 8px;
+    }
+
+    .lead-story-badge {
+        font-size: 0.6rem;
+        padding: 2px 5px;
+    }
+
+    .lead-story-actions {
         flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        padding-top: 8px;
     }
 
-    .quick-chips {
-        gap: 5px;
-    }
-
-    .chip-btn {
-        font-size: 0.66rem;
-        padding: 5px 6px;
-        flex-grow: 1;
+    .lead-stamp-prompt {
         text-align: center;
+        font-size: 0.62rem;
     }
 
-    .action-buttons button {
-        font-size: 1.05rem;
-        padding: 11px 8px;
-    }
-
-    .btn-dice {
-        padding: 0 10px;
-        font-size: 1.15rem;
-    }
-
-    .feed-item-footer {
+    .lead-reactions {
+        display: flex;
+        width: 100%;
         gap: 6px;
     }
 
-    .reaction-stamp-btn {
-        font-size: 0.62rem;
-        padding: 2px 6px;
+    .lead-reactions .reaction-stamp-btn {
+        flex: 1;
+        min-height: 40px;
+        font-size: 0.68rem;
+        padding: 6px 2px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
+    /* ==========================================
+       CONTENT HIERARCHY REORDERING (Mobile Flaw #4 Fix)
+       ========================================== */
+    .newspaper-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .left-col, .right-col {
+        display: contents; /* Flattens columns into a single unified flex flow */
+    }
+
+    /* Mobile Order:
+       1. Input Form
+       2. Wall of Shame
+       3. The Public Wire (Directly visible without scrolling through 10 countries!)
+       4. Live Statistics
+       5. Global Index
+       6. Unique Visitors
+       7. Daily Diversions
+       8. Commercial Break
+    */
+    #box-input {
+        order: 1;
+        margin-bottom: 22px;
+    }
+
+    #hall-of-shame {
+        order: 2;
+        margin-bottom: 18px;
+    }
+
+    #box-wire {
+        order: 3;
+        margin-bottom: 24px;
+    }
+
+    #box-stats {
+        order: 4;
+        margin-bottom: 22px;
+    }
+
+    #box-index {
+        order: 5;
+        margin-bottom: 18px;
+    }
+
+    #box-visitors {
+        order: 6;
+        margin-top: 0;
+        margin-bottom: 22px;
+    }
+
+    #box-diversions {
+        order: 7;
+        margin-bottom: 22px;
+    }
+
+    #box-video {
+        order: 8;
+        margin-bottom: 18px;
+    }
+
+    /* Input Section & Inputs */
+    .section-title {
+        font-size: 1.25rem;
+        margin-bottom: 10px;
+        padding-bottom: 3px;
+    }
+
+    .user-details {
+        flex-direction: column;
+        margin-bottom: 8px;
+    }
+
+    .user-details input {
+        padding: 10px 10px;
+        border-width: 1.5px;
+    }
+
+    textarea {
+        padding: 10px 10px;
+        height: 82px;
+        border-width: 1.5px;
+    }
+
+    /* Quick Chips: 3 Neat Columns with >= 38px Touch Targets */
+    .quick-chips-wrapper {
+        margin-top: 10px;
+        margin-bottom: 8px;
+    }
+
+    .chips-label {
+        font-size: 0.64rem;
+        margin-bottom: 6px;
+    }
+
+    .quick-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .chip-btn {
+        font-size: 0.7rem;
+        padding: 8px 4px;
+        min-height: 38px;
+        flex: 1 1 calc(33.333% - 6px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-sizing: border-box;
+        text-align: center;
+    }
+
+    .chip-random {
+        flex: 1 1 100%;
+        min-height: 38px;
+        font-weight: 700;
+        margin-top: 2px;
+    }
+
+    /* Action Buttons (Generous Touch Targets >= 48px) */
+    .action-buttons {
+        margin-top: 12px;
+    }
+
+    .primary-action-row {
+        display: flex;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .btn-heavy {
+        flex: 1;
+        min-height: 52px;
+        font-size: 1.15rem;
+        padding: 12px 8px;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-dice {
+        min-width: 52px;
+        min-height: 52px;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .btn-outline {
+        width: 100%;
+        min-height: 46px;
+        font-size: 1rem;
+        margin-top: 8px;
+        padding: 10px 8px;
+    }
+
+    /* Public Wire & Cards (Scroll Trap Fix) */
+    .feed-container {
+        max-height: 460px;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
+        border-width: 2px;
+    }
+
+    .feed-item {
+        padding: 12px 10px;
+    }
+
+    .feed-item-meta {
+        font-size: 0.65rem;
+        margin-bottom: 4px;
+    }
+
+    .feed-item-text {
+        font-size: 0.95rem;
+        line-height: 1.35;
+        margin-bottom: 8px;
+    }
+
+    .feed-item-footer {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .feed-item-time {
+        font-size: 0.65rem;
+    }
+
+    .feed-reactions {
+        display: flex;
+        width: 100%;
+        gap: 6px;
+    }
+
+    .feed-reactions .reaction-stamp-btn {
+        flex: 1;
+        min-height: 40px; /* High tactile touch targets (was 19px) */
+        font-size: 0.65rem;
+        padding: 6px 1px;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-width: 1.5px;
+        letter-spacing: -0.2px;
+    }
+
+    /* Statistics & Leaderboards */
     .visitor-counter {
         width: 100%;
         padding: 8px 10px;
@@ -1904,6 +2216,7 @@ body.sepia-edition .rubber-stamp {
         font-size: 0.95rem;
     }
 
+    /* Diversions */
     .diversion-header {
         flex-direction: column;
         align-items: stretch;
@@ -1923,8 +2236,12 @@ body.sepia-edition .rubber-stamp {
     .div-tab {
         flex: 1;
         text-align: center;
-        padding: 6px 2px;
-        font-size: 0.62rem;
+        padding: 8px 2px;
+        min-height: 38px;
+        font-size: 0.65rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .clicker-body {
@@ -1936,8 +2253,9 @@ body.sepia-edition .rubber-stamp {
     .clicker-btn {
         width: 100%;
         text-align: center;
-        font-size: 0.78rem;
-        padding: 10px 8px;
+        font-size: 0.82rem;
+        padding: 12px 8px;
+        min-height: 46px;
     }
 
     .clicker-stats {
@@ -1953,22 +2271,24 @@ body.sepia-edition .rubber-stamp {
         gap: 10px;
     }
 
+    /* Footer */
     .site-footer {
         flex-direction: column;
         gap: 12px;
-        margin-top: 30px;
-        padding: 20px 0 15px 0;
+        margin-top: 24px;
+        padding: 16px 0 12px 0;
     }
 
     .footer-share-btn {
         width: 100%;
         box-sizing: border-box;
-        font-size: 0.8rem;
-        padding: 10px 12px;
+        font-size: 0.82rem;
+        padding: 12px 10px;
+        min-height: 44px;
     }
 
     .footer-quote {
-        font-size: 0.8rem;
+        font-size: 0.78rem;
         max-width: 100%;
     }
 
@@ -1979,46 +2299,12 @@ body.sepia-edition .rubber-stamp {
     }
 
     .credential-modal {
-        padding: 10px;
+        padding: 8px;
     }
 
     .credential-modal-dialog {
-        padding: 14px 10px;
-    }
-
-    /* Lead Story Mobile Responsive */
-    .lead-story-banner {
-        padding: 12px 10px 14px 10px;
-        margin-bottom: 18px;
-    }
-
-    .lead-story-headline {
-        font-size: 1.55rem;
-        line-height: 1.15;
-        margin: 6px 0 8px 0;
-    }
-
-    .lead-story-header {
-        font-size: 0.62rem;
-        gap: 4px;
-    }
-
-    .lead-story-eyebrow {
-        font-size: 0.6rem;
-        padding: 2px 6px;
-        letter-spacing: 0.8px;
-    }
-
-    .lead-story-meta {
-        font-size: 0.62rem;
-        gap: 5px;
-        margin-bottom: 8px;
-    }
-
-    .lead-story-actions {
-        flex-direction: column;
-        gap: 6px;
-        padding-top: 8px;
+        padding: 12px 8px;
+        max-height: 94vh;
     }
 }
 
