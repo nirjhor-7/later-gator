@@ -3072,66 +3072,175 @@ document.addEventListener('DOMContentLoaded', () => {
         renderOracle(oracleSelect.value, false);
     }
 
-    // --- Option 5: Front-Page Editorial ASCII Comic Strip ---
+    // --- Option 5: Front-Page Editorial 2-Panel Comic Strip ---
     const COMIC_STRIPS = [
         {
-            ascii: "  _.~\"~._.~\"~._\n (   (•_•)     )\n  \\  <)  )╯   /\n   `~-.__.-~'",
-            caption: "\"The early bird gets the worm. The second mouse gets the cheese. I am going back to sleep.\""
+            title: "EP. 1: THE SNOOZE TRAP",
+            tag1: "PANEL 1 • 07:00 AM",
+            art1: " ⏰[07:00]  (-_-) zZ\n            <)  )╯\n             /  \\",
+            speech1: "\"Just 5 more mins.\"",
+            tag2: "PANEL 2 • 11:45 AM",
+            art2: " ⏰[11:45]  (⊙_⊙)\n            /(  )\\\n             |  |",
+            speech2: "\"The math was wrong.\"",
+            caption: "\"5 minutes of morning sleep is legally equivalent to 4 hours in physical space.\""
         },
         {
-            ascii: "   \\   |   /\n     (•_•)  )\n     (  (\n    /    \\",
-            caption: "\"[DEADLINE APPROACHING] If I don't look directly at it, it can't legally see me.\""
+            title: "EP. 2: SCHRÖDINGER'S INBOX",
+            tag1: "PANEL 1 • UNOPENED",
+            art1: " ✉️[99+]    (•_•)\n            <)  )╯\n             /  \\",
+            speech1: "\"If I don't look...\"",
+            tag2: "PANEL 2 • PURE BLISS",
+            art2: "   💤       \\(^-^)/\n  (-_-)      /   \\\n (  ( )     [ALL GOOD]",
+            speech2: "\"The crisis isn't real!\"",
+            caption: "\"Unopened emails exist in a superposition of both urgent and non-existent.\""
         },
         {
-            ascii: " [ 2:00 PM: 5-MIN BREAK ]\n      ( -_-) zzz\n       (   )\n      /     \\",
-            caption: "\"I planned to start at 2:05. It is now 2:06. Routine ruined. Must wait until 3:00.\""
+            title: "EP. 3: THE 2:01 TRAGEDY",
+            tag1: "PANEL 1 • 02:00 PM",
+            art1: " ⏱️[02:00]  (•_•)\n            /)  )╯\n             /  \\",
+            speech1: "\"Starting promptly now.\"",
+            tag2: "PANEL 2 • 02:01 PM",
+            art2: " ⏱️[02:01]  (-_-)\n            /(  )\\\n             |  |",
+            speech2: "\"Missed it. Next: 3:00.\"",
+            caption: "\"Work can only legally begin on timestamps ending in 0 or 5.\""
         },
         {
-            ascii: " ┌────────────┐\n │ TO-DO LIST │   (•_•)\n │ 1. [✓]LIST │   /)  )\n └────────────┘   /   \\",
-            caption: "\"Step 1: Write to-do list. Step 2: Rest for 4 hours from the exertion of Step 1.\""
+            title: "EP. 4: STRATEGIC HOUSEKEEPING",
+            tag1: "PANEL 1 • URGENT TASK",
+            art1: " 📋[DEAD-   (•_•)\n   LINE]   <)  )╯\n             /  \\",
+            speech1: "\"I must write now.\"",
+            tag2: "PANEL 2 • SUDDEN URGE",
+            art2: " 🧹  ✨    (•̀ᴗ•́)\n  \\       <)  )╯\n   \\    [DEEP CLEAN]",
+            speech2: "\"Baseboards need buffing!\"",
+            caption: "\"Never does a home shine brighter than on the eve of a major deadline.\""
         },
         {
-            ascii: "     (•_•)\n    /(   )\\   \"Why do today what\n      | |      can wait until next fiscal\n               quarter?\"",
-            caption: "\"The Gator contemplating all the milestones he won't be reaching today.\""
+            title: "EP. 5: TO-DO LIST ZEN",
+            tag1: "PANEL 1 • HIGH AMBITION",
+            art1: " 📝[LIST]   (•_•)\n   [✓ 1.]  <)  )╯\n             /  \\",
+            speech1: "\"Step 1: Write list [✓]\"",
+            tag2: "PANEL 2 • EXHAUSTED",
+            art2: "   💤\n  (-_-)      🛋️\n (  ( )    [TIRED]",
+            speech2: "\"Huge day. Need a nap.\"",
+            caption: "\"Documenting future labor burns an estimated 400 metaphorical calories.\""
         },
         {
-            ascii: "   (•_•)     \"I am not procrastinating.\n  <)  )╯      I am giving my great ideas\n   /   \\      time to properly marinate.\"",
-            caption: "\"Culinary theory applied to severe work avoidance.\""
+            title: "EP. 6: THE TEA CEREMONY",
+            tag1: "PANEL 1 • PREPARATION",
+            art1: " ♨️ ☕     (•_•)\n  |  |    <)  )╯\n ══════    /  \\",
+            speech1: "\"Coffee first. Then work.\"",
+            tag2: "PANEL 2 • 3 HOURS LATER",
+            art2: " ☕ ☕ ☕   (⊙_⊙)\n ════════  /(  )\\\n [CAFFEINE]  |  |",
+            speech2: "\"Vibrating. Zero output.\"",
+            caption: "\"Work cannot commence until beverage temperature is within 0.1°C of perfection.\""
         },
         {
-            ascii: "  [ 11:59 PM ]\n     (⊙_⊙)    \"The deadline has arrived.\n    /(   )\\    Suddenly I am operating at\n      | |      10,000% efficiency.\"",
-            caption: "\"Panic mode: Nature's ultimate performance-enhancing drug.\""
+            title: "EP. 7: BROWSER TAB HOARD",
+            tag1: "PANEL 1 • QUICK QUESTION",
+            art1: " 🔍[INFO]   (•_•)\n            <)  )╯\n             /  \\",
+            speech1: "\"Just 1 quick query.\"",
+            tag2: "PANEL 2 • 83 TABS OPEN",
+            art2: " [][][][][] (O_O;)\n [][][][][] /(  )\\\n [RAM: 98%]  |  |",
+            speech2: "\"Why do ducks float??\"",
+            caption: "\"Every open tab is an emotional support document that must never be closed.\""
+        },
+        {
+            title: "EP. 8: THE 11:59 SURGE",
+            tag1: "PANEL 1 • 11:58 PM",
+            art1: " [11:58]    (-_-)\n             )  )~\n            /    \\",
+            speech1: "\"All hope is lost.\"",
+            tag2: "PANEL 2 • 11:59 PM",
+            art2: " ⚡🔥⚡    (ò_ó)!\n ⌨️ 💻💨  <)  )╯\n ======== [GOD MODE]",
+            speech2: "\"10,000 WPM UNLEASHED!\"",
+            caption: "\"Panic is nature's ultimate performance-enhancing drug.\""
         }
     ];
 
     let comicIdx = 0;
-    const comicAsciiEl = document.getElementById('comic-ascii');
+    const comicTitleEl = document.getElementById('comic-title');
+    const comicTag1El = document.getElementById('comic-panel-tag-1');
+    const comicArt1El = document.getElementById('comic-art-1');
+    const comicSpeech1El = document.getElementById('comic-speech-1');
+    const comicTag2El = document.getElementById('comic-panel-tag-2');
+    const comicArt2El = document.getElementById('comic-art-2');
+    const comicSpeech2El = document.getElementById('comic-speech-2');
     const comicCaptionEl = document.getElementById('comic-caption');
     const comicPageNumEl = document.getElementById('comic-page-num');
     const comicPrevBtn = document.getElementById('comic-prev-btn');
     const comicNextBtn = document.getElementById('comic-next-btn');
+    const comicRandomBtn = document.getElementById('comic-random-btn');
+    const comicCopyBtn = document.getElementById('comic-copy-btn');
+    const comicStripContainer = document.querySelector('.comic-strip-container');
 
-    const renderComic = (idx) => {
+    const renderComic = (idx, animate = false) => {
         const item = COMIC_STRIPS[idx];
         if (!item) return;
-        if (comicAsciiEl) comicAsciiEl.textContent = item.ascii;
+        if (comicTitleEl) comicTitleEl.textContent = item.title;
+        if (comicTag1El) comicTag1El.textContent = item.tag1;
+        if (comicArt1El) comicArt1El.textContent = item.art1;
+        if (comicSpeech1El) comicSpeech1El.textContent = item.speech1;
+        if (comicTag2El) comicTag2El.textContent = item.tag2;
+        if (comicArt2El) comicArt2El.textContent = item.art2;
+        if (comicSpeech2El) comicSpeech2El.textContent = item.speech2;
         if (comicCaptionEl) comicCaptionEl.textContent = item.caption;
         if (comicPageNumEl) comicPageNumEl.textContent = `STRIP ${idx + 1} OF ${COMIC_STRIPS.length}`;
+
+        if (animate && comicStripContainer) {
+            comicStripContainer.style.opacity = '0.35';
+            comicStripContainer.style.transform = 'scale(0.99)';
+            comicStripContainer.style.transition = 'opacity 0.12s ease, transform 0.12s ease';
+            setTimeout(() => {
+                comicStripContainer.style.opacity = '1';
+                comicStripContainer.style.transform = 'scale(1)';
+            }, 50);
+        }
     };
 
-    renderComic(comicIdx);
+    renderComic(comicIdx, false);
 
     if (comicPrevBtn) {
         comicPrevBtn.addEventListener('click', () => {
             comicIdx = (comicIdx - 1 + COMIC_STRIPS.length) % COMIC_STRIPS.length;
-            renderComic(comicIdx);
+            renderComic(comicIdx, true);
         });
     }
 
     if (comicNextBtn) {
         comicNextBtn.addEventListener('click', () => {
             comicIdx = (comicIdx + 1) % COMIC_STRIPS.length;
-            renderComic(comicIdx);
+            renderComic(comicIdx, true);
+        });
+    }
+
+    if (comicRandomBtn) {
+        comicRandomBtn.addEventListener('click', () => {
+            if (COMIC_STRIPS.length <= 1) return;
+            let nextIdx;
+            do {
+                nextIdx = Math.floor(Math.random() * COMIC_STRIPS.length);
+            } while (nextIdx === comicIdx);
+            comicIdx = nextIdx;
+            renderComic(comicIdx, true);
+        });
+    }
+
+    if (comicCopyBtn) {
+        comicCopyBtn.addEventListener('click', async () => {
+            const item = COMIC_STRIPS[comicIdx];
+            if (!item) return;
+            const copyMsg = `📰 *THE CHRONICLES OF LATER GATOR* — ${item.title}\n` +
+                `[${item.tag1}]: ${item.speech1}\n` +
+                `[${item.tag2}]: ${item.speech2}\n` +
+                `> "${item.caption.replace(/^"|"$/g, '')}"\n` +
+                `— via LaterGator.live`;
+            try {
+                await navigator.clipboard.writeText(copyMsg);
+                comicCopyBtn.textContent = "COPIED! ✓";
+                setTimeout(() => { comicCopyBtn.textContent = "📋 COPY"; }, 2000);
+            } catch (e) {
+                comicCopyBtn.textContent = "COPIED!";
+                setTimeout(() => { comicCopyBtn.textContent = "📋 COPY"; }, 2000);
+            }
         });
     }
 

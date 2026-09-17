@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.7.2">
+    <link rel="stylesheet" href="style.css?v=2.7.3">
     <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
@@ -399,16 +399,38 @@
                         </div>
                     </div>
 
-                    <!-- Tab 4: Editorial ASCII Comic Strip -->
+                    <!-- Tab 4: Front-Page Editorial Comic Strip -->
                     <div id="tab-comic" class="tab-panel" role="tabpanel" style="display: none;">
-                        <div class="comic-display">
-                            <pre class="comic-ascii" id="comic-ascii"></pre>
-                            <div class="comic-caption" id="comic-caption"></div>
+                        <div class="comic-header-bar">
+                            <span class="comic-series-tag">THE CHRONICLES OF LATER GATOR</span>
+                            <span class="comic-episode-title" id="comic-title">EP. 1: THE SNOOZE TRAP</span>
+                        </div>
+                        <div class="comic-strip-container">
+                            <div class="comic-panels-row">
+                                <div class="comic-panel-box">
+                                    <div class="comic-panel-tag" id="comic-panel-tag-1">PANEL 1 • 07:00 AM</div>
+                                    <pre class="comic-panel-art" id="comic-art-1"></pre>
+                                    <div class="comic-speech-bubble" id="comic-speech-1"></div>
+                                </div>
+                                <div class="comic-panel-divider"></div>
+                                <div class="comic-panel-box">
+                                    <div class="comic-panel-tag" id="comic-panel-tag-2">PANEL 2 • 11:45 AM</div>
+                                    <pre class="comic-panel-art" id="comic-art-2"></pre>
+                                    <div class="comic-speech-bubble" id="comic-speech-2"></div>
+                                </div>
+                            </div>
+                            <div class="comic-punchline-bar" id="comic-caption"></div>
                         </div>
                         <div class="comic-controls">
-                            <button type="button" id="comic-prev-btn" class="comic-nav-btn">◄ PREV</button>
-                            <span class="comic-page-num" id="comic-page-num">STRIP 1 OF 7</span>
-                            <button type="button" id="comic-next-btn" class="comic-nav-btn">NEXT ►</button>
+                            <div class="comic-controls-left">
+                                <button type="button" id="comic-prev-btn" class="comic-nav-btn">◄ PREV</button>
+                                <span class="comic-page-num" id="comic-page-num">STRIP 1 OF 8</span>
+                                <button type="button" id="comic-next-btn" class="comic-nav-btn">NEXT ►</button>
+                            </div>
+                            <div class="comic-controls-right">
+                                <button type="button" id="comic-random-btn" class="comic-nav-btn">🎲 RANDOM</button>
+                                <button type="button" id="comic-copy-btn" class="comic-nav-btn">📋 COPY</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -456,7 +478,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.7.2"></script>
+    <script src="script.js?v=2.7.3"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>
