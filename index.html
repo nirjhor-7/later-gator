@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.7.0">
+    <link rel="stylesheet" href="style.css?v=2.7.1">
     <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
@@ -27,6 +27,8 @@
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@thelatergators">
+    <meta name="twitter:creator" content="@thelatergators">
     <meta name="twitter:domain" content="latergators.live">
     <meta name="twitter:url" content="https://www.latergators.live/">
     <meta name="twitter:title" content="LATER, GATORS — Global Procrastination Journal">
@@ -266,7 +268,8 @@
                         <span class="diversion-label">DAILY DIVERSIONS</span>
                         <div class="diversion-tabs" role="tablist">
                             <button type="button" class="div-tab active" data-tab="clicker" role="tab" aria-selected="true">★ DO NOTHING</button>
-                            <button type="button" class="div-tab" data-tab="weather" role="tab" aria-selected="false">☼ WEATHER</button>
+                            <button type="button" class="div-tab" data-tab="alibis" role="tab" aria-selected="false">📜 ALIBIS</button>
+                            <button type="button" class="div-tab" data-tab="oracle" role="tab" aria-selected="false">🔮 ORACLE</button>
                             <button type="button" class="div-tab" data-tab="comic" role="tab" aria-selected="false">✂ COMIC</button>
                         </div>
                     </div>
@@ -274,9 +277,12 @@
                     <!-- Tab 1: The Do-Nothing Clicker -->
                     <div id="tab-clicker" class="tab-panel active" role="tabpanel">
                         <div class="clicker-body">
-                            <button type="button" id="clicker-btn" class="clicker-btn">
-                                [ CLICK TO DO NOTHING ]
-                            </button>
+                            <div class="clicker-btn-wrapper">
+                                <button type="button" id="clicker-btn" class="clicker-btn">
+                                    [ CLICK TO DO NOTHING ]
+                                </button>
+                                <div id="clicker-particles" class="clicker-particles"></div>
+                            </div>
                             <div class="clicker-stats">
                                 <div class="clicker-count-line">
                                     TIME WASTED: <span id="clicker-count" class="clicker-num">0</span> <span id="clicker-time" class="clicker-time"></span>
@@ -288,6 +294,26 @@
                             </div>
                         </div>
 
+                        <!-- Procrastination DEFCON Meter -->
+                        <div class="defcon-gauge-container">
+                            <div class="defcon-gauge-header">
+                                <span class="defcon-label">SLOTH GAUGE:</span>
+                                <span id="defcon-status" class="defcon-status">DEFCON 5 (MILD DELAY)</span>
+                            </div>
+                            <div class="defcon-meter-track">
+                                <div id="defcon-meter-fill" class="defcon-meter-fill" style="width: 5%;"></div>
+                            </div>
+                        </div>
+
+                        <!-- Office Sound Camouflage -->
+                        <div id="camo-section" class="camo-controls">
+                            <span class="camo-label">CAMOUFLAGE:</span>
+                            <button type="button" id="camo-typing-btn" class="camo-btn">⌨ FAKE TYPING</button>
+                            <button type="button" id="camo-sigh-btn" class="camo-btn">☕ SIGH</button>
+                            <button type="button" id="camo-paper-btn" class="camo-btn">📁 PAPERS</button>
+                            <button type="button" id="camo-stop-btn" class="camo-btn" style="display: none;">⏹ STOP</button>
+                        </div>
+
                         <!-- Progressive Unlockables Row -->
                         <div class="clicker-perks-row">
                             <button type="button" id="claim-pass-btn" class="div-action-btn claim-pass-btn" style="display: none;">
@@ -296,14 +322,6 @@
                             <button type="button" id="sepia-toggle-btn" class="div-action-btn" style="display: none;">
                                 [ 📜 1890s PRINT: OFF ]
                             </button>
-                        </div>
-
-                        <!-- Office Sound Camouflage (Unlocked at Rank 25+) -->
-                        <div id="camo-section" class="camo-controls" style="display: none;">
-                            <span class="camo-label">CAMOUFLAGE:</span>
-                            <button type="button" id="camo-typing-btn" class="camo-btn">⌨ FAKE TYPING</button>
-                            <button type="button" id="camo-sigh-btn" class="camo-btn">☕ SIGH</button>
-                            <button type="button" id="camo-stop-btn" class="camo-btn" style="display: none;">⏹ STOP</button>
                         </div>
 
                         <!-- Secret Gossip Column (Unlocked at Rank 200+) -->
@@ -321,31 +339,67 @@
                         </div>
                     </div>
 
-                    <!-- Tab 2: Meteorological Outlook -->
-                    <div id="tab-weather" class="tab-panel" role="tabpanel" style="display: none;">
-                        <div class="weather-grid">
-                            <div class="weather-row">
-                                <span class="weather-k">OUTLOOK:</span>
-                                <span class="weather-v" id="weather-condition">HEAVY BRAIN FOG</span>
-                            </div>
-                            <div class="weather-row">
-                                <span class="weather-k">TEMP:</span>
-                                <span class="weather-v" id="weather-temp">98°F IN DENIAL</span>
-                                <span class="weather-k" style="margin-left: 8px;">HUMIDITY:</span>
-                                <span class="weather-v" id="weather-humidity">100% AVOIDANCE</span>
-                            </div>
-                            <div class="weather-forecast-line" id="weather-forecast">
-                                Forecast: Scattered excuses turning into crippling guilt by midnight.
-                            </div>
+                    <!-- Tab 2: The Airtight Alibi Dispenser -->
+                    <div id="tab-alibis" class="tab-panel" role="tabpanel" style="display: none;">
+                        <div class="alibi-category-row">
+                            <button type="button" class="alibi-cat-btn active" data-cat="work">🏢 WORK</button>
+                            <button type="button" class="alibi-cat-btn" data-cat="school">🎓 SCHOOL</button>
+                            <button type="button" class="alibi-cat-btn" data-cat="social">🍻 SOCIAL</button>
+                            <button type="button" class="alibi-cat-btn" data-cat="existential">🛌 EXISTENTIAL</button>
                         </div>
-                        <div class="weather-footer">
-                            <button type="button" id="weather-next-btn" class="div-action-btn">
-                                [ NEXT FORECAST ↻ ]
+                        <div class="alibi-card" id="alibi-card">
+                            <div class="alibi-badge">OFFICIAL DISPATCH OF NON-PERFORMANCE</div>
+                            <div class="alibi-text" id="alibi-text">
+                                "The bearer is unable to attend due to acute cognitive atmospheric interference. All inquiries are legally deferred to next Tuesday."
+                            </div>
+                            <div class="alibi-ref" id="alibi-ref">STATUTE 404 • REF #ALB-8912 • VERIFIED DELAY</div>
+                        </div>
+                        <div class="diversion-actions-row">
+                            <button type="button" id="alibi-next-btn" class="div-action-btn">
+                                [ 🖨️ DISPENSE NEXT ALIBI ]
+                            </button>
+                            <button type="button" id="alibi-copy-btn" class="div-action-btn">
+                                [ 📋 COPY FOR SLACK ]
                             </button>
                         </div>
                     </div>
 
-                    <!-- Tab 3: Editorial ASCII Comic Strip -->
+                    <!-- Tab 3: Slacker's Daily Oracle / Horoscope -->
+                    <div id="tab-oracle" class="tab-panel" role="tabpanel" style="display: none;">
+                        <div class="oracle-header">
+                            <label for="oracle-sign-select" class="oracle-label">CHOOSE YOUR CELESTIAL SIGN:</label>
+                            <select id="oracle-sign-select" class="oracle-select">
+                                <option value="aries">♈ ARIES</option>
+                                <option value="taurus">♉ TAURUS</option>
+                                <option value="gemini">♊ GEMINI</option>
+                                <option value="cancer">♋ CANCER</option>
+                                <option value="leo">♌ LEO</option>
+                                <option value="virgo">♍ VIRGO</option>
+                                <option value="libra">♎ LIBRA</option>
+                                <option value="scorpio">♏ SCORPIO</option>
+                                <option value="sagittarius">♐ SAGITTARIUS</option>
+                                <option value="capricorn">♑ CAPRICORN</option>
+                                <option value="aquarius">♒ AQUARIUS</option>
+                                <option value="pisces">♓ PISCES</option>
+                            </select>
+                        </div>
+                        <div class="oracle-card">
+                            <div class="oracle-sign-title" id="oracle-sign-title">♈ ARIES • THE CELESTIAL MANDATE</div>
+                            <div class="oracle-body" id="oracle-body">
+                                "Mars is in retrograde. Answering that email will disrupt the cosmic equilibrium. Stare out the window for 45 minutes instead."
+                            </div>
+                        </div>
+                        <div class="diversion-actions-row">
+                            <button type="button" id="oracle-random-btn" class="div-action-btn">
+                                [ 🔮 ROLL RANDOM DESTINY ]
+                            </button>
+                            <button type="button" id="oracle-copy-btn" class="div-action-btn">
+                                [ 📋 COPY DESTINY ]
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab 4: Editorial ASCII Comic Strip -->
                     <div id="tab-comic" class="tab-panel" role="tabpanel" style="display: none;">
                         <div class="comic-display">
                             <pre class="comic-ascii" id="comic-ascii"></pre>
@@ -402,7 +456,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.7.0"></script>
+    <script src="script.js?v=2.7.1"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>

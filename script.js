@@ -1552,7 +1552,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const plainCensored = censorNsfwText(clean);
         const actionVerb = isPanicMode ? "am officially panicking about" : "just postponed";
         const punchline = isPanicMode ? "Wish me luck." : "Not my problem today.";
-        currentShareText = `I ${actionVerb} "${plainCensored}" on Later, Gator alongside the rest of the world. ${punchline}`;
+        currentShareText = `I ${actionVerb} "${plainCensored}" on @thelatergators (https://latergators.live) alongside the rest of the world. ${punchline}`;
         
         const shareNativeBtn = document.getElementById('share-native-btn');
         if (shareNativeBtn && navigator.share) {
@@ -1567,11 +1567,33 @@ document.addEventListener('DOMContentLoaded', () => {
         shareNativeBtn.addEventListener('click', async () => {
             if (!navigator.share) return;
             try {
-                await navigator.share({
-                    title: 'LATER, GATORS — Official Postponement Notice',
-                    text: currentShareText,
-                    url: getShareUrl()
-                });
+                if (currentRawTask && navigator.canShare) {
+                    const canvas = generateCertificateImage(currentRawTask, currentIsPanic, currentSubmittedName);
+                    canvas.toBlob(async (blob) => {
+                        if (blob) {
+                            const file = new File([blob], 'postponement-certificate.png', { type: 'image/png' });
+                            if (navigator.canShare({ files: [file] })) {
+                                await navigator.share({
+                                    title: 'LATER, GATORS — Official Postponement Notice',
+                                    text: currentShareText,
+                                    files: [file]
+                                });
+                                return;
+                            }
+                        }
+                        await navigator.share({
+                            title: 'LATER, GATORS — Official Postponement Notice',
+                            text: currentShareText,
+                            url: getShareUrl()
+                        });
+                    });
+                } else {
+                    await navigator.share({
+                        title: 'LATER, GATORS — Official Postponement Notice',
+                        text: currentShareText,
+                        url: getShareUrl()
+                    });
+                }
             } catch (e) {}
         });
     }
@@ -1601,7 +1623,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (shareXBtn) {
         shareXBtn.addEventListener('click', () => {
-            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentShareText)}&url=${encodeURIComponent(getShareUrl())}`;
+            if (currentRawTask) {
+                const canvas = generateCertificateImage(currentRawTask, currentIsPanic, currentSubmittedName);
+                const link = document.createElement('a');
+                link.download = `official-postponement-certificate-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+            const tweetText = `${currentShareText}\n\nOfficially sealed on @thelatergators:`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(getShareUrl())}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         });
     }
@@ -1933,7 +1963,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const divTabs = document.querySelectorAll('.div-tab');
     const tabPanels = {
         clicker: document.getElementById('tab-clicker'),
-        weather: document.getElementById('tab-weather'),
+        alibis: document.getElementById('tab-alibis'),
+        oracle: document.getElementById('tab-oracle'),
         comic: document.getElementById('tab-comic')
     };
 
@@ -1971,13 +2002,64 @@ document.addEventListener('DOMContentLoaded', () => {
         switchTab(savedTab);
     }
 
-    // --- Option 2: The Do-Nothing Clicker ---
+    // --- Option 2: The Do-Nothing Clicker (Supercharged) ---
     const clickerBtn = document.getElementById('clicker-btn');
     const clickerCountEl = document.getElementById('clicker-count');
     const clickerTimeEl = document.getElementById('clicker-time');
     const clickerRankEl = document.getElementById('clicker-rank');
     const clickerQuoteEl = document.getElementById('clicker-quote');
     const clickerResetBtn = document.getElementById('clicker-reset-btn');
+    const clickerParticlesEl = document.getElementById('clicker-particles');
+    const defconStatusEl = document.getElementById('defcon-status');
+    const defconFillEl = document.getElementById('defcon-meter-fill');
+
+    const CLICK_PARTICLES = [
+        "+1 MINUTE DODGED",
+        "TAXES DELAYED",
+        "NAP DECLARED",
+        "SLACK MUTED",
+        "EXCEL CLOSED",
+        "BOSS CONFUSED",
+        "WILLPOWER: 0%",
+        "MEETING SKIPPED",
+        "STILL SNOOZING",
+        "FUTURE ME'S PROBLEM",
+        "DIPLOMATIC IMMUNITY",
+        "INERTIA ACHIEVED"
+    ];
+
+    const spawnClickerParticle = () => {
+        if (!clickerParticlesEl) return;
+        const particle = document.createElement('div');
+        particle.className = 'clicker-particle';
+        const text = CLICK_PARTICLES[Math.floor(Math.random() * CLICK_PARTICLES.length)];
+        particle.textContent = text;
+        const xOffset = (Math.random() * 80 - 40);
+        particle.style.setProperty('--x-offset', `${xOffset}px`);
+        particle.style.left = `${Math.max(10, Math.min(75, 40 + xOffset))}%`;
+        particle.style.top = '10px';
+        clickerParticlesEl.appendChild(particle);
+        setTimeout(() => { particle.remove(); }, 900);
+    };
+
+    const updateDefconMeter = (count) => {
+        if (!defconStatusEl || !defconFillEl) return;
+        let title = "DEFCON 5 (MILD DELAY)";
+        let pct = Math.min(100, Math.max(8, (count / 100) * 100));
+
+        if (count >= 100) {
+            title = "DEFCON 1 (TOTAL INERTIA)";
+        } else if (count >= 50) {
+            title = "DEFCON 2 (MASTER OF DELAY)";
+        } else if (count >= 25) {
+            title = "DEFCON 3 (CHRONIC IDLE)";
+        } else if (count >= 10) {
+            title = "DEFCON 4 (CALCULATED NAP)";
+        }
+
+        defconStatusEl.textContent = title;
+        defconFillEl.style.width = `${pct}%`;
+    };
 
     const CLICKER_QUOTES = [
         "\"Every click is another responsibility successfully dodged.\"",
@@ -1988,18 +2070,11 @@ document.addEventListener('DOMContentLoaded', () => {
         "\"A masterclass in strategic unproductivity.\"",
         "\"Your boss is probably crying somewhere.\"",
         "\"Tomorrow is looking very busy at this rate.\"",
-        "\"Due today? Sounds like a tomorrow problem.\"",
-        "\"Hard work pays off in the future. Slacking pays off right now.\"",
-        "\"You are single-handedly stabilizing the global sloth economy.\"",
-        "\"Just tell them you are waiting on email replies.\"",
-        "\"If at first you don't succeed, do what you're doing right now.\"",
-        "\"Deadlines are merely helpful suggestions from the universe.\"",
-        "\"Look at you go. Achieving absolutely nothing with great gusto.\"",
-        "\"The art of doing nothing requires incredible commitment.\"",
-        "\"A task postponed is a task that might solve itself.\"",
-        "\"Currently operating at peak non-performance.\"",
-        "\"A true master of the art of delay.\"",
-        "\"Legend says you were once productive. A vicious rumor.\""
+        "\"Sloth is not a bug; it is an executive lifestyle choice.\"",
+        "\"Somewhere, a deadline just missed you.\"",
+        "\"You are doing the Lord's work (nothing).\"",
+        "\"The hardest part of doing nothing is knowing when you are done.\"",
+        "\"Congratulations, you have achieved Olympic-grade avoidance.\""
     ];
 
     const getClickerBtnText = (count) => {
@@ -2021,11 +2096,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const ctx = new AudioCtx();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
+
             osc.type = 'triangle';
-            osc.frequency.setValueAtTime(520, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.035);
-            gain.gain.setValueAtTime(0.09, ctx.currentTime);
+            const baseFreq = 160 + Math.min(clickerCount * 2, 400);
+            osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.035);
+
+            gain.gain.setValueAtTime(0.08, ctx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+
             osc.connect(gain);
             gain.connect(ctx.destination);
             osc.start();
@@ -2057,6 +2136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clickerQuoteEl.textContent = CLICKER_QUOTES[qIdx];
         }
 
+        updateDefconMeter(clickerCount);
         checkUnlockables();
     };
 
@@ -2066,6 +2146,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const camoSection = document.getElementById('camo-section');
     const camoTypingBtn = document.getElementById('camo-typing-btn');
     const camoSighBtn = document.getElementById('camo-sigh-btn');
+    const camoPaperBtn = document.getElementById('camo-paper-btn');
     const camoStopBtn = document.getElementById('camo-stop-btn');
     const secretColumn = document.getElementById('secret-column');
 
@@ -2081,10 +2162,6 @@ document.addEventListener('DOMContentLoaded', () => {
         // Rank 10+ (>= 10 clicks): Press Pass claim button
         if (claimPassBtn) {
             claimPassBtn.style.display = (clickerCount >= 10) ? 'inline-block' : 'none';
-        }
-        // Rank 25+ (>= 25 clicks): Office Sound Camouflage
-        if (camoSection) {
-            camoSection.style.display = (clickerCount >= 25) ? 'flex' : 'none';
         }
         // Rank 50+ (>= 50 clicks): 1890s Newsprint Sepia Edition
         if (sepiaToggleBtn) {
@@ -2103,6 +2180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             clickerCount++;
             try { localStorage.setItem('lg_clicker_count', clickerCount.toString()); } catch (e) {}
             playClickerSound();
+            spawnClickerParticle();
             if (navigator.vibrate) {
                 try { navigator.vibrate(12); } catch (e) {}
             }
@@ -2422,8 +2500,57 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     };
 
+    const playPaperShuffle = () => {
+        try {
+            const ctx = getCamoAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const duration = 0.65;
+
+            const bufferSize = Math.floor(ctx.sampleRate * duration);
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                const env = Math.sin((i / bufferSize) * Math.PI);
+                const jitter = Math.sin(i * 0.05) * 0.5 + 0.5;
+                data[i] = (Math.random() * 2 - 1) * env * jitter;
+            }
+
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(1400, now);
+            filter.Q.setValueAtTime(1.8, now);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.01, now);
+            gain.gain.linearRampToValueAtTime(0.12, now + 0.15);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            noiseSource.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            noiseSource.start(now);
+            noiseSource.stop(now + duration);
+
+            if (camoPaperBtn) {
+                const orig = camoPaperBtn.textContent;
+                camoPaperBtn.textContent = '📁 *SHUFFLE*';
+                camoPaperBtn.classList.add('playing');
+                setTimeout(() => {
+                    camoPaperBtn.textContent = orig;
+                    camoPaperBtn.classList.remove('playing');
+                }, duration * 1000);
+            }
+        } catch (e) {}
+    };
+
     if (camoTypingBtn) camoTypingBtn.addEventListener('click', startTypingCamouflage);
     if (camoSighBtn) camoSighBtn.addEventListener('click', playExhaustedSigh);
+    if (camoPaperBtn) camoPaperBtn.addEventListener('click', playPaperShuffle);
     if (camoStopBtn) camoStopBtn.addEventListener('click', stopCamouflage);
 
     // --- Perk 3: Official Sloth Credential & Press Pass ---
@@ -2690,8 +2817,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (credentialXBtn) {
         credentialXBtn.addEventListener('click', () => {
+            if (credentialCanvas) {
+                const link = document.createElement('a');
+                link.download = `sloth-credential-pass-${Date.now()}.png`;
+                link.href = credentialCanvas.toDataURL('image/png');
+                link.click();
+            }
             const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-            const text = `I have been officially certified as "${rankText}" with ${clickerCount} tasks evaded on @LaterGator. My diplomatic immunity is legally binding.`;
+            const text = `I have been officially certified as "${rankText}" with ${clickerCount} tasks evaded on @thelatergators. My diplomatic immunity is legally binding.`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         });
@@ -2714,37 +2847,208 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Option 4: Meteorological Outlook ---
-    const WEATHER_REPORTS = [
-        { condition: "HEAVY BRAIN FOG", temp: "98°F IN DENIAL", humidity: "100% AVOIDANCE", forecast: "Forecast: Scattered excuses turning into crippling guilt by midnight." },
-        { condition: "SPARSE MOTIVATION", temp: "72°F ROOM TEMPERATURE", humidity: "88% LETHARGY", forecast: "Forecast: 100% chance of telling everyone 'I will start fresh on Monday'." },
-        { condition: "COLD DEADLINE FRONT", temp: "34°F CHILLING APATHY", humidity: "95% DISTRACTION", forecast: "Forecast: Approaching deadline front moving at 0.0001 MPH. Bunker down with tea." },
-        { condition: "PRESSURE COLLAPSE", temp: "84°F COMFORT ZONE", humidity: "92% RATIONALIZATION", forecast: "Forecast: Severe low-pressure system over personal willpower. Stay in bed." },
-        { condition: "PRECIPITATION WARNING", temp: "77°F COFFEE JITTERS", humidity: "99% COGNITIVE EVASION", forecast: "Forecast: Heavy downpour of 4-hour YouTube rabbit holes on medieval castle doors." },
-        { condition: "SOLAR FLARE ADVISORY", temp: "104°F PANIC SOUP", humidity: "100% RELUCTANCE", forecast: "Forecast: Astral interference detected. All productive work legally grounded." }
-    ];
-
-    let weatherIdx = 0;
-    const weatherConditionEl = document.getElementById('weather-condition');
-    const weatherTempEl = document.getElementById('weather-temp');
-    const weatherHumidityEl = document.getElementById('weather-humidity');
-    const weatherForecastEl = document.getElementById('weather-forecast');
-    const weatherNextBtn = document.getElementById('weather-next-btn');
-
-    const renderWeather = (idx) => {
-        const item = WEATHER_REPORTS[idx];
-        if (!item) return;
-        if (weatherConditionEl) weatherConditionEl.textContent = item.condition;
-        if (weatherTempEl) weatherTempEl.textContent = item.temp;
-        if (weatherHumidityEl) weatherHumidityEl.textContent = item.humidity;
-        if (weatherForecastEl) weatherForecastEl.textContent = item.forecast;
+    // ==========================================
+    // TAB 2: THE AIRTIGHT ALIBI DISPENSER
+    // ==========================================
+    const ALIBI_DATABASE = {
+        work: [
+            { text: "My local cache has desynchronized from the upstream repository, corrupting the cognitive build pipeline. Rebuilding takes 4 to 6 business days.", ref: "STATUTE 404 • REF #WRK-901 • CORRUPT CACHE" },
+            { text: "I am actively analyzing cross-functional deliverables to identify synergistic blockers. Any sudden output right now could disrupt quarterly alignment.", ref: "STATUTE 102 • REF #WRK-382 • STRATEGIC SYNERGY" },
+            { text: "Currently caught in an emergency asynchronous retrospective loop. Direct queries will bounce back with a 504 Gateway Timeout.", ref: "STATUTE 504 • REF #WRK-712 • ASYNC DEADLOCK" },
+            { text: "I would love to prioritize this, but I am waiting on critical sign-offs from three executives who are currently out of office indefinitely.", ref: "STATUTE 203 • REF #WRK-419 • BLOCKED BY MGMT" },
+            { text: "My mouse cursor froze inside an invisible modal overlay. Interacting with Slack or email will irrevocably compromise security protocols.", ref: "STATUTE 808 • REF #WRK-664 • MODAL TRAP" }
+        ],
+        school: [
+            { text: "My primary textbook spontaneously combusted into philosophical irrelevance upon contact with reality. Requesting an indefinite extension.", ref: "DEAN DISPATCH • REF #SCH-101 • SYLLABUS DISPUTE" },
+            { text: "I conducted profound preliminary research for 7 hours, concluding that the essay prompt presupposes an unprovable metaphysical premise.", ref: "ACADEMIC BOARD • REF #SCH-420 • ONTOLOGICAL CRISIS" },
+            { text: "The dog did not eat my homework. The dog initiated a distributed denial of service attack against my home router. Pls understand.", ref: "CAMPUS IT • REF #SCH-883 • CANINE DDOS" },
+            { text: "I submitted the assignment directly into the ether. If the portal claims it is missing, the portal has failed its own verification.", ref: "REGISTRAR • REF #SCH-919 • ETHER SUBMISSION" }
+        ],
+        social: [
+            { text: "My social battery experienced catastrophic thermal throttling at 4:15 PM. Forced reboot requires a weighted blanket and 3 episodes of television.", ref: "SOCIETAL ACCORD • REF #SOC-500 • THERMAL THROTTLE" },
+            { text: "I am trapped inside an unresolvable conversation with my cat regarding the redistribution of treats. Etiquette forbids early departure.", ref: "DOMESTIC PROTOCOL • REF #SOC-214 • FELINE DISPUTE" },
+            { text: "I was already dressed and heading to the door, but gravity experienced a sudden localized spike in the living room sofa.", ref: "GRAVITATIONAL ANOMALY • REF #SOC-771 • SOFA SPIKE" },
+            { text: "My psychic advised against traversing any doorway facing east today. Regrettably, your gathering is due east.", ref: "MYSTIC CODES • REF #SOC-333 • EASTWARD EMBARGO" }
+        ],
+        existential: [
+            { text: "The bearer is unable to attend due to acute cognitive atmospheric interference. All inquiries are legally deferred to next Tuesday.", ref: "STATUTE 404 • REF #EXT-8912 • VERIFIED DELAY" },
+            { text: "In 5 billion years the sun will engulf the earth, rendering this sprint review fundamentally trivial. Exercising proactive indifference.", ref: "COSMIC TRIBUNAL • REF #EXT-001 • SOLAR PREEMPTION" },
+            { text: "I have achieved quantum superposition between working and not working. By observing me, you will collapse the wave function into complete slumber.", ref: "PHYSICS CODEX • REF #EXT-734 • SCHRÖDINGER SLOTH" },
+            { text: "I am taking a mental sabbatical for the next 45 minutes to contemplate the geometry of dust motes in the afternoon sunbeam.", ref: "CONTEMPLATION ORDER • REF #EXT-404 • DUST MOTES" }
+        ]
     };
 
-    if (weatherNextBtn) {
-        weatherNextBtn.addEventListener('click', () => {
-            weatherIdx = (weatherIdx + 1) % WEATHER_REPORTS.length;
-            renderWeather(weatherIdx);
+    let currentAlibiCat = 'work';
+    let currentAlibiIdx = 0;
+    const alibiCatBtns = document.querySelectorAll('.alibi-cat-btn');
+    const alibiTextEl = document.getElementById('alibi-text');
+    const alibiRefEl = document.getElementById('alibi-ref');
+    const alibiNextBtn = document.getElementById('alibi-next-btn');
+    const alibiCopyBtn = document.getElementById('alibi-copy-btn');
+
+    const renderAlibi = (animate = false) => {
+        const catList = ALIBI_DATABASE[currentAlibiCat] || ALIBI_DATABASE.work;
+        const item = catList[currentAlibiIdx % catList.length];
+        if (!item) return;
+
+        if (animate && alibiTextEl) {
+            alibiTextEl.style.opacity = '0';
+            setTimeout(() => {
+                alibiTextEl.textContent = `"${item.text}"`;
+                if (alibiRefEl) alibiRefEl.textContent = item.ref;
+                alibiTextEl.style.opacity = '1';
+            }, 120);
+        } else {
+            if (alibiTextEl) alibiTextEl.textContent = `"${item.text}"`;
+            if (alibiRefEl) alibiRefEl.textContent = item.ref;
+        }
+    };
+
+    alibiCatBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            alibiCatBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentAlibiCat = btn.getAttribute('data-cat') || 'work';
+            currentAlibiIdx = Math.floor(Math.random() * (ALIBI_DATABASE[currentAlibiCat] || []).length);
+            renderAlibi(true);
         });
+    });
+
+    if (alibiNextBtn) {
+        alibiNextBtn.addEventListener('click', () => {
+            const catList = ALIBI_DATABASE[currentAlibiCat] || ALIBI_DATABASE.work;
+            currentAlibiIdx = (currentAlibiIdx + 1) % catList.length;
+            renderAlibi(true);
+        });
+    }
+
+    if (alibiCopyBtn) {
+        alibiCopyBtn.addEventListener('click', async () => {
+            const catList = ALIBI_DATABASE[currentAlibiCat] || ALIBI_DATABASE.work;
+            const item = catList[currentAlibiIdx % catList.length];
+            if (!item) return;
+            const slackText = `> 🚨 *OFFICIAL ALIBI DISPATCH*:\n> "${item.text}"\n> — _${item.ref} via LaterGator.live_`;
+            try {
+                await navigator.clipboard.writeText(slackText);
+                alibiCopyBtn.textContent = "[ COPIED TO SLACK! ✓ ]";
+                setTimeout(() => { alibiCopyBtn.textContent = "[ 📋 COPY FOR SLACK ]"; }, 2000);
+            } catch (e) {
+                alibiCopyBtn.textContent = "[ COPIED! ]";
+            }
+        });
+    }
+
+    renderAlibi(false);
+
+    // ==========================================
+    // TAB 3: SLACKER'S DAILY ORACLE / HOROSCOPE
+    // ==========================================
+    const ORACLE_HOROSCOPES = {
+        aries: {
+            title: "♈ ARIES • THE IMPULSIVE REST",
+            text: "Mars demands bold aggression, but your bed demands horizontal solidarity. Choose peace over emails. Any task attempted today will backfire into a 3-hour nap."
+        },
+        taurus: {
+            title: "♉ TAURUS • THE STUBBORN COCOON",
+            text: "Venus aligns with your comfort zone. Today is not the day to conquer mountains; it is the day to conquer snacks. If someone asks for a status update, chew louder."
+        },
+        gemini: {
+            title: "♊ GEMINI • THE DUAL INACTION",
+            text: "Both of your personalities have unanimously agreed: absolutely not. You will open 47 browser tabs with good intentions and read none of them. A flawless victory."
+        },
+        cancer: {
+            title: "♋ CANCER • THE EMOTIONAL FORTRESS",
+            text: "The Moon urges you to retreat into your shell. Seal the perimeters. The spreadsheet is toxic and lacks emotional maturity. Ignore it until next fiscal quarter."
+        },
+        leo: {
+            title: "♌ LEO • THE REGAL SLACKER",
+            text: "You are royalty, and royalty does not fill out Jira tickets. Bask in the spotlight of unearned confidence. Let the commoners deal with the deliverables."
+        },
+        virgo: {
+            title: "♍ VIRGO • THE PERFECTIONIST'S PARALYSIS",
+            text: "You cannot start until the desk is clean, the inbox is zeroed, and the lighting is cinematic. Since this will take until 2028, you are free to do nothing today."
+        },
+        libra: {
+            title: "♎ LIBRA • THE DELICATE IMBALANCE",
+            text: "Weighing the pros and cons of doing work has revealed that not doing work has zero calorie expenditure. The scales have spoken. Remain motionless."
+        },
+        scorpio: {
+            title: "♏ SCORPIO • THE SHADOW RETREAT",
+            text: "Plot in silence. If they can't see you, they can't assign you tasks. Set your Slack status to a cryptic moon emoji and vanish into the ether."
+        },
+        sagittarius: {
+            title: "♐ SAGITTARIUS • THE RUNAWAY ARROW",
+            text: "Your spirit yearns for wild horizons, or at least a 2-hour lunch break in the park. Run free. The project manager's ping cannot cross state lines."
+        },
+        capricorn: {
+            title: "♑ CAPRICORN • THE STRATEGIC STRIKE",
+            text: "Even workaholics need a strike day. Frame your complete inactivity as an 'executive resilience audit'. They will respect your visionary leadership."
+        },
+        aquarius: {
+            title: "♒ AQUARIUS • THE REVOLUTIONARY IDLE",
+            text: "By refusing to work today, you are subverting the capitalist industrial complex. Your nap is not laziness; it is high-concept political performance art."
+        },
+        pisces: {
+            title: "♓ PISCES • THE DREAMLAND VOYAGE",
+            text: "Neptune floods your consciousness with whimsical daydreams. You are technically at your desk, but your soul is swimming with neon dolphins in the year 3000."
+        }
+    };
+
+    const oracleSelect = document.getElementById('oracle-sign-select');
+    const oracleTitleEl = document.getElementById('oracle-sign-title');
+    const oracleBodyEl = document.getElementById('oracle-body');
+    const oracleRandomBtn = document.getElementById('oracle-random-btn');
+    const oracleCopyBtn = document.getElementById('oracle-copy-btn');
+
+    const renderOracle = (signKey, animate = false) => {
+        const item = ORACLE_HOROSCOPES[signKey] || ORACLE_HOROSCOPES.aries;
+        if (!item) return;
+
+        if (animate && oracleBodyEl) {
+            oracleBodyEl.style.opacity = '0';
+            setTimeout(() => {
+                if (oracleTitleEl) oracleTitleEl.textContent = item.title;
+                oracleBodyEl.textContent = `"${item.text}"`;
+                oracleBodyEl.style.opacity = '1';
+            }, 120);
+        } else {
+            if (oracleTitleEl) oracleTitleEl.textContent = item.title;
+            if (oracleBodyEl) oracleBodyEl.textContent = `"${item.text}"`;
+        }
+    };
+
+    if (oracleSelect) {
+        oracleSelect.addEventListener('change', () => {
+            renderOracle(oracleSelect.value, true);
+        });
+    }
+
+    if (oracleRandomBtn) {
+        oracleRandomBtn.addEventListener('click', () => {
+            const keys = Object.keys(ORACLE_HOROSCOPES);
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            if (oracleSelect) oracleSelect.value = randomKey;
+            renderOracle(randomKey, true);
+        });
+    }
+
+    if (oracleCopyBtn) {
+        oracleCopyBtn.addEventListener('click', async () => {
+            const signKey = oracleSelect ? oracleSelect.value : 'aries';
+            const item = ORACLE_HOROSCOPES[signKey] || ORACLE_HOROSCOPES.aries;
+            const copyMsg = `🔮 *CELESTIAL SLACKER ORACLE*:\n"${item.title}"\n${item.text}\n— via LaterGator.live`;
+            try {
+                await navigator.clipboard.writeText(copyMsg);
+                oracleCopyBtn.textContent = "[ COPIED DESTINY! ✓ ]";
+                setTimeout(() => { oracleCopyBtn.textContent = "[ 📋 COPY DESTINY ]"; }, 2000);
+            } catch (e) {
+                oracleCopyBtn.textContent = "[ COPIED! ]";
+            }
+        });
+    }
+
+    if (oracleSelect) {
+        renderOracle(oracleSelect.value, false);
     }
 
     // --- Option 5: Front-Page Editorial ASCII Comic Strip ---
