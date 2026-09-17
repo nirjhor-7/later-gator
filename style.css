@@ -821,7 +821,7 @@ button {
     margin-top: 15px;
     border: 2px dashed var(--ink);
     padding: 12px 14px;
-    background-color: #FAFAFA;
+    background-color: var(--paper);
     animation: slideIn 0.25s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
 
@@ -1813,8 +1813,18 @@ button {
     text-transform: uppercase;
 }
 
-/* Sepia 1890s Newsprint Edition */
+/* ==========================================
+   1890s NEWSPRINT SEPIA EDITION
+   ========================================== */
+html:has(body.sepia-edition),
+html.sepia-edition {
+    background-color: #E2D7BE !important;
+}
+
 body.sepia-edition {
+    --paper: #F6EED9 !important;
+    --ink: #21150A !important;
+    --ink-light: #685743 !important;
     background-color: #E2D7BE !important;
     color: #21150A !important;
 }
@@ -1826,9 +1836,572 @@ body.sepia-edition .page-border {
     box-shadow: 16px 16px 0px #21150A !important;
 }
 
-body.sepia-edition .rubber-stamp {
+body.sepia-edition .masthead {
+    border-bottom-color: #21150A !important;
+}
+
+body.sepia-edition .masthead-meta {
+    border-bottom-color: #21150A !important;
+    color: #685743 !important;
+}
+
+body.sepia-edition .masthead h1 {
+    color: #21150A !important;
+}
+
+body.sepia-edition .masthead-sub {
+    color: #685743 !important;
+}
+
+body.sepia-edition .telegraph-ticker {
+    background: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .ticker-badge {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .ticker-text {
+    color: #21150A !important;
+}
+
+body.sepia-edition .lead-story-banner {
+    background-color: #F6EED9 !important;
+    border-color: #21150A !important;
+    box-shadow: 4px 4px 0px rgba(33, 21, 10, 0.15) !important;
+}
+
+body.sepia-edition .lead-story-eyebrow {
+    background-color: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .lead-story-badge {
+    background-color: #E2D7BE !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .lead-story-headline {
+    color: #21150A !important;
+}
+
+body.sepia-edition .lead-story-meta,
+body.sepia-edition .lead-story-ornament,
+body.sepia-edition .lead-stamp-prompt {
+    color: #685743 !important;
+}
+
+body.sepia-edition .lead-story-dot {
+    background-color: #21150A !important;
+}
+
+body.sepia-edition .lead-story-actions {
+    border-top-color: rgba(33, 21, 10, 0.25) !important;
+}
+
+body.sepia-edition .section-title {
+    color: #21150A !important;
+}
+
+body.sepia-edition .subtitle {
+    color: #685743 !important;
+}
+
+/* Form Inputs & Buttons */
+body.sepia-edition input[type="text"],
+body.sepia-edition textarea,
+body.sepia-edition select {
+    background-color: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .byline-input-row {
+    border-color: #21150A !important;
     background-color: #F6EED9 !important;
 }
+
+body.sepia-edition .byline-input-row:focus-within {
+    outline-color: #21150A !important;
+}
+
+body.sepia-edition .byline-tag {
+    background-color: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .byline-input-row input {
+    background-color: #F6EED9 !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition input[type="text"]::placeholder,
+body.sepia-edition textarea::placeholder {
+    color: #8C7B68 !important;
+}
+
+body.sepia-edition input[type="text"]:focus,
+body.sepia-edition textarea:focus {
+    outline-color: #21150A !important;
+}
+
+body.sepia-edition .task-char-count {
+    color: #8C7B68 !important;
+}
+
+body.sepia-edition .chips-label {
+    color: #685743 !important;
+}
+
+body.sepia-edition .chip-btn {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .chip-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .btn-heavy {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+    border-color: #21150A !important;
+    box-shadow: 4px 4px 0px rgba(33, 21, 10, 0.25) !important;
+}
+
+body.sepia-edition .btn-heavy:hover {
+    background: #3B2818 !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .btn-dice {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .btn-dice:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .btn-outline {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .btn-outline:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+/* Feed & Ticker */
+body.sepia-edition .feed-container {
+    background-color: #F6EED9 !important;
+    border-color: #21150A !important;
+    scrollbar-color: #21150A #F6EED9 !important;
+}
+
+body.sepia-edition .feed-container::-webkit-scrollbar-track {
+    background: #F6EED9 !important;
+    border-left-color: #21150A !important;
+}
+
+body.sepia-edition .feed-container::-webkit-scrollbar-thumb {
+    background: #21150A !important;
+}
+
+body.sepia-edition .feed-item {
+    border-bottom-color: #21150A !important;
+}
+
+body.sepia-edition .feed-item-meta {
+    color: #21150A !important;
+}
+
+body.sepia-edition .feed-item-time {
+    color: #685743 !important;
+}
+
+body.sepia-edition .feed-item-text {
+    color: #21150A !important;
+}
+
+body.sepia-edition .reaction-stamp-btn {
+    background: transparent !important;
+    border-color: #21150A !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition .reaction-stamp-btn:hover {
+    background: rgba(33, 21, 10, 0.08) !important;
+}
+
+body.sepia-edition .reaction-stamp-btn.stamped {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .reaction-stamp-btn[data-type="same"].stamped {
+    background: #8B2500 !important;
+    border-color: #8B2500 !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .reaction-stamp-btn[data-type="valid"].stamped {
+    background: #2E5A36 !important;
+    border-color: #2E5A36 !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .reaction-stamp-btn[data-type="rip"].stamped {
+    background: #21150A !important;
+    border-color: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .rubber-stamp {
+    background: #F6EED9 !important;
+    border-color: #8B2500 !important;
+    color: #8B2500 !important;
+}
+
+/* Postponed Share Card */
+body.sepia-edition .share-card {
+    background-color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .share-btn {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .share-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+/* Statistics & Shame Box */
+body.sepia-edition .stat-box,
+body.sepia-edition .visitor-counter {
+    background: #F6EED9 !important;
+    border-color: #21150A !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition .stat-label {
+    color: #685743 !important;
+}
+
+body.sepia-edition .stat-value {
+    color: #21150A !important;
+}
+
+body.sepia-edition .odometer-digit {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .shame-box {
+    background: rgba(139, 37, 0, 0.08) !important;
+    border-color: #8B2500 !important;
+}
+
+body.sepia-edition .shame-badge {
+    background: #8B2500 !important;
+    color: #F6EED9 !important;
+}
+
+/* Video Box & Daily Diversions Box */
+body.sepia-edition .video-box,
+body.sepia-edition .diversion-box {
+    background-color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .diversion-header {
+    border-bottom-color: #21150A !important;
+}
+
+body.sepia-edition .diversion-label {
+    color: #21150A !important;
+}
+
+body.sepia-edition .div-tab {
+    background: #EBE1C7 !important;
+    color: #685743 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .div-tab:hover {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition .div-tab.active {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .clicker-btn {
+    background: #F6EED9 !important;
+    border-color: #21150A !important;
+    color: #21150A !important;
+    box-shadow: 4px 4px 0px #21150A !important;
+}
+
+body.sepia-edition .clicker-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .clicker-count {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .clicker-time {
+    color: #685743 !important;
+}
+
+body.sepia-edition .clicker-quote {
+    color: #685743 !important;
+}
+
+body.sepia-edition .clicker-reset-btn {
+    color: #8C7B68 !important;
+}
+
+body.sepia-edition .clicker-reset-btn:hover {
+    color: #8B2500 !important;
+}
+
+body.sepia-edition .clicker-particle {
+    background: #F6EED9 !important;
+    border-color: #8B2500 !important;
+    color: #8B2500 !important;
+    box-shadow: 2px 2px 0px rgba(139, 37, 0, 0.4) !important;
+}
+
+/* DEFCON Meter in Sepia */
+body.sepia-edition .defcon-gauge-container {
+    background: rgba(33, 21, 10, 0.05) !important;
+    border-color: rgba(33, 21, 10, 0.3) !important;
+}
+
+body.sepia-edition .defcon-label {
+    color: #21150A !important;
+}
+
+body.sepia-edition .defcon-status {
+    color: #8B2500 !important;
+}
+
+body.sepia-edition .defcon-meter-track {
+    background: rgba(33, 21, 10, 0.1) !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .defcon-meter-fill {
+    background: repeating-linear-gradient(
+        -45deg,
+        #21150A,
+        #21150A 6px,
+        #8B2500 6px,
+        #8B2500 12px
+    ) !important;
+}
+
+/* Camouflage Controls in Sepia */
+body.sepia-edition .camo-controls {
+    border-top-color: rgba(33, 21, 10, 0.25) !important;
+}
+
+body.sepia-edition .camo-label {
+    color: #685743 !important;
+}
+
+body.sepia-edition .camo-btn {
+    background: transparent !important;
+    border-color: #21150A !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition .camo-btn:hover,
+body.sepia-edition .camo-btn.playing {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+/* Unlockable Perks in Sepia */
+body.sepia-edition .claim-pass-btn {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .sepia-btn,
+body.sepia-edition #sepia-toggle-btn {
+    background: transparent !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .sepia-btn:hover,
+body.sepia-edition #sepia-toggle-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .secret-column {
+    background: rgba(33, 21, 10, 0.05) !important;
+    border-color: #21150A !important;
+    color: #21150A !important;
+}
+
+/* Tab 2: Alibis in Sepia */
+body.sepia-edition .alibi-cat-btn {
+    background: transparent !important;
+    border-color: #21150A !important;
+    color: #21150A !important;
+}
+
+body.sepia-edition .alibi-cat-btn:hover {
+    background: rgba(33, 21, 10, 0.08) !important;
+}
+
+body.sepia-edition .alibi-cat-btn.active {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.sepia-edition .alibi-card {
+    background: rgba(33, 21, 10, 0.03) !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .alibi-badge {
+    color: #8B2500 !important;
+    border-bottom-color: #8B2500 !important;
+}
+
+body.sepia-edition .alibi-text {
+    color: #21150A !important;
+}
+
+body.sepia-edition .alibi-ref {
+    color: #685743 !important;
+    border-top-color: rgba(33, 21, 10, 0.2) !important;
+}
+
+/* Tab 3: Oracle in Sepia */
+body.sepia-edition .oracle-label {
+    color: #685743 !important;
+}
+
+body.sepia-edition .oracle-select {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .oracle-card {
+    background: rgba(33, 21, 10, 0.03) !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .oracle-sign-title {
+    color: #8B2500 !important;
+    border-bottom-color: rgba(33, 21, 10, 0.2) !important;
+}
+
+body.sepia-edition .oracle-body {
+    color: #21150A !important;
+}
+
+body.sepia-edition .div-action-btn {
+    background: transparent !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .div-action-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+/* Tab 4: Comic in Sepia */
+body.sepia-edition .comic-display {
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .comic-ascii,
+body.sepia-edition .comic-caption {
+    color: #21150A !important;
+}
+
+body.sepia-edition .comic-footer {
+    border-top-color: rgba(33, 21, 10, 0.2) !important;
+}
+
+body.sepia-edition .comic-page-num {
+    color: #685743 !important;
+}
+
+/* Sloth Credential Modal in Sepia */
+body.sepia-edition .credential-modal-dialog {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .credential-preview-wrapper {
+    background: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .share-btn-cert {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .share-btn-cert:hover {
+    background: #3B2818 !important;
+}
+
+/* Footer in Sepia */
+body.sepia-edition .site-footer {
+    border-top-color: #21150A !important;
+}
+
+body.sepia-edition .footer-share-btn {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+    border-color: #21150A !important;
+}
+
+body.sepia-edition .footer-share-btn:hover {
+    background: #3B2818 !important;
+}
+
+body.sepia-edition .footer-quote {
+    color: #685743 !important;
+}
+
+body.sepia-edition .footer-credit {
+    color: #8C7B68 !important;
+}
+
 
 /* Unlockables styles */
 .clicker-perks-row {

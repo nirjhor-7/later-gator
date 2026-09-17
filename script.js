@@ -2261,14 +2261,37 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     };
 
+    const applySepiaMode = (enable) => {
+        document.body.classList.toggle('sepia-edition', enable);
+        document.documentElement.classList.toggle('sepia-edition', enable);
+        if (sepiaToggleBtn) {
+            sepiaToggleBtn.textContent = enable ? '[ 📜 1890s PRINT: ON ]' : '[ 📜 1890s PRINT: OFF ]';
+        }
+        if (enable) {
+            if (document.body.classList.contains('midnight-edition')) {
+                applyMidnightMode(false, false);
+            }
+            if (mastheadVol) mastheadVol.textContent = '1890s ED.';
+            if (mastheadSub) mastheadSub.textContent = 'PRINTED ON RAGGED LINEN NEWSPRINT // PRICE: TWO CENTS';
+        } else {
+            if (!document.body.classList.contains('midnight-edition')) {
+                if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
+                if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
+            }
+        }
+        try {
+            localStorage.setItem('lg_sepia_mode', enable ? 'true' : 'false');
+        } catch (e) {}
+    };
+
     const applyMidnightMode = (enable, playSound = false) => {
         if (enable) {
             document.body.classList.add('midnight-edition');
             // If sepia mode was on, turn off sepia so themes do not clash
             if (document.body.classList.contains('sepia-edition')) {
                 document.body.classList.remove('sepia-edition');
+                document.documentElement.classList.remove('sepia-edition');
                 if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: OFF ]';
-                try { localStorage.setItem('lg_sepia_mode', 'false'); } catch (e) {}
             }
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
@@ -2279,8 +2302,13 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             document.body.classList.remove('midnight-edition');
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: OFF';
-            if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
-            if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
+            const savedSepia = localStorage.getItem('lg_sepia_mode') === 'true';
+            if (savedSepia) {
+                applySepiaMode(true);
+            } else {
+                if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
+                if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
+            }
             if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('awake at this hour'))) {
                 taskInput.placeholder = "Declare your intent to procrastinate here...";
             }
@@ -2327,8 +2355,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const isSepia = localStorage.getItem('lg_sepia_mode') === 'true';
             if (isSepia && !document.body.classList.contains('midnight-edition')) {
-                document.body.classList.add('sepia-edition');
-                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: ON ]';
+                applySepiaMode(true);
             }
         } catch (e) {}
     };
@@ -2336,14 +2363,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (sepiaToggleBtn) {
         sepiaToggleBtn.addEventListener('click', () => {
-            const isSepia = document.body.classList.toggle('sepia-edition');
-            if (isSepia && document.body.classList.contains('midnight-edition')) {
-                applyMidnightMode(false, false);
-            }
-            sepiaToggleBtn.textContent = isSepia ? '[ 📜 1890s PRINT: ON ]' : '[ 📜 1890s PRINT: OFF ]';
-            try {
-                localStorage.setItem('lg_sepia_mode', isSepia ? 'true' : 'false');
-            } catch (e) {}
+            const isCurrentlySepia = document.body.classList.contains('sepia-edition');
+            applySepiaMode(!isCurrentlySepia);
         });
     }
 
