@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     if (!supabase) return res.status(500).json({ error: "Supabase Env Vars missing in Vercel" });
 
     try {
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=120');
         const { data: tasks, error } = await supabase
             .from('tasks')
             .select('country, created_at')

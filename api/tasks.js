@@ -157,11 +157,14 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
+            res.setHeader('Cache-Control', 'public, s-maxage=5, stale-while-revalidate=10');
+            const queryLimit = Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 10), 300);
+
             const { data: tasks, error } = await supabase
                 .from('tasks')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(2000);
+                .limit(queryLimit);
                 
             if (error) throw error;
 

@@ -492,110 +492,170 @@ document.addEventListener('DOMContentLoaded', () => {
     let renderedTopId = null;
     let renderedCount = 0;
 
+    const buildFeedItemHtml = (task, isNew) => {
+        const userName = task.city || 'Anonymous';
+        const userCountry = task.country || 'Parts Unknown';
+        
+        let displayName = userName;
+        let rankFlairHtml = '';
+        const flairMatch = userName.match(/^\[(.*?)\]\s*(.*)$/);
+        if (flairMatch) {
+            rankFlairHtml = `<span class="feed-rank-flair">${escapeHtml(flairMatch[1])}</span> `;
+            displayName = flairMatch[2] || 'Anonymous';
+        }
+
+        const locationString = `REPORT: ${rankFlairHtml}${escapeHtml(displayName).toUpperCase()} IN ${escapeHtml(userCountry).toUpperCase()}`;
+
+        let isPanic = false;
+        let rawText = task.text || '';
+
+        if (rawText.startsWith('[PANIC] ')) {
+            isPanic = true;
+            rawText = rawText.replace('[PANIC] ', '');
+        }
+
+        let verb = "";
+        if (isPanic) {
+            const verbIndex = task.id % panicVerbs.length;
+            verb = panicVerbs[verbIndex];
+        } else {
+            const verbIndex = task.id % evasionVerbs.length;
+            verb = evasionVerbs[verbIndex];
+        }
+
+        const animationClass = isNew ? 'slide-in' : '';
+
+        // User reaction status for this dispatch
+        const myStamp = userStamps[task.id] || null;
+        const sameCount = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
+        const validCount = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
+        const ripCount = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
+
+        return `
+        <div class="feed-item ${animationClass}" data-task-id="${task.id}">
+            <div class="feed-item-meta">${censorNsfwHtml(locationString)} ${verb}:</div>
+            <div class="feed-item-text">${censorNsfwHtml(escapeHtml(rawText))}</div>
+            <div class="feed-item-footer">
+                <span class="feed-item-time" data-created-at="${escapeHtml(task.created_at || '')}">${timeAgo(task.created_at)}</span>
+                <div class="feed-reactions" data-task-id="${task.id}">
+                    <button type="button" class="reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}" data-type="same" title="I am doing this right now">
+                        [ SAME <span class="reaction-count">${sameCount}</span> ]
+                    </button>
+                    <button type="button" class="reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}" data-type="valid" title="Completely justifiable excuse">
+                        [ VALID <span class="reaction-count">${validCount}</span> ]
+                    </button>
+                    <button type="button" class="reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}" data-type="rip" title="Thoughts and prayers for your deadline">
+                        [ RIP <span class="reaction-count">${ripCount}</span> ]
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    };
+
+    const updateRelativeTimestamps = () => {
+        if (!feedContainer) return;
+        const timeEls = feedContainer.querySelectorAll('.feed-item-time[data-created-at]');
+        timeEls.forEach(el => {
+            const createdAt = el.getAttribute('data-created-at');
+            if (createdAt) {
+                el.textContent = timeAgo(createdAt);
+            }
+        });
+    };
+
     const renderFeed = (tasks) => {
         if (!tasks || tasks.length === 0) {
             feedContainer.innerHTML = '<div class="feed-item">No transmissions received yet.</div>';
+            renderedTopId = null;
+            renderedCount = 0;
             return;
         }
 
-        // In-place refresh of reaction counts if tasks structure hasn't changed (prevents scroll jumps)
-        if (renderedTopId === tasks[0].id && renderedCount === tasks.length) {
-            tasks.forEach(task => {
-                const reactionsEl = feedContainer.querySelector(`.feed-reactions[data-task-id="${task.id}"]`);
-                if (reactionsEl) {
-                    const myStamp = userStamps[task.id] || null;
-                    const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
-                    const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
-                    const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
+        const existingItems = feedContainer.querySelectorAll('.feed-item[data-task-id]');
 
-                    if (sameEl) sameEl.textContent = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
-                    if (validEl) validEl.textContent = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
-                    if (ripEl) ripEl.textContent = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
-                }
-            });
-            return;
-        }
-
-        const prevScrollTop = feedContainer.scrollTop;
-        const isScrolled = prevScrollTop > 20;
-
-        const feedHtml = tasks.map(task => {
-            const userName = task.city || 'Anonymous';
-            const userCountry = task.country || 'Parts Unknown';
-            
-            let displayName = userName;
-            let rankFlairHtml = '';
-            const flairMatch = userName.match(/^\[(.*?)\]\s*(.*)$/);
-            if (flairMatch) {
-                rankFlairHtml = `<span class="feed-rank-flair">${escapeHtml(flairMatch[1])}</span> `;
-                displayName = flairMatch[2] || 'Anonymous';
-            }
-
-            const locationString = `REPORT: ${rankFlairHtml}${escapeHtml(displayName).toUpperCase()} IN ${escapeHtml(userCountry).toUpperCase()}`;
-
-            let isPanic = false;
-            let rawText = task.text;
-
-            if (rawText.startsWith('[PANIC] ')) {
-                isPanic = true;
-                rawText = rawText.replace('[PANIC] ', '');
-            }
-
-            let verb = "";
-            if (isPanic) {
-                const verbIndex = task.id % panicVerbs.length;
-                verb = panicVerbs[verbIndex];
-            } else {
-                const verbIndex = task.id % evasionVerbs.length;
-                verb = evasionVerbs[verbIndex];
-            }
-
-            const isNew = (lastTopTaskId !== null && task.id > lastTopTaskId);
-            const animationClass = isNew ? 'slide-in' : '';
-
-            // User reaction status for this dispatch
-            const myStamp = userStamps[task.id] || null;
-            const sameCount = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
-            const validCount = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
-            const ripCount = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
-
-            return `
-            <div class="feed-item ${animationClass}">
-                <div class="feed-item-meta">${censorNsfwHtml(locationString)} ${verb}:</div>
-                <div class="feed-item-text">${censorNsfwHtml(escapeHtml(rawText))}</div>
-                <div class="feed-item-footer">
-                    <span class="feed-item-time">${timeAgo(task.created_at)}</span>
-                    <div class="feed-reactions" data-task-id="${task.id}">
-                        <button type="button" class="reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}" data-type="same" title="I am doing this right now">
-                            [ SAME <span class="reaction-count">${sameCount}</span> ]
-                        </button>
-                        <button type="button" class="reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}" data-type="valid" title="Completely justifiable excuse">
-                            [ VALID <span class="reaction-count">${validCount}</span> ]
-                        </button>
-                        <button type="button" class="reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}" data-type="rip" title="Thoughts and prayers for your deadline">
-                            [ RIP <span class="reaction-count">${ripCount}</span> ]
-                        </button>
-                    </div>
+        // 1. Initial Load or reset when no feed items are present
+        if (existingItems.length === 0 || renderedTopId === null) {
+            const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + `
+                <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
+                    // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
                 </div>
-            </div>
             `;
-        }).join('') + `
-            <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
-                // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
-            </div>
-        `;
-
-        feedContainer.innerHTML = feedHtml;
-
-        if (isScrolled) {
-            feedContainer.scrollTop = prevScrollTop;
+            feedContainer.innerHTML = feedHtml;
+            renderedTopId = tasks[0].id;
+            renderedCount = tasks.length;
+            lastTopTaskId = tasks[0].id;
+            return;
         }
 
-        renderedTopId = tasks[0].id;
-        renderedCount = tasks.length;
-        if (tasks.length > 0) {
-            lastTopTaskId = Math.max(lastTopTaskId || 0, tasks[0].id);
+        // 2. Incremental updates: Check if new tasks arrived
+        const newTasks = tasks.filter(t => t.id > renderedTopId);
+
+        if (newTasks.length > 0) {
+            if (newTasks.length < 15) {
+                // Smoothly prepend only newly arrived transmissions without wiping DOM!
+                const prevScrollTop = feedContainer.scrollTop;
+                const isScrolled = prevScrollTop > 40;
+
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = newTasks.map(t => buildFeedItemHtml(t, true)).join('');
+
+                const firstExisting = feedContainer.querySelector('.feed-item[data-task-id]');
+                const fragment = document.createDocumentFragment();
+                const newEls = Array.from(tempDiv.children);
+                newEls.forEach(el => fragment.appendChild(el));
+
+                if (firstExisting) {
+                    feedContainer.insertBefore(fragment, firstExisting);
+                } else {
+                    feedContainer.appendChild(fragment);
+                }
+
+                // If user was scrolled down reading archives, preserve their exact viewport offset!
+                if (isScrolled) {
+                    let addedHeight = 0;
+                    newEls.forEach(el => { addedHeight += el.offsetHeight; });
+                    feedContainer.scrollTop = prevScrollTop + addedHeight;
+                }
+
+                renderedTopId = tasks[0].id;
+                renderedCount = tasks.length;
+                lastTopTaskId = tasks[0].id;
+            } else {
+                // Large batch gap: perform full clean render
+                const prevScrollTop = feedContainer.scrollTop;
+                const isScrolled = prevScrollTop > 20;
+
+                const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + `
+                    <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
+                        // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
+                    </div>
+                `;
+                feedContainer.innerHTML = feedHtml;
+
+                if (isScrolled) {
+                    feedContainer.scrollTop = prevScrollTop;
+                }
+
+                renderedTopId = tasks[0].id;
+                renderedCount = tasks.length;
+                lastTopTaskId = tasks[0].id;
+            }
         }
+
+        // 3. In-place refresh of reaction counts for all rendered tasks
+        tasks.forEach(task => {
+            const reactionsEl = feedContainer.querySelector(`.feed-reactions[data-task-id="${task.id}"]`);
+            if (reactionsEl) {
+                const myStamp = userStamps[task.id] || null;
+                const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
+                const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
+                const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
+
+                if (sameEl) sameEl.textContent = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
+                if (validEl) validEl.textContent = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
+                if (ripEl) ripEl.textContent = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
+            }
+        });
     };
 
     // ==========================================
@@ -837,7 +897,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
-            feedContainer.innerHTML = '<div class="loading">Connection severed.</div>';
+            if (feedContainer && !feedContainer.querySelector('.feed-item[data-task-id]')) {
+                feedContainer.innerHTML = '<div class="loading">Connection severed.</div>';
+            }
         }
     };
 
@@ -3244,28 +3306,43 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Smart Polling (Page Visibility API to save battery and network)
-    let pollInterval = null;
+    // Decoupled Smart Polling (Standard-Time Automatic Cadence + Page Visibility)
+    let tasksPollTimer = null;
+    let statsPollTimer = null;
+    let slowPollTimer = null;
+    let timeTickerTimer = null;
 
-    const startPolling = () => {
-        if (!pollInterval) {
-            pollInterval = setInterval(fetchAll, 10000);
-        }
+    const startAllPolling = () => {
+        stopAllPolling();
+        // 1. Live Public Wire transmissions: standard 15s interval
+        tasksPollTimer = setInterval(fetchTasks, 15000);
+        // 2. Active user & total procrastination stats: 30s interval
+        statsPollTimer = setInterval(fetchStats, 30000);
+        // 3. Weekly shame & country leaderboard: 60s interval
+        slowPollTimer = setInterval(() => {
+            fetchWeeklyStats();
+            fetchCountries();
+        }, 60000);
+        // 4. In-place relative timestamps updater: 30s interval
+        timeTickerTimer = setInterval(updateRelativeTimestamps, 30000);
     };
 
-    const stopPolling = () => {
-        if (pollInterval) {
-            clearInterval(pollInterval);
-            pollInterval = null;
-        }
+    const stopAllPolling = () => {
+        if (tasksPollTimer) { clearInterval(tasksPollTimer); tasksPollTimer = null; }
+        if (statsPollTimer) { clearInterval(statsPollTimer); statsPollTimer = null; }
+        if (slowPollTimer) { clearInterval(slowPollTimer); slowPollTimer = null; }
+        if (timeTickerTimer) { clearInterval(timeTickerTimer); timeTickerTimer = null; }
     };
 
     document.addEventListener('visibilitychange', () => {
         if (document.hidden) {
-            stopPolling();
+            stopAllPolling();
         } else {
-            fetchAll();
-            startPolling();
+            // Immediately refresh transmissions and stats when returning to the tab
+            fetchTasks();
+            fetchStats();
+            updateRelativeTimestamps();
+            startAllPolling();
         }
     });
 
@@ -3287,8 +3364,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 3000);
         }
         fetchAll();
+        startAllPolling();
     });
 
     fetchAll();
-    startPolling();
+    startAllPolling();
+
+    // Internal diagnostics & testing hook
+    window.__lg_feed = {
+        renderFeed,
+        updateRelativeTimestamps,
+        getTimers: () => ({ tasksPollTimer, statsPollTimer, slowPollTimer, timeTickerTimer })
+    };
 });

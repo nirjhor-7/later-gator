@@ -10,6 +10,7 @@ export default async function handler(req, res) {
     if (!supabase) return res.status(500).json({ error: "Supabase Env Vars missing in Vercel" });
 
     try {
+        res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=20');
         const sessionId = req.query.session;
         let dbLog = "No session tracking";
         
