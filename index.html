@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.7.4">
+    <link rel="stylesheet" href="style.css?v=2.7.6">
     <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
@@ -250,14 +250,15 @@
                 <!-- Commercial Break Video Section -->
                 <div class="article-box video-box" id="box-video">
                     <h2 class="section-title">COMMERCIAL BREAK</h2>
-                    <div class="video-wrapper">
-                        <iframe 
-                            src="https://www.youtube.com/embed/lry0hAerJs4" 
-                            title="Introducing Later, Gator!" 
-                            loading="lazy"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen>
-                        </iframe>
+                    <div class="video-wrapper video-facade" id="video-wrapper" data-video-id="lry0hAerJs4" role="button" tabindex="0" aria-label="Play Commercial Break Video">
+                        <div class="video-facade-poster" style="background-image: url('https://img.youtube.com/vi/lry0hAerJs4/hqdefault.jpg');">
+                            <div class="video-facade-overlay">
+                                <div class="video-facade-play">
+                                    <svg viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>
+                                </div>
+                                <span class="video-facade-label">▶ WATCH BROADCAST</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="video-caption">SPONSORED BY NOT DOING YOUR WORK</div>
                 </div>
@@ -478,7 +479,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.7.5"></script>
+    <script src="script.js?v=2.7.6" defer></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>

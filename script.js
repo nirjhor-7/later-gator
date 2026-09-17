@@ -441,7 +441,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // Fall back to localStorage silently
         }
     };
-    syncSessionReactionsFromServer();
+    // Defer session reactions sync so initial render is completely unblocked
+    setTimeout(() => {
+        syncSessionReactionsFromServer();
+    }, 1500);
 
     // Synthesize physical wooden rubber stamp slam sound
     const playStampSlamSound = () => {
@@ -894,6 +897,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderFeed(tasks);
                 renderTicker(tasks);
                 renderLeadStory(tasks);
+                if (Array.isArray(tasks) && tasks.length > 0) {
+                    try {
+                        localStorage.setItem('lg_cached_tasks', JSON.stringify(tasks.slice(0, 30)));
+                    } catch (e) {}
+                }
             }
         } catch (error) {
             console.error('Failed to fetch tasks:', error);
@@ -993,17 +1001,42 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('later_gator_visitor', sessionId);
     }
 
+    // Lightweight non-blocking presence heartbeat (runs in background, never delays stats)
+    const sendHeartbeat = () => {
+        if (isDeveloper) return;
+        try {
+            const payload = JSON.stringify({ sessionId });
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon('/api/stats', payload);
+            } else {
+                fetch('/api/stats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload,
+                    keepalive: true
+                }).catch(() => {});
+            }
+        } catch (e) {}
+    };
+
+    // Blazing fast edge-cached stats fetch (no user query params = 99% Edge Cache HIT)
     const fetchStats = async () => {
         try {
-            const devQuery = isDeveloper ? '&dev=true' : '';
-            const response = await fetch(`/api/stats?session=${sessionId}${devQuery}`);
+            const response = await fetch('/api/stats');
             if (response.ok) {
                 const stats = await response.json();
-                if (statCurrent) updateStat('stat-current', stats.currentlyProcrastinating.toLocaleString());
-                if (statTotal) updateStat('stat-total', stats.totalPostponed.toLocaleString());
-                if (statVisitors && stats.totalVisitors) {
+                if (statCurrent && stats.currentlyProcrastinating != null) {
+                    updateStat('stat-current', stats.currentlyProcrastinating.toLocaleString());
+                }
+                if (statTotal && stats.totalPostponed != null) {
+                    updateStat('stat-total', stats.totalPostponed.toLocaleString());
+                }
+                if (statVisitors && stats.totalVisitors != null) {
                     updateStat('stat-visitors', stats.totalVisitors.toString().padStart(4, '0'));
                 }
+                try {
+                    localStorage.setItem('lg_cached_stats', JSON.stringify(stats));
+                } catch (e) {}
             }
         } catch (error) {
             console.error('Failed to fetch stats:', error);
@@ -1022,6 +1055,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     shameContainer.style.display = 'block';
                     shameTask.innerHTML = `"${censorNsfwHtml(escapeHtml(taskName))}"`;
                     shameCount.textContent = data.count;
+                    try {
+                        localStorage.setItem('lg_cached_weekly', JSON.stringify(data));
+                    } catch (e) {}
                 } else {
                     shameContainer.style.display = 'none';
                 }
@@ -1054,6 +1090,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                         `;
                     }).join('');
+                    try {
+                        localStorage.setItem('lg_cached_countries', JSON.stringify(countries));
+                    } catch (e) {}
                 }
             }
         } catch (error) {
@@ -1062,6 +1101,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const fetchAll = () => {
+        sendHeartbeat();
         fetchTasks();
         fetchStats();
         fetchWeeklyStats();
@@ -3306,7 +3346,87 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // High-performance video facade: click-to-load YouTube player
+    const initVideoFacade = () => {
+        const facade = document.getElementById('video-wrapper');
+        if (!facade) return;
+        const mountVideo = () => {
+            const videoId = facade.getAttribute('data-video-id') || 'lry0hAerJs4';
+            facade.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" title="Introducing Later, Gator!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+            facade.classList.remove('video-facade');
+            facade.removeAttribute('role');
+            facade.removeAttribute('tabindex');
+        };
+        facade.addEventListener('click', mountVideo, { once: true });
+        facade.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                mountVideo();
+            }
+        }, { once: true });
+    };
+
+    // Stale-While-Revalidate bootstrap from localStorage (instant 0ms first render)
+    const restoreCachedData = () => {
+        try {
+            // 1. Stats
+            const cachedStats = localStorage.getItem('lg_cached_stats');
+            if (cachedStats) {
+                const stats = JSON.parse(cachedStats);
+                if (statCurrent && stats.currentlyProcrastinating != null) {
+                    updateStat('stat-current', stats.currentlyProcrastinating.toLocaleString());
+                }
+                if (statTotal && stats.totalPostponed != null) {
+                    updateStat('stat-total', stats.totalPostponed.toLocaleString());
+                }
+                if (statVisitors && stats.totalVisitors != null) {
+                    updateStat('stat-visitors', stats.totalVisitors.toString().padStart(4, '0'));
+                }
+            }
+            // 2. Feed & ticker
+            const cachedTasks = localStorage.getItem('lg_cached_tasks');
+            if (cachedTasks) {
+                const tasks = JSON.parse(cachedTasks);
+                if (Array.isArray(tasks) && tasks.length > 0) {
+                    renderFeed(tasks);
+                    renderTicker(tasks);
+                    renderLeadStory(tasks);
+                }
+            }
+            // 3. Weekly shame
+            const cachedWeekly = localStorage.getItem('lg_cached_weekly');
+            if (cachedWeekly) {
+                const data = JSON.parse(cachedWeekly);
+                if (data && data.count > 0 && shameContainer && shameTask && shameCount) {
+                    let taskName = data.text;
+                    if (taskName.startsWith('[PANIC] ')) taskName = taskName.replace('[PANIC] ', '');
+                    shameContainer.style.display = 'block';
+                    shameTask.innerHTML = `"${censorNsfwHtml(escapeHtml(taskName))}"`;
+                    shameCount.textContent = data.count;
+                }
+            }
+            // 4. Countries
+            const cachedCountries = localStorage.getItem('lg_cached_countries');
+            if (cachedCountries && countryLeaderboard) {
+                const countries = JSON.parse(cachedCountries);
+                if (Array.isArray(countries) && countries.length > 0) {
+                    countryLeaderboard.innerHTML = countries.map((c, index) => {
+                        const rank = String(index + 1).padStart(2, '0');
+                        return `
+                        <div class="leaderboard-row">
+                            <span class="leaderboard-rank">${rank}</span>
+                            <span class="leaderboard-country">${escapeHtml(c.country)}</span>
+                            <span class="leaderboard-count">${c.count}</span>
+                        </div>
+                        `;
+                    }).join('');
+                }
+            }
+        } catch (e) {}
+    };
+
     // Decoupled Smart Polling (Standard-Time Automatic Cadence + Page Visibility)
+    let heartbeatTimer = null;
     let tasksPollTimer = null;
     let statsPollTimer = null;
     let slowPollTimer = null;
@@ -3314,6 +3434,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startAllPolling = () => {
         stopAllPolling();
+        // 0. Non-blocking presence heartbeat: 25s interval
+        heartbeatTimer = setInterval(sendHeartbeat, 25000);
         // 1. Live Public Wire transmissions: standard 15s interval
         tasksPollTimer = setInterval(fetchTasks, 15000);
         // 2. Active user & total procrastination stats: 30s interval
@@ -3328,6 +3450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const stopAllPolling = () => {
+        if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
         if (tasksPollTimer) { clearInterval(tasksPollTimer); tasksPollTimer = null; }
         if (statsPollTimer) { clearInterval(statsPollTimer); statsPollTimer = null; }
         if (slowPollTimer) { clearInterval(slowPollTimer); slowPollTimer = null; }
@@ -3339,6 +3462,7 @@ document.addEventListener('DOMContentLoaded', () => {
             stopAllPolling();
         } else {
             // Immediately refresh transmissions and stats when returning to the tab
+            sendHeartbeat();
             fetchTasks();
             fetchStats();
             updateRelativeTimestamps();
@@ -3367,6 +3491,8 @@ document.addEventListener('DOMContentLoaded', () => {
         startAllPolling();
     });
 
+    initVideoFacade();
+    restoreCachedData();
     fetchAll();
     startAllPolling();
 
