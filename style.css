@@ -512,8 +512,12 @@ textarea:focus {
 
 /* Quick Chips (Preset Tasks) */
 .quick-chips-wrapper {
-    margin-top: 12px;
-    margin-bottom: 5px;
+    margin-top: 6px;
+    margin-bottom: 14px;
+}
+
+.byline-field-group {
+    margin-bottom: 14px;
 }
 
 .chips-label {

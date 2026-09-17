@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.6.8">
+    <link rel="stylesheet" href="style.css?v=2.7.0">
     <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
@@ -120,16 +120,7 @@
                             </div>
                         </div>
 
-                        <!-- 2. Dispatched By (Optional Byline) -->
-                        <div class="field-group byline-field-group">
-                            <label for="user-name" class="field-label">DISPATCHED BY (OPTIONAL ALIAS):</label>
-                            <div class="byline-input-row">
-                                <span class="byline-tag">BY:</span>
-                                <input type="text" id="user-name" placeholder="Your name or alias" maxlength="30">
-                            </div>
-                        </div>
-                        
-                        <!-- Quick Chips / Presets -->
+                        <!-- Quick Chips / Presets (Directly under task textarea) -->
                         <div class="quick-chips-wrapper">
                             <span class="chips-label">TOO TIRED TO TYPE? CHOOSE:</span>
                             <div class="quick-chips">
@@ -142,6 +133,15 @@
                                 <button type="button" class="chip-btn" data-task="Existing">EXISTING</button>
                                 <button type="button" class="chip-btn" data-task="Too tired to type">TOO TIRED TO TYPE</button>
                                 <button type="button" class="chip-btn chip-random" id="chip-random-btn">[?] ROLL EXCUSE</button>
+                            </div>
+                        </div>
+
+                        <!-- 2. Dispatched By (Optional Byline) -->
+                        <div class="field-group byline-field-group">
+                            <label for="user-name" class="field-label">DISPATCHED BY (OPTIONAL ALIAS):</label>
+                            <div class="byline-input-row">
+                                <span class="byline-tag">BY:</span>
+                                <input type="text" id="user-name" placeholder="Your name or alias" maxlength="30">
                             </div>
                         </div>
 
@@ -402,7 +402,7 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.6.9"></script>
+    <script src="script.js?v=2.7.0"></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>
