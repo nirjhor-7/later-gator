@@ -3316,18 +3316,22 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isPanic) {
             ctx.font = '900 12px "Space Mono", monospace';
             ctx.fillStyle = accentRed;
-            ctx.fillText('⚡ HIGH-PANIC TRANSMISSION // CODE RED DELAY', 80, 192);
+            ctx.fillText('◆ HIGH-PANIC TRANSMISSION // CODE RED DELAY', 80, 192);
         } else {
             ctx.font = '700 12px "Space Mono", monospace';
             ctx.fillStyle = inkSecondary;
             ctx.fillText('OFFICIAL CONFESSION RECORD // UNFINISHED BUSINESS:', 80, 192);
         }
 
-        // Dispatch Headline Text (Quoted)
+        // Dispatch Headline Text (Quoted) with Dynamic Typography
         const maxWidth = 560; // Leave space for rubber stamp on the right
-        let headlineFontSize = 32;
-        if (cleanHeadline.length > 70) headlineFontSize = 26;
-        if (cleanHeadline.length > 120) headlineFontSize = 22;
+        const cleanLen = cleanHeadline.length;
+        let headlineFontSize = 54;
+        if (cleanLen > 110) headlineFontSize = 22;
+        else if (cleanLen > 75) headlineFontSize = 26;
+        else if (cleanLen > 40) headlineFontSize = 32;
+        else if (cleanLen > 18) headlineFontSize = 42;
+        else headlineFontSize = 54;
 
         ctx.font = `900 ${headlineFontSize}px "Big Shoulders Display", sans-serif`;
         ctx.fillStyle = inkPrimary;
@@ -3338,12 +3342,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const last = wrappedLines[3];
             wrappedLines[3] = last.replace(/”?$/, '') + '...”';
         }
-        const lineHeight = Math.round(headlineFontSize * 1.24);
-        let curY = 230;
+        const lineHeight = Math.round(headlineFontSize * 1.15);
+        const textHeight = wrappedLines.length * lineHeight;
+
+        // Editorial sub-deck for concise headlines (eliminates awkward empty voids)
+        let subdeck = '';
+        if (wrappedLines.length <= 2) {
+            subdeck = isPanic
+                ? '— EMERGENCY SUSPENSION OF LABOR // CODE RED STAY GRANTED —'
+                : '— FORMALLY LOGGED FOR INDEFINITE DELAY // STATUTE 404 —';
+        }
+
+        const zoneTop = 205;
+        const zoneBottom = 345;
+        const contentHeight = textHeight + (subdeck ? 26 : 0);
+        const startY = zoneTop + Math.max(0, Math.round((zoneBottom - zoneTop - contentHeight) / 2)) + Math.round(headlineFontSize * 0.82);
+
+        let curY = startY;
         wrappedLines.forEach(line => {
             ctx.fillText(line, 80, curY);
             curY += lineHeight;
         });
+
+        if (subdeck) {
+            ctx.font = '700 10px "Space Mono", monospace';
+            ctx.fillStyle = isPanic ? accentRed : inkSecondary;
+            ctx.fillText(subdeck, 80, curY + 6);
+            curY += 22;
+        }
 
         // 3. Byline & Operative Dossier
         const authorRaw = (task.city || 'Anonymous').trim();
@@ -3356,7 +3382,7 @@ document.addEventListener('DOMContentLoaded', () => {
             authorClean = flairMatch[2] || 'Anonymous';
         }
 
-        const dossierY = Math.max(curY + 14, 352);
+        const dossierY = Math.max(curY + 16, 352);
 
         // Dividing rule above dossier
         ctx.beginPath();
