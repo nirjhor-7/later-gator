@@ -1,5 +1,5 @@
 -- ============================================================
--- LATER GATORS — GATOR TAG AUTH SYSTEM MIGRATION
+-- LATER GATORS — GATOR TAG AUTH & REACTIONS SCHEMA MIGRATION
 -- Run this once in your Supabase SQL Editor
 -- ============================================================
 
@@ -33,10 +33,36 @@ CREATE TABLE IF NOT EXISTS dispatch_notifications (
 );
 
 -- 4. Author identity on tasks
-ALTER TABLE tasks ADD COLUMN IF NOT EXISTS author_gator_id UUID REFERENCES gator_tags(gator_id);
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tasks') THEN
+        ALTER TABLE tasks ADD COLUMN IF NOT EXISTS author_gator_id UUID REFERENCES gator_tags(gator_id);
+    END IF;
+END $$;
 
--- 5. Gator identity on reactions
-ALTER TABLE user_reactions ADD COLUMN IF NOT EXISTS gator_id UUID REFERENCES gator_tags(gator_id);
+-- 5. User reactions table (creates table if not exists)
+CREATE TABLE IF NOT EXISTS user_reactions (
+    id              BIGSERIAL PRIMARY KEY,
+    session_id      TEXT,
+    task_id         TEXT NOT NULL,
+    reaction_type   TEXT NOT NULL,
+    gator_id        UUID REFERENCES gator_tags(gator_id),
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Ensure columns exist if table was already created
+DO $$
+BEGIN
+    ALTER TABLE user_reactions ADD COLUMN IF NOT EXISTS gator_id UUID REFERENCES gator_tags(gator_id);
+EXCEPTION
+    WHEN duplicate_column THEN NULL;
+END $$;
+
+-- Constraints & Indexes for fast lookups and upserts
+CREATE UNIQUE INDEX IF NOT EXISTS idx_user_reactions_session_task
+    ON user_reactions (session_id, task_id)
+    WHERE session_id IS NOT NULL;
+
 CREATE UNIQUE INDEX IF NOT EXISTS idx_user_reactions_gator_task
     ON user_reactions (gator_id, task_id)
     WHERE gator_id IS NOT NULL;
