@@ -382,6 +382,22 @@ body.sepia-edition .midnight-toggle-btn:hover {
 .right-col {
     border-left: 2px solid var(--ink);
     padding-left: 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+#box-wire {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    margin-bottom: 30px;
+}
+
+#box-wire .feed-container {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 520px;
+    max-height: none;
 }
 
 .section-title {
@@ -4578,8 +4594,8 @@ body.midnight-edition .bureau-logout-btn {
    TELEGRAPH DISPATCH DESK (VIRAL COWORKER DISTRIBUTION)
    ============================================================ */
 .dispatch-desk-box {
-    margin-top: 30px;
-    margin-bottom: 30px;
+    margin-top: auto;
+    margin-bottom: 0;
     border: 2px solid var(--ink);
     padding: 16px 18px;
     background: var(--paper);
