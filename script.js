@@ -2160,41 +2160,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Telegraph Dispatch Desk (Viral Coworker Distribution)
-    const dispatchSlackBtn = document.getElementById('dispatch-slack-btn');
+    // Telegraph Dispatch Desk (Viral Distribution)
     const dispatchXBtn = document.getElementById('dispatch-x-btn');
-    const dispatchShareBtn = document.getElementById('dispatch-share-btn');
-
-    if (dispatchShareBtn && navigator.share) {
-        dispatchShareBtn.style.display = 'inline-flex';
-    }
-
-    if (dispatchSlackBtn) {
-        dispatchSlackBtn.addEventListener('click', async () => {
-            const shareUrl = getShareUrl();
-            const slackMsg = `> 🚨 *OFFICIAL WIRE FROM THE BUREAU OF STRATEGIC INACTION*:\n> "Solitary procrastination is a misdemeanor. Collective procrastination is an executive movement."\n> 🐊 *Confess what you are putting off today*: ${shareUrl}`;
-            try {
-                await navigator.clipboard.writeText(slackMsg);
-                const orig = dispatchSlackBtn.textContent;
-                dispatchSlackBtn.textContent = '✓ COPIED FOR SLACK! GO DISTRACT THEM';
-                setTimeout(() => { dispatchSlackBtn.textContent = orig; }, 2500);
-            } catch (err) {
-                try {
-                    const ta = document.createElement('textarea');
-                    ta.value = slackMsg;
-                    document.body.appendChild(ta);
-                    ta.select();
-                    document.execCommand('copy');
-                    document.body.removeChild(ta);
-                    const orig = dispatchSlackBtn.textContent;
-                    dispatchSlackBtn.textContent = '✓ COPIED FOR SLACK! GO DISTRACT THEM';
-                    setTimeout(() => { dispatchSlackBtn.textContent = orig; }, 2500);
-                } catch (e) {
-                    dispatchSlackBtn.textContent = '✓ WIRE READY: ' + shareUrl;
-                }
-            }
-        });
-    }
+    const dispatchFbBtn = document.getElementById('dispatch-fb-btn');
+    const dispatchIgBtn = document.getElementById('dispatch-ig-btn');
 
     if (dispatchXBtn) {
         dispatchXBtn.addEventListener('click', () => {
@@ -2204,17 +2173,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (dispatchShareBtn) {
-        dispatchShareBtn.addEventListener('click', async () => {
+    if (dispatchFbBtn) {
+        dispatchFbBtn.addEventListener('click', () => {
+            const shareUrl = getShareUrl();
+            const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (dispatchIgBtn) {
+        dispatchIgBtn.addEventListener('click', async () => {
             const shareUrl = getShareUrl();
             if (navigator.share) {
                 try {
                     await navigator.share({
-                        title: 'LATER, GATORS — Global Procrastination Journal',
-                        text: 'Solitary procrastination is a misdemeanor. Collective procrastination is an executive movement. What are you putting off today?',
+                        title: 'LATER, GATORS — Bureau of Strategic Inaction',
+                        text: 'Solitary procrastination is a misdemeanor. Collective procrastination is an executive movement.',
                         url: shareUrl
                     });
-                } catch (e) {}
+                    return;
+                } catch (err) {
+                    // User dismissed native share sheet or unhandled error; fall through to link copy
+                }
+            }
+
+            const copySuccess = () => {
+                const orig = dispatchIgBtn.textContent;
+                dispatchIgBtn.textContent = '✓ LINK COPIED! PASTE IN IG STORY';
+                setTimeout(() => { dispatchIgBtn.textContent = orig; }, 2500);
+            };
+
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                copySuccess();
+            } catch (err) {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = shareUrl;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    copySuccess();
+                } catch (e) {
+                    dispatchIgBtn.textContent = '✓ LINK: ' + shareUrl;
+                }
             }
         });
     }

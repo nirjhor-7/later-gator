@@ -4633,10 +4633,10 @@ body.midnight-edition .bureau-logout-btn {
 }
 
 .dispatch-act-btn {
-    flex: 1 1 180px;
-    padding: 10px 14px;
+    flex: 1 1 140px;
+    padding: 10px 12px;
     font-family: 'Space Mono', monospace;
-    font-size: 0.74rem;
+    font-size: 0.72rem;
     font-weight: 700;
     border: 2px solid var(--ink);
     background: var(--paper);
@@ -4662,15 +4662,21 @@ body.midnight-edition .bureau-logout-btn {
     transform: scale(0.98);
 }
 
-.dispatch-slack-btn:hover {
-    background: #047857;
-    border-color: #047857;
-    color: #ffffff;
-}
-
 .dispatch-x-btn:hover {
     background: #111111;
     border-color: #111111;
+    color: #ffffff;
+}
+
+.dispatch-fb-btn:hover {
+    background: #1877f2;
+    border-color: #1877f2;
+    color: #ffffff;
+}
+
+.dispatch-ig-btn:hover {
+    background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+    border-color: #dc2743;
     color: #ffffff;
 }
 
