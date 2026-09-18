@@ -3171,14 +3171,9 @@ body.sepia-edition .footer-credit {
         margin-bottom: 22px;
     }
 
-    #box-diversions {
+    #box-dispatch {
         order: 7;
         margin-bottom: 22px;
-    }
-
-    #box-video {
-        order: 8;
-        margin-bottom: 18px;
     }
 
     /* Input Section & Inputs */
@@ -4577,6 +4572,160 @@ body.midnight-edition .dossier-item {
 body.midnight-edition .bureau-logout-btn {
     border-color: #a89885 !important;
     color: #a89885 !important;
+}
+
+/* ============================================================
+   TELEGRAPH DISPATCH DESK (VIRAL COWORKER DISTRIBUTION)
+   ============================================================ */
+.dispatch-desk-box {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    border: 2px solid var(--ink);
+    padding: 16px 18px;
+    background: var(--paper);
+    font-family: 'Space Mono', monospace;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.dispatch-desk-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.dispatch-desk-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.dispatch-ornament {
+    color: #b91c1c;
+    font-size: 0.75rem;
+}
+
+.dispatch-desk-pitch {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0;
+    color: var(--ink);
+}
+
+.dispatch-desk-pitch strong {
+    font-weight: 700;
+}
+
+.dispatch-desk-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.dispatch-act-btn {
+    flex: 1 1 180px;
+    padding: 10px 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 700;
+    border: 2px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.dispatch-act-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+}
+
+.dispatch-act-btn:active {
+    transform: scale(0.98);
+}
+
+.dispatch-slack-btn:hover {
+    background: #047857;
+    border-color: #047857;
+    color: #ffffff;
+}
+
+.dispatch-x-btn:hover {
+    background: #111111;
+    border-color: #111111;
+    color: #ffffff;
+}
+
+.dispatch-desk-footer {
+    font-size: 0.62rem;
+    color: var(--ink-light);
+    letter-spacing: 0.8px;
+    text-align: center;
+    border-top: 1px dotted var(--ink);
+    padding-top: 8px;
+    margin-top: 4px;
+    text-transform: uppercase;
+}
+
+/* Sepia & Midnight Overrides */
+body.sepia-edition .dispatch-desk-box {
+    border-color: #5a3e26;
+    background: #efe4d3;
+}
+body.sepia-edition .dispatch-desk-banner {
+    background: #5a3e26;
+    color: #f6eedf;
+}
+body.sepia-edition .dispatch-act-btn {
+    border-color: #5a3e26;
+    background: #f6eedf;
+    color: #3b2818;
+}
+body.sepia-edition .dispatch-act-btn:hover {
+    background: #5a3e26;
+    color: #f6eedf;
+}
+
+body.midnight-edition .dispatch-desk-box {
+    border-color: #554433;
+    background: #161411;
+}
+body.midnight-edition .dispatch-desk-banner {
+    background: #2a241d;
+    color: #eae1d1;
+    border: 1px solid #554433;
+}
+body.midnight-edition .dispatch-act-btn {
+    border-color: #665544;
+    background: #221d17;
+    color: #eae1d1;
+}
+body.midnight-edition .dispatch-act-btn:hover {
+    background: #d4a373;
+    border-color: #d4a373;
+    color: #111111;
+}
+body.midnight-edition .dispatch-desk-footer {
+    border-top-color: #554433;
+    color: #8c7d6c;
 }
 
 

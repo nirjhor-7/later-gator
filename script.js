@@ -2160,6 +2160,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Telegraph Dispatch Desk (Viral Coworker Distribution)
+    const dispatchSlackBtn = document.getElementById('dispatch-slack-btn');
+    const dispatchXBtn = document.getElementById('dispatch-x-btn');
+    const dispatchShareBtn = document.getElementById('dispatch-share-btn');
+
+    if (dispatchShareBtn && navigator.share) {
+        dispatchShareBtn.style.display = 'inline-flex';
+    }
+
+    if (dispatchSlackBtn) {
+        dispatchSlackBtn.addEventListener('click', async () => {
+            const shareUrl = getShareUrl();
+            const slackMsg = `> 🚨 *OFFICIAL WIRE FROM THE BUREAU OF STRATEGIC INACTION*:\n> "Solitary procrastination is a misdemeanor. Collective procrastination is an executive movement."\n> 🐊 *Confess what you are putting off today*: ${shareUrl}`;
+            try {
+                await navigator.clipboard.writeText(slackMsg);
+                const orig = dispatchSlackBtn.textContent;
+                dispatchSlackBtn.textContent = '✓ COPIED FOR SLACK! GO DISTRACT THEM';
+                setTimeout(() => { dispatchSlackBtn.textContent = orig; }, 2500);
+            } catch (err) {
+                try {
+                    const ta = document.createElement('textarea');
+                    ta.value = slackMsg;
+                    document.body.appendChild(ta);
+                    ta.select();
+                    document.execCommand('copy');
+                    document.body.removeChild(ta);
+                    const orig = dispatchSlackBtn.textContent;
+                    dispatchSlackBtn.textContent = '✓ COPIED FOR SLACK! GO DISTRACT THEM';
+                    setTimeout(() => { dispatchSlackBtn.textContent = orig; }, 2500);
+                } catch (e) {
+                    dispatchSlackBtn.textContent = '✓ WIRE READY: ' + shareUrl;
+                }
+            }
+        });
+    }
+
+    if (dispatchXBtn) {
+        dispatchXBtn.addEventListener('click', () => {
+            const tweet = `Solitary procrastination is a misdemeanor. Collective procrastination is an executive movement. What are you putting off today? @thelatergators`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweet)}&url=${encodeURIComponent(getShareUrl())}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (dispatchShareBtn) {
+        dispatchShareBtn.addEventListener('click', async () => {
+            const shareUrl = getShareUrl();
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'LATER, GATORS — Global Procrastination Journal',
+                        text: 'Solitary procrastination is a misdemeanor. Collective procrastination is an executive movement. What are you putting off today?',
+                        url: shareUrl
+                    });
+                } catch (e) {}
+            }
+        });
+    }
+
     // Quick Chips (Preset Tasks & Random Excuse Generator)
     const RANDOM_EXCUSES = [
         "Reorganizing desktop icons by color",
