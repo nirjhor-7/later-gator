@@ -4126,7 +4126,7 @@ body.midnight-edition .comic-page-num {
     font-size: 11px;
     letter-spacing: 1.5px;
     text-transform: uppercase;
-    color: var(--ink-faded, #666);
+    color: var(--ink-light);
     margin-bottom: 12px;
 }
 
@@ -4134,44 +4134,46 @@ body.midnight-edition .comic-page-num {
 .bureau-tabs {
     display: flex;
     gap: 0;
-    border: 1px solid var(--ink-main, #1a1a1a);
+    border: 1.5px solid var(--ink);
     margin-bottom: 14px;
     overflow: hidden;
 }
 .bureau-tab {
     flex: 1;
     padding: 6px 4px;
-    font-family: var(--font-headline, 'UnifrakturMaguntia', serif);
+    font-family: 'Space Mono', monospace;
     font-size: 11px;
+    font-weight: 700;
     letter-spacing: 2px;
     background: transparent;
     border: none;
     cursor: pointer;
-    color: var(--ink-main, #1a1a1a);
-    border-right: 1px solid var(--ink-main, #1a1a1a);
+    color: var(--ink);
+    border-right: 1.5px solid var(--ink);
     transition: background 0.15s, color 0.15s;
 }
 .bureau-tab:last-child { border-right: none; }
 .bureau-tab.active,
 .bureau-tab:hover {
-    background: var(--ink-main, #1a1a1a);
-    color: var(--paper-bg, #faf7f0);
+    background: var(--ink);
+    color: var(--paper);
 }
 
 /* Form fields */
 .bureau-form { display: flex; flex-direction: column; gap: 10px; }
 .bureau-field { display: flex; flex-direction: column; gap: 3px; }
 .bureau-label {
-    font-size: 9px;
-    letter-spacing: 2px;
+    font-size: 0.68rem;
+    letter-spacing: 0.8px;
     text-transform: uppercase;
     font-weight: 700;
-    color: var(--ink-faded, #666);
+    color: var(--ink);
 }
 .bureau-optional {
     font-weight: 400;
     text-transform: none;
     letter-spacing: 0;
+    color: var(--ink-light);
 }
 .bureau-input-row {
     display: flex;
@@ -4181,23 +4183,23 @@ body.midnight-edition .comic-page-num {
 .bureau-input {
     width: 100%;
     padding: 7px 8px;
-    border: 1px solid var(--ink-main, #1a1a1a);
-    background: var(--paper-bg, #faf7f0);
-    font-family: 'Courier New', Courier, monospace;
+    border: 1.5px solid var(--ink);
+    background: transparent;
+    font-family: 'Space Mono', monospace;
     font-size: 12px;
-    color: var(--ink-main, #1a1a1a);
+    color: var(--ink);
     box-sizing: border-box;
     outline: none;
     transition: border-color 0.15s;
 }
 .bureau-input:focus {
     border-color: #8B0000;
-    box-shadow: 0 0 0 2px rgba(139,0,0,0.08);
+    box-shadow: 0 0 0 2px rgba(139,0,0,0.12);
 }
 .bureau-hint {
     font-size: 9px;
     letter-spacing: 0.5px;
-    color: var(--ink-faded, #888);
+    color: var(--ink-light);
     line-height: 1.4;
 }
 
@@ -4213,11 +4215,12 @@ body.midnight-edition .comic-page-num {
 .bureau-submit-btn {
     width: 100%;
     padding: 9px 4px;
-    background: var(--ink-main, #1a1a1a);
-    color: var(--paper-bg, #faf7f0);
-    border: none;
-    font-family: 'Courier New', Courier, monospace;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1.5px solid var(--ink);
+    font-family: 'Space Mono', monospace;
     font-size: 10px;
+    font-weight: 700;
     letter-spacing: 1px;
     cursor: pointer;
     transition: opacity 0.15s;
@@ -4227,7 +4230,7 @@ body.midnight-edition .comic-page-num {
     opacity: 0.4;
     cursor: not-allowed;
 }
-.bureau-submit-btn:not(:disabled):hover { opacity: 0.8; }
+.bureau-submit-btn:not(:disabled):hover { opacity: 0.85; }
 
 /* Error message */
 .bureau-error {
@@ -4245,22 +4248,23 @@ body.midnight-edition .comic-page-num {
     justify-content: space-between;
     margin-bottom: 14px;
     padding-bottom: 10px;
-    border-bottom: 1px solid var(--ink-main, #1a1a1a);
+    border-bottom: 1.5px solid var(--ink);
 }
 .bureau-op-tag {
     font-size: 10px;
     letter-spacing: 2px;
     font-weight: 700;
     text-transform: uppercase;
+    color: var(--ink);
 }
 .bureau-logout-btn {
-    font-family: 'Courier New', Courier, monospace;
+    font-family: 'Space Mono', monospace;
     font-size: 9px;
     letter-spacing: 1px;
     padding: 4px 6px;
     background: transparent;
-    border: 1px solid var(--ink-faded, #999);
-    color: var(--ink-faded, #666);
+    border: 1px solid var(--ink-light);
+    color: var(--ink-light);
     cursor: pointer;
     transition: border-color 0.15s, color 0.15s;
 }
@@ -4278,13 +4282,14 @@ body.midnight-edition .comic-page-num {
     text-align: center;
     margin-bottom: 10px;
     padding: 6px 0;
-    border-top: 1px solid var(--ink-main, #1a1a1a);
-    border-bottom: 1px solid var(--ink-main, #1a1a1a);
+    border-top: 1.5px solid var(--ink);
+    border-bottom: 1.5px solid var(--ink);
+    color: var(--ink);
 }
 .dossier-summary {
     font-size: 10px;
     letter-spacing: 1px;
-    color: var(--ink-faded, #666);
+    color: var(--ink-light);
     margin-bottom: 10px;
     text-align: center;
     text-transform: uppercase;
@@ -4298,15 +4303,15 @@ body.midnight-edition .comic-page-num {
 }
 .dossier-item {
     padding: 8px 10px;
-    border: 1px solid var(--ink-faded, #ccc);
+    border: 1.5px solid var(--ink);
     font-size: 11px;
     line-height: 1.4;
-    background: rgba(0,0,0,0.02);
+    background: transparent;
 }
 .dossier-item-task {
     font-style: italic;
     margin-bottom: 4px;
-    color: var(--ink-main, #1a1a1a);
+    color: var(--ink);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -4315,39 +4320,107 @@ body.midnight-edition .comic-page-num {
 .dossier-item-counts {
     font-size: 9px;
     letter-spacing: 1px;
-    color: var(--ink-faded, #777);
+    color: var(--ink-light);
     display: flex;
     gap: 10px;
 }
 .dossier-empty {
     font-size: 10px;
-    color: var(--ink-faded, #888);
+    color: var(--ink-light);
     font-style: italic;
     text-align: center;
     padding: 10px 0;
 }
 
-/* ── Edition overrides — Sepia ── */
+/* ── Bureau Operative — Sepia Edition Overrides ── */
+body.sepia-edition .bureau-tagline,
+body.sepia-edition .bureau-label,
+body.sepia-edition .bureau-op-tag,
+body.sepia-edition .dossier-header,
+body.sepia-edition .dossier-item-task {
+    color: #3b2818 !important;
+}
+body.sepia-edition .bureau-optional,
+body.sepia-edition .bureau-hint,
+body.sepia-edition .dossier-summary,
+body.sepia-edition .dossier-item-counts,
+body.sepia-edition .dossier-empty {
+    color: #6d533b !important;
+}
 body.sepia-edition .bureau-input {
-    background: #EAE0C8;
-    border-color: #5C4A2A;
-    color: #3B2F1A;
+    background: #e8dcce !important;
+    border-color: #5a3e26 !important;
+    color: #3b2818 !important;
 }
-body.sepia-edition .bureau-tab { color: #3B2F1A; border-color: #5C4A2A; }
+body.sepia-edition .bureau-tabs {
+    border-color: #5a3e26 !important;
+}
+body.sepia-edition .bureau-tab {
+    border-color: #5a3e26 !important;
+    color: #3b2818 !important;
+}
 body.sepia-edition .bureau-tab.active,
-body.sepia-edition .bureau-tab:hover { background: #5C4A2A; color: #EAE0C8; }
-body.sepia-edition .bureau-tabs { border-color: #5C4A2A; }
-body.sepia-edition .bureau-submit-btn { background: #5C4A2A; }
-
-/* ── Edition overrides — Midnight ── */
-body.midnight-edition .bureau-input {
-    background: #1A1713;
-    border-color: #6E5C49;
-    color: #EFE3D3;
+body.sepia-edition .bureau-tab:hover {
+    background: #5a3e26 !important;
+    color: #f2e9de !important;
 }
-body.midnight-edition .bureau-tab { color: #EFE3D3; border-color: #6E5C49; }
+body.sepia-edition .bureau-submit-btn {
+    background: #5a3e26 !important;
+    color: #f2e9de !important;
+    border-color: #5a3e26 !important;
+}
+body.sepia-edition .dossier-item {
+    border-color: #5a3e26 !important;
+}
+body.sepia-edition .bureau-logout-btn {
+    border-color: #6d533b !important;
+    color: #6d533b !important;
+}
+
+/* ── Bureau Operative — Midnight Broadsheet Overrides ── */
+body.midnight-edition .bureau-tagline,
+body.midnight-edition .bureau-label,
+body.midnight-edition .bureau-op-tag,
+body.midnight-edition .dossier-header,
+body.midnight-edition .dossier-item-task {
+    color: #efe3d3 !important;
+}
+body.midnight-edition .bureau-optional,
+body.midnight-edition .bureau-hint,
+body.midnight-edition .dossier-summary,
+body.midnight-edition .dossier-item-counts,
+body.midnight-edition .dossier-empty {
+    color: #a89885 !important;
+}
+body.midnight-edition .bureau-input {
+    background: #1a1713 !important;
+    border-color: #6e5c49 !important;
+    color: #efe3d3 !important;
+}
+body.midnight-edition .bureau-tabs {
+    border-color: #6e5c49 !important;
+}
+body.midnight-edition .bureau-tab {
+    border-color: #6e5c49 !important;
+    color: #efe3d3 !important;
+}
 body.midnight-edition .bureau-tab.active,
-body.midnight-edition .bureau-tab:hover { background: #EFE3D3; color: #1A1713; }
-body.midnight-edition .bureau-tabs { border-color: #6E5C49; }
-body.midnight-edition .bureau-submit-btn { background: #EFE3D3; color: #1A1713; }
-body.midnight-edition .dossier-item { border-color: #6E5C49; background: rgba(255,255,255,0.03); }
+body.midnight-edition .bureau-tab:hover {
+    background: #efe3d3 !important;
+    color: #1a1713 !important;
+}
+body.midnight-edition .bureau-submit-btn {
+    background: #efe3d3 !important;
+    color: #1a1713 !important;
+    border-color: #efe3d3 !important;
+}
+body.midnight-edition .dossier-item {
+    border-color: #6e5c49 !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+}
+body.midnight-edition .bureau-logout-btn {
+    border-color: #a89885 !important;
+    color: #a89885 !important;
+}
+
+
