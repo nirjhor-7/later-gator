@@ -8,7 +8,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.7.7">
+    <link rel="stylesheet" href="style.css?v=2.8.0">
+
     <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
@@ -232,6 +233,64 @@
                     </div>
                 </div>
 
+
+                <!-- BUREAU OPERATIVE PANEL -->
+                <div class="article-box bureau-box" id="box-bureau">
+                    <h2 class="section-title">BUREAU OF IDLENESS</h2>
+                    <div id="bureau-guest" class="bureau-guest">
+                        <div class="bureau-tagline">Claim your place on the wire.</div>
+                        <div class="bureau-tabs">
+                            <button type="button" class="bureau-tab active" data-btab="claim">JOIN</button>
+                            <button type="button" class="bureau-tab" data-btab="login">REPORT IN</button>
+                        </div>
+                        <div id="bureau-form-claim" class="bureau-form">
+                            <div class="bureau-field">
+                                <label class="bureau-label">GATOR TAG</label>
+                                <div class="bureau-input-row">
+                                    <input type="text" id="bureau-tag-input" class="bureau-input" placeholder="lazy_knight_forever" maxlength="24" autocomplete="off" spellcheck="false">
+                                    <span class="bureau-tag-status" id="bureau-tag-status"></span>
+                                </div>
+                                <div class="bureau-hint">3–24 chars. First come, first served.</div>
+                            </div>
+                            <div class="bureau-field">
+                                <label class="bureau-label">PASSWORD</label>
+                                <input type="password" id="bureau-pw-input" class="bureau-input" placeholder="min. 8 characters" maxlength="72">
+                            </div>
+                            <div class="bureau-field">
+                                <label class="bureau-label">EMAIL <span class="bureau-optional">(optional)</span></label>
+                                <input type="email" id="bureau-email-input" class="bureau-input" placeholder="for Bureau Communiqués only">
+                                <div class="bureau-hint">No email = no recovery. No communiqués. Your call.</div>
+                            </div>
+                            <button type="button" id="bureau-claim-btn" class="bureau-submit-btn" disabled>[ CLAIM MY PLACE ON THE WIRE ]</button>
+                            <div class="bureau-error" id="bureau-claim-error"></div>
+                        </div>
+                        <div id="bureau-form-login" class="bureau-form" style="display:none;">
+                            <div class="bureau-field">
+                                <label class="bureau-label">GATOR TAG</label>
+                                <input type="text" id="bureau-login-tag" class="bureau-input" placeholder="your_tag" maxlength="24" autocomplete="off" spellcheck="false">
+                            </div>
+                            <div class="bureau-field">
+                                <label class="bureau-label">PASSWORD</label>
+                                <input type="password" id="bureau-login-pw" class="bureau-input" placeholder="●●●●●●●●" maxlength="72">
+                            </div>
+                            <button type="button" id="bureau-login-btn" class="bureau-submit-btn">[ REPORT FOR DUTY ]</button>
+                            <div class="bureau-error" id="bureau-login-error"></div>
+                            <div class="bureau-hint" style="margin-top:8px;">Forgot your password and skipped email? Tough luck, gator.</div>
+                        </div>
+                    </div>
+                    <div id="bureau-operative" class="bureau-operative" style="display:none;">
+                        <div class="bureau-op-header">
+                            <div class="bureau-op-tag" id="bureau-op-tag">OPERATIVE: —</div>
+                            <button type="button" id="bureau-logout-btn" class="bureau-logout-btn">[ DESERT ]</button>
+                        </div>
+                        <div class="dossier-section">
+                            <div class="dossier-header">◆ THE DOSSIER ◆</div>
+                            <div class="dossier-summary" id="dossier-summary"></div>
+                            <div class="dossier-list" id="dossier-list"></div>
+                            <div class="dossier-empty" id="dossier-empty" style="display:none;">No dispatches filed yet. Get out there and confess something.</div>
+                        </div>
+                    </div>
+                </div>
             </section>
 
             <!-- Right Column: The Feed & Shame -->
@@ -506,7 +565,8 @@
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.7.7" defer></script>
+    <script src="script.js?v=2.8.0" defer></script>
+
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>

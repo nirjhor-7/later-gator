@@ -412,6 +412,16 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const SESSION_ID = getSessionId();
 
+    // Gator Account State (HN-Style Auth)
+    let currentGator = (() => {
+        try {
+            return JSON.parse(localStorage.getItem('lg_gator_user') || 'null');
+        } catch (e) {
+            return null;
+        }
+    })();
+    let gatorToken = localStorage.getItem('lg_gator_token') || null;
+
     let userStamps = (() => {
         try {
             return JSON.parse(localStorage.getItem('lg_user_stamps') || '{}');
@@ -426,16 +436,44 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
     };
 
-    // On load, fetch this session's reactions from server and merge into userStamps
+    const syncAllReactionButtonsInDOM = () => {
+        document.querySelectorAll('.feed-reactions').forEach(container => {
+            const taskId = container.getAttribute('data-task-id');
+            if (!taskId) return;
+            const myStamp = userStamps[taskId] || null;
+            ['same', 'valid', 'rip'].forEach(type => {
+                const btn = container.querySelector(`.reaction-stamp-btn[data-type="${type}"]`);
+                if (btn) {
+                    if (myStamp === type) {
+                        btn.classList.add('stamped');
+                        if (!btn.style.getPropertyValue('--stamp-rot')) {
+                            const defaultRot = ((taskId * 17) % 7 - 3.2).toFixed(2);
+                            btn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
+                        }
+                    } else {
+                        btn.classList.remove('stamped');
+                        btn.style.removeProperty('--stamp-rot');
+                    }
+                }
+            });
+        });
+    };
+
+    // On load, fetch reactions (by sessionId and/or gatorId) from server and merge into userStamps
     const syncSessionReactionsFromServer = async () => {
         try {
-            const res = await fetch(`/api/react?sessionId=${encodeURIComponent(SESSION_ID)}`);
+            let url = `/api/react?sessionId=${encodeURIComponent(SESSION_ID)}`;
+            if (currentGator && currentGator.gatorId) {
+                url += `&gatorId=${encodeURIComponent(currentGator.gatorId)}`;
+            }
+            const res = await fetch(url);
             if (!res.ok) return;
             const data = await res.json();
             if (data && data.reactions && typeof data.reactions === 'object') {
                 // Merge server state into local (server is source of truth)
                 Object.assign(userStamps, data.reactions);
                 saveUserStamps();
+                syncAllReactionButtonsInDOM();
             }
         } catch (e) {
             // Fall back to localStorage silently
@@ -445,6 +483,7 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         syncSessionReactionsFromServer();
     }, 1500);
+
 
     // Synthesize physical wooden rubber stamp slam sound
     const playStampSlamSound = () => {
@@ -779,10 +818,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const prevActiveType = userStamps[taskId];
             if (prevActiveType && prevActiveType !== reactionType) {
                 clearedType = prevActiveType;
+                const clearPayload = { taskId, reactionType: clearedType, action: 'remove', sessionId: SESSION_ID };
+                if (currentGator && currentGator.gatorId) clearPayload.gatorId = currentGator.gatorId;
                 fetch('/api/react', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ taskId, reactionType: clearedType, action: 'remove', sessionId: SESSION_ID })
+                    body: JSON.stringify(clearPayload)
                 }).catch(() => {});
             }
 
@@ -795,10 +836,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 4. Background sync to /api/react
         try {
+            const reactPayload = { taskId, reactionType, action, sessionId: SESSION_ID };
+            if (currentGator && currentGator.gatorId) reactPayload.gatorId = currentGator.gatorId;
             const res = await fetch('/api/react', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taskId, reactionType, action, sessionId: SESSION_ID })
+                body: JSON.stringify(reactPayload)
             });
             if (res.ok) {
                 const data = await res.json();
@@ -810,6 +853,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Optimistic local state remains intact
         }
     };
+
 
     const handleClipClick = (clipBtn) => {
         const taskIdStr = clipBtn.getAttribute('data-task-id');
@@ -1543,13 +1587,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // 2. Dispatch network request in parallel
+        const postPayload = { text, name: submittedAuthorName, sessionId: SESSION_ID };
+        if (currentGator && currentGator.gatorId) {
+            postPayload.gatorId = currentGator.gatorId;
+        }
         const postPromise = fetch('/api/tasks', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'X-Gator-Token': 'chomp-chomp'
             },
-            body: JSON.stringify({ text, name: submittedAuthorName })
+            body: JSON.stringify(postPayload)
         }).catch(err => ({ ok: false, error: err }));
 
         // 3. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
@@ -1571,6 +1619,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const response = await postPromise;
                 if (response && response.ok) {
                     fetchAll();
+                    if (typeof fetchDossier === 'function') fetchDossier();
                 } else if (response && response.json) {
                     const errData = await response.json().catch(() => ({}));
                     if (errData.error) {
@@ -1582,6 +1631,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Background refresh error handled
             }
         }, 1100);
+
     };
 
     // Share Card Slip & Certificate Logic
@@ -4084,8 +4134,330 @@ document.addEventListener('DOMContentLoaded', () => {
         startAllPolling();
     });
 
+    // ==========================================
+    // BUREAU OPERATIVE & THE DOSSIER (GATOR AUTH)
+    // ==========================================
+
+    const bureauGuestEl = document.getElementById('bureau-guest');
+    const bureauOperativeEl = document.getElementById('bureau-operative');
+    const bureauOpTagEl = document.getElementById('bureau-op-tag');
+    const bureauLogoutBtn = document.getElementById('bureau-logout-btn');
+    const dossierSummaryEl = document.getElementById('dossier-summary');
+    const dossierListEl = document.getElementById('dossier-list');
+    const dossierEmptyEl = document.getElementById('dossier-empty');
+
+    const bureauTagInput = document.getElementById('bureau-tag-input');
+    const bureauTagStatus = document.getElementById('bureau-tag-status');
+    const bureauPwInput = document.getElementById('bureau-pw-input');
+    const bureauEmailInput = document.getElementById('bureau-email-input');
+    const bureauClaimBtn = document.getElementById('bureau-claim-btn');
+    const bureauClaimError = document.getElementById('bureau-claim-error');
+
+    const bureauLoginTag = document.getElementById('bureau-login-tag');
+    const bureauLoginPw = document.getElementById('bureau-login-pw');
+    const bureauLoginBtn = document.getElementById('bureau-login-btn');
+    const bureauLoginError = document.getElementById('bureau-login-error');
+
+    const bureauTabs = document.querySelectorAll('.bureau-tab');
+    const bureauFormClaim = document.getElementById('bureau-form-claim');
+    const bureauFormLogin = document.getElementById('bureau-form-login');
+
+    let tagCheckTimeout = null;
+    let isTagValid = false;
+
+    window.fetchDossier = async () => {
+        if (!gatorToken || !dossierListEl) return;
+        try {
+            const res = await fetch(`/api/gator/dossier?token=${encodeURIComponent(gatorToken)}`);
+            if (res.status === 401) {
+                logoutGator(false);
+                return;
+            }
+            if (!res.ok) return;
+            const data = await res.json();
+            if (!data || !data.dispatches) return;
+
+            const count = data.dispatches.length;
+            const total = data.totalSympathy || 0;
+            if (dossierSummaryEl) {
+                dossierSummaryEl.textContent = `${count} OPEN ${count === 1 ? 'CASE' : 'CASES'} • ${total} TOTAL SYMPATHY`;
+            }
+
+            if (count === 0) {
+                if (dossierEmptyEl) dossierEmptyEl.style.display = 'block';
+                dossierListEl.innerHTML = '';
+            } else {
+                if (dossierEmptyEl) dossierEmptyEl.style.display = 'none';
+                dossierListEl.innerHTML = data.dispatches.map(t => {
+                    const taskText = escapeHtml(t.task || t.text || '');
+                    const same = t.same_count || 0;
+                    const valid = t.valid_count || 0;
+                    const rip = t.rip_count || 0;
+                    return `
+                        <div class="dossier-item" data-task-id="${t.id}">
+                            <div class="dossier-item-task">"${taskText}"</div>
+                            <div class="dossier-item-counts">
+                                <span>[ SAME: ${same} ]</span>
+                                <span>[ VALID: ${valid} ]</span>
+                                <span>[ RIP: ${rip} ]</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        } catch (e) {}
+    };
+
+    const updateBureauUI = () => {
+        if (!bureauGuestEl || !bureauOperativeEl) return;
+        if (currentGator && gatorToken) {
+            bureauGuestEl.style.display = 'none';
+            bureauOperativeEl.style.display = 'block';
+            if (bureauOpTagEl) {
+                bureauOpTagEl.textContent = `OPERATIVE: ${currentGator.displayTag || currentGator.tag}`;
+            }
+            const userNameInput = document.getElementById('user-name');
+            if (userNameInput && !userNameInput.value.trim()) {
+                userNameInput.value = `@${currentGator.displayTag || currentGator.tag}`;
+            }
+            window.fetchDossier();
+        } else {
+            bureauGuestEl.style.display = 'block';
+            bureauOperativeEl.style.display = 'none';
+        }
+    };
+
+    const logoutGator = async (callApi = true) => {
+        if (callApi && gatorToken) {
+            fetch('/api/gator/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: gatorToken })
+            }).catch(() => {});
+        }
+        localStorage.removeItem('lg_gator_token');
+        localStorage.removeItem('lg_gator_user');
+        gatorToken = null;
+        currentGator = null;
+        updateBureauUI();
+    };
+
+    const initBureauAuth = () => {
+        if (!bureauGuestEl) return;
+
+        // 1. Check existing session
+        if (gatorToken) {
+            fetch(`/api/gator/me?token=${encodeURIComponent(gatorToken)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data && data.ok) {
+                        currentGator = {
+                            gatorId: data.gatorId,
+                            tag: data.tag,
+                            displayTag: data.displayTag,
+                            notifyEmail: data.notifyEmail
+                        };
+                        localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
+                        updateBureauUI();
+                        syncSessionReactionsFromServer();
+                    } else {
+                        logoutGator(false);
+                    }
+                })
+                .catch(() => updateBureauUI());
+        } else {
+            updateBureauUI();
+        }
+
+        // 2. Tab switching
+        bureauTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                bureauTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const mode = tab.getAttribute('data-btab');
+                if (mode === 'login') {
+                    if (bureauFormClaim) bureauFormClaim.style.display = 'none';
+                    if (bureauFormLogin) bureauFormLogin.style.display = 'flex';
+                } else {
+                    if (bureauFormClaim) bureauFormClaim.style.display = 'flex';
+                    if (bureauFormLogin) bureauFormLogin.style.display = 'none';
+                }
+                if (bureauClaimError) bureauClaimError.textContent = '';
+                if (bureauLoginError) bureauLoginError.textContent = '';
+            });
+        });
+
+        // 3. Live Tag Check
+        const checkTagAvailability = () => {
+            const raw = (bureauTagInput?.value || '').trim();
+            if (raw.length < 3) {
+                isTagValid = false;
+                if (bureauTagStatus) bureauTagStatus.textContent = '';
+                if (bureauClaimBtn) bureauClaimBtn.disabled = true;
+                if (bureauClaimError) bureauClaimError.textContent = '';
+                return;
+            }
+
+            if (!/^[a-zA-Z0-9_]+$/.test(raw)) {
+                isTagValid = false;
+                if (bureauTagStatus) bureauTagStatus.textContent = '❌';
+                if (bureauClaimError) bureauClaimError.textContent = 'Only letters, numbers, and underscores.';
+                if (bureauClaimBtn) bureauClaimBtn.disabled = true;
+                return;
+            }
+
+            if (bureauTagStatus) bureauTagStatus.textContent = '⏳';
+            if (bureauClaimError) bureauClaimError.textContent = '';
+
+            fetch(`/api/gator/check?tag=${encodeURIComponent(raw)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.available) {
+                        isTagValid = true;
+                        if (bureauTagStatus) bureauTagStatus.textContent = '✅';
+                        if (bureauClaimError) bureauClaimError.textContent = '';
+                        validateClaimForm();
+                    } else {
+                        isTagValid = false;
+                        if (bureauTagStatus) bureauTagStatus.textContent = '❌';
+                        if (bureauClaimError) bureauClaimError.textContent = data.reason || 'Occupied. Someone claimed that tag first.';
+                        if (bureauClaimBtn) bureauClaimBtn.disabled = true;
+                    }
+                })
+                .catch(() => {
+                    if (bureauTagStatus) bureauTagStatus.textContent = '';
+                });
+        };
+
+        const validateClaimForm = () => {
+            const pw = bureauPwInput?.value || '';
+            const canSubmit = isTagValid && pw.length >= 8;
+            if (bureauClaimBtn) bureauClaimBtn.disabled = !canSubmit;
+        };
+
+        if (bureauTagInput) {
+            bureauTagInput.addEventListener('input', () => {
+                clearTimeout(tagCheckTimeout);
+                tagCheckTimeout = setTimeout(checkTagAvailability, 320);
+            });
+        }
+
+        if (bureauPwInput) {
+            bureauPwInput.addEventListener('input', validateClaimForm);
+        }
+
+        // 4. Claim (Sign Up) Submit
+        if (bureauClaimBtn) {
+            bureauClaimBtn.addEventListener('click', async () => {
+                const tag = (bureauTagInput?.value || '').trim();
+                const password = bureauPwInput?.value || '';
+                const email = (bureauEmailInput?.value || '').trim();
+
+                if (!tag || password.length < 8) return;
+
+                bureauClaimBtn.disabled = true;
+                bureauClaimBtn.textContent = '[ REGISTERING WITH BUREAU... ]';
+                if (bureauClaimError) bureauClaimError.textContent = '';
+
+                try {
+                    const res = await fetch('/api/gator/claim', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tag, password, email, sessionId: SESSION_ID })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.ok) {
+                        gatorToken = data.token;
+                        currentGator = {
+                            gatorId: data.gatorId,
+                            tag: data.tag,
+                            displayTag: data.displayTag,
+                            notifyEmail: data.notifyEmail
+                        };
+                        localStorage.setItem('lg_gator_token', gatorToken);
+                        localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
+                        updateBureauUI();
+                        syncSessionReactionsFromServer();
+                        playStampSlamSound();
+                    } else {
+                        if (bureauClaimError) {
+                            bureauClaimError.textContent = data.error || 'Failed to claim tag. Try again.';
+                        }
+                    }
+                } catch (e) {
+                    if (bureauClaimError) bureauClaimError.textContent = 'Telegraph line down. Try again.';
+                } finally {
+                    if (bureauClaimBtn) {
+                        bureauClaimBtn.textContent = '[ CLAIM MY PLACE ON THE WIRE ]';
+                        validateClaimForm();
+                    }
+                }
+            });
+        }
+
+        // 5. Login (Sign In) Submit
+        if (bureauLoginBtn) {
+            bureauLoginBtn.addEventListener('click', async () => {
+                const tag = (bureauLoginTag?.value || '').trim();
+                const password = bureauLoginPw?.value || '';
+
+                if (!tag || !password) {
+                    if (bureauLoginError) bureauLoginError.textContent = 'Tag and password are required.';
+                    return;
+                }
+
+                bureauLoginBtn.disabled = true;
+                bureauLoginBtn.textContent = '[ VERIFYING CREDENTIALS... ]';
+                if (bureauLoginError) bureauLoginError.textContent = '';
+
+                try {
+                    const res = await fetch('/api/gator/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ tag, password })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.ok) {
+                        gatorToken = data.token;
+                        currentGator = {
+                            gatorId: data.gatorId,
+                            tag: data.tag,
+                            displayTag: data.displayTag,
+                            notifyEmail: data.notifyEmail
+                        };
+                        localStorage.setItem('lg_gator_token', gatorToken);
+                        localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
+                        updateBureauUI();
+                        syncSessionReactionsFromServer();
+                        playStampSlamSound();
+                    } else {
+                        if (bureauLoginError) {
+                            bureauLoginError.textContent = data.error || 'Invalid credentials.';
+                        }
+                    }
+                } catch (e) {
+                    if (bureauLoginError) bureauLoginError.textContent = 'Telegraph line down. Try again.';
+                } finally {
+                    if (bureauLoginBtn) {
+                        bureauLoginBtn.disabled = false;
+                        bureauLoginBtn.textContent = '[ REPORT FOR DUTY ]';
+                    }
+                }
+            });
+        }
+
+        // 6. Logout
+        if (bureauLogoutBtn) {
+            bureauLogoutBtn.addEventListener('click', () => {
+                logoutGator(true);
+            });
+        }
+    };
+
+    initBureauAuth();
     initVideoFacade();
     restoreCachedData();
+
     fetchAll();
     startAllPolling();
 

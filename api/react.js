@@ -16,21 +16,23 @@ module.exports = async function handler(req, res) {
     // ── GET: Return all reactions this session has made ──────────────────────
     if (req.method === 'GET') {
         const sessionId = req.query.sessionId;
-        if (!sessionId) {
+        const gatorId = req.query.gatorId;
+        if (!sessionId && !gatorId) {
             return res.status(200).json({ reactions: {} });
         }
         try {
-            const { data, error } = await supabase
-                .from('user_reactions')
-                .select('task_id, reaction_type')
-                .eq('session_id', sessionId);
+            let query = supabase.from('user_reactions').select('task_id, reaction_type');
+            if (gatorId) {
+                query = query.eq('gator_id', gatorId);
+            } else {
+                query = query.eq('session_id', sessionId);
+            }
+            const { data, error } = await query;
 
             if (error) {
-                // Table may not exist yet — return empty gracefully
                 return res.status(200).json({ reactions: {} });
             }
 
-            // Convert array → { taskId: reactionType } map
             const reactions = {};
             (data || []).forEach(row => {
                 reactions[row.task_id] = row.reaction_type;
@@ -41,13 +43,15 @@ module.exports = async function handler(req, res) {
         }
     }
 
+
     // ── POST: Record / remove a reaction ─────────────────────────────────────
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
     }
 
     try {
-        const { taskId, reactionType, action, sessionId } = req.body || {};
+        const { taskId, reactionType, action, sessionId, gatorId } = req.body || {};
+
 
         if (!taskId) {
             return res.status(400).json({ error: 'Task ID required' });
@@ -99,24 +103,33 @@ module.exports = async function handler(req, res) {
         await supabase.from('tasks').update(updateObj).eq('id', taskId);
 
         // ── 2. Update per-session reaction record ─────────────────────────────
-        if (sessionId) {
+        if (sessionId || gatorId) {
             if (action === 'remove') {
-                // Delete the row
-                await supabase
-                    .from('user_reactions')
-                    .delete()
-                    .eq('session_id', sessionId)
-                    .eq('task_id', taskId);
+                let q = supabase.from('user_reactions').delete();
+                if (gatorId) {
+                    q = q.eq('gator_id', gatorId).eq('task_id', taskId);
+                } else {
+                    q = q.eq('session_id', sessionId).eq('task_id', taskId);
+                }
+                await q;
             } else {
-                // Upsert: one row per (session_id, task_id), update reaction_type if changed
-                await supabase
-                    .from('user_reactions')
-                    .upsert(
-                        { session_id: sessionId, task_id: taskId, reaction_type: reactionType },
+                const upsertPayload = { task_id: taskId, reaction_type: reactionType };
+                if (gatorId) {
+                    upsertPayload.gator_id = gatorId;
+                    await supabase.from('user_reactions').upsert(
+                        upsertPayload,
+                        { onConflict: 'gator_id,task_id' }
+                    );
+                }
+                if (sessionId) {
+                    await supabase.from('user_reactions').upsert(
+                        { ...upsertPayload, session_id: sessionId },
                         { onConflict: 'session_id,task_id' }
                     );
+                }
             }
         }
+
 
         return res.status(200).json({
             ok: true,

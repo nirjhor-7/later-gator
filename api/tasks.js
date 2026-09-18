@@ -194,7 +194,8 @@ export default async function handler(req, res) {
 
     if (req.method === 'POST') {
         try {
-            const { text, name, country } = req.body;
+            const { text, name, country, gatorId, sessionId } = req.body;
+
             
             // Anti-bot honeypot
             if (req.headers['x-gator-token'] !== 'chomp-chomp') {
@@ -354,13 +355,37 @@ export default async function handler(req, res) {
                 }
             }
             
+            const insertPayload = {
+                text: cleanText,
+                city: finalName,
+                country: finalCountry,
+                ip_address: clientIp,
+            };
+            if (gatorId) insertPayload.author_gator_id = gatorId;
+
             const { data: newTask, error } = await supabase
                 .from('tasks')
-                .insert([{ text: cleanText, city: finalName, country: finalCountry, ip_address: clientIp }])
+                .insert([insertPayload])
                 .select()
                 .single();
                 
             if (error) throw error;
+
+            // Register for milestone communiqués if gator has an email
+            if (gatorId && newTask) {
+                const { data: gator } = await supabase
+                    .from('gator_tags')
+                    .select('notify_email')
+                    .eq('gator_id', gatorId)
+                    .maybeSingle();
+                if (gator && gator.notify_email) {
+                    await supabase.from('dispatch_notifications').upsert(
+                        { task_id: String(newTask.id), gator_id: gatorId, notify_email: gator.notify_email, last_milestone: 0 },
+                        { onConflict: 'task_id' }
+                    );
+                }
+            }
+
             return res.status(201).json(newTask);
         } catch (err) {
             return res.status(500).json({ error: err.message });

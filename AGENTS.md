@@ -1,10 +1,13 @@
 # Later, Gators — Project Rules & Guidelines
 
 ## 1. Deployment & Branching Protocol
-- **Staging-First Workflow:** Do not push experimental or breaking changes directly to `main`.
-- Always develop, test, and verify on the `staging` branch (`https://later-gator-git-staging-nirjhor-7.vercel.app`).
-- Promote to `main` (`https://www.latergators.live`) only after verification and user sign-off.
-- Keep both `staging` and `main` synced after production merges.
+- **Staging-Only by Default:** Every deploy goes to `staging` first — no exceptions.
+- Never push to `main` unless the user explicitly names it in their message.
+  - ✅ Acceptable: "push to main", "merge to main", "make it live on main", "deploy to production"
+  - ❌ Not sufficient: "deploy it", "ship it", "make it live", "go live" — these mean `staging` unless `main` is named.
+- Staging URL: `https://later-gator-git-staging-nirjhor-7.vercel.app`
+- Production URL: `https://www.latergators.live`
+- Keep both `staging` and `main` synced after every production merge.
 
 ## 2. Social Previews & Cache Invalidation
 - Standard domain: `https://www.latergators.live/` (canonical with www).
@@ -27,3 +30,12 @@
 ## 5. Canvas Image Viral Attribution
 - Every downloadable canvas artifact (Postponement Certificate, Sloth Press Pass) must include the canonical footer text:
   `LATER, GATORS // THE GLOBAL PROCRASTINATION JOURNAL // LATERGATORS.LIVE`
+
+## 6. Brand Voice in Plans & Proposals
+- When writing implementation plans, design proposals, open questions, or any user-facing planning content for this project, match the Later Gators brand voice:
+  - Casual, humanized prose. Write like a person thinking out loud, not a chatbot generating structured output.
+  - Lowercase where natural. Conversational phrasing over bullet-point formalism.
+  - No stiff `Q1/Q2/Q3` labels for open questions — just ask them plainly.
+  - On-brand terminology: Bureau of Idleness, the wire, dispatches, operatives, gators.
+  - Absurdist bureaucratic earnestness about trivial things is the right tone.
+
