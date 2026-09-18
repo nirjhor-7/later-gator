@@ -52,6 +52,10 @@
                 </div>
                 <div class="meta-row-right">
                     <span id="current-date">Today</span>
+                    <button type="button" id="header-pass-btn" class="header-pass-btn" title="View Official Sloth Credential & Press Pass" aria-label="Official Press Pass">
+                        🪪 PRESS PASS
+                    </button>
+                    <span class="meta-sep">•</span>
                     <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
                         <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
                     </button>
@@ -281,178 +285,7 @@
                     <div class="video-caption">SPONSORED BY NOT DOING YOUR WORK</div>
                 </div>
 
-                <!-- Daily Diversions: Weather, Clicker, Comic -->
-                <div class="article-box diversion-box" id="box-diversions">
-                    <div class="diversion-header">
-                        <span class="diversion-label">DAILY DIVERSIONS</span>
-                        <div class="diversion-tabs" role="tablist">
-                            <button type="button" class="div-tab active" data-tab="clicker" role="tab" aria-selected="true">★ DO NOTHING</button>
-                            <button type="button" class="div-tab" data-tab="alibis" role="tab" aria-selected="false">📜 ALIBIS</button>
-                            <button type="button" class="div-tab" data-tab="oracle" role="tab" aria-selected="false">🔮 ORACLE</button>
-                            <button type="button" class="div-tab" data-tab="comic" role="tab" aria-selected="false">✂ COMIC</button>
-                        </div>
-                    </div>
 
-                    <!-- Tab 1: The Do-Nothing Clicker -->
-                    <div id="tab-clicker" class="tab-panel active" role="tabpanel">
-                        <div class="clicker-body">
-                            <div class="clicker-btn-wrapper">
-                                <button type="button" id="clicker-btn" class="clicker-btn">
-                                    [ CLICK TO DO NOTHING ]
-                                </button>
-                                <div id="clicker-particles" class="clicker-particles"></div>
-                            </div>
-                            <div class="clicker-stats">
-                                <div class="clicker-count-line">
-                                    TIME WASTED: <span id="clicker-count" class="clicker-num">0</span> <span id="clicker-time" class="clicker-time"></span>
-                                </div>
-                                <div class="clicker-rank-row">
-                                    <div class="clicker-rank" id="clicker-rank">RANK: CASUAL SLACKER</div>
-                                    <button type="button" id="clicker-reset-btn" class="clicker-reset-btn" title="Reset tally">RESET</button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Procrastination DEFCON Meter -->
-                        <div class="defcon-gauge-container">
-                            <div class="defcon-gauge-header">
-                                <span class="defcon-label">SLOTH GAUGE:</span>
-                                <span id="defcon-status" class="defcon-status">DEFCON 5 (MILD DELAY)</span>
-                            </div>
-                            <div class="defcon-meter-track">
-                                <div id="defcon-meter-fill" class="defcon-meter-fill" style="width: 5%;"></div>
-                            </div>
-                        </div>
-
-                        <!-- Office Sound Camouflage -->
-                        <div id="camo-section" class="camo-controls">
-                            <span class="camo-label">CAMOUFLAGE:</span>
-                            <button type="button" id="camo-typing-btn" class="camo-btn">⌨ FAKE TYPING</button>
-                            <button type="button" id="camo-sigh-btn" class="camo-btn">☕ SIGH</button>
-                            <button type="button" id="camo-paper-btn" class="camo-btn">📁 PAPERS</button>
-                            <button type="button" id="camo-stop-btn" class="camo-btn" style="display: none;">⏹ STOP</button>
-                        </div>
-
-                        <!-- Progressive Unlockables Row -->
-                        <div class="clicker-perks-row">
-                            <button type="button" id="claim-pass-btn" class="div-action-btn claim-pass-btn" style="display: none;">
-                                [ 📜 CLAIM OFFICIAL PRESS PASS ]
-                            </button>
-                            <button type="button" id="sepia-toggle-btn" class="div-action-btn" style="display: none;">
-                                [ 📜 1890s PRINT: OFF ]
-                            </button>
-                        </div>
-
-                        <!-- Secret Gossip Column (Unlocked at Rank 200+) -->
-                        <div id="secret-column" class="secret-column" style="display: none;">
-                            <div class="secret-column-header">
-                                <span>★ CONFIDENTIAL DISPATCH: THE 5 AM FRAUD ★</span>
-                            </div>
-                            <div class="secret-column-body">
-                                "An undercover investigation reveals waking up at 5:00 AM does not make you a billionaire. It merely ensures you are profoundly exhausted by 9:15 AM."
-                            </div>
-                        </div>
-
-                        <div class="clicker-quote" id="clicker-quote">
-                            "Every click is another responsibility successfully dodged."
-                        </div>
-                    </div>
-
-                    <!-- Tab 2: The Airtight Alibi Dispenser -->
-                    <div id="tab-alibis" class="tab-panel" role="tabpanel" style="display: none;">
-                        <div class="alibi-category-row">
-                            <button type="button" class="alibi-cat-btn active" data-cat="work">🏢 WORK</button>
-                            <button type="button" class="alibi-cat-btn" data-cat="school">🎓 SCHOOL</button>
-                            <button type="button" class="alibi-cat-btn" data-cat="social">🍻 SOCIAL</button>
-                            <button type="button" class="alibi-cat-btn" data-cat="existential">🛌 EXISTENTIAL</button>
-                        </div>
-                        <div class="alibi-card" id="alibi-card">
-                            <div class="alibi-badge">OFFICIAL DISPATCH OF NON-PERFORMANCE</div>
-                            <div class="alibi-text" id="alibi-text">
-                                "The bearer is unable to attend due to acute cognitive atmospheric interference. All inquiries are legally deferred to next Tuesday."
-                            </div>
-                            <div class="alibi-ref" id="alibi-ref">STATUTE 404 • REF #ALB-8912 • VERIFIED DELAY</div>
-                        </div>
-                        <div class="diversion-actions-row">
-                            <button type="button" id="alibi-next-btn" class="div-action-btn">
-                                [ 🖨️ DISPENSE NEXT ALIBI ]
-                            </button>
-                            <button type="button" id="alibi-copy-btn" class="div-action-btn">
-                                [ 📋 COPY FOR SLACK ]
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Tab 3: Slacker's Daily Oracle / Horoscope -->
-                    <div id="tab-oracle" class="tab-panel" role="tabpanel" style="display: none;">
-                        <div class="oracle-header">
-                            <label for="oracle-sign-select" class="oracle-label">CHOOSE YOUR CELESTIAL SIGN:</label>
-                            <select id="oracle-sign-select" class="oracle-select">
-                                <option value="aries">♈ ARIES</option>
-                                <option value="taurus">♉ TAURUS</option>
-                                <option value="gemini">♊ GEMINI</option>
-                                <option value="cancer">♋ CANCER</option>
-                                <option value="leo">♌ LEO</option>
-                                <option value="virgo">♍ VIRGO</option>
-                                <option value="libra">♎ LIBRA</option>
-                                <option value="scorpio">♏ SCORPIO</option>
-                                <option value="sagittarius">♐ SAGITTARIUS</option>
-                                <option value="capricorn">♑ CAPRICORN</option>
-                                <option value="aquarius">♒ AQUARIUS</option>
-                                <option value="pisces">♓ PISCES</option>
-                            </select>
-                        </div>
-                        <div class="oracle-card">
-                            <div class="oracle-sign-title" id="oracle-sign-title">♈ ARIES • THE CELESTIAL MANDATE</div>
-                            <div class="oracle-body" id="oracle-body">
-                                "Mars is in retrograde. Answering that email will disrupt the cosmic equilibrium. Stare out the window for 45 minutes instead."
-                            </div>
-                        </div>
-                        <div class="diversion-actions-row">
-                            <button type="button" id="oracle-random-btn" class="div-action-btn">
-                                [ 🔮 ROLL RANDOM DESTINY ]
-                            </button>
-                            <button type="button" id="oracle-copy-btn" class="div-action-btn">
-                                [ 📋 COPY DESTINY ]
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Tab 4: Front-Page Editorial Comic Strip -->
-                    <div id="tab-comic" class="tab-panel" role="tabpanel" style="display: none;">
-                        <div class="comic-header-bar">
-                            <span class="comic-series-tag">THE CHRONICLES OF LATER GATOR</span>
-                            <span class="comic-episode-title" id="comic-title">EP. 1: THE SNOOZE TRAP</span>
-                        </div>
-                        <div class="comic-strip-container">
-                            <div class="comic-panels-row">
-                                <div class="comic-panel-box">
-                                    <div class="comic-panel-tag" id="comic-panel-tag-1">PANEL 1 • 07:00 AM</div>
-                                    <div class="comic-panel-art" id="comic-art-1"></div>
-                                    <div class="comic-speech-bubble" id="comic-speech-1"></div>
-                                </div>
-                                <div class="comic-panel-divider"></div>
-                                <div class="comic-panel-box">
-                                    <div class="comic-panel-tag" id="comic-panel-tag-2">PANEL 2 • 11:45 AM</div>
-                                    <div class="comic-panel-art" id="comic-art-2"></div>
-                                    <div class="comic-speech-bubble" id="comic-speech-2"></div>
-                                </div>
-                            </div>
-                            <div class="comic-punchline-bar" id="comic-caption"></div>
-                        </div>
-                        <div class="comic-controls">
-                            <div class="comic-controls-left">
-                                <button type="button" id="comic-prev-btn" class="comic-nav-btn">◄ PREV</button>
-                                <span class="comic-page-num" id="comic-page-num">STRIP 1 OF 8</span>
-                                <button type="button" id="comic-next-btn" class="comic-nav-btn">NEXT ►</button>
-                            </div>
-                            <div class="comic-controls-right">
-                                <button type="button" id="comic-random-btn" class="comic-nav-btn">🎲 RANDOM</button>
-                                <button type="button" id="comic-copy-btn" class="comic-nav-btn">📋 COPY</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
             </section>
 
@@ -569,6 +402,12 @@
                     <button type="button" id="bureau-claim-btn" class="bureau-submit-btn" disabled>[ CLAIM MY TAG ]</button>
                     <div class="bureau-error" id="bureau-claim-error"></div>
                 </div>
+
+                <div class="bureau-guest-pass-row">
+                    <button type="button" id="bureau-guest-pass-btn" class="bureau-pass-btn">
+                        🪪 VIEW / CLAIM SLOTH PRESS PASS
+                    </button>
+                </div>
             </div>
 
             <!-- Operative Logged In State: The Dossier -->
@@ -576,6 +415,11 @@
                 <div class="bureau-op-header">
                     <div class="bureau-op-tag" id="bureau-op-tag">OPERATIVE: —</div>
                     <button type="button" id="bureau-logout-btn" class="bureau-logout-btn">[ DESERT ]</button>
+                </div>
+                <div class="bureau-actions-row">
+                    <button type="button" id="bureau-pass-btn" class="bureau-pass-btn">
+                        🪪 VIEW OFFICIAL ACCREDITED PRESS PASS
+                    </button>
                 </div>
                 <div class="dossier-section">
                     <div class="dossier-header">◆ THE DOSSIER ◆</div>

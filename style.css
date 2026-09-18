@@ -4141,6 +4141,61 @@ body.midnight-edition .comic-page-num {
     color: var(--paper);
 }
 
+.header-pass-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    padding: 3px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    user-select: none;
+}
+.header-pass-btn:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: #ffffff;
+}
+
+.bureau-actions-row,
+.bureau-guest-pass-row {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    width: 100%;
+}
+.bureau-pass-btn {
+    width: 100%;
+    padding: 9px 12px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.76rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-sizing: border-box;
+}
+.bureau-pass-btn:hover {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: #ffffff;
+}
+
 .bureau-dialog {
     max-width: 420px !important;
     width: 92% !important;

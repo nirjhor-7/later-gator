@@ -3082,11 +3082,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const openCredentialModal = () => {
         if (!credentialModal || !credentialCanvas) return;
         const userNameInput = document.getElementById('user-name');
-        const authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '') || 'Anonymous Slacker';
-        const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-        const timeStr = formatWastedTime(clickerCount);
+        let authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '');
+        if (!authorName && currentGator && (currentGator.displayTag || currentGator.tag)) {
+            authorName = `@${(currentGator.displayTag || currentGator.tag).replace(/^@/, '')}`;
+        }
+        authorName = authorName || 'Anonymous Slacker';
 
-        generateCredentialCard(credentialCanvas, authorName, rankText, clickerCount, timeStr);
+        const effectiveClicks = Math.max(clickerCount || 0, 15);
+        const rankText = (typeof getClickerRank === 'function')
+            ? getClickerRank(effectiveClicks).replace('RANK: ', '').trim()
+            : 'CERTIFIED PROCRASTINATOR';
+        const timeStr = formatWastedTime(effectiveClicks);
+
+        generateCredentialCard(credentialCanvas, authorName, rankText, effectiveClicks, timeStr);
 
         const credentialShareBtn = document.getElementById('credential-share-btn');
         if (credentialShareBtn && navigator.share) {
@@ -3095,12 +3103,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         credentialModal.style.display = 'flex';
     };
+    window.openCredentialModal = openCredentialModal;
 
     const closeCredentialModal = () => {
         if (credentialModal) credentialModal.style.display = 'none';
     };
 
     if (claimPassBtn) claimPassBtn.addEventListener('click', openCredentialModal);
+    const headerPassBtn = document.getElementById('header-pass-btn');
+    if (headerPassBtn) headerPassBtn.addEventListener('click', openCredentialModal);
+    const bureauPassBtn = document.getElementById('bureau-pass-btn');
+    if (bureauPassBtn) bureauPassBtn.addEventListener('click', () => {
+        closeBureauModal();
+        openCredentialModal();
+    });
+    const bureauGuestPassBtn = document.getElementById('bureau-guest-pass-btn');
+    if (bureauGuestPassBtn) bureauGuestPassBtn.addEventListener('click', () => {
+        closeBureauModal();
+        openCredentialModal();
+    });
     if (credentialCloseBtn) credentialCloseBtn.addEventListener('click', closeCredentialModal);
     if (credentialBackdrop) credentialBackdrop.addEventListener('click', closeCredentialModal);
 
