@@ -1,5 +1,6 @@
 {
   "rewrites": [
+    { "source": "/api/gator/:action*", "destination": "/api/gator?action=:action" },
     { "source": "/api/(.*)", "destination": "/api/$1" }
   ],
   "headers": [
@@ -11,4 +12,5 @@
     }
   ]
 }
+
 
