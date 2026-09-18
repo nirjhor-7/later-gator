@@ -4142,13 +4142,36 @@ body.midnight-edition .comic-page-num {
 }
 
 .bureau-dialog {
-    max-width: 440px !important;
+    max-width: 420px !important;
     width: 92% !important;
-    padding: 0 !important;
+    padding: 20px !important;
     overflow: hidden;
+    box-sizing: border-box;
+}
+.bureau-dialog .credential-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px;
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.bureau-dialog .share-close-btn {
+    font-size: 1.3rem;
+    line-height: 1;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
 }
 .bureau-modal-body {
-    padding: 20px 22px 24px;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Subtle prompt in post-submission slip */
@@ -4187,21 +4210,25 @@ body.midnight-edition .comic-page-num {
     border: 1.5px solid var(--ink);
     margin-bottom: 16px;
     overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .bureau-tab {
     flex: 1;
-    padding: 6px 4px;
+    padding: 8px 4px;
     font-family: 'Space Mono', monospace;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 2px;
+    text-align: center;
     background: transparent;
     border: none;
     cursor: pointer;
     color: var(--ink);
     border-right: 1.5px solid var(--ink);
     transition: background 0.15s, color 0.15s;
+    box-sizing: border-box;
 }
 .bureau-tab:last-child { border-right: none; }
 .bureau-tab.active,
@@ -4211,8 +4238,20 @@ body.midnight-edition .comic-page-num {
 }
 
 /* Form fields */
-.bureau-form { display: flex; flex-direction: column; gap: 10px; }
-.bureau-field { display: flex; flex-direction: column; gap: 3px; }
+.bureau-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+}
+.bureau-field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
 .bureau-label {
     font-size: 0.68rem;
     letter-spacing: 0.8px;
@@ -4227,13 +4266,17 @@ body.midnight-edition .comic-page-num {
     color: var(--ink-light);
 }
 .bureau-input-row {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+}
+.bureau-input-row .bureau-input {
+    width: 100%;
+    padding-right: 32px;
 }
 .bureau-input {
     width: 100%;
-    padding: 7px 8px;
+    padding: 8px 10px;
     border: 1.5px solid var(--ink);
     background: transparent;
     font-family: 'Space Mono', monospace;
@@ -4256,26 +4299,33 @@ body.midnight-edition .comic-page-num {
 
 /* Tag availability indicator */
 .bureau-tag-status {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
     font-size: 13px;
-    flex-shrink: 0;
     width: 18px;
     text-align: center;
+    pointer-events: none;
+    line-height: 1;
 }
 
 /* Submit button */
 .bureau-submit-btn {
     width: 100%;
-    padding: 9px 4px;
+    padding: 10px 8px;
     background: var(--ink);
     color: var(--paper);
     border: 1.5px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 1px;
     cursor: pointer;
     transition: opacity 0.15s;
     margin-top: 4px;
+    box-sizing: border-box;
+    text-align: center;
 }
 .bureau-submit-btn:disabled {
     opacity: 0.4;
