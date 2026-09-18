@@ -867,11 +867,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 const textEl = feedItem.querySelector('.feed-item-text') || feedItem.querySelector('.lead-story-headline');
                 const metaEl = feedItem.querySelector('.feed-item-meta') || feedItem.querySelector('.lead-story-byline');
                 const text = textEl ? textEl.textContent.replace(/^"|"$/g, '') : 'Undisclosed avoided task';
+                let city = 'Wire Slacker';
+                let country = 'Parts Unknown';
+                let authorTag = null;
+                if (metaEl) {
+                    const metaText = metaEl.textContent || '';
+                    const tagMatch = metaText.match(/@([a-zA-Z0-9_]+)/);
+                    if (tagMatch) {
+                        authorTag = tagMatch[1];
+                        city = `@${tagMatch[1]}`;
+                    }
+                    const inMatch = metaText.match(/\bIN\s+([^:]+):?/i);
+                    if (inMatch) {
+                        country = inMatch[1].trim();
+                    }
+                }
                 task = {
                     id: taskId || Date.now(),
                     text: text,
-                    city: 'Wire Slacker',
-                    country: 'Parts Unknown',
+                    city: city,
+                    country: country,
+                    author_tag: authorTag,
                     created_at: new Date().toISOString()
                 };
             }
@@ -1561,17 +1577,27 @@ document.addEventListener('DOMContentLoaded', () => {
             text = `[PANIC] ${text}`;
         }
 
-        // Automatically attach rank flair to author name if unlocked (Rank 10+)
+        // Attach verified Gator Tag to author name if authenticated
         let submittedAuthorName = name;
+        if (currentGator && (currentGator.displayTag || currentGator.tag)) {
+            const myTag = `@${currentGator.displayTag || currentGator.tag}`;
+            if (!submittedAuthorName || submittedAuthorName.trim() === '' || submittedAuthorName.trim().toLowerCase() === 'anonymous') {
+                submittedAuthorName = myTag;
+            } else if (!submittedAuthorName.startsWith('@')) {
+                submittedAuthorName = `${myTag} (${submittedAuthorName})`;
+            }
+        }
+
+        // Automatically attach rank flair to author name if unlocked (Rank 10+)
         if (clickerCount >= 10) {
             const rawRank = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-            const cleanAuthor = name ? name : 'Anonymous';
+            const cleanAuthor = submittedAuthorName ? submittedAuthorName : 'Anonymous';
             submittedAuthorName = `[${rawRank}] ${cleanAuthor}`;
         }
 
         currentRawTask = submittedText;
         currentIsPanic = isPanic;
-        currentSubmittedName = name; // Certificate keeps original base name
+        currentSubmittedName = submittedAuthorName;
 
         // 1. INSTANT STAMP SLAM & DESK SHOCKWAVE (Zero latency!)
         triggerRubberStamp(isPanic);
@@ -1697,27 +1723,48 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.lineWidth = 1;
         ctx.stroke();
 
+        // Check for verified Gator Tag
+        const gatorTag = (currentGator && (currentGator.displayTag || currentGator.tag))
+            ? (currentGator.displayTag || currentGator.tag).replace(/^@/, '')
+            : (holderName && holderName.includes('@') ? holderName.match(/@([A-Za-z0-9_]+)/)?.[1] : null);
+
+        let displayHolder = (holderName && holderName.trim() !== '') ? holderName.trim().toUpperCase() : 'ANONYMOUS PROCRASTINATOR';
+        if (gatorTag) {
+            if (!holderName || holderName.trim() === '' || holderName.toUpperCase() === 'ANONYMOUS' || holderName.toUpperCase() === `@${gatorTag.toUpperCase()}`) {
+                displayHolder = `@${gatorTag.toUpperCase()}`;
+            } else if (!displayHolder.includes('@')) {
+                displayHolder = `@${gatorTag.toUpperCase()} (${displayHolder})`;
+            }
+        }
+
         // Metadata
         ctx.font = '700 15px "Space Mono", monospace';
         ctx.textAlign = 'left';
         const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
         ctx.fillText(`DATE: ${dateStr}`, 100, 225);
         ctx.textAlign = 'right';
-        const refId = 'REF: LG-' + Math.floor(100000 + Math.random() * 900000);
+        const refNum = Math.floor(100000 + Math.random() * 900000);
+        const refId = gatorTag ? `TAG: @${gatorTag.toUpperCase()} • REF: LG-${refNum}` : `REF: LG-${refNum}`;
         ctx.fillText(refId, 1100, 225);
 
         // Declaration
         ctx.textAlign = 'center';
         ctx.font = '400 17px "Space Mono", monospace';
-        const holder = (holderName && holderName.trim() !== '') ? holderName.trim().toUpperCase() : 'ANONYMOUS PROCRASTINATOR';
-        ctx.fillText('THIS INSTRUMENT CONFIRMS THAT THE BEARER:', 600, 280);
+        ctx.fillText('THIS INSTRUMENT CONFIRMS THAT THE BEARER:', 600, 275);
 
         ctx.font = '900 24px "Space Mono", monospace';
-        ctx.fillText(`[ ${holder} ]`, 600, 320);
+        ctx.fillText(`[ ${displayHolder} ]`, 600, 312);
+
+        if (gatorTag) {
+            ctx.font = '700 11px "Space Mono", monospace';
+            ctx.fillStyle = '#b91c1c';
+            ctx.fillText('★ VERIFIED BUREAU OPERATIVE // GATOR TAG ACCREDITED ★', 600, 334);
+            ctx.fillStyle = '#111111';
+        }
 
         ctx.font = '400 17px "Space Mono", monospace';
         const verbDeclaration = isPanicMode ? 'HAS BROKEN DOWN AND UNDERTAKEN EMERGENCY EFFORTS ON:' : 'HAS OFFICIALLY AND LAWFULLY DODGED THE OBLIGATION DECLARED BELOW:';
-        ctx.fillText(verbDeclaration, 600, 365);
+        ctx.fillText(verbDeclaration, 600, gatorTag ? 370 : 365);
 
         // Task Box
         ctx.fillStyle = '#EBEBEB';
@@ -2909,12 +2956,24 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.stroke();
 
         // Field 1: OPERATIVE / HOLDER
+        const gatorTag = (currentGator && (currentGator.displayTag || currentGator.tag))
+            ? (currentGator.displayTag || currentGator.tag).replace(/^@/, '')
+            : (holderName && holderName.includes('@') ? holderName.match(/@([A-Za-z0-9_]+)/)?.[1] : null);
+
+        let cleanHolder = (holderName || 'ANONYMOUS SLACKER').trim().toUpperCase();
+        if (gatorTag) {
+            if (!holderName || cleanHolder === 'ANONYMOUS SLACKER' || cleanHolder === `@${gatorTag.toUpperCase()}` || cleanHolder === gatorTag.toUpperCase()) {
+                cleanHolder = `@${gatorTag.toUpperCase()}`;
+            } else if (!cleanHolder.includes('@')) {
+                cleanHolder = `@${gatorTag.toUpperCase()} (${cleanHolder})`;
+            }
+        }
+
         ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillStyle = '#555555';
-        ctx.fillText('OPERATIVE / ACCREDITED HOLDER:', 60, 214);
+        ctx.fillStyle = gatorTag ? '#b91c1c' : '#555555';
+        ctx.fillText(gatorTag ? 'OPERATIVE / GATOR TAG [★ VERIFIED]:' : 'OPERATIVE / ACCREDITED HOLDER:', 60, 214);
         ctx.font = '900 18px "Space Mono", monospace';
         ctx.fillStyle = '#111111';
-        const cleanHolder = (holderName || 'ANONYMOUS SLACKER').trim().toUpperCase();
         ctx.fillText(cleanHolder.length > 28 ? cleanHolder.substring(0, 26) + '...' : cleanHolder, 60, 236);
 
         // Field 2: SLACKER RANK
@@ -2941,7 +3000,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#111111';
         const certCode = `SLOTH-${Math.abs((clicks * 7919) ^ 0xABCD).toString(16).toUpperCase().padStart(8, '0')}`;
         const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
-        ctx.fillText(`${certCode} • ISSUED ${dateStr}`, 60, 404);
+        const tagClearance = gatorTag ? `TAG: @${gatorTag.toUpperCase()} • ` : '';
+        ctx.fillText(`${certCode} • ${tagClearance}${dateStr}`, 60, 404);
 
         // Legal Mandate Box
         ctx.fillStyle = 'rgba(17, 17, 17, 0.04)';
@@ -3382,6 +3442,16 @@ document.addEventListener('DOMContentLoaded', () => {
             authorClean = flairMatch[2] || 'Anonymous';
         }
 
+        // Determine if author has a verified Gator Tag
+        let gatorTag = null;
+        if (authorClean.startsWith('@')) {
+            gatorTag = authorClean.replace(/^@/, '');
+        } else if (task.author_tag || task.gator_tag) {
+            gatorTag = (task.author_tag || task.gator_tag).replace(/^@/, '');
+        } else if (currentGator && (task.author_gator_id === currentGator.gatorId || task.gatorId === currentGator.gatorId)) {
+            gatorTag = (currentGator.displayTag || currentGator.tag).replace(/^@/, '');
+        }
+
         const dossierY = Math.max(curY + 16, 352);
 
         // Dividing rule above dossier
@@ -3389,15 +3459,26 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.moveTo(80, dossierY);
         ctx.lineTo(600, dossierY);
         ctx.lineWidth = 1;
+        ctx.strokeStyle = borderColor;
         ctx.stroke();
 
         ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillStyle = inkSecondary;
-        ctx.fillText('OPERATIVE / ORIGIN:', 80, dossierY + 22);
+        if (gatorTag) {
+            ctx.fillStyle = accentRed;
+            ctx.fillText('★ VERIFIED OPERATIVE // GATOR TAG:', 80, dossierY + 22);
 
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillStyle = inkPrimary;
-        ctx.fillText(`${rankTag}${authorClean.toUpperCase()} IN ${country}`, 80, dossierY + 40);
+            ctx.font = '900 13px "Space Mono", monospace';
+            ctx.fillStyle = inkPrimary;
+            const tagFormatted = authorClean.startsWith('@') ? authorClean.toUpperCase() : `@${gatorTag.toUpperCase()}${authorClean && authorClean !== 'ANONYMOUS' ? ` (${authorClean.toUpperCase()})` : ''}`;
+            ctx.fillText(`${rankTag}${tagFormatted} IN ${country}`, 80, dossierY + 40);
+        } else {
+            ctx.fillStyle = inkSecondary;
+            ctx.fillText('OPERATIVE / ORIGIN:', 80, dossierY + 22);
+
+            ctx.font = '700 13px "Space Mono", monospace';
+            ctx.fillStyle = inkPrimary;
+            ctx.fillText(`${rankTag}${authorClean.toUpperCase()} IN ${country}`, 80, dossierY + 40);
+        }
 
         // Time / Sympathy counts
         const sameCount = task.same_count || (userStamps[task.id] === 'same' ? 1 : 0);
@@ -3453,7 +3534,11 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('// ACTION PERMANENTLY DEFERRED //', 0, 24);
 
         ctx.font = '700 9px "Space Mono", monospace';
-        ctx.fillText(`STAMP ID: #LG-${task.id || '99'} • NO EXTENSION GRANTED`, 0, 39);
+        if (gatorTag) {
+            ctx.fillText(`OPERATIVE: @${gatorTag.toUpperCase()} • NO EXTENSION`, 0, 39);
+        } else {
+            ctx.fillText(`STAMP ID: #LG-${task.id || '99'} • NO EXTENSION GRANTED`, 0, 39);
+        }
 
         // Ink bleed splatter / distressed micro marks inside stamp
         ctx.fillStyle = stampColor;
@@ -3482,8 +3567,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         ctx.textAlign = 'center';
         ctx.font = '700 10px "Space Mono", monospace';
-        ctx.fillStyle = inkSecondary;
-        ctx.fillText(`* WIRE-${task.id || '0000'} *`, 775, barY + barHeight + 16);
+        ctx.fillText(gatorTag ? `* WIRE-${task.id || '0000'} // @${gatorTag.toUpperCase()} *` : `* WIRE-${task.id || '0000'} *`, 775, barY + barHeight + 16);
 
         // 7. Broadside Footer
         ctx.beginPath();
@@ -3513,6 +3597,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         clippingModal.style.display = 'flex';
     };
+    window.openClippingModal = openClippingModal;
 
     const closeClippingModal = () => {
         if (clippingModal) clippingModal.style.display = 'none';
