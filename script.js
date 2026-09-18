@@ -4135,8 +4135,16 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // ==========================================
-    // BUREAU OPERATIVE & THE DOSSIER (GATOR AUTH)
+    // BUREAU OPERATIVE & THE DOSSIER (HN-STYLE AUTH)
     // ==========================================
+
+    const bureauModal = document.getElementById('bureau-modal');
+    const bureauBackdrop = document.getElementById('bureau-backdrop');
+    const bureauCloseBtn = document.getElementById('bureau-close-btn');
+    const headerAuthBtn = document.getElementById('header-auth-btn');
+    const shareDossierPrompt = document.getElementById('share-dossier-prompt');
+    const shareDossierMsg = document.getElementById('share-dossier-msg');
+    const shareDossierBtn = document.getElementById('share-dossier-btn');
 
     const bureauGuestEl = document.getElementById('bureau-guest');
     const bureauOperativeEl = document.getElementById('bureau-operative');
@@ -4165,10 +4173,33 @@ document.addEventListener('DOMContentLoaded', () => {
     let tagCheckTimeout = null;
     let isTagValid = false;
 
+    const openBureauModal = (preferredTab = null) => {
+        if (!bureauModal) return;
+        bureauModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        if (preferredTab && bureauTabs) {
+            bureauTabs.forEach(t => {
+                if (t.getAttribute('data-btab') === preferredTab) {
+                    t.click();
+                }
+            });
+        }
+        if (currentGator && gatorToken) {
+            window.fetchDossier();
+        }
+    };
+
+    const closeBureauModal = () => {
+        if (!bureauModal) return;
+        bureauModal.style.display = 'none';
+        document.body.style.overflow = '';
+    };
+
     window.fetchDossier = async () => {
         if (!gatorToken || !dossierListEl) return;
         try {
-            const res = await fetch(`/api/gator/dossier?token=${encodeURIComponent(gatorToken)}`);
+            const res = await fetch(`/api/gator?action=dossier&token=${encodeURIComponent(gatorToken)}`);
             if (res.status === 401) {
                 logoutGator(false);
                 return;
@@ -4209,12 +4240,34 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateBureauUI = () => {
-        if (!bureauGuestEl || !bureauOperativeEl) return;
+        // Update top-right header button (HackerNews-style)
+        if (headerAuthBtn) {
+            if (currentGator && gatorToken) {
+                headerAuthBtn.textContent = `[@${currentGator.displayTag || currentGator.tag}]`;
+                headerAuthBtn.setAttribute('title', `Operative @${currentGator.displayTag || currentGator.tag} — Click to view Dossier`);
+            } else {
+                headerAuthBtn.textContent = '[ LOGIN ]';
+                headerAuthBtn.setAttribute('title', 'Bureau of Idleness — Sign in or Claim Tag');
+            }
+        }
+
+        // Update post-submission share prompt
+        if (shareDossierMsg && shareDossierBtn) {
+            if (currentGator && gatorToken) {
+                shareDossierMsg.textContent = 'Dispatch recorded under your tag.';
+                shareDossierBtn.textContent = '[ View Dossier ]';
+            } else {
+                shareDossierMsg.textContent = 'Want to track this confession?';
+                shareDossierBtn.textContent = '[ Claim a Gator Tag ]';
+            }
+        }
+
+        // Update modal body
         if (currentGator && gatorToken) {
-            bureauGuestEl.style.display = 'none';
-            bureauOperativeEl.style.display = 'block';
+            if (bureauGuestEl) bureauGuestEl.style.display = 'none';
+            if (bureauOperativeEl) bureauOperativeEl.style.display = 'block';
             if (bureauOpTagEl) {
-                bureauOpTagEl.textContent = `OPERATIVE: ${currentGator.displayTag || currentGator.tag}`;
+                bureauOpTagEl.textContent = `OPERATIVE: @${currentGator.displayTag || currentGator.tag}`;
             }
             const userNameInput = document.getElementById('user-name');
             if (userNameInput && !userNameInput.value.trim()) {
@@ -4222,14 +4275,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             window.fetchDossier();
         } else {
-            bureauGuestEl.style.display = 'block';
-            bureauOperativeEl.style.display = 'none';
+            if (bureauGuestEl) bureauGuestEl.style.display = 'block';
+            if (bureauOperativeEl) bureauOperativeEl.style.display = 'none';
         }
     };
 
     const logoutGator = async (callApi = true) => {
         if (callApi && gatorToken) {
-            fetch('/api/gator/logout', {
+            fetch('/api/gator?action=logout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: gatorToken })
@@ -4243,11 +4296,30 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const initBureauAuth = () => {
-        if (!bureauGuestEl) return;
+        // Wire opening and closing modal
+        if (headerAuthBtn) {
+            headerAuthBtn.addEventListener('click', () => openBureauModal());
+        }
+        if (shareDossierBtn) {
+            shareDossierBtn.addEventListener('click', () => {
+                if (currentGator && gatorToken) {
+                    openBureauModal();
+                } else {
+                    openBureauModal('claim');
+                }
+            });
+        }
+        if (bureauCloseBtn) bureauCloseBtn.addEventListener('click', closeBureauModal);
+        if (bureauBackdrop) bureauBackdrop.addEventListener('click', closeBureauModal);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && bureauModal && bureauModal.style.display !== 'none') {
+                closeBureauModal();
+            }
+        });
 
         // 1. Check existing session
         if (gatorToken) {
-            fetch(`/api/gator/me?token=${encodeURIComponent(gatorToken)}`)
+            fetch(`/api/gator?action=me&token=${encodeURIComponent(gatorToken)}`)
                 .then(r => r.json())
                 .then(data => {
                     if (data && data.ok) {
@@ -4269,7 +4341,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateBureauUI();
         }
 
-        // 2. Tab switching
+        // 2. Tab switching inside modal
         bureauTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 bureauTabs.forEach(t => t.classList.remove('active'));
@@ -4309,7 +4381,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (bureauTagStatus) bureauTagStatus.textContent = '⏳';
             if (bureauClaimError) bureauClaimError.textContent = '';
 
-            fetch(`/api/gator/check?tag=${encodeURIComponent(raw)}`)
+            fetch(`/api/gator?action=check&tag=${encodeURIComponent(raw)}`)
                 .then(r => r.json())
                 .then(data => {
                     if (data.available) {
@@ -4356,11 +4428,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!tag || password.length < 8) return;
 
                 bureauClaimBtn.disabled = true;
-                bureauClaimBtn.textContent = '[ REGISTERING WITH BUREAU... ]';
+                bureauClaimBtn.textContent = '[ CLAIMING... ]';
                 if (bureauClaimError) bureauClaimError.textContent = '';
 
                 try {
-                    const res = await fetch('/api/gator/claim', {
+                    const res = await fetch('/api/gator?action=claim', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ tag, password, email, sessionId: SESSION_ID })
@@ -4388,7 +4460,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (bureauClaimError) bureauClaimError.textContent = 'Telegraph line down. Try again.';
                 } finally {
                     if (bureauClaimBtn) {
-                        bureauClaimBtn.textContent = '[ CLAIM MY PLACE ON THE WIRE ]';
+                        bureauClaimBtn.textContent = '[ CLAIM MY TAG ]';
                         validateClaimForm();
                     }
                 }
@@ -4407,11 +4479,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 bureauLoginBtn.disabled = true;
-                bureauLoginBtn.textContent = '[ VERIFYING CREDENTIALS... ]';
+                bureauLoginBtn.textContent = '[ REPORTING... ]';
                 if (bureauLoginError) bureauLoginError.textContent = '';
 
                 try {
-                    const res = await fetch('/api/gator/login', {
+                    const res = await fetch('/api/gator?action=login', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ tag, password })
@@ -4453,6 +4525,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     };
+
 
     initBureauAuth();
     initVideoFacade();

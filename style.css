@@ -4118,16 +4118,66 @@ body.midnight-edition .comic-page-num {
    BUREAU OPERATIVE PANEL — GATOR TAG AUTH WIDGET
    ============================================================ */
 
-.bureau-box {
-    padding: 18px 16px 20px;
+/* ============================================================
+   BUREAU OPERATIVE & THE DOSSIER (HN-STYLE TOP CORNER & MODAL)
+   ============================================================ */
+
+.header-auth-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    padding: 3px 8px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.15s, color 0.15s;
+    letter-spacing: 0.5px;
+    line-height: 1.2;
+}
+.header-auth-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
 }
 
-.bureau-tagline {
-    font-size: 11px;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+.bureau-dialog {
+    max-width: 440px !important;
+    width: 92% !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+.bureau-modal-body {
+    padding: 20px 22px 24px;
+}
+
+/* Subtle prompt in post-submission slip */
+.share-dossier-prompt {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.72rem;
     color: var(--ink-light);
-    margin-bottom: 12px;
+}
+.share-dossier-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--ink);
+    padding: 4px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+.share-dossier-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
 }
 
 /* Tab switcher */
@@ -4135,9 +4185,10 @@ body.midnight-edition .comic-page-num {
     display: flex;
     gap: 0;
     border: 1.5px solid var(--ink);
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     overflow: hidden;
 }
+
 .bureau-tab {
     flex: 1;
     padding: 6px 4px;
