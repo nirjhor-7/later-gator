@@ -1,6 +1,6 @@
 -- ============================================================
 -- LATER GATORS — GATOR TAG AUTH & REACTIONS SCHEMA MIGRATION
--- Run this once in your Supabase SQL Editor
+-- Run this once in your Supabase SQL Editor (Full with RLS)
 -- ============================================================
 
 -- 1. Gator identity table
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS dispatch_notifications (
     created_at      TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Author identity on tasks
+-- 4. Author identity on tasks (if tasks table exists)
 DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tasks') THEN
@@ -66,3 +66,35 @@ CREATE UNIQUE INDEX IF NOT EXISTS idx_user_reactions_session_task
 CREATE UNIQUE INDEX IF NOT EXISTS idx_user_reactions_gator_task
     ON user_reactions (gator_id, task_id)
     WHERE gator_id IS NOT NULL;
+
+-- ============================================================
+-- 6. ROW LEVEL SECURITY (RLS) POLICIES
+-- ============================================================
+
+-- Enable RLS on all auth & reaction tables
+ALTER TABLE gator_tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE gator_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE dispatch_notifications ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_reactions ENABLE ROW LEVEL SECURITY;
+
+-- Policies for gator_tags
+DROP POLICY IF EXISTS "Allow API select on gator_tags" ON gator_tags;
+CREATE POLICY "Allow API select on gator_tags" ON gator_tags FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Allow API insert on gator_tags" ON gator_tags;
+CREATE POLICY "Allow API insert on gator_tags" ON gator_tags FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Allow API update on gator_tags" ON gator_tags;
+CREATE POLICY "Allow API update on gator_tags" ON gator_tags FOR UPDATE USING (true) WITH CHECK (true);
+
+-- Policies for gator_sessions
+DROP POLICY IF EXISTS "Allow API all on gator_sessions" ON gator_sessions;
+CREATE POLICY "Allow API all on gator_sessions" ON gator_sessions FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for dispatch_notifications
+DROP POLICY IF EXISTS "Allow API all on dispatch_notifications" ON dispatch_notifications;
+CREATE POLICY "Allow API all on dispatch_notifications" ON dispatch_notifications FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for user_reactions
+DROP POLICY IF EXISTS "Allow API all on user_reactions" ON user_reactions;
+CREATE POLICY "Allow API all on user_reactions" ON user_reactions FOR ALL USING (true) WITH CHECK (true);
