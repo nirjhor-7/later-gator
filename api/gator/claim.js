@@ -1,7 +1,7 @@
 // POST /api/gator/claim
 // Body: { tag, password, email? }
 // Creates account, returns { ok, token, gatorId, displayTag }
-const { getSupabase, hashPassword, generateToken, normalizeTag, validateTag } = require('./_auth');
+const { getSupabase, hashPassword, generateToken, normalizeTag, validateTag } = require('../../lib/auth');
 
 // Simple profanity check reuse
 function isClean(tag) {

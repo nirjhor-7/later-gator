@@ -1,6 +1,6 @@
 // GET /api/gator/me?token=TOKEN
 // Returns { ok, gatorId, tag, displayTag, notifyEmail } or { ok: false }
-const { getSupabase, verifySession } = require('./_auth');
+const { getSupabase, verifySession } = require('../../lib/auth');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });

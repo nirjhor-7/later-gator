@@ -1,6 +1,6 @@
 // GET /api/gator/check?tag=lazy_knight
 // Returns { available: true|false, error? }
-const { getSupabase, normalizeTag, validateTag } = require('./_auth');
+const { getSupabase, normalizeTag, validateTag } = require('../../lib/auth');
 
 const checkRateMap = new Map();
 

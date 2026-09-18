@@ -1,7 +1,7 @@
 // POST /api/gator/login
 // Body: { tag, password }
 // Returns { ok, token, gatorId, displayTag, notifyEmail }
-const { getSupabase, verifyPassword, generateToken, normalizeTag } = require('./_auth');
+const { getSupabase, verifyPassword, generateToken, normalizeTag } = require('../../lib/auth');
 
 const loginRateMap = new Map();
 

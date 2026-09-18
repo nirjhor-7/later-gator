@@ -1,7 +1,7 @@
 // POST /api/gator/logout
 // Body: { token }
 // Deletes the session
-const { getSupabase } = require('./_auth');
+const { getSupabase } = require('../../lib/auth');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });

@@ -1,6 +1,6 @@
 // GET /api/gator/dossier?token=TOKEN
 // Returns the operative's filed dispatches with sympathy counts
-const { getSupabase, verifySession } = require('./_auth');
+const { getSupabase, verifySession } = require('../../lib/auth');
 
 module.exports = async function handler(req, res) {
     if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
