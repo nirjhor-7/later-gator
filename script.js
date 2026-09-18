@@ -494,8 +494,13 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTopTaskId = null;
     let renderedTopId = null;
     let renderedCount = 0;
+    const allKnownTasks = new Map();
+    let refreshClippingTheme = () => {};
 
     const buildFeedItemHtml = (task, isNew) => {
+        if (task && task.id) {
+            allKnownTasks.set(Number(task.id), task);
+        }
         const userName = task.city || 'Anonymous';
         const userCountry = task.country || 'Parts Unknown';
         
@@ -530,6 +535,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // User reaction status for this dispatch
         const myStamp = userStamps[task.id] || null;
+        const defaultRot = ((task.id * 17) % 7 - 3.2).toFixed(2);
         const sameCount = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
         const validCount = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
         const ripCount = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
@@ -541,14 +547,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="feed-item-footer">
                 <span class="feed-item-time" data-created-at="${escapeHtml(task.created_at || '')}">${timeAgo(task.created_at)}</span>
                 <div class="feed-reactions" data-task-id="${task.id}">
-                    <button type="button" class="reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}" data-type="same" title="I am doing this right now">
+                    <button type="button" class="reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}" ${myStamp === 'same' ? `style="--stamp-rot: ${defaultRot}deg;"` : ''} data-type="same" title="I am doing this right now">
                         [ SAME <span class="reaction-count">${sameCount}</span> ]
                     </button>
-                    <button type="button" class="reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}" data-type="valid" title="Completely justifiable excuse">
+                    <button type="button" class="reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}" ${myStamp === 'valid' ? `style="--stamp-rot: ${defaultRot}deg;"` : ''} data-type="valid" title="Completely justifiable excuse">
                         [ VALID <span class="reaction-count">${validCount}</span> ]
                     </button>
-                    <button type="button" class="reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}" data-type="rip" title="Thoughts and prayers for your deadline">
+                    <button type="button" class="reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}" ${myStamp === 'rip' ? `style="--stamp-rot: ${defaultRot}deg;"` : ''} data-type="rip" title="Thoughts and prayers for your deadline">
                         [ RIP <span class="reaction-count">${ripCount}</span> ]
+                    </button>
+                    <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
+                        ✂ CLIP
                     </button>
                 </div>
             </div>
@@ -573,6 +582,10 @@ document.addEventListener('DOMContentLoaded', () => {
             renderedCount = 0;
             return;
         }
+
+        tasks.forEach(t => {
+            if (t && t.id) allKnownTasks.set(Number(t.id), t);
+        });
 
         const existingItems = feedContainer.querySelectorAll('.feed-item[data-task-id]');
 
@@ -664,15 +677,22 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // SYNCHRONIZED REACTION STAMPS (WIRE & LEAD STORY)
     // ==========================================
-    const syncReactionInDOM = (taskId, reactionType, isStamped, newCount, clearedType = null) => {
+    const syncReactionInDOM = (taskId, reactionType, isStamped, newCount, clearedType = null, rot = null) => {
         const containers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
         containers.forEach(container => {
             const btn = container.querySelector(`.reaction-stamp-btn[data-type="${reactionType}"]`);
             if (btn) {
                 if (isStamped) {
                     btn.classList.add('stamped');
+                    if (rot) {
+                        btn.style.setProperty('--stamp-rot', `${rot}deg`);
+                    } else if (!btn.style.getPropertyValue('--stamp-rot')) {
+                        const defaultRot = ((taskId * 17) % 7 - 3.2).toFixed(2);
+                        btn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
+                    }
                 } else {
                     btn.classList.remove('stamped');
+                    btn.style.removeProperty('--stamp-rot');
                 }
                 const countEl = btn.querySelector('.reaction-count');
                 if (countEl && newCount != null) {
@@ -684,6 +704,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prevBtn = container.querySelector(`.reaction-stamp-btn[data-type="${clearedType}"]`);
                 if (prevBtn) {
                     prevBtn.classList.remove('stamped');
+                    prevBtn.style.removeProperty('--stamp-rot');
                     const prevCountEl = prevBtn.querySelector('.reaction-count');
                     if (prevCountEl) {
                         const val = parseInt(prevCountEl.textContent, 10) || 0;
@@ -712,10 +733,36 @@ document.addEventListener('DOMContentLoaded', () => {
             try { navigator.vibrate(14); } catch (err) {}
         }
 
-        // 2. Stamp animation
+        // 2. Physical rubber stamp tilt (-3.2° to +3.8°) & slam animation
+        const rot = (Math.random() * 7 - 3.2).toFixed(2);
+        btn.style.setProperty('--stamp-rot', `${rot}deg`);
+
         btn.classList.remove('stamp-slam');
         void btn.offsetWidth;
         btn.classList.add('stamp-slam');
+
+        // Micro ink splatter burst particles
+        if (!isAlreadyStamped) {
+            const burst = document.createElement('span');
+            burst.className = 'ink-splatter-burst';
+            for (let i = 0; i < 5; i++) {
+                const drop = document.createElement('span');
+                drop.className = 'ink-drop';
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 10 + Math.random() * 16;
+                const dx = (Math.cos(angle) * dist).toFixed(1);
+                const dy = (Math.sin(angle) * dist).toFixed(1);
+                const scale = (0.35 + Math.random() * 0.45).toFixed(2);
+                drop.style.left = '50%';
+                drop.style.top = '50%';
+                drop.style.setProperty('--drop-x', `${dx}px`);
+                drop.style.setProperty('--drop-y', `${dy}px`);
+                drop.style.setProperty('--drop-scale', scale);
+                burst.appendChild(drop);
+            }
+            btn.appendChild(burst);
+            setTimeout(() => { burst.remove(); }, 480);
+        }
 
         // 3. Optimistic toggle
         let action = 'add';
@@ -726,6 +773,7 @@ document.addEventListener('DOMContentLoaded', () => {
             action = 'remove';
             delete userStamps[taskId];
             newCount = Math.max(0, currentCount - 1);
+            btn.style.removeProperty('--stamp-rot');
             syncReactionInDOM(taskId, reactionType, false, newCount);
         } else {
             const prevActiveType = userStamps[taskId];
@@ -740,7 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             userStamps[taskId] = reactionType;
             newCount = currentCount + 1;
-            syncReactionInDOM(taskId, reactionType, true, newCount, clearedType);
+            syncReactionInDOM(taskId, reactionType, true, newCount, clearedType, rot);
         }
 
         saveUserStamps();
@@ -755,7 +803,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 const data = await res.json();
                 if (data && data.counts && data.counts[reactionType] != null) {
-                    syncReactionInDOM(taskId, reactionType, !isAlreadyStamped, data.counts[reactionType]);
+                    syncReactionInDOM(taskId, reactionType, !isAlreadyStamped, data.counts[reactionType], null, rot);
                 }
             }
         } catch (err) {
@@ -763,8 +811,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const handleClipClick = (clipBtn) => {
+        const taskIdStr = clipBtn.getAttribute('data-task-id');
+        const taskId = parseInt(taskIdStr, 10);
+        let task = allKnownTasks.get(taskId);
+
+        if (!task) {
+            // Fallback from DOM element
+            const feedItem = clipBtn.closest('.feed-item') || clipBtn.closest('.lead-story-banner');
+            if (feedItem) {
+                const textEl = feedItem.querySelector('.feed-item-text') || feedItem.querySelector('.lead-story-headline');
+                const metaEl = feedItem.querySelector('.feed-item-meta') || feedItem.querySelector('.lead-story-byline');
+                const text = textEl ? textEl.textContent.replace(/^"|"$/g, '') : 'Undisclosed avoided task';
+                task = {
+                    id: taskId || Date.now(),
+                    text: text,
+                    city: 'Wire Slacker',
+                    country: 'Parts Unknown',
+                    created_at: new Date().toISOString()
+                };
+            }
+        }
+
+        if (task) {
+            playClickerSound();
+            openClippingModal(task);
+        }
+    };
+
     if (feedContainer) {
         feedContainer.addEventListener('click', (e) => {
+            const clipBtn = e.target.closest('.feed-clip-btn');
+            if (clipBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleClipClick(clipBtn);
+                return;
+            }
+
             const btn = e.target.closest('.reaction-stamp-btn');
             if (btn) {
                 e.preventDefault();
@@ -782,15 +866,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const leadByline = document.getElementById('lead-story-byline');
     const leadBadge = document.getElementById('lead-story-badge');
     const leadReactions = document.getElementById('lead-reactions');
+    const leadClipBtn = document.getElementById('lead-clip-btn');
 
     if (leadStoryBanner) {
         leadStoryBanner.addEventListener('click', (e) => {
+            const clipBtn = e.target.closest('.lead-clip-btn, .feed-clip-btn');
+            if (clipBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleClipClick(clipBtn);
+                return;
+            }
+
             const btn = e.target.closest('.reaction-stamp-btn');
             if (btn) {
                 e.preventDefault();
                 e.stopPropagation();
                 handleReactionClick(btn);
             }
+        });
+    }
+
+    if (leadClipBtn) {
+        leadClipBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            handleClipClick(leadClipBtn);
         });
     }
 
@@ -834,6 +935,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (!topTask) return;
+        allKnownTasks.set(Number(topTask.id), topTask);
 
         // Populate headline
         let choreText = (topTask.text || '').trim();
@@ -862,8 +964,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate reaction buttons
         leadReactions.setAttribute('data-task-id', topTask.id);
+        if (leadClipBtn) {
+            leadClipBtn.setAttribute('data-task-id', topTask.id);
+        }
 
         const myStamp = userStamps[topTask.id] || null;
+        const defaultRot = ((topTask.id * 17) % 7 - 3.2).toFixed(2);
         const sameCount = (topTask.same_count != null ? topTask.same_count : (myStamp === 'same' ? 1 : 0));
         const validCount = (topTask.valid_count != null ? topTask.valid_count : (myStamp === 'valid' ? 1 : 0));
         const ripCount = (topTask.rip_count != null ? topTask.rip_count : (myStamp === 'rip' ? 1 : 0));
@@ -874,16 +980,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (sameBtn) {
             sameBtn.className = `reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}`;
+            if (myStamp === 'same') sameBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
+            else sameBtn.style.removeProperty('--stamp-rot');
             const c = sameBtn.querySelector('.reaction-count');
             if (c) c.textContent = sameCount;
         }
         if (validBtn) {
             validBtn.className = `reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}`;
+            if (myStamp === 'valid') validBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
+            else validBtn.style.removeProperty('--stamp-rot');
             const c = validBtn.querySelector('.reaction-count');
             if (c) c.textContent = validCount;
         }
         if (ripBtn) {
             ripBtn.className = `reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}`;
+            if (myStamp === 'rip') ripBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
+            else ripBtn.style.removeProperty('--stamp-rot');
             const c = ripBtn.querySelector('.reaction-count');
             if (c) c.textContent = ripCount;
         }
@@ -2384,6 +2496,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             localStorage.setItem('lg_sepia_mode', enable ? 'true' : 'false');
         } catch (e) {}
+        refreshClippingTheme();
     };
 
     const applyMidnightMode = (enable, playSound = false) => {
@@ -2423,6 +2536,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (playSound) {
             playMidnightGaslightSound(enable);
         }
+        refreshClippingTheme();
     };
 
     const initMidnightMode = () => {
@@ -2967,6 +3081,485 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 credentialCopyBtn.textContent = "COPIED";
             }
+        });
+    }
+
+    // ==========================================
+    // VIRAL NEWSPAPER CLIPPING GENERATOR
+    // ==========================================
+    const clippingModal = document.getElementById('clipping-modal');
+    const clippingBackdrop = document.getElementById('clipping-backdrop');
+    const clippingCloseBtn = document.getElementById('clipping-close-btn');
+    const clippingCanvas = document.getElementById('clipping-canvas');
+    const clippingDownloadBtn = document.getElementById('clipping-download-btn');
+    const clippingShareBtn = document.getElementById('clipping-share-btn');
+    const clippingCopyBtn = document.getElementById('clipping-copy-btn');
+    const clippingXBtn = document.getElementById('clipping-x-btn');
+
+    let currentClippingTask = null;
+
+    // Word wrap helper for canvas 2D
+    const wrapCanvasText = (ctx, text, maxWidth) => {
+        const words = text.split(/\s+/);
+        const lines = [];
+        let currentLine = words[0] || '';
+
+        for (let i = 1; i < words.length; i++) {
+            const word = words[i];
+            const width = ctx.measureText(currentLine + ' ' + word).width;
+            if (width < maxWidth) {
+                currentLine += ' ' + word;
+            } else {
+                lines.push(currentLine);
+                currentLine = word;
+            }
+        }
+        if (currentLine) {
+            lines.push(currentLine);
+        }
+        return lines;
+    };
+
+    const generateNewspaperClipping = (canvas, task) => {
+        if (!canvas || !task) return;
+        const ctx = canvas.getContext('2d');
+        const W = 1000;
+        const H = 650;
+
+        ctx.clearRect(0, 0, W, H);
+
+        // Detect current edition styling
+        const isSepia = document.body.classList.contains('sepia-edition');
+        const isMidnight = document.body.classList.contains('midnight-edition');
+
+        let paperColor = '#f6f2e7';
+        let paperShadow = 'rgba(0, 0, 0, 0.32)';
+        let inkPrimary = '#111111';
+        let inkSecondary = '#4a4742';
+        let borderColor = '#111111';
+        let accentRed = '#b91c1c';
+        let noticeBg = 'rgba(0, 0, 0, 0.035)';
+        let isDark = false;
+
+        if (isSepia) {
+            paperColor = '#e5d1b1';
+            paperShadow = 'rgba(38, 26, 14, 0.45)';
+            inkPrimary = '#261a0e';
+            inkSecondary = '#5a4533';
+            borderColor = '#261a0e';
+            accentRed = '#991b1b';
+            noticeBg = 'rgba(38, 26, 14, 0.06)';
+        } else if (isMidnight) {
+            paperColor = '#0d1117';
+            paperShadow = 'rgba(0, 0, 0, 0.8)';
+            inkPrimary = '#eae4d5';
+            inkSecondary = '#9e9686';
+            borderColor = '#a89f8d';
+            accentRed = '#ef4444';
+            noticeBg = 'rgba(255, 255, 255, 0.05)';
+            isDark = true;
+        }
+
+        // Draw torn deckle-edge paper sheet with realistic ripped fibers
+        ctx.save();
+        ctx.shadowColor = paperShadow;
+        ctx.shadowBlur = 24;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 10;
+
+        ctx.beginPath();
+        // Top torn deckle edge (left to right)
+        ctx.moveTo(28, 28);
+        for (let x = 28; x <= 972; x += 4) {
+            const rip = Math.sin(x * 0.05) * 3.5 + Math.sin(x * 0.17) * 2.2 + ((x * 7) % 5 - 2) * 0.7;
+            ctx.lineTo(x, 26 + rip);
+        }
+        // Right straight side with slight raggedness
+        ctx.lineTo(974, 622);
+        // Bottom torn deckle edge (right to left)
+        for (let x = 974; x >= 26; x -= 4) {
+            const rip = Math.sin(x * 0.06 + 1.4) * 3.8 + Math.sin(x * 0.22) * 2.4 + ((x * 11) % 5 - 2) * 0.7;
+            ctx.lineTo(x, 624 + rip);
+        }
+        // Left straight side
+        ctx.lineTo(26, 28);
+        ctx.closePath();
+
+        ctx.fillStyle = paperColor;
+        ctx.fill();
+        ctx.restore();
+
+        // Clip inside the torn paper to render grain and content
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(28, 28);
+        for (let x = 28; x <= 972; x += 4) {
+            const rip = Math.sin(x * 0.05) * 3.5 + Math.sin(x * 0.17) * 2.2 + ((x * 7) % 5 - 2) * 0.7;
+            ctx.lineTo(x, 26 + rip);
+        }
+        ctx.lineTo(974, 622);
+        for (let x = 974; x >= 26; x -= 4) {
+            const rip = Math.sin(x * 0.06 + 1.4) * 3.8 + Math.sin(x * 0.22) * 2.4 + ((x * 11) % 5 - 2) * 0.7;
+            ctx.lineTo(x, 624 + rip);
+        }
+        ctx.lineTo(26, 28);
+        ctx.closePath();
+        ctx.clip();
+
+        // Subtle newsprint fiber texture
+        ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.018)' : 'rgba(0, 0, 0, 0.025)';
+        for (let y = 30; y < 620; y += 4) {
+            ctx.fillRect(26, y, 948, 1);
+        }
+
+        // Broadsheet inner border
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 3;
+        ctx.strokeRect(52, 50, 896, 548);
+
+        ctx.lineWidth = 1;
+        ctx.strokeRect(57, 55, 886, 538);
+
+        // Corner ornaments
+        ctx.fillStyle = borderColor;
+        [[49, 47], [945, 47], [49, 595], [945, 595]].forEach(([x, y]) => {
+            ctx.fillRect(x, y, 6, 6);
+        });
+
+        // 1. Masthead
+        ctx.textAlign = 'center';
+        ctx.fillStyle = inkSecondary;
+        ctx.font = '700 12px "Space Mono", monospace';
+        ctx.fillText('★ THE GLOBAL PROCRASTINATION JOURNAL // WIRE CLIPPING ARCHIVE ★', 500, 84);
+
+        ctx.font = '900 36px "Big Shoulders Display", sans-serif';
+        ctx.fillStyle = inkPrimary;
+        ctx.fillText('DAILY DISPATCH OF AVOIDED LABOR', 500, 122);
+
+        // Masthead Metadata bar
+        const createdDate = task.created_at ? new Date(task.created_at) : new Date();
+        const dateStr = createdDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillStyle = inkSecondary;
+        ctx.fillText(`DISPATCH #${task.id || 'WIRE'} • FILED: ${dateStr} • SPECIAL WIRE RECORD`, 500, 145);
+
+        // Double rule under masthead
+        ctx.beginPath();
+        ctx.moveTo(68, 158);
+        ctx.lineTo(932, 158);
+        ctx.lineWidth = 2.5;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(68, 163);
+        ctx.lineTo(932, 163);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // 2. Dispatch Section
+        const rawText = (task.text || '').trim();
+        const isPanic = rawText.startsWith('[PANIC]');
+        const cleanHeadline = rawText.replace(/^\[PANIC\]\s*/, '').replace(/[\r\n]+/g, ' ');
+
+        // Category Tag
+        ctx.textAlign = 'left';
+        if (isPanic) {
+            ctx.font = '900 12px "Space Mono", monospace';
+            ctx.fillStyle = accentRed;
+            ctx.fillText('⚡ HIGH-PANIC TRANSMISSION // CODE RED DELAY', 80, 192);
+        } else {
+            ctx.font = '700 12px "Space Mono", monospace';
+            ctx.fillStyle = inkSecondary;
+            ctx.fillText('OFFICIAL CONFESSION RECORD // UNFINISHED BUSINESS:', 80, 192);
+        }
+
+        // Dispatch Headline Text (Quoted)
+        const maxWidth = 560; // Leave space for rubber stamp on the right
+        let headlineFontSize = 32;
+        if (cleanHeadline.length > 70) headlineFontSize = 26;
+        if (cleanHeadline.length > 120) headlineFontSize = 22;
+
+        ctx.font = `900 ${headlineFontSize}px "Big Shoulders Display", sans-serif`;
+        ctx.fillStyle = inkPrimary;
+
+        let wrappedLines = wrapCanvasText(ctx, `“${cleanHeadline}”`, maxWidth);
+        if (wrappedLines.length > 4) {
+            wrappedLines = wrappedLines.slice(0, 4);
+            const last = wrappedLines[3];
+            wrappedLines[3] = last.replace(/”?$/, '') + '...”';
+        }
+        const lineHeight = Math.round(headlineFontSize * 1.24);
+        let curY = 230;
+        wrappedLines.forEach(line => {
+            ctx.fillText(line, 80, curY);
+            curY += lineHeight;
+        });
+
+        // 3. Byline & Operative Dossier
+        const authorRaw = (task.city || 'Anonymous').trim();
+        const country = (task.country || 'Parts Unknown').toUpperCase();
+        let authorClean = authorRaw;
+        let rankTag = '';
+        const flairMatch = authorRaw.match(/^\[(.*?)\]\s*(.*)$/);
+        if (flairMatch) {
+            rankTag = `[${flairMatch[1].toUpperCase()}] `;
+            authorClean = flairMatch[2] || 'Anonymous';
+        }
+
+        const dossierY = Math.max(curY + 14, 352);
+
+        // Dividing rule above dossier
+        ctx.beginPath();
+        ctx.moveTo(80, dossierY);
+        ctx.lineTo(600, dossierY);
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillStyle = inkSecondary;
+        ctx.fillText('OPERATIVE / ORIGIN:', 80, dossierY + 22);
+
+        ctx.font = '700 13px "Space Mono", monospace';
+        ctx.fillStyle = inkPrimary;
+        ctx.fillText(`${rankTag}${authorClean.toUpperCase()} IN ${country}`, 80, dossierY + 40);
+
+        // Time / Sympathy counts
+        const sameCount = task.same_count || (userStamps[task.id] === 'same' ? 1 : 0);
+        const validCount = task.valid_count || (userStamps[task.id] === 'valid' ? 1 : 0);
+        const ripCount = task.rip_count || (userStamps[task.id] === 'rip' ? 1 : 0);
+
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillStyle = inkSecondary;
+        ctx.fillText(`PUBLIC SYMPATHY: [ SAME: ${sameCount} ] • [ VALID: ${validCount} ] • [ RIP: ${ripCount} ]`, 80, dossierY + 62);
+
+        // 4. Legal / Inaction Exemption Box (Bottom Left)
+        const boxY = dossierY + 76;
+        ctx.fillStyle = noticeBg;
+        ctx.fillRect(80, boxY, 520, 62);
+        ctx.strokeStyle = borderColor;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.strokeRect(80, boxY, 520, 62);
+        ctx.setLineDash([]);
+
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillStyle = inkPrimary;
+        ctx.fillText('LEGAL DEFERRAL MANDATE // STATUTE 404:', 92, boxY + 18);
+        ctx.font = '400 10px "Space Mono", monospace';
+        ctx.fillStyle = inkSecondary;
+        ctx.fillText('This dispatch has been entered into the Official Archive of Idleness.', 92, boxY + 34);
+        ctx.fillText('Any attempt to enforce immediate action is stayed by international sloth privilege.', 92, boxY + 48);
+
+        // 5. Huge Angled Red Rubber Stamp on the Right
+        ctx.save();
+        ctx.translate(768, 335);
+        ctx.rotate(-13 * Math.PI / 180);
+
+        const stampColor = accentRed;
+        ctx.strokeStyle = stampColor;
+        ctx.lineWidth = 3.5;
+        ctx.strokeRect(-140, -56, 280, 112);
+
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 3]);
+        ctx.strokeRect(-133, -49, 266, 98);
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = stampColor;
+        ctx.textAlign = 'center';
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillText('★ BUREAU OF STRATEGIC INACTION ★', 0, -26);
+
+        ctx.font = '900 23px "Space Mono", monospace';
+        ctx.fillText('VERIFIED UNFINISHED', 0, 4);
+
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillText('// ACTION PERMANENTLY DEFERRED //', 0, 24);
+
+        ctx.font = '700 9px "Space Mono", monospace';
+        ctx.fillText(`STAMP ID: #LG-${task.id || '99'} • NO EXTENSION GRANTED`, 0, 39);
+
+        // Ink bleed splatter / distressed micro marks inside stamp
+        ctx.fillStyle = stampColor;
+        for (let s = 0; s < 18; s++) {
+            const sx = (Math.sin(s * 91) * 125);
+            const sy = (Math.cos(s * 47) * 45);
+            const sr = 0.5 + (s % 3) * 0.5;
+            ctx.beginPath();
+            ctx.arc(sx, sy, sr, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.restore();
+
+        // 6. Barcode Simulation (Bottom Right)
+        const barStartX = 650;
+        const barY = 445;
+        const barHeight = 40;
+        const barPattern = [3, 1, 4, 1, 2, 3, 1, 4, 2, 1, 3, 2, 4, 1, 2, 3, 1, 4, 1, 2, 3, 2, 1, 4, 2];
+        let curBarX = barStartX;
+        ctx.fillStyle = borderColor;
+        barPattern.forEach((w, idx) => {
+            if (idx % 2 === 0) {
+                ctx.fillRect(curBarX, barY, w * 1.8, barHeight);
+            }
+            curBarX += w * 1.8 + 2.5;
+        });
+        ctx.textAlign = 'center';
+        ctx.font = '700 10px "Space Mono", monospace';
+        ctx.fillStyle = inkSecondary;
+        ctx.fillText(`* WIRE-${task.id || '0000'} *`, 775, barY + barHeight + 16);
+
+        // 7. Broadside Footer
+        ctx.beginPath();
+        ctx.moveTo(68, 560);
+        ctx.lineTo(932, 560);
+        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = borderColor;
+        ctx.stroke();
+
+        ctx.textAlign = 'center';
+        ctx.font = '700 11px "Space Mono", monospace';
+        ctx.fillStyle = inkSecondary;
+        ctx.fillText('LATER, GATOR // THE INDEPENDENT PROCRASTINATION JOURNAL • LATERGATORS.LIVE • @thelatergators', 500, 580);
+
+        ctx.restore(); // end torn-paper clip
+        return canvas;
+    };
+
+    const openClippingModal = (task) => {
+        if (!clippingModal || !clippingCanvas || !task) return;
+        currentClippingTask = task;
+        generateNewspaperClipping(clippingCanvas, task);
+
+        if (clippingShareBtn && navigator.share) {
+            clippingShareBtn.style.display = 'inline-block';
+        }
+
+        clippingModal.style.display = 'flex';
+    };
+
+    const closeClippingModal = () => {
+        if (clippingModal) clippingModal.style.display = 'none';
+        currentClippingTask = null;
+    };
+
+    refreshClippingTheme = () => {
+        if (clippingModal && clippingModal.style.display === 'flex' && currentClippingTask && clippingCanvas) {
+            generateNewspaperClipping(clippingCanvas, currentClippingTask);
+        }
+    };
+
+    if (clippingCloseBtn) clippingCloseBtn.addEventListener('click', closeClippingModal);
+    if (clippingBackdrop) clippingBackdrop.addEventListener('click', closeClippingModal);
+
+    // Escape key closes modals
+    window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            if (clippingModal && clippingModal.style.display === 'flex') {
+                closeClippingModal();
+            }
+            if (credentialModal && credentialModal.style.display === 'flex') {
+                closeCredentialModal();
+            }
+        }
+    });
+
+    if (clippingDownloadBtn && clippingCanvas) {
+        clippingDownloadBtn.addEventListener('click', () => {
+            if (!currentClippingTask) return;
+            const link = document.createElement('a');
+            link.download = `later-gator-dispatch-${currentClippingTask.id || 'clipping'}.png`;
+            link.href = clippingCanvas.toDataURL('image/png');
+            link.click();
+
+            const orig = clippingDownloadBtn.textContent;
+            clippingDownloadBtn.textContent = '[ CLIPPING DOWNLOADED ✓ ]';
+            setTimeout(() => { clippingDownloadBtn.textContent = orig; }, 2500);
+        });
+    }
+
+    if (clippingCopyBtn && clippingCanvas) {
+        clippingCopyBtn.addEventListener('click', async () => {
+            if (!currentClippingTask) return;
+            const raw = (currentClippingTask.text || '').replace(/^\[PANIC\]\s*/, '').trim();
+            const orig = clippingCopyBtn.textContent;
+
+            if (clippingCanvas.toBlob && navigator.clipboard && navigator.clipboard.write) {
+                try {
+                    clippingCanvas.toBlob(async (blob) => {
+                        if (!blob) throw new Error('Blob generation failed');
+                        await navigator.clipboard.write([
+                            new ClipboardItem({ 'image/png': blob })
+                        ]);
+                        clippingCopyBtn.textContent = '✓ IMAGE COPIED!';
+                        setTimeout(() => { clippingCopyBtn.textContent = orig; }, 2500);
+                    }, 'image/png');
+                    return;
+                } catch (err) {
+                    console.warn('Clipboard image write failed, falling back to text:', err);
+                }
+            }
+
+            // Fallback: copy citation text
+            try {
+                const quoteText = `“${raw}”\n— Verified Unfinished on @thelatergators (https://latergators.live)`;
+                await navigator.clipboard.writeText(quoteText);
+                clippingCopyBtn.textContent = '✓ CITATION COPIED!';
+                setTimeout(() => { clippingCopyBtn.textContent = orig; }, 2500);
+            } catch (e) {
+                clippingCopyBtn.textContent = '✓ COPIED';
+                setTimeout(() => { clippingCopyBtn.textContent = orig; }, 2500);
+            }
+        });
+    }
+
+    if (clippingXBtn && clippingCanvas) {
+        clippingXBtn.addEventListener('click', () => {
+            if (!currentClippingTask) return;
+            // Also trigger PNG download so user has the graphic to attach to their tweet
+            const link = document.createElement('a');
+            link.download = `later-gator-dispatch-${currentClippingTask.id || 'clipping'}.png`;
+            link.href = clippingCanvas.toDataURL('image/png');
+            link.click();
+
+            const raw = (currentClippingTask.text || '').replace(/^\[PANIC\]\s*/, '').trim();
+            const snippet = raw.length > 100 ? raw.substring(0, 97) + '...' : raw;
+            const text = `“${snippet}”\n\nFormally stamped as VERIFIED UNFINISHED on @thelatergators. The 1890 Inaction Treaty protects me.`;
+            const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent('https://latergators.live')}`;
+            window.open(url, '_blank', 'noopener,noreferrer');
+        });
+    }
+
+    if (clippingShareBtn && clippingCanvas) {
+        clippingShareBtn.addEventListener('click', () => {
+            if (!currentClippingTask || !navigator.share) return;
+            const raw = (currentClippingTask.text || '').replace(/^\[PANIC\]\s*/, '').trim();
+            const snippet = raw.length > 80 ? raw.substring(0, 77) + '...' : raw;
+            const shareTitle = 'VERIFIED UNFINISHED DISPATCH // LATER, GATOR';
+            const shareText = `“${snippet}” — Certified as VERIFIED UNFINISHED on @thelatergators:`;
+
+            clippingCanvas.toBlob(async (blob) => {
+                if (blob) {
+                    try {
+                        const file = new File([blob], `later-gator-dispatch-${currentClippingTask.id}.png`, { type: 'image/png' });
+                        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                            await navigator.share({
+                                title: shareTitle,
+                                text: shareText,
+                                files: [file]
+                            });
+                            return;
+                        }
+                    } catch (e) {}
+                }
+                try {
+                    await navigator.share({
+                        title: shareTitle,
+                        text: shareText,
+                        url: 'https://latergators.live'
+                    });
+                } catch (e) {}
+            }, 'image/png');
         });
     }
 

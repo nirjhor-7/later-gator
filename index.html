@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=2.7.6">
+    <link rel="stylesheet" href="style.css?v=2.7.7">
     <link rel="canonical" href="https://latergators.live/">
 
     <!-- Social Preview & OpenGraph Tags -->
@@ -99,6 +99,9 @@
                         </button>
                         <button type="button" class="reaction-stamp-btn" data-type="rip" title="Thoughts and prayers for your deadline">
                             [ RIP <span class="reaction-count">0</span> ]
+                        </button>
+                        <button type="button" class="feed-clip-btn lead-clip-btn" id="lead-clip-btn" title="Print & Clip Newspaper Snippet" aria-label="Clip Today's Chief Transgression">
+                            ✂ CLIP
                         </button>
                     </div>
                 </div>
@@ -475,11 +478,35 @@
         </div>
     </div>
 
+    <!-- Newspaper Clipping Modal -->
+    <div id="clipping-modal" class="credential-modal clipping-modal" style="display: none;">
+        <div class="credential-modal-backdrop" id="clipping-backdrop"></div>
+        <div class="credential-modal-dialog">
+            <div class="credential-modal-header">
+                <span>NEWSPAPER CLIPPING BUREAU // WIRE ARCHIVES</span>
+                <button type="button" id="clipping-close-btn" class="share-close-btn" aria-label="Close">&times;</button>
+            </div>
+            <div class="credential-preview-wrapper">
+                <canvas id="clipping-canvas" width="1000" height="650" class="credential-canvas clipping-canvas"></canvas>
+            </div>
+            <div class="credential-actions">
+                <button type="button" id="clipping-download-btn" class="share-btn-cert">
+                    [ DOWNLOAD OFFICIAL CLIPPING (.PNG) ]
+                </button>
+                <div class="credential-sub-actions">
+                    <button type="button" id="clipping-share-btn" class="share-btn" style="display: none;">📲 SHARE</button>
+                    <button type="button" id="clipping-copy-btn" class="share-btn">📋 COPY IMAGE</button>
+                    <button type="button" id="clipping-x-btn" class="share-btn">POST ON X</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';
         inject();
     </script>
-    <script src="script.js?v=2.7.6" defer></script>
+    <script src="script.js?v=2.7.7" defer></script>
     <script>
         document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
     </script>
