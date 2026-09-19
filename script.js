@@ -60,6 +60,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return "RANK: NOVICE DODGER";
     };
 
+    // Expose rank calculations for external canvas/pass renderers
+    window.getSlackerRank = getSlackerRank;
+    window.getSlackerScore = getSlackerScore;
+    window.postponementsCount = postponementsCount;
+    window.timeStolenSeconds = timeStolenSeconds;
+
+    // Sub-modules & Services (Audio, Evasion, Canvas)
+    const GatorAudio = window.GatorAudio || {};
+    const GatorEvasion = window.GatorEvasion || {};
+    const GatorCanvas = window.GatorCanvas || {};
+
     // Backward compatibility aliases
     let clickerCount = postponementsCount;
     const getClickerRank = () => getSlackerRank(postponementsCount, timeStolenSeconds);
@@ -68,97 +79,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // THE EVASION ENGINE (DYNAMIC SUBMIT BUTTON & TASK-REACTIVE SYSTEM)
     // ==========================================
-    const STARTER_EVASION_PHRASES = [
-        "NOT MY PROBLEM TODAY",
-        "REFER TO FUTURE ME",
-        "A PROBLEM FOR MONDAY",
-        "TABLE FOR TOMORROW",
-        "DECREE AN EMERGENCY NAP",
-        "CONSULT THE CEILING FIRST",
-        "SLEEP ON IT INDEFINITELY",
-        "SWEPT UNDER THE RUG",
-        "COMMENCE PROCRASTINATION",
-        "ABSOLUTELY NOT",
-        "FORWARD TO THE VOID",
-        "LET FATE DECIDE",
-        "FILE UNDER 'LATER'",
-        "DISMISS WITH PREJUDICE",
-        "TAKE TO MY FAINTING COUCH",
-        "I RESPECTFULLY DECLINE",
-        "MAYBE IN ANOTHER LIFE",
-        "LET THE UNIVERSE HANDLE IT"
-    ];
-
-    const RANK_10_PRESTIGE_PHRASES = [
-        "OFFICIALLY DEFER",
-        "PUNT INTO NEXT WEEK",
-        "BANISH TO NEXT QUARTER",
-        "SOLEMNLY POSTPONE"
-    ];
-
-    const RANK_25_PRESTIGE_PHRASES = [
-        "POSTPONE SINE DIE",
-        "EXECUTIVE ORDER: DELAY",
-        "STRATEGIC INACTION",
-        "AUTHORIZE TACTICAL SLOTH"
-    ];
-
-    const RANK_50_PRESTIGE_PHRASES = [
-        "BY ROYAL DECREE: NO",
-        "DECLARE A NATIONAL HOLIDAY",
-        "DIPLOMATIC IMMUNITY INVOKED",
-        "STATE-SPONSORED DAWDLING"
-    ];
-
-    const RANK_100_PRESTIGE_PHRASES = [
-        "SUPREME INACTION DECLARED",
-        "TRANSCENDENT SLOTH ACHIEVED",
-        "SOVEREIGN RIGHT TO DO NOTHING",
-        "APPOINTED AMBASSADOR OF DELAY"
-    ];
-
-    const TASK_REACTIVE_PAIRS = [
-        {
-            keywords: ['email', 'inbox', 'reply', 'mail'],
-            later: "MARK AS UNREAD FOREVER",
-            panic: "SEND TYPO-RIDDEN REPLY"
-        },
-        {
-            keywords: ['study', 'exam', 'homework', 'thesis', 'reading', 'read', 'assignment'],
-            later: "CLOSE BOOK RESPECTFULLY",
-            panic: "CRAM AT 3:00 AM"
-        },
-        {
-            keywords: ['laundry', 'clothes', 'fold', 'wash'],
-            later: "THE CHAIR IS MY CLOSET",
-            panic: "WEAR IT INSIDE OUT"
-        },
-        {
-            keywords: ['gym', 'workout', 'exercise', 'run', 'cardio', 'weights'],
-            later: "DECLARE A REST CENTURY",
-            panic: "DO 1 PUSHUP AND QUIT"
-        },
-        {
-            keywords: ['sleep', 'nap', 'bed', 'rest', 'tired'],
-            later: "COMMENCE UNCONSCIOUSNESS",
-            panic: "JUST ONE MORE REEL"
-        },
-        {
-            keywords: ['exist', 'existing', 'life choices', 'alive', 'life'],
-            later: "PAUSE REALITY FOR 5 MIN",
-            panic: "EXISTENTIAL DREAD"
-        },
-        {
-            keywords: ['work', 'project', 'client', 'spreadsheet', 'excel', 'bug', 'code', 'deploy'],
-            later: "BANISH TO NEXT SPRINT",
-            panic: "TYPE VERY FAST AND PRAY"
-        },
-        {
-            keywords: ['clean', 'dishes', 'room', 'trash', 'chores'],
-            later: "STRATEGIC DUST ACCUMULATION",
-            panic: "SHOVE UNDER BED"
-        }
-    ];
+    const STARTER_EVASION_PHRASES = GatorEvasion.STARTER_EVASION_PHRASES || [];
+    const RANK_10_PRESTIGE_PHRASES = GatorEvasion.RANK_10_PRESTIGE_PHRASES || [];
+    const RANK_25_PRESTIGE_PHRASES = GatorEvasion.RANK_25_PRESTIGE_PHRASES || [];
+    const RANK_50_PRESTIGE_PHRASES = GatorEvasion.RANK_50_PRESTIGE_PHRASES || [];
+    const RANK_100_PRESTIGE_PHRASES = GatorEvasion.RANK_100_PRESTIGE_PHRASES || [];
+    const TASK_REACTIVE_PAIRS = GatorEvasion.TASK_REACTIVE_PAIRS || [];
 
     let currentActiveEvasionPhrase = "NOT MY PROBLEM TODAY";
     let isTaskReactiveActive = false;
@@ -259,14 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Common task keywords used for smart detection and field auto-correction
-    const COMMON_TASK_KEYWORDS = [
-        'sleep', 'sleeping', 'study', 'studying', 'work', 'working',
-        'laundry', 'doing laundry', 'gym', 'going to gym', 'taxes',
-        'doing taxes', 'homework', 'dishes', 'doing dishes', 'emails',
-        'replying to emails', 'cleaning', 'cleaning room', 'life choices',
-        'my life choices', 'existing', 'too tired to type', 'nothing',
-        'procrastinating', 'assignment', 'paper', 'essay', 'workout'
-    ];
+    const COMMON_TASK_KEYWORDS = GatorEvasion.COMMON_TASK_KEYWORDS || [];
 
     // Local Alias Auto-Retention (Permanent local identity with task-keyword sanitizer)
     if (userNameInput) {
@@ -315,49 +234,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const stampMeta = document.getElementById('stamp-meta');
     const shareStampBadge = document.getElementById('share-stamp-badge');
 
-    // Tactile Rubber Stamp Sound Generator (Synthesized Web Audio API)
-    function playRubberStampSound() {
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            if (ctx.state === 'suspended') ctx.resume();
-
-            const now = ctx.currentTime;
-            // Low thud / rubber stamp mechanical strike
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(160, now);
-            osc.frequency.exponentialRampToValueAtTime(28, now + 0.12);
-
-            gain.gain.setValueAtTime(0.35, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.15);
-
-            // Paper slap / impact noise burst
-            const bufLen = Math.floor(ctx.sampleRate * 0.04);
-            const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-            const data = buf.getChannelData(0);
-            for (let i = 0; i < bufLen; i++) {
-                data[i] = (Math.random() * 2 - 1) * 0.15;
-            }
-            const noise = ctx.createBufferSource();
-            noise.buffer = buf;
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.setValueAtTime(0.2, now);
-            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-            noise.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
-            noise.start(now);
-        } catch (e) {
-            // Audio optional, fail silently
-        }
-    }
+    // Tactile Rubber Stamp Sound Generator (Web Audio API via GatorAudio)
+    const playRubberStampSound = () => {
+        if (GatorAudio.playRubberStampSound) GatorAudio.playRubberStampSound();
+    };
 
     const updateStat = (id, newValue) => {
         const el = document.getElementById(id);
@@ -459,9 +339,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     })();
 
+    window.currentGator = currentGator;
+    window.userStamps = userStamps;
+
     const saveUserStamps = () => {
         try {
             localStorage.setItem('lg_user_stamps', JSON.stringify(userStamps));
+            window.userStamps = userStamps;
         } catch (e) {}
     };
 
@@ -514,49 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1500);
 
 
-    // Synthesize physical wooden rubber stamp slam sound
+    // Synthesize physical wooden rubber stamp slam sound (Web Audio API via GatorAudio)
     const playStampSlamSound = () => {
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-
-            // 1. Low thud impact (150Hz -> 30Hz exponential pitch drop)
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(150, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 0.08);
-
-            gain.gain.setValueAtTime(0.45, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.085);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.085);
-
-            // 2. High snap / slap burst for tactile wood-on-paper feeling
-            const bufferSize = Math.floor(ctx.sampleRate * 0.025);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
-            }
-            const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.value = 550;
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.setValueAtTime(0.3, ctx.currentTime);
-            noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.025);
-
-            noise.connect(filter);
-            filter.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
-            noise.start();
-        } catch (e) {}
+        if (GatorAudio.playStampSlamSound) GatorAudio.playStampSlamSound();
     };
 
     let lastTopTaskId = null;
@@ -1350,145 +1194,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchCountries();
     };
 
-    const FUNNY_CENSOR_MESSAGES = [
-        "THE EDITOR-IN-CHIEF REFUSES TO PRINT SUCH SCANDALOUS LANGUAGE.",
-        "REDACTED BY THE DEPARTMENT OF DECENCY: KEEP IT CIVIL, CITIZEN.",
-        "OUR TYPESETTERS ARE BLUSHING. MIND YOUR MANNERS.",
-        "TRANSMISSION REJECTED: THIS IS A RESPECTABLE PROCRASTINATION JOURNAL.",
-        "CENSORSHIP NOTICE: WASH YOUR KEYBOARD OUT WITH SOAP."
-    ];
-
-    function containsInappropriate(str) {
-        if (!str) return false;
-        const lower = str.toLowerCase();
-
-        // 1. Direct word boundary check for explicit sexual terms, acts, anatomy & profanity
-        const explicitWords = [
-            // Sexual acts & phrases
-            /\b(sex|sexual|sexy|anal|blowjob\w*|handjob\w*|rimjob\w*|footjob\w*|titfuck\w*)\b/i,
-            /\b(deepthroat\w*|gangbang\w*|creampie\w*|pegging|pegged|fingering)\b/i,
-            /\b(masturbat\w*|wank\w*|circlejerk\w*|orgasm\w*|ejaculat\w*|bukkake)\b/i,
-            /\b(cum|cums|cumming|cumshot\w*|squirt\w*)\b/i,
-            /\b(threesome\w*|foursome\w*|orgy|orgies|gloryhole\w*|bdsm|bondage|erotic\w*)\b/i,
-            /\b(jerk\s*off|jerking\s*off|jack\s*off|jacking\s*off)\b/i,
-            
-            // Genitalia & anatomy
-            /\b(penis\w*|cock|cocks|cocksucker\w*|dick|dicks|dickhead\w*)\b/i,
-            /\b(vagina\w*|pussy|pussies|clit|clitoris|labia)\b/i,
-            /\b(tits|titties|boob|boobs|boobies|areola\w*)\b/i,
-            /\b(asshole\w*|butthole\w*|anus\w*|ballsack\w*|testicle\w*)\b/i,
-            /\b(dildo\w*|vibrator\w*|fleshlight\w*|buttplug\w*)\b/i,
-            
-            // Adult industry / pornography
-            /\b(porn|porno|pornography|hentai|xxx|onlyfans|pornhub|xvideos|redtube|xhamster)\b/i,
-            /\b(nude|nudes|naked|stripper\w*|hooker\w*|prostitute\w*|escort\w*|milf\w*|dilf\w*|horny|boner\w*)\b/i,
-            
-            // Profanity & vulgar terms
-            /\b(fuck\w*|fck|fuk|f\*ck|motherfuck\w*)\b/i,
-            /\b(bitch\w*|b!tch)\b/i,
-            /\b(cunt\w*)\b/i,
-            /\b(whore\w*|slut\w*)\b/i,
-            /\b(bastard\w*)\b/i,
-
-            // 2. Common spaced / leetspeak obfuscations with word boundaries
-            /\b(s[\s._\-*]*[3e][\s._\-*]*x+)\b/i,
-            /\b([4a][\s._\-*]*n[\s._\-*]*[4a][\s._\-*]*l)\b/i,
-            /\b(p[\s._\-*]*[0o][\s._\-*]*r[\s._\-*]*n)\b/i,
-            /\b(f[\s._\-*]*[u*][\s._\-*]*c[\s._\-*]*k+)\b/i,
-            /\b(d[\s._\-*]*[1!i][\s._\-*]*c[\s._\-*]*k+)\b/i,
-            /\b(b[\s._\-*]*[1!i][\s._\-*]*t[\s._\-*]*c[\s._\-*]*h+)\b/i,
-            /\b(c[\s._\-*]*[u*][\s._\-*]*n[\s._\-*]*t+)\b/i,
-            /\b(p[\s._\-*]*[u*][\s._\-*]*s+[\s._\-*]*[y!1])\b/i
-        ];
-
-        for (const rx of explicitWords) {
-            if (rx.test(lower)) return true;
-        }
-
-        // 3. Severe racial / identity slurs (checked against collapsed text)
-        const collapsed = lower.replace(/[^a-z0-9]/g, '');
-        const normalized = collapsed
-            .replace(/[1!|]/g, 'i')
-            .replace(/0/g, 'o')
-            .replace(/3/g, 'e')
-            .replace(/[4@]/g, 'a')
-            .replace(/[5$]/g, 's')
-            .replace(/7/g, 't')
-            .replace(/8/g, 'b');
-        const deDuplicated = normalized.replace(/(.)\1+/g, '$1');
-
-        const severeSlurs = [
-            /n+[i1l]+[g9]+[e3a4r]+/i,
-            /n+i+g+[ae]+/i,
-            /f+a+g+[o0e3]*t?/i,
-            /k+i+k+e/i,
-            /c+h+i+n+k/i,
-            /s+p+i+c/i,
-            /r+e+t+a+r+d/i
-        ];
-
-        for (const rx of severeSlurs) {
-            if (rx.test(collapsed) || rx.test(normalized) || rx.test(deDuplicated)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    function isGibberish(text) {
-        if (!text) return true;
-        const clean = text.trim();
-        if (clean.length < 3) return true;
-
-        // Normalizing expressive elongation:
-        // e.g. "studyiiiiiiing" -> "studying", "sleeeeeep" -> "sleep"
-        const deElongated = clean.replace(/(.)\1{2,}/gi, "$1");
-
-        // Common keyboard home-row / sequential key walks (pure smash)
-        const mashes = [
-            /asdf/i, /sdfg/i, /dfgh/i, /ghjk/i, /hjkl/i,
-            /qwerty/i, /werty/i, /ertyu/i, /rtyui/i,
-            /zxcv/i, /xcvb/i, /cvbn/i,
-            /asdw/i, /qweasd/i, /asdasd/i, /dsad/i, /fdsa/i,
-            /lkjh/i, /poiu/i, /mnbv/i
-        ];
-        for (const m of mashes) {
-            if (m.test(clean) || m.test(deElongated)) return true;
-        }
-
-        // Only flag repeated characters if there is NO other substantial word (e.g. "aaaaa", "zzzzzz")
-        if (/^(.)\1+$/i.test(clean.replace(/\s+/g, ""))) return true;
-
-        // Check individual words
-        const words = deElongated.split(/\s+/);
-        let validWords = 0;
-
-        for (const w of words) {
-            const lettersOnly = w.replace(/[^a-z]/gi, "");
-            if (!lettersOnly) continue;
-
-            // Expressive conversational procrastination words
-            if (["no", "so", "ugh", "ah", "ha", "eh"].includes(lettersOnly.toLowerCase())) {
-                validWords++;
-                continue;
-            }
-
-            // Must have vowels if length >= 4
-            if (lettersOnly.length >= 4 && !/[aeiouy]/i.test(lettersOnly)) {
-                return true;
-            }
-
-            if (lettersOnly.length >= 7) {
-                const vowels = (lettersOnly.match(/[aeiouy]/gi) || []).length;
-                if (vowels / lettersOnly.length < 0.15) return true;
-            }
-
-            validWords++;
-        }
-
-        return validWords === 0;
-    }
+    const FUNNY_CENSOR_MESSAGES = GatorEvasion.FUNNY_CENSOR_MESSAGES || [];
+    const containsInappropriate = (str) => GatorEvasion.containsInappropriate ? GatorEvasion.containsInappropriate(str) : false;
+    const isGibberish = (text) => GatorEvasion.isGibberish ? GatorEvasion.isGibberish(text) : false;
 
     function triggerRubberStamp(isPanicMode = false) {
         if (!stampOverlay || !rubberStamp) return;
@@ -1776,177 +1484,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const getShareUrl = () => window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://latergators.live';
 
     const generateCertificateImage = (taskText, isPanicMode, holderName) => {
-        const canvas = document.createElement('canvas');
-        canvas.width = 1200;
-        canvas.height = 800;
-        const ctx = canvas.getContext('2d');
-
-        // Background: Crisp newsprint paper
-        ctx.fillStyle = '#FAF9F6';
-        ctx.fillRect(0, 0, 1200, 800);
-
-        // Heavy Double Border
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 8;
-        ctx.strokeRect(30, 30, 1140, 740);
-
-        ctx.lineWidth = 2;
-        ctx.strokeRect(44, 44, 1112, 712);
-
-        // Corner squares
-        ctx.lineWidth = 2;
-        [[50, 50], [1130, 50], [50, 730], [1130, 730]].forEach(([x, y]) => {
-            ctx.strokeRect(x, y, 20, 20);
-        });
-
-        // Header
-        ctx.fillStyle = '#111111';
-        ctx.textAlign = 'center';
-        ctx.font = '700 20px "Space Mono", monospace';
-        ctx.fillText('LATER, GATORS  //  GLOBAL PROCRASTINATION JOURNAL', 600, 105);
-
-        ctx.font = '900 44px "Big Shoulders Display", sans-serif';
-        const certTitle = isPanicMode ? 'EMERGENCY DISPATCH OF RELUCTANT ACTION' : 'OFFICIAL CERTIFICATE OF POSTPONEMENT';
-        ctx.fillText(certTitle, 600, 160);
-
-        // Lines
-        ctx.beginPath();
-        ctx.moveTo(100, 185);
-        ctx.lineTo(1100, 185);
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(100, 191);
-        ctx.lineTo(1100, 191);
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Check for verified Gator Tag
-        const gatorTag = (currentGator && (currentGator.displayTag || currentGator.tag))
-            ? (currentGator.displayTag || currentGator.tag).replace(/^@/, '')
-            : (holderName && holderName.includes('@') ? holderName.match(/@([A-Za-z0-9_]+)/)?.[1] : null);
-
-        let displayHolder = (holderName && holderName.trim() !== '') ? holderName.trim().toUpperCase() : 'ANONYMOUS PROCRASTINATOR';
-        // Strip any legacy [RANK] prefixes if stored or input
-        displayHolder = displayHolder.replace(/^\[[^\]]+\]\s*/, '');
-        if (gatorTag) {
-            if (!holderName || holderName.trim() === '' || holderName.toUpperCase() === 'ANONYMOUS' || holderName.toUpperCase() === `@${gatorTag.toUpperCase()}`) {
-                displayHolder = `@${gatorTag.toUpperCase()}`;
-            } else if (!displayHolder.includes('@')) {
-                displayHolder = `@${gatorTag.toUpperCase()} (${displayHolder})`;
-            }
-        }
-
-        // Metadata
-        ctx.font = '700 15px "Space Mono", monospace';
-        ctx.textAlign = 'left';
-        const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }).toUpperCase();
-        ctx.fillText(`DATE: ${dateStr}`, 100, 225);
-        ctx.textAlign = 'right';
-        const refNum = Math.floor(100000 + Math.random() * 900000);
-        const refId = gatorTag ? `TAG: @${gatorTag.toUpperCase()} • REF: LG-${refNum}` : `REF: LG-${refNum}`;
-        ctx.fillText(refId, 1100, 225);
-
-        // Declaration
-        ctx.textAlign = 'center';
-        ctx.font = '400 17px "Space Mono", monospace';
-        ctx.fillText('THIS INSTRUMENT CONFIRMS THAT THE BEARER:', 600, 275);
-
-        ctx.font = '900 24px "Space Mono", monospace';
-        ctx.fillText(`[ ${displayHolder} ]`, 600, 312);
-
-        const currentRank = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
-        const dispatchWord = postponementsCount === 1 ? 'DISPATCH' : 'DISPATCHES';
-
-        ctx.font = '700 11px "Space Mono", monospace';
-        if (gatorTag) {
-            ctx.fillStyle = '#b91c1c';
-            ctx.fillText(`★ VERIFIED BUREAU OPERATIVE // ${currentRank} • ${postponementsCount} ${dispatchWord} FILED ★`, 600, 334);
-            ctx.fillStyle = '#111111';
-        } else {
-            ctx.fillStyle = '#555555';
-            ctx.fillText(`★ ACCREDITED CLEARANCE: ${currentRank} • ${postponementsCount} ${dispatchWord} FILED ★`, 600, 334);
-            ctx.fillStyle = '#111111';
-        }
-
-        ctx.font = '400 17px "Space Mono", monospace';
-        const verbDeclaration = isPanicMode ? 'HAS BROKEN DOWN AND UNDERTAKEN EMERGENCY EFFORTS ON:' : 'HAS OFFICIALLY AND LAWFULLY DODGED THE OBLIGATION DECLARED BELOW:';
-        ctx.fillText(verbDeclaration, 600, 370);
-
-        // Task Box
-        ctx.fillStyle = '#EBEBEB';
-        ctx.fillRect(140, 400, 920, 100);
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(140, 400, 920, 100);
-
-        ctx.fillStyle = '#111111';
-        ctx.font = '900 28px "Space Mono", monospace';
-        let safeTask = `"${censorNsfwText(taskText.trim())}"`;
-        if (safeTask.length > 50) safeTask = safeTask.substring(0, 47) + '..."';
-        ctx.fillText(safeTask, 600, 460);
-
-        // Legal Clause
-        ctx.font = '400 14px "Space Mono", monospace';
-        const statuteText = isPanicMode ? 'STATUTE 911: IMMEDIATE CRISIS MODE IN EFFECT.' : 'STATUTE 404: "NOT MY PROBLEM TODAY".';
-        ctx.fillText(statuteText, 600, 545);
-        ctx.fillText('ALL RESPONSIBILITY AND GUILT ARE TRANSFERRED TO TOMORROW.', 600, 570);
-        ctx.fillText('ANY ATTEMPTS TO ENFORCE ACTION SHALL BE MET WITH DELAY TACTICS.', 600, 592);
-
-        // Bottom Seals
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(140, 640, 220, 60);
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillText('OFFICIAL BUREAU SEAL', 250, 665);
-        ctx.font = '400 11px "Space Mono", monospace';
-        ctx.fillText('VERIFIED INACTION', 250, 685);
-
-        ctx.textAlign = 'right';
-        ctx.font = '700 15px "Space Mono", monospace';
-        ctx.fillText('Dr. Gator, Chief Delayer', 1060, 665);
-        ctx.beginPath();
-        ctx.moveTo(820, 675);
-        ctx.lineTo(1060, 675);
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.font = '400 12px "Space Mono", monospace';
-        // Distressed Red Rubber Stamp on Certificate
-        ctx.save();
-        ctx.translate(920, 520);
-        ctx.rotate(-11 * Math.PI / 180);
-        const stampColor = isPanicMode ? '#b43403' : '#b91c1c';
-
-        // Outer heavy border
-        ctx.strokeStyle = stampColor;
-        ctx.lineWidth = 4;
-        ctx.strokeRect(-160, -42, 320, 84);
-
-        // Inner dashed border
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 4]);
-        ctx.strokeRect(-153, -35, 306, 70);
-        ctx.setLineDash([]);
-
-        // Stamp Text
-        ctx.fillStyle = stampColor;
-        ctx.textAlign = 'center';
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillText(isPanicMode ? '⚠ EMERGENCY DIRECTIVE ⚠' : '★ OFFICIAL DISPATCH ★', 0, -15);
-        ctx.font = '900 20px "Space Mono", monospace';
-        ctx.fillText(isPanicMode ? 'PANIC MANDATE' : 'APPROVED FOR DELAY', 0, 7);
-        ctx.font = '700 10px "Space Mono", monospace';
-        ctx.fillText(isPanicMode ? 'URGENT RESCHEDULING' : 'BUREAU OF PROCRASTINATION // VALID', 0, 24);
-        ctx.restore();
-
-        // Footer note with live domain
-        ctx.fillStyle = '#111111';
-        ctx.textAlign = 'center';
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillText('LATER, GATORS // THE GLOBAL PROCRASTINATION JOURNAL // LATERGATORS.LIVE', 600, 734);
-
-        return canvas;
+        return GatorCanvas.generateCertificateImage
+            ? GatorCanvas.generateCertificateImage(taskText, isPanicMode, holderName, { postponementsCount, timeStolenSeconds })
+            : document.createElement('canvas');
     };
     window.generateCertificateImage = generateCertificateImage;
 
@@ -2127,26 +1667,8 @@ document.addEventListener('DOMContentLoaded', () => {
              .replace(/'/g, "&#039;");
     }
 
-    const NSFW_REGEX = /\b(sex|sexual|anal|porn|porno|hentai|nude|nudes|boob|boobs|tit|tits|penis|dick|dicks|cock|cocks|vagina|pussy|pussies|clit|clitoris|masturbat\w*|horny|orgasm|orgasms|ejaculat\w*|ass|asshole|assholes|butthole|anus|blowjob\w*|handjob\w*|rimjob\w*|deepthroat\w*|creampie\w*|pegging|cum|cumming|onlyfans|fuck\w*|bitch\w*|cunt\w*|whore\w*|slut\w*|dildo\w*)\b/gi;
-
-    function censorNsfwHtml(str) {
-        if (!str) return str;
-        return str.replace(NSFW_REGEX, (match) => {
-            if (match.length <= 1) return match;
-            const first = match[0];
-            const rest = match.slice(1);
-            return `${first}<span class="nsfw-censor" title="CENSORED BY EDITORIAL BOARD">${rest}</span>`;
-        });
-    }
-
-    function censorNsfwText(str) {
-        if (!str) return str;
-        return str.replace(NSFW_REGEX, (match) => {
-            if (match.length <= 1) return match;
-            const first = match[0];
-            return `${first}${"█".repeat(match.length - 1)}`;
-        });
-    }
+    const censorNsfwHtml = (str) => GatorEvasion.censorNsfwHtml ? GatorEvasion.censorNsfwHtml(str) : str;
+    const censorNsfwText = (str) => GatorEvasion.censorNsfwText ? GatorEvasion.censorNsfwText(str) : str;
 
     function timeAgo(dateString) {
         let date = new Date(dateString);
@@ -2572,26 +2094,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let prevRank = getClickerRank(clickerCount);
 
     const playClickerSound = () => {
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-
-            osc.type = 'triangle';
-            const baseFreq = 160 + Math.min(clickerCount * 2, 400);
-            osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.035);
-
-            gain.gain.setValueAtTime(0.08, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
-
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.035);
-        } catch (e) {}
+        if (GatorAudio.playClickerSound) GatorAudio.playClickerSound(clickerCount);
     };
 
     const updateClickerUI = () => {
@@ -2696,53 +2199,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const mastheadVol = document.getElementById('masthead-vol');
     const mastheadSub = document.getElementById('masthead-sub');
 
-    // Synthesize warm gaslight / candle ignition sound
+    // Synthesize warm gaslight / candle ignition sound (Web Audio API via GatorAudio)
     const playMidnightGaslightSound = (isActivating) => {
-        try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-
-            // 1. Soft breathy gaslight strike hiss
-            const duration = isActivating ? 0.22 : 0.14;
-            const bufferSize = Math.floor(ctx.sampleRate * duration);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
-            }
-            const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(isActivating ? 320 : 440, ctx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(isActivating ? 140 : 220, ctx.currentTime + duration);
-
-            const noiseGain = ctx.createGain();
-            noiseGain.gain.setValueAtTime(0.2, ctx.currentTime);
-            noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-
-            noise.connect(filter);
-            filter.connect(noiseGain);
-            noiseGain.connect(ctx.destination);
-            noise.start();
-
-            // 2. Warm nocturnal resonance chime
-            const osc = ctx.createOscillator();
-            const oscGain = ctx.createGain();
-            osc.type = 'sine';
-            const freq = isActivating ? 523.25 : 392.0; // C5 or G4
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.98, ctx.currentTime + 0.35);
-
-            oscGain.gain.setValueAtTime(0.1, ctx.currentTime);
-            oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-
-            osc.connect(oscGain);
-            oscGain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.35);
-        } catch (e) {}
+        if (GatorAudio.playMidnightGaslightSound) GatorAudio.playMidnightGaslightSound(isActivating);
     };
 
     const applySepiaMode = (enable) => {
@@ -2855,62 +2314,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // --- Perk 2: Office Sound Camouflage (Web Audio API) ---
-    let camoAudioCtx = null;
     let typingTimeout = null;
     let isTypingCamoActive = false;
 
-    const getCamoAudioContext = () => {
-        if (!camoAudioCtx) {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) camoAudioCtx = new AudioCtx();
-        }
-        if (camoAudioCtx && camoAudioCtx.state === 'suspended') {
-            camoAudioCtx.resume();
-        }
-        return camoAudioCtx;
-    };
+    const getCamoAudioContext = () => GatorAudio.getCamoAudioContext ? GatorAudio.getCamoAudioContext() : null;
 
     const playKeyClick = (isReturnOrSpace = false) => {
-        try {
-            const ctx = getCamoAudioContext();
-            if (!ctx) return;
-
-            const now = ctx.currentTime;
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            const filter = ctx.createBiquadFilter();
-
-            filter.type = 'bandpass';
-            if (isReturnOrSpace) {
-                filter.frequency.setValueAtTime(320, now);
-                filter.Q.setValueAtTime(2.2, now);
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(140, now);
-                osc.frequency.exponentialRampToValueAtTime(45, now + 0.05);
-                gain.gain.setValueAtTime(0.12, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.05);
-            } else {
-                const baseFreq = 750 + Math.random() * 850;
-                filter.frequency.setValueAtTime(baseFreq, now);
-                filter.Q.setValueAtTime(3.0, now);
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(baseFreq, now);
-                osc.frequency.exponentialRampToValueAtTime(180, now + 0.024);
-                const volume = 0.04 + Math.random() * 0.04;
-                gain.gain.setValueAtTime(volume, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.024);
-                osc.connect(filter);
-                filter.connect(gain);
-                gain.connect(ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.024);
-            }
-        } catch (e) {}
+        if (GatorAudio.playKeyClick) GatorAudio.playKeyClick(isReturnOrSpace);
     };
 
     const scheduleNextKeystroke = () => {
@@ -2962,97 +2372,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const playExhaustedSigh = () => {
-        try {
-            const ctx = getCamoAudioContext();
-            if (!ctx) return;
-            const now = ctx.currentTime;
-            const duration = 1.9;
-
-            const bufferSize = Math.floor(ctx.sampleRate * duration);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = Math.random() * 2 - 1;
-            }
-
-            const noiseSource = ctx.createBufferSource();
-            noiseSource.buffer = buffer;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'lowpass';
-            filter.frequency.setValueAtTime(850, now);
-            filter.frequency.exponentialRampToValueAtTime(170, now + duration);
-
-            const gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.001, now);
-            gain.gain.linearRampToValueAtTime(0.09, now + 0.35);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-            noiseSource.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-
-            noiseSource.start(now);
-            noiseSource.stop(now + duration);
-
-            if (camoSighBtn) {
-                const orig = camoSighBtn.textContent;
-                camoSighBtn.textContent = '☕ *SIGH*';
-                camoSighBtn.classList.add('playing');
-                setTimeout(() => {
-                    camoSighBtn.textContent = orig;
-                    camoSighBtn.classList.remove('playing');
-                }, duration * 1000);
-            }
-        } catch (e) {}
+        if (GatorAudio.playExhaustedSigh) GatorAudio.playExhaustedSigh(camoSighBtn);
     };
 
     const playPaperShuffle = () => {
-        try {
-            const ctx = getCamoAudioContext();
-            if (!ctx) return;
-            const now = ctx.currentTime;
-            const duration = 0.65;
-
-            const bufferSize = Math.floor(ctx.sampleRate * duration);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                const env = Math.sin((i / bufferSize) * Math.PI);
-                const jitter = Math.sin(i * 0.05) * 0.5 + 0.5;
-                data[i] = (Math.random() * 2 - 1) * env * jitter;
-            }
-
-            const noiseSource = ctx.createBufferSource();
-            noiseSource.buffer = buffer;
-
-            const filter = ctx.createBiquadFilter();
-            filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(1400, now);
-            filter.Q.setValueAtTime(1.8, now);
-
-            const gain = ctx.createGain();
-            gain.gain.setValueAtTime(0.01, now);
-            gain.gain.linearRampToValueAtTime(0.12, now + 0.15);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
-
-            noiseSource.connect(filter);
-            filter.connect(gain);
-            gain.connect(ctx.destination);
-
-            noiseSource.start(now);
-            noiseSource.stop(now + duration);
-
-            if (camoPaperBtn) {
-                const orig = camoPaperBtn.textContent;
-                camoPaperBtn.textContent = '📁 *SHUFFLE*';
-                camoPaperBtn.classList.add('playing');
-                setTimeout(() => {
-                    camoPaperBtn.textContent = orig;
-                    camoPaperBtn.classList.remove('playing');
-                }, duration * 1000);
-            }
-        } catch (e) {}
+        if (GatorAudio.playPaperShuffle) GatorAudio.playPaperShuffle();
+        if (camoPaperBtn) {
+            const orig = camoPaperBtn.textContent;
+            camoPaperBtn.textContent = '📁 *SHUFFLE*';
+            camoPaperBtn.classList.add('playing');
+            setTimeout(() => {
+                camoPaperBtn.textContent = orig;
+                camoPaperBtn.classList.remove('playing');
+            }, 650);
+        }
     };
 
     if (camoTypingBtn) camoTypingBtn.addEventListener('click', startTypingCamouflage);
@@ -3060,197 +2393,11 @@ document.addEventListener('DOMContentLoaded', () => {
     if (camoPaperBtn) camoPaperBtn.addEventListener('click', playPaperShuffle);
     if (camoStopBtn) camoStopBtn.addEventListener('click', stopCamouflage);
 
-    // --- Perk 3: Official Sloth Credential & Press Pass ---
+    // --- Perk 3: Official Sloth Credential & Press Pass (Canvas via GatorCanvas) ---
     const generateCredentialCard = (targetCanvas, holderName, rankName, clicks, timeStr) => {
-        const canvas = targetCanvas || document.createElement('canvas');
-        canvas.width = 1000;
-        canvas.height = 620;
-        const ctx = canvas.getContext('2d');
-
-        // Background: Newsprint parchment
-        const isSepia = document.body.classList.contains('sepia-edition');
-        ctx.fillStyle = isSepia ? '#F6EED9' : '#FAF8F5';
-        ctx.fillRect(0, 0, 1000, 620);
-
-        // Heavy Broadsheet Border
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 7;
-        ctx.strokeRect(18, 18, 964, 584);
-
-        ctx.lineWidth = 2;
-        ctx.strokeRect(28, 28, 944, 564);
-
-        // Corner Ornaments
-        ctx.fillStyle = '#111111';
-        [[32, 32], [952, 32], [32, 572], [952, 572]].forEach(([x, y]) => {
-            ctx.fillRect(x, y, 16, 16);
-        });
-
-        // Dashed inner rule
-        ctx.lineWidth = 1;
-        ctx.setLineDash([5, 4]);
-        ctx.strokeRect(36, 36, 928, 548);
-        ctx.setLineDash([]);
-
-        // Header section
-        ctx.textAlign = 'center';
-        ctx.fillStyle = '#111111';
-        ctx.font = '700 14px "Space Mono", monospace';
-        ctx.fillText('★ BUREAU OF STRATEGIC PROCRASTINATION & INACTION ★', 500, 68);
-
-        ctx.font = '900 38px "Big Shoulders Display", sans-serif';
-        ctx.fillText('OFFICIAL SLOTH CREDENTIAL & PRESS PASS', 500, 110);
-
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillText('INTERNATIONAL DISPATCH // DIPLOMATIC IMMUNITY FROM ALL LABOR', 500, 134);
-
-        // Double rule
-        ctx.beginPath();
-        ctx.moveTo(45, 146);
-        ctx.lineTo(955, 146);
-        ctx.lineWidth = 3;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(45, 151);
-        ctx.lineTo(955, 151);
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // Left Column: Operative Dossier
-        ctx.textAlign = 'left';
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillText('CREDENTIAL DOSSIER // CLASSIFIED IDLE', 60, 182);
-
-        ctx.beginPath();
-        ctx.moveTo(60, 188);
-        ctx.lineTo(360, 188);
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // Field 1: OPERATIVE / HOLDER
-        const gatorTag = (currentGator && (currentGator.displayTag || currentGator.tag))
-            ? (currentGator.displayTag || currentGator.tag).replace(/^@/, '')
-            : (holderName && holderName.includes('@') ? holderName.match(/@([A-Za-z0-9_]+)/)?.[1] : null);
-
-        let cleanHolder = (holderName || 'ANONYMOUS SLACKER').trim().toUpperCase();
-        if (gatorTag) {
-            if (!holderName || cleanHolder === 'ANONYMOUS SLACKER' || cleanHolder === `@${gatorTag.toUpperCase()}` || cleanHolder === gatorTag.toUpperCase()) {
-                cleanHolder = `@${gatorTag.toUpperCase()}`;
-            } else if (!cleanHolder.includes('@')) {
-                cleanHolder = `@${gatorTag.toUpperCase()} (${cleanHolder})`;
-            }
-        }
-
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillStyle = gatorTag ? '#b91c1c' : '#555555';
-        ctx.fillText(gatorTag ? 'OPERATIVE / GATOR TAG [★ VERIFIED]:' : 'OPERATIVE / ACCREDITED HOLDER:', 60, 214);
-        ctx.font = '900 18px "Space Mono", monospace';
-        ctx.fillStyle = '#111111';
-        ctx.fillText(cleanHolder.length > 28 ? cleanHolder.substring(0, 26) + '...' : cleanHolder, 60, 236);
-
-        // Field 2: SLACKER RANK
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillStyle = '#555555';
-        ctx.fillText('ACCREDITED SLACKER RANK:', 60, 270);
-        ctx.font = '900 16px "Space Mono", monospace';
-        ctx.fillStyle = '#111111';
-        ctx.fillText(rankName.toUpperCase(), 60, 292);
-
-        // Field 3: RECORD OF NON-PERFORMANCE
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillStyle = '#555555';
-        ctx.fillText('RECORD OF NON-PERFORMANCE:', 60, 326);
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillStyle = '#111111';
-        const dispWord = clicks === 1 ? 'DISPATCH' : 'DISPATCHES';
-        ctx.fillText(`${clicks} ${dispWord} FILED • ${timeStr} STOLEN FROM WORK`, 60, 348);
-
-        // Field 4: IDENTIFIER & DATE
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillStyle = '#555555';
-        ctx.fillText('CLEARANCE CODE & ISSUE DATE:', 60, 382);
-        ctx.font = '700 13px "Space Mono", monospace';
-        ctx.fillStyle = '#111111';
-        const certCode = `SLOTH-${Math.abs(((clicks + 1) * 7919) ^ 0xABCD).toString(16).toUpperCase().padStart(8, '0')}`;
-        const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
-        const tagClearance = gatorTag ? `TAG: @${gatorTag.toUpperCase()} • ` : '';
-        ctx.fillText(`${certCode} • ${tagClearance}${dateStr}`, 60, 404);
-
-        // Legal Mandate Box
-        ctx.fillStyle = 'rgba(17, 17, 17, 0.04)';
-        ctx.fillRect(60, 430, 550, 98);
-        ctx.strokeStyle = '#111111';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(60, 430, 550, 98);
-
-        ctx.fillStyle = '#111111';
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillText('LEGAL EXEMPTION CLAUSE // ARTICLE 404:', 72, 452);
-        ctx.font = '400 11px "Space Mono", monospace';
-        ctx.fillText('The bearer of this press pass is certified in strategic procrastination.', 72, 471);
-        ctx.fillText('All superiors, urgent Slack pings, and calendar invites are legally voided.', 72, 487);
-        ctx.fillText('Attempting to force productivity violates the 1890 Inaction Treaty.', 72, 503);
-
-        // Right Column: Distressed Red Rubber Stamp + Signature + Barcode
-        ctx.save();
-        ctx.translate(775, 260);
-        ctx.rotate(-8 * Math.PI / 180);
-        const stampColor = '#b91c1c';
-        ctx.strokeStyle = stampColor;
-        ctx.lineWidth = 3.5;
-        ctx.strokeRect(-140, -52, 280, 104);
-
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 3]);
-        ctx.strokeRect(-133, -45, 266, 90);
-        ctx.setLineDash([]);
-
-        ctx.fillStyle = stampColor;
-        ctx.textAlign = 'center';
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillText('★ BUREAU OF IDLENESS ★', 0, -22);
-        ctx.font = '900 19px "Space Mono", monospace';
-        ctx.fillText('DIPLOMATIC IMMUNITY', 0, 4);
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillText('CERTIFIED SLACKER // FULL EXEMPTION', 0, 24);
-        ctx.restore();
-
-        // Signature line
-        ctx.textAlign = 'center';
-        ctx.font = '700 14px "Space Mono", monospace';
-        ctx.fillStyle = '#111111';
-        ctx.fillText('Dr. Gator', 775, 365);
-        ctx.beginPath();
-        ctx.moveTo(660, 375);
-        ctx.lineTo(890, 375);
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillText('HIGH CHANCELLOR OF DELAY', 775, 392);
-
-        // Barcode simulation
-        const barStartX = 660;
-        const barY = 430;
-        const barHeight = 45;
-        const barPattern = [3, 1, 4, 1, 2, 3, 1, 4, 2, 1, 3, 2, 4, 1, 2, 3, 1, 4, 1, 2, 3, 2, 1, 4, 2, 1, 3, 1, 4];
-        let curX = barStartX;
-        ctx.fillStyle = '#111111';
-        barPattern.forEach((w, idx) => {
-            if (idx % 2 === 0) {
-                ctx.fillRect(curX, barY, w * 1.8, barHeight);
-            }
-            curX += w * 1.8 + 2.5;
-        });
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillText(`* LG-${certCode} *`, 775, 495);
-
-        // Footer note
-        ctx.textAlign = 'center';
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillText('LATER, GATORS // THE INDEPENDENT PROCRASTINATION JOURNAL // LATERGATORS.LIVE', 500, 556);
-
-        return canvas;
+        return GatorCanvas.generateCredentialCard
+            ? GatorCanvas.generateCredentialCard(targetCanvas, holderName, rankName, clicks, timeStr)
+            : targetCanvas;
     };
 
     const openCredentialModal = () => {
@@ -3407,382 +2554,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentClippingTask = null;
 
-    // Word wrap helper for canvas 2D
-    const wrapCanvasText = (ctx, text, maxWidth) => {
-        const words = text.split(/\s+/);
-        const lines = [];
-        let currentLine = words[0] || '';
-
-        for (let i = 1; i < words.length; i++) {
-            const word = words[i];
-            const width = ctx.measureText(currentLine + ' ' + word).width;
-            if (width < maxWidth) {
-                currentLine += ' ' + word;
-            } else {
-                lines.push(currentLine);
-                currentLine = word;
-            }
-        }
-        if (currentLine) {
-            lines.push(currentLine);
-        }
-        return lines;
-    };
-
+    // Word wrap helper and clipping generator (Canvas via GatorCanvas)
+    const wrapCanvasText = (ctx, text, maxWidth) => GatorCanvas.wrapCanvasText ? GatorCanvas.wrapCanvasText(ctx, text, maxWidth) : [];
     const generateNewspaperClipping = (canvas, task) => {
-        if (!canvas || !task) return;
-        const ctx = canvas.getContext('2d');
-        const W = 1000;
-        const H = 650;
-
-        ctx.clearRect(0, 0, W, H);
-
-        // Detect current edition styling
-        const isSepia = document.body.classList.contains('sepia-edition');
-        const isMidnight = document.body.classList.contains('midnight-edition');
-
-        let paperColor = '#f6f2e7';
-        let paperShadow = 'rgba(0, 0, 0, 0.32)';
-        let inkPrimary = '#111111';
-        let inkSecondary = '#4a4742';
-        let borderColor = '#111111';
-        let accentRed = '#b91c1c';
-        let noticeBg = 'rgba(0, 0, 0, 0.035)';
-        let isDark = false;
-
-        if (isSepia) {
-            paperColor = '#e5d1b1';
-            paperShadow = 'rgba(38, 26, 14, 0.45)';
-            inkPrimary = '#261a0e';
-            inkSecondary = '#5a4533';
-            borderColor = '#261a0e';
-            accentRed = '#991b1b';
-            noticeBg = 'rgba(38, 26, 14, 0.06)';
-        } else if (isMidnight) {
-            paperColor = '#0d1117';
-            paperShadow = 'rgba(0, 0, 0, 0.8)';
-            inkPrimary = '#eae4d5';
-            inkSecondary = '#9e9686';
-            borderColor = '#a89f8d';
-            accentRed = '#ef4444';
-            noticeBg = 'rgba(255, 255, 255, 0.05)';
-            isDark = true;
-        }
-
-        // Draw torn deckle-edge paper sheet with realistic ripped fibers
-        ctx.save();
-        ctx.shadowColor = paperShadow;
-        ctx.shadowBlur = 24;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 10;
-
-        ctx.beginPath();
-        // Top torn deckle edge (left to right)
-        ctx.moveTo(28, 28);
-        for (let x = 28; x <= 972; x += 4) {
-            const rip = Math.sin(x * 0.05) * 3.5 + Math.sin(x * 0.17) * 2.2 + ((x * 7) % 5 - 2) * 0.7;
-            ctx.lineTo(x, 26 + rip);
-        }
-        // Right straight side with slight raggedness
-        ctx.lineTo(974, 622);
-        // Bottom torn deckle edge (right to left)
-        for (let x = 974; x >= 26; x -= 4) {
-            const rip = Math.sin(x * 0.06 + 1.4) * 3.8 + Math.sin(x * 0.22) * 2.4 + ((x * 11) % 5 - 2) * 0.7;
-            ctx.lineTo(x, 624 + rip);
-        }
-        // Left straight side
-        ctx.lineTo(26, 28);
-        ctx.closePath();
-
-        ctx.fillStyle = paperColor;
-        ctx.fill();
-        ctx.restore();
-
-        // Clip inside the torn paper to render grain and content
-        ctx.save();
-        ctx.beginPath();
-        ctx.moveTo(28, 28);
-        for (let x = 28; x <= 972; x += 4) {
-            const rip = Math.sin(x * 0.05) * 3.5 + Math.sin(x * 0.17) * 2.2 + ((x * 7) % 5 - 2) * 0.7;
-            ctx.lineTo(x, 26 + rip);
-        }
-        ctx.lineTo(974, 622);
-        for (let x = 974; x >= 26; x -= 4) {
-            const rip = Math.sin(x * 0.06 + 1.4) * 3.8 + Math.sin(x * 0.22) * 2.4 + ((x * 11) % 5 - 2) * 0.7;
-            ctx.lineTo(x, 624 + rip);
-        }
-        ctx.lineTo(26, 28);
-        ctx.closePath();
-        ctx.clip();
-
-        // Subtle newsprint fiber texture
-        ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.018)' : 'rgba(0, 0, 0, 0.025)';
-        for (let y = 30; y < 620; y += 4) {
-            ctx.fillRect(26, y, 948, 1);
-        }
-
-        // Broadsheet inner border
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 3;
-        ctx.strokeRect(52, 50, 896, 548);
-
-        ctx.lineWidth = 1;
-        ctx.strokeRect(57, 55, 886, 538);
-
-        // Corner ornaments
-        ctx.fillStyle = borderColor;
-        [[49, 47], [945, 47], [49, 595], [945, 595]].forEach(([x, y]) => {
-            ctx.fillRect(x, y, 6, 6);
-        });
-
-        // 1. Masthead
-        ctx.textAlign = 'center';
-        ctx.fillStyle = inkSecondary;
-        ctx.font = '700 12px "Space Mono", monospace';
-        ctx.fillText('★ THE GLOBAL PROCRASTINATION JOURNAL // WIRE CLIPPING ARCHIVE ★', 500, 84);
-
-        ctx.font = '900 36px "Big Shoulders Display", sans-serif';
-        ctx.fillStyle = inkPrimary;
-        ctx.fillText('DAILY DISPATCH OF AVOIDED LABOR', 500, 122);
-
-        // Masthead Metadata bar
-        const createdDate = task.created_at ? new Date(task.created_at) : new Date();
-        const dateStr = createdDate.toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillStyle = inkSecondary;
-        ctx.fillText(`DISPATCH #${task.id || 'WIRE'} • FILED: ${dateStr} • SPECIAL WIRE RECORD`, 500, 145);
-
-        // Double rule under masthead
-        ctx.beginPath();
-        ctx.moveTo(68, 158);
-        ctx.lineTo(932, 158);
-        ctx.lineWidth = 2.5;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(68, 163);
-        ctx.lineTo(932, 163);
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        // 2. Dispatch Section
-        const rawText = (task.text || '').trim();
-        const isPanic = rawText.startsWith('[PANIC]');
-        const cleanHeadline = rawText.replace(/^\[PANIC\]\s*/, '').replace(/[\r\n]+/g, ' ');
-
-        // Category Tag
-        ctx.textAlign = 'left';
-        if (isPanic) {
-            ctx.font = '900 12px "Space Mono", monospace';
-            ctx.fillStyle = accentRed;
-            ctx.fillText('◆ HIGH-PANIC TRANSMISSION // CODE RED DELAY', 80, 192);
-        } else {
-            ctx.font = '700 12px "Space Mono", monospace';
-            ctx.fillStyle = inkSecondary;
-            ctx.fillText('OFFICIAL CONFESSION RECORD // UNFINISHED BUSINESS:', 80, 192);
-        }
-
-        // Dispatch Headline Text (Quoted) with Dynamic Typography
-        const maxWidth = 560; // Leave space for rubber stamp on the right
-        const cleanLen = cleanHeadline.length;
-        let headlineFontSize = 54;
-        if (cleanLen > 110) headlineFontSize = 22;
-        else if (cleanLen > 75) headlineFontSize = 26;
-        else if (cleanLen > 40) headlineFontSize = 32;
-        else if (cleanLen > 18) headlineFontSize = 42;
-        else headlineFontSize = 54;
-
-        ctx.font = `900 ${headlineFontSize}px "Big Shoulders Display", sans-serif`;
-        ctx.fillStyle = inkPrimary;
-
-        let wrappedLines = wrapCanvasText(ctx, `“${cleanHeadline}”`, maxWidth);
-        if (wrappedLines.length > 4) {
-            wrappedLines = wrappedLines.slice(0, 4);
-            const last = wrappedLines[3];
-            wrappedLines[3] = last.replace(/”?$/, '') + '...”';
-        }
-        const lineHeight = Math.round(headlineFontSize * 1.15);
-        const textHeight = wrappedLines.length * lineHeight;
-
-        // Editorial sub-deck for concise headlines (eliminates awkward empty voids)
-        let subdeck = '';
-        if (wrappedLines.length <= 2) {
-            subdeck = isPanic
-                ? '— EMERGENCY SUSPENSION OF LABOR // CODE RED STAY GRANTED —'
-                : '— FORMALLY LOGGED FOR INDEFINITE DELAY // STATUTE 404 —';
-        }
-
-        const zoneTop = 205;
-        const zoneBottom = 345;
-        const contentHeight = textHeight + (subdeck ? 26 : 0);
-        const startY = zoneTop + Math.max(0, Math.round((zoneBottom - zoneTop - contentHeight) / 2)) + Math.round(headlineFontSize * 0.82);
-
-        let curY = startY;
-        wrappedLines.forEach(line => {
-            ctx.fillText(line, 80, curY);
-            curY += lineHeight;
-        });
-
-        if (subdeck) {
-            ctx.font = '700 10px "Space Mono", monospace';
-            ctx.fillStyle = isPanic ? accentRed : inkSecondary;
-            ctx.fillText(subdeck, 80, curY + 6);
-            curY += 22;
-        }
-
-        // 3. Byline & Operative Dossier
-        const authorRaw = (task.city || 'Anonymous').trim();
-        const country = (task.country || 'Parts Unknown').toUpperCase();
-        let authorClean = authorRaw;
-        let rankTag = '';
-        const flairMatch = authorRaw.match(/^\[(.*?)\]\s*(.*)$/);
-        if (flairMatch) {
-            rankTag = `[${flairMatch[1].toUpperCase()}] `;
-            authorClean = flairMatch[2] || 'Anonymous';
-        }
-
-        // Determine if author has a verified Gator Tag
-        let gatorTag = null;
-        if (authorClean.startsWith('@')) {
-            gatorTag = authorClean.replace(/^@/, '');
-        } else if (task.author_tag || task.gator_tag) {
-            gatorTag = (task.author_tag || task.gator_tag).replace(/^@/, '');
-        } else if (currentGator && (task.author_gator_id === currentGator.gatorId || task.gatorId === currentGator.gatorId)) {
-            gatorTag = (currentGator.displayTag || currentGator.tag).replace(/^@/, '');
-        }
-
-        const dossierY = Math.max(curY + 16, 352);
-
-        // Dividing rule above dossier
-        ctx.beginPath();
-        ctx.moveTo(80, dossierY);
-        ctx.lineTo(600, dossierY);
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = borderColor;
-        ctx.stroke();
-
-        ctx.font = '700 11px "Space Mono", monospace';
-        if (gatorTag) {
-            ctx.fillStyle = accentRed;
-            ctx.fillText('★ VERIFIED OPERATIVE // GATOR TAG:', 80, dossierY + 22);
-
-            ctx.font = '900 13px "Space Mono", monospace';
-            ctx.fillStyle = inkPrimary;
-            const tagFormatted = authorClean.startsWith('@') ? authorClean.toUpperCase() : `@${gatorTag.toUpperCase()}${authorClean && authorClean !== 'ANONYMOUS' ? ` (${authorClean.toUpperCase()})` : ''}`;
-            ctx.fillText(`${rankTag}${tagFormatted} IN ${country}`, 80, dossierY + 40);
-        } else {
-            ctx.fillStyle = inkSecondary;
-            ctx.fillText('OPERATIVE / ORIGIN:', 80, dossierY + 22);
-
-            ctx.font = '700 13px "Space Mono", monospace';
-            ctx.fillStyle = inkPrimary;
-            ctx.fillText(`${rankTag}${authorClean.toUpperCase()} IN ${country}`, 80, dossierY + 40);
-        }
-
-        // Time / Sympathy counts
-        const sameCount = task.same_count || (userStamps[task.id] === 'same' ? 1 : 0);
-        const validCount = task.valid_count || (userStamps[task.id] === 'valid' ? 1 : 0);
-        const ripCount = task.rip_count || (userStamps[task.id] === 'rip' ? 1 : 0);
-
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillStyle = inkSecondary;
-        ctx.fillText(`PUBLIC SYMPATHY: [ SAME: ${sameCount} ] • [ VALID: ${validCount} ] • [ RIP: ${ripCount} ]`, 80, dossierY + 62);
-
-        // 4. Legal / Inaction Exemption Box (Bottom Left)
-        const boxY = dossierY + 76;
-        ctx.fillStyle = noticeBg;
-        ctx.fillRect(80, boxY, 520, 62);
-        ctx.strokeStyle = borderColor;
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-        ctx.strokeRect(80, boxY, 520, 62);
-        ctx.setLineDash([]);
-
-        ctx.font = '700 10px "Space Mono", monospace';
-        ctx.fillStyle = inkPrimary;
-        ctx.fillText('LEGAL DEFERRAL MANDATE // STATUTE 404:', 92, boxY + 18);
-        ctx.font = '400 10px "Space Mono", monospace';
-        ctx.fillStyle = inkSecondary;
-        ctx.fillText('This dispatch has been entered into the Official Archive of Idleness.', 92, boxY + 34);
-        ctx.fillText('Any attempt to enforce immediate action is stayed by international sloth privilege.', 92, boxY + 48);
-
-        // 5. Huge Angled Red Rubber Stamp on the Right
-        ctx.save();
-        ctx.translate(768, 335);
-        ctx.rotate(-13 * Math.PI / 180);
-
-        const stampColor = accentRed;
-        ctx.strokeStyle = stampColor;
-        ctx.lineWidth = 3.5;
-        ctx.strokeRect(-140, -56, 280, 112);
-
-        ctx.lineWidth = 1.5;
-        ctx.setLineDash([5, 3]);
-        ctx.strokeRect(-133, -49, 266, 98);
-        ctx.setLineDash([]);
-
-        ctx.fillStyle = stampColor;
-        ctx.textAlign = 'center';
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillText('★ BUREAU OF STRATEGIC INACTION ★', 0, -26);
-
-        ctx.font = '900 23px "Space Mono", monospace';
-        ctx.fillText('VERIFIED UNFINISHED', 0, 4);
-
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillText('// ACTION PERMANENTLY DEFERRED //', 0, 24);
-
-        ctx.font = '700 9px "Space Mono", monospace';
-        if (gatorTag) {
-            ctx.fillText(`OPERATIVE: @${gatorTag.toUpperCase()} • NO EXTENSION`, 0, 39);
-        } else {
-            ctx.fillText(`STAMP ID: #LG-${task.id || '99'} • NO EXTENSION GRANTED`, 0, 39);
-        }
-
-        // Ink bleed splatter / distressed micro marks inside stamp
-        ctx.fillStyle = stampColor;
-        for (let s = 0; s < 18; s++) {
-            const sx = (Math.sin(s * 91) * 125);
-            const sy = (Math.cos(s * 47) * 45);
-            const sr = 0.5 + (s % 3) * 0.5;
-            ctx.beginPath();
-            ctx.arc(sx, sy, sr, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.restore();
-
-        // 6. Barcode Simulation (Bottom Right)
-        const barStartX = 650;
-        const barY = 445;
-        const barHeight = 40;
-        const barPattern = [3, 1, 4, 1, 2, 3, 1, 4, 2, 1, 3, 2, 4, 1, 2, 3, 1, 4, 1, 2, 3, 2, 1, 4, 2];
-        let curBarX = barStartX;
-        ctx.fillStyle = borderColor;
-        barPattern.forEach((w, idx) => {
-            if (idx % 2 === 0) {
-                ctx.fillRect(curBarX, barY, w * 1.8, barHeight);
-            }
-            curBarX += w * 1.8 + 2.5;
-        });
-        ctx.textAlign = 'center';
-        ctx.font = '700 10px "Space Mono", monospace';
-        ctx.fillText(gatorTag ? `* WIRE-${task.id || '0000'} // @${gatorTag.toUpperCase()} *` : `* WIRE-${task.id || '0000'} *`, 775, barY + barHeight + 16);
-
-        // 7. Broadside Footer
-        ctx.beginPath();
-        ctx.moveTo(68, 560);
-        ctx.lineTo(932, 560);
-        ctx.lineWidth = 1.5;
-        ctx.strokeStyle = borderColor;
-        ctx.stroke();
-
-        ctx.textAlign = 'center';
-        ctx.font = '700 11px "Space Mono", monospace';
-        ctx.fillStyle = inkSecondary;
-        ctx.fillText('LATER, GATOR // THE INDEPENDENT PROCRASTINATION JOURNAL • LATERGATORS.LIVE • @thelatergators', 500, 580);
-
-        ctx.restore(); // end torn-paper clip
-        return canvas;
+        return GatorCanvas.generateNewspaperClipping
+            ? GatorCanvas.generateNewspaperClipping(canvas, task)
+            : canvas;
     };
 
     const openClippingModal = (task) => {
@@ -4607,6 +3384,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('lg_gator_user');
         gatorToken = null;
         currentGator = null;
+        window.currentGator = null;
         updateBureauUI();
     };
 
@@ -4645,6 +3423,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             notifyEmail: data.notifyEmail
                         };
                         localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
+                        window.currentGator = currentGator;
                         updateBureauUI();
                         syncSessionReactionsFromServer();
                     } else {
@@ -4763,6 +3542,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         };
                         localStorage.setItem('lg_gator_token', gatorToken);
                         localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
+                        window.currentGator = currentGator;
                         updateBureauUI();
                         syncSessionReactionsFromServer();
                         playStampSlamSound();
@@ -4814,6 +3594,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         };
                         localStorage.setItem('lg_gator_token', gatorToken);
                         localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
+                        window.currentGator = currentGator;
                         updateBureauUI();
                         syncSessionReactionsFromServer();
                         playStampSlamSound();
