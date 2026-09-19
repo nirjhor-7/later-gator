@@ -2999,12 +2999,13 @@ body.sepia-edition .footer-credit {
     }
 
     .page-border {
-        margin: 4px auto;
-        padding: 8px clamp(8px, 2.5vw, 12px) 14px clamp(8px, 2.5vw, 12px);
+        margin: 6px auto 16px auto;
+        width: calc(100% - 12px);
+        max-width: calc(100% - 12px);
+        padding: 10px 10px 18px 10px;
+        border: 2.5px solid var(--ink);
         box-shadow: 3px 3px 0px var(--ink);
-        outline: 1.5px solid var(--ink);
-        outline-offset: 1.5px;
-        max-width: 100%;
+        outline: none;
         box-sizing: border-box;
     }
 
@@ -3017,11 +3018,15 @@ body.sepia-edition .footer-credit {
     .masthead-meta {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 5px;
         align-items: center;
         text-align: center;
         font-size: clamp(0.6rem, 2.2vw, 0.66rem);
-        padding: 3px 2px;
+        padding: 4px 0;
+        border-top: 1px solid var(--ink);
+        border-bottom: 1px solid var(--ink);
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .meta-row-left {
@@ -3053,6 +3058,7 @@ body.sepia-edition .footer-credit {
         justify-content: space-between;
         gap: 4px;
         width: 100%;
+        margin-top: 1px;
     }
 
     .meta-row-right .header-pass-btn,
@@ -3061,14 +3067,21 @@ body.sepia-edition .footer-credit {
         flex: 1 1 0;
         min-width: 0;
         min-height: 28px;
-        padding: 3px 2px;
-        font-size: clamp(0.56rem, 2vw, 0.63rem);
+        padding: 4px 2px;
+        font-size: clamp(0.56rem, 2vw, 0.64rem);
+        font-family: 'Space Mono', monospace;
+        font-weight: 700;
+        letter-spacing: 0.3px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         white-space: nowrap;
         text-align: center;
         box-sizing: border-box;
+        border: 1.5px solid var(--ink);
+        background: transparent;
+        color: var(--ink);
+        margin: 0;
     }
 
     h1 {
@@ -3112,9 +3125,11 @@ body.sepia-edition .footer-credit {
 
     /* Front-Page Lead Story of the Day (Condensed Editorial Bulletin) */
     .lead-story-banner {
-        padding: 8px clamp(6px, 2vw, 10px) 10px clamp(6px, 2vw, 10px);
+        padding: 10px 10px 12px 10px;
         margin-bottom: 14px;
-        border-width: 1.5px;
+        border: 2px solid var(--ink);
+        background: var(--paper);
+        box-sizing: border-box;
     }
 
     .lead-story-header {
@@ -3173,16 +3188,20 @@ body.sepia-edition .footer-credit {
         gap: 4px;
     }
 
-    .lead-reactions .reaction-stamp-btn {
-        flex: 1;
-        min-height: 34px;
-        font-size: clamp(0.6rem, 2.2vw, 0.66rem);
-        padding: 4px 2px;
+    .lead-reactions .reaction-stamp-btn,
+    .lead-reactions .lead-clip-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        min-height: 36px;
+        font-size: clamp(0.58rem, 2.1vw, 0.66rem);
+        padding: 4px 1px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-width: 1.5px;
+        border: 1.5px solid var(--ink);
+        margin: 0;
+        box-sizing: border-box;
     }
 
     /* ==========================================
@@ -3191,21 +3210,23 @@ body.sepia-edition .footer-credit {
     .mobile-segmented-bar {
         display: flex;
         gap: 0;
-        margin: 0 0 10px 0;
+        margin: 0 0 12px 0;
         border: 2px solid var(--ink);
         background: var(--paper);
-        box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
+        box-shadow: 2px 2px 0 var(--ink);
         overflow: hidden;
         position: sticky;
         top: 0;
         z-index: 100;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .mobile-tab-btn {
         flex: 1;
-        padding: 9px 4px;
+        padding: 10px 4px;
         font-family: 'Space Mono', monospace;
-        font-size: clamp(0.72rem, 3.1vw, 0.8rem);
+        font-size: clamp(0.72rem, 3.1vw, 0.82rem);
         font-weight: 700;
         text-align: center;
         background: transparent;
@@ -3216,11 +3237,12 @@ body.sepia-edition .footer-credit {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 5px;
+        gap: 6px;
         transition: background 0.15s ease, color 0.15s ease;
         letter-spacing: 0.5px;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
+        box-sizing: border-box;
     }
 
     .mobile-tab-btn:last-child {
@@ -3252,10 +3274,27 @@ body.sepia-edition .footer-credit {
         display: flex;
         flex-direction: column;
         gap: 0;
+        width: 100%;
     }
 
-    .left-col, .right-col {
-        display: contents;
+    .left-col {
+        order: 2;
+        display: block;
+        width: 100% !important;
+        border: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    .right-col {
+        order: 1;
+        display: block;
+        width: 100% !important;
+        border: none !important;
+        border-left: none !important;
+        padding: 0 !important;
+        padding-left: 0 !important;
+        margin: 0 !important;
     }
 
     /* 1. DISPATCH TAB MODE (Clean, Focused Hero Desk) */
@@ -3271,59 +3310,46 @@ body.sepia-edition .footer-credit {
         display: none !important;
     }
 
+    body.mobile-view-dispatch .left-col {
+        order: 1;
+        display: block !important;
+    }
+
     body.mobile-view-dispatch #box-input {
         display: block !important;
         margin-bottom: 12px;
     }
 
     /* 2. WIRE TAB MODE (Full-Screen Live Public Wire) */
+    body.mobile-view-wire {
+        padding-bottom: 76px; /* Clearance so FAB never obstructs bottom content */
+    }
+
     body.mobile-view-wire #box-input {
         display: none !important;
     }
 
     body.mobile-view-wire #lead-story-banner {
         display: block !important;
-        margin-bottom: 12px;
+        margin-bottom: 14px;
     }
 
-    body.mobile-view-wire .right-col,
+    body.mobile-view-wire .right-col {
+        order: 1;
+        display: block !important;
+    }
+
+    body.mobile-view-wire .left-col {
+        order: 2;
+        display: block !important;
+    }
+
     body.mobile-view-wire #box-wire,
-    body.mobile-view-wire #hall-of-shame,
     body.mobile-view-wire #box-dispatch,
     body.mobile-view-wire #box-stats,
     body.mobile-view-wire #box-index,
     body.mobile-view-wire #box-visitors {
         display: block !important;
-    }
-
-    body.mobile-view-wire #hall-of-shame {
-        order: 1;
-        margin-bottom: 14px;
-    }
-
-    body.mobile-view-wire #box-wire {
-        order: 2;
-        margin-bottom: 20px;
-    }
-
-    body.mobile-view-wire #box-dispatch {
-        order: 3;
-        margin-bottom: 20px;
-    }
-
-    body.mobile-view-wire #box-stats {
-        order: 4;
-        margin-bottom: 20px;
-    }
-
-    body.mobile-view-wire #box-index {
-        order: 5;
-        margin-bottom: 20px;
-    }
-
-    body.mobile-view-wire #box-visitors {
-        order: 6;
-        margin-bottom: 20px;
     }
 
     body.mobile-view-wire .mobile-fab-post {
@@ -3343,7 +3369,7 @@ body.sepia-edition .footer-credit {
         padding: 11px 18px;
         border: 2px solid var(--paper);
         border-radius: 30px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 2px 2px 0 rgba(0, 0, 0, 0.85);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 2px 2px 0 var(--ink);
         z-index: 990;
         display: none;
         align-items: center;
@@ -3392,25 +3418,34 @@ body.sepia-edition .footer-credit {
         margin-bottom: 4px;
     }
 
+    textarea {
+        width: 100%;
+        padding: 10px 10px;
+        height: 72px;
+        min-height: 72px;
+        border: 2px solid var(--ink);
+        box-sizing: border-box;
+    }
+
+    .byline-input-row {
+        width: 100%;
+        border: 2px solid var(--ink);
+        box-sizing: border-box;
+    }
+
     .byline-input-row input {
         font-size: 16px !important; /* Critical: Prevent iOS Safari auto-zoom */
-        padding: 8px 8px;
+        padding: 8px 10px;
     }
 
     .byline-tag {
-        font-size: 0.68rem;
-        padding: 0 8px;
+        font-size: 0.7rem;
+        padding: 0 10px;
     }
 
-    textarea {
-        padding: 8px 10px;
-        height: 68px;
-        min-height: 68px;
-        border-width: 1.5px;
-    }
-
-    /* Quick Chips: Single-row horizontal scroll ribbon on mobile! */
+    /* Quick Chips: Single-row horizontal scroll ribbon on mobile with discoverable fade */
     .quick-chips-wrapper {
+        position: relative;
         margin-top: 8px;
         margin-bottom: 8px;
     }
@@ -3428,6 +3463,8 @@ body.sepia-edition .footer-credit {
         gap: 6px;
         padding: 2px 2px 6px 2px;
         scrollbar-width: none;
+        mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
     }
     .quick-chips::-webkit-scrollbar {
         display: none;
@@ -3444,6 +3481,7 @@ body.sepia-edition .footer-credit {
         box-sizing: border-box;
         text-align: center;
         white-space: nowrap;
+        border: 1.5px solid var(--ink);
     }
 
     .chip-random {
@@ -3452,41 +3490,106 @@ body.sepia-edition .footer-credit {
         font-weight: 700;
         margin-top: 0;
         padding: 6px 12px;
+        border: 1.5px solid var(--ink);
     }
 
     /* Action Buttons */
     .action-buttons {
-        margin-top: 10px;
+        margin-top: 12px;
         gap: 8px;
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     .btn-post-wire {
         width: 100%;
         min-height: 50px;
-        font-size: clamp(1.05rem, 4.5vw, 1.25rem);
+        font-size: clamp(1.05rem, 4.4vw, 1.22rem);
         padding: 10px 14px;
         letter-spacing: 1.5px;
+        border: 2px solid var(--ink);
+        box-shadow: 2px 2px 0 var(--ink);
+        box-sizing: border-box;
+    }
+
+    .btn-post-wire:hover {
+        box-shadow: 1px 1px 0 var(--ink);
+        transform: translate(1px, 1px);
+    }
+
+    .btn-post-wire:active {
+        box-shadow: 0 0 0 var(--ink);
+        transform: translate(2px, 2px);
     }
 
     .btn-panic-clean {
         width: 100%;
         min-height: 38px;
-        font-size: clamp(0.82rem, 3.2vw, 0.92rem);
+        font-size: clamp(0.8rem, 3.2vw, 0.9rem);
         padding: 8px 10px;
         letter-spacing: 0.8px;
+        border: 2px solid var(--ink);
+        box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.25);
+        box-sizing: border-box;
+    }
+
+    .btn-panic-clean:hover {
+        box-shadow: 1px 1px 0 var(--ink);
+        transform: translate(1px, 1px);
+    }
+
+    .btn-panic-clean:active {
+        box-shadow: 0 0 0 var(--ink);
+        transform: translate(2px, 2px);
+    }
+
+    /* Hall of Shame: Editorial Warning Box */
+    .hall-of-shame {
+        border: 2px solid var(--ink);
+        padding: 12px 10px;
+        margin-bottom: 16px;
+        text-align: center;
+        box-sizing: border-box;
+        background: var(--paper-tint, rgba(0, 0, 0, 0.02));
+    }
+
+    .shame-badge {
+        font-size: 0.62rem;
+        padding: 2px 8px;
+        margin-bottom: 8px;
+        letter-spacing: 0.8px;
+        display: inline-block;
+    }
+
+    .shame-task {
+        font-size: clamp(1.2rem, 5vw, 1.6rem);
+        line-height: 1.2;
+        margin-bottom: 6px;
+    }
+
+    .shame-meta {
+        font-size: 0.68rem;
     }
 
     /* Public Wire & Cards */
+    .article-box {
+        margin-bottom: 20px;
+    }
+
     .feed-container {
         height: auto;
         max-height: none;
         overflow: visible;
         -webkit-overflow-scrolling: touch;
-        border-width: 2px;
+        border: 2px solid var(--ink);
+        padding: 10px 10px;
+        box-sizing: border-box;
     }
 
     .feed-item {
-        padding: 10px 10px;
+        padding: 10px 0;
     }
 
     .feed-item-meta {
@@ -3516,17 +3619,20 @@ body.sepia-edition .footer-credit {
         gap: 4px;
     }
 
-    .feed-reactions .reaction-stamp-btn {
+    .feed-reactions .reaction-stamp-btn,
+    .feed-reactions .feed-clip-btn {
         flex: 1 1 0;
         min-width: 0;
         min-height: 36px;
-        font-size: clamp(0.6rem, 2.2vw, 0.68rem);
-        padding: 6px 2px;
+        font-size: clamp(0.58rem, 2.1vw, 0.66rem);
+        padding: 4px 1px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-width: 1.5px;
+        border: 1.5px solid var(--ink);
+        margin: 0;
+        box-sizing: border-box;
     }
 
     .feed-clip-btn {
@@ -3938,7 +4044,8 @@ body.midnight-edition .page-border {
 
 @media (max-width: 768px) {
     body.midnight-edition .page-border {
-        box-shadow: 5px 5px 0px #060504 !important;
+        box-shadow: 3px 3px 0px #060504 !important;
+        outline: none !important;
     }
 }
 
