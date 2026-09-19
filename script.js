@@ -863,31 +863,44 @@ document.addEventListener('DOMContentLoaded', () => {
     // Floating Jump to Latest Dispatch Indicator
     const wireJumpLatestBtn = document.getElementById('wire-jump-latest-btn');
 
-    const updateJumpLatestVisibility = () => {
+    const updateJumpLatestVisibility = (forceHide = false) => {
         if (!wireJumpLatestBtn) return;
+        if (forceHide) {
+            wireJumpLatestBtn.classList.remove('visible');
+            return;
+        }
+
         const feedScroll = feedContainer ? feedContainer.scrollTop : 0;
         const isMobile = window.innerWidth <= 768;
         const isWireTab = !isMobile || document.body.classList.contains('mobile-view-wire');
 
-        // Show when scrolled > 200px into feed or > 250px down page
-        const isDeep = feedScroll > 200 || (isMobile && isWireTab && window.scrollY > 250);
+        if (!isWireTab) {
+            wireJumpLatestBtn.classList.remove('visible');
+            return;
+        }
 
-        if (isDeep && isWireTab) {
+        // Only reveal when the reader has crawled significantly deep into the archives (750px+ down)
+        // Prevents button from popping up near the top or during standard page browsing
+        const isDeep = feedScroll > 750 || (isMobile && window.scrollY > 900);
+
+        if (isDeep) {
             wireJumpLatestBtn.classList.add('visible');
-        } else {
+        } else if (feedScroll < 400 && (!isMobile || window.scrollY < 550)) {
             wireJumpLatestBtn.classList.remove('visible');
         }
     };
 
     if (feedContainer) {
-        feedContainer.addEventListener('scroll', updateJumpLatestVisibility, { passive: true });
+        feedContainer.addEventListener('scroll', () => updateJumpLatestVisibility(false), { passive: true });
     }
-    window.addEventListener('scroll', updateJumpLatestVisibility, { passive: true });
+    window.addEventListener('scroll', () => updateJumpLatestVisibility(false), { passive: true });
 
     if (wireJumpLatestBtn) {
         wireJumpLatestBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
+            // Instantly hide the button as soon as tapped
+            wireJumpLatestBtn.classList.remove('visible');
             if (typeof playClickerSound === 'function') playClickerSound();
             if (navigator.vibrate) {
                 try { navigator.vibrate(15); } catch (err) {}
@@ -901,7 +914,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-            setTimeout(updateJumpLatestVisibility, 150);
         });
     }
 
@@ -3743,7 +3755,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (smoothScroll) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
-            if (typeof updateJumpLatestVisibility === 'function') updateJumpLatestVisibility();
+            if (typeof updateJumpLatestVisibility === 'function') updateJumpLatestVisibility(true);
         };
 
         if (tabDispatchBtn) {
