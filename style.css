@@ -1349,6 +1349,93 @@ button {
     color: var(--paper);
 }
 
+/* End of Wire Archives Banner & Return to Latest Dispatch */
+.feed-end-banner {
+    text-align: center;
+    padding: 24px 10px 18px 10px;
+    box-sizing: border-box;
+    font-family: 'Space Mono', monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.feed-end-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: var(--ink-light);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.feed-end-ornament {
+    color: #b91c1c;
+    font-size: 0.8rem;
+}
+
+.feed-back-to-top-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 22px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    user-select: none;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 320px;
+}
+
+.feed-back-to-top-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+    transform: translate(1px, 1px);
+}
+
+.feed-back-to-top-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: none;
+}
+
+body.sepia-edition .feed-back-to-top-btn {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+    box-shadow: 2px 2px 0 rgba(33, 21, 10, 0.4) !important;
+}
+body.sepia-edition .feed-back-to-top-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.midnight-edition .feed-back-to-top-btn {
+    background: #221d17 !important;
+    color: #eae1d1 !important;
+    border-color: #665544 !important;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8) !important;
+}
+body.midnight-edition .feed-back-to-top-btn:hover {
+    background: #d4a373 !important;
+    border-color: #d4a373 !important;
+    color: #111111 !important;
+}
+
 /* Newspaper Clipping Modal & Canvas */
 .clipping-modal .credential-modal-dialog {
     max-width: 680px;

@@ -511,6 +511,19 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
+    const buildFeedEndBannerHtml = () => `
+        <div class="feed-end-banner">
+            <div class="feed-end-divider">
+                <span class="feed-end-ornament">✦</span>
+                <span class="feed-end-text">END OF WIRE ARCHIVES • DISPATCH NO. 1</span>
+                <span class="feed-end-ornament">✦</span>
+            </div>
+            <button type="button" class="feed-back-to-top-btn" id="feed-back-to-top-btn" title="Jump to the latest incoming dispatch" aria-label="Return to latest dispatch">
+                ▲ RETURN TO LATEST DISPATCH
+            </button>
+        </div>
+    `;
+
     const renderFeed = (tasks) => {
         if (!tasks || tasks.length === 0) {
             feedContainer.innerHTML = '<div class="feed-item">No transmissions received yet.</div>';
@@ -546,11 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const prevScrollTop = feedContainer.scrollTop;
             const isScrolled = prevScrollTop > 20;
 
-            const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + `
-                <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
-                    // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
-                </div>
-            `;
+            const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + buildFeedEndBannerHtml();
             feedContainer.innerHTML = feedHtml;
 
             if (isScrolled) {
@@ -601,11 +610,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prevScrollTop = feedContainer.scrollTop;
                 const isScrolled = prevScrollTop > 20;
 
-                const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + `
-                    <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
-                        // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
-                    </div>
-                `;
+                const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + buildFeedEndBannerHtml();
                 feedContainer.innerHTML = feedHtml;
 
                 if (isScrolled) {
@@ -822,6 +827,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (feedContainer) {
         feedContainer.addEventListener('click', (e) => {
+            const topBtn = e.target.closest('#feed-back-to-top-btn, .feed-back-to-top-btn');
+            if (topBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof playClickerSound === 'function') playClickerSound();
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(15); } catch (err) {}
+                }
+                feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
+                const wireBox = document.getElementById('box-wire');
+                if (wireBox && window.innerWidth <= 768) {
+                    wireBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                return;
+            }
+
             const clipBtn = e.target.closest('.feed-clip-btn');
             if (clipBtn) {
                 e.preventDefault();
