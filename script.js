@@ -13,29 +13,57 @@ document.addEventListener('DOMContentLoaded', () => {
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
 
-    // Slacker Rank & Clicks (Global Local State)
-    let clickerCount = (() => {
-        try { return parseInt(localStorage.getItem('lg_clicker_count') || '0', 10); } catch (e) { return 0; }
+    // Slacker Rank & Time Stolen (Global Local State)
+    // Clear out legacy clicker count if present
+    try { localStorage.removeItem('lg_clicker_count'); } catch (e) {}
+
+    let postponementsCount = (() => {
+        try { return parseInt(localStorage.getItem('lg_postponements_count') || '0', 10); } catch (e) { return 0; }
     })();
 
-    const getClickerRank = (count) => {
-        if (count >= 1000) return "RANK: TRANSCENDENT VOID DWELLER ✦";
-        if (count >= 500) return "RANK: SUPREME TIME BENDER ★★★";
-        if (count >= 200) return "RANK: ARCHBISHOP OF APATHY ★★";
-        if (count >= 100) return "RANK: GRAND MASTER OF DELAY ★";
-        if (count >= 50) return "RANK: EXECUTIVE SLOTH";
-        if (count >= 25) return "RANK: PROFESSIONAL TIME BANDIT";
-        if (count >= 10) return "RANK: CERTIFIED PROCRASTINATOR";
-        if (count >= 1) return "RANK: NOVICE DODGER";
-        return "RANK: CASUAL SLACKER";
+    let timeStolenSeconds = (() => {
+        try { return parseInt(localStorage.getItem('lg_time_stolen_seconds') || '0', 10); } catch (e) { return 0; }
+    })();
+
+    // Active time spent on site avoiding work (increments every 5s while tab is visible)
+    setInterval(() => {
+        if (document.visibilityState === 'visible') {
+            timeStolenSeconds += 5;
+            try { localStorage.setItem('lg_time_stolen_seconds', timeStolenSeconds.toString()); } catch (e) {}
+        }
+    }, 5000);
+
+    const formatTimeStolen = (secs) => {
+        const s = secs || 0;
+        if (s < 60) return `~${Math.max(s, 5)}s`;
+        if (s < 3600) {
+            const mins = Math.round(s / 60);
+            return `~${mins}m`;
+        }
+        const hrs = (s / 3600).toFixed(1);
+        return `~${hrs}h`;
     };
 
-    const formatWastedTime = (clicks) => {
-        const secs = Math.round(clicks * 1.5);
-        if (secs < 60) return `(~${secs}s)`;
-        const mins = (secs / 60).toFixed(1);
-        return `(~${mins}m)`;
+    const getSlackerScore = (dispatches = postponementsCount, timeSecs = timeStolenSeconds) => {
+        return (dispatches * 5) + Math.floor(timeSecs / 120);
     };
+
+    const getSlackerRank = (dispatches = postponementsCount, timeSecs = timeStolenSeconds) => {
+        const score = getSlackerScore(dispatches, timeSecs);
+        if (score >= 150 || dispatches >= 30) return "RANK: TRANSCENDENT VOID DWELLER ✦";
+        if (score >= 75 || dispatches >= 15) return "RANK: SUPREME TIME BENDER ★★★";
+        if (score >= 40 || dispatches >= 8) return "RANK: ARCHBISHOP OF APATHY ★★";
+        if (score >= 20 || dispatches >= 5) return "RANK: GRAND MASTER OF DELAY ★";
+        if (score >= 10 || dispatches >= 3) return "RANK: EXECUTIVE SLOTH";
+        if (score >= 5 || dispatches >= 2) return "RANK: PROFESSIONAL TIME BANDIT";
+        if (score >= 1 || dispatches >= 1 || timeSecs >= 60) return "RANK: CERTIFIED PROCRASTINATOR";
+        return "RANK: NOVICE DODGER";
+    };
+
+    // Backward compatibility aliases
+    let clickerCount = postponementsCount;
+    const getClickerRank = () => getSlackerRank(postponementsCount, timeStolenSeconds);
+    const formatWastedTime = () => formatTimeStolen(timeStolenSeconds);
 
     // ==========================================
     // THE EVASION ENGINE (DYNAMIC SUBMIT BUTTON & TASK-REACTIVE SYSTEM)
@@ -137,10 +165,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getAvailableEvasionPool = () => {
         let pool = [...STARTER_EVASION_PHRASES];
-        if (clickerCount >= 10) pool = pool.concat(RANK_10_PRESTIGE_PHRASES);
-        if (clickerCount >= 25) pool = pool.concat(RANK_25_PRESTIGE_PHRASES);
-        if (clickerCount >= 50) pool = pool.concat(RANK_50_PRESTIGE_PHRASES);
-        if (clickerCount >= 100) pool = pool.concat(RANK_100_PRESTIGE_PHRASES);
+        const score = getSlackerScore();
+        if (score >= 5 || postponementsCount >= 2) pool = pool.concat(RANK_10_PRESTIGE_PHRASES);
+        if (score >= 20 || postponementsCount >= 5) pool = pool.concat(RANK_25_PRESTIGE_PHRASES);
+        if (score >= 40 || postponementsCount >= 10) pool = pool.concat(RANK_50_PRESTIGE_PHRASES);
+        if (score >= 75 || postponementsCount >= 20) pool = pool.concat(RANK_100_PRESTIGE_PHRASES);
         return pool;
     };
 
@@ -1439,7 +1468,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
             if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
             rubberStamp.className = "rubber-stamp stamped-panic";
-        } else if (clickerCount >= 100) {
+        } else if (postponementsCount >= 10 || getSlackerScore() >= 50) {
             if (stampHeader) stampHeader.textContent = "★ SUPREME DIPLOMATIC IMMUNITY ★";
             if (stampTitle) stampTitle.textContent = "LABOR EXEMPTION GRANTED";
             if (stampSub) stampSub.textContent = "BUREAU OF IDLENESS • GRAND MASTER";
@@ -1588,12 +1617,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Automatically attach rank flair to author name if unlocked (Rank 10+)
-        if (clickerCount >= 10) {
-            const rawRank = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-            const cleanAuthor = submittedAuthorName ? submittedAuthorName : 'Anonymous';
-            submittedAuthorName = `[${rawRank}] ${cleanAuthor}`;
-        }
+        // Increment and persist postponements tally on every submission
+        postponementsCount++;
+        clickerCount = postponementsCount;
+        try { localStorage.setItem('lg_postponements_count', postponementsCount.toString()); } catch (e) {}
 
         currentRawTask = submittedText;
         currentIsPanic = isPanic;
@@ -1729,6 +1756,8 @@ document.addEventListener('DOMContentLoaded', () => {
             : (holderName && holderName.includes('@') ? holderName.match(/@([A-Za-z0-9_]+)/)?.[1] : null);
 
         let displayHolder = (holderName && holderName.trim() !== '') ? holderName.trim().toUpperCase() : 'ANONYMOUS PROCRASTINATOR';
+        // Strip any legacy [RANK] prefixes if stored or input
+        displayHolder = displayHolder.replace(/^\[[^\]]+\]\s*/, '');
         if (gatorTag) {
             if (!holderName || holderName.trim() === '' || holderName.toUpperCase() === 'ANONYMOUS' || holderName.toUpperCase() === `@${gatorTag.toUpperCase()}`) {
                 displayHolder = `@${gatorTag.toUpperCase()}`;
@@ -1755,16 +1784,23 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.font = '900 24px "Space Mono", monospace';
         ctx.fillText(`[ ${displayHolder} ]`, 600, 312);
 
+        const currentRank = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
+        const dispatchWord = postponementsCount === 1 ? 'DISPATCH' : 'DISPATCHES';
+
+        ctx.font = '700 11px "Space Mono", monospace';
         if (gatorTag) {
-            ctx.font = '700 11px "Space Mono", monospace';
             ctx.fillStyle = '#b91c1c';
-            ctx.fillText('★ VERIFIED BUREAU OPERATIVE // GATOR TAG ACCREDITED ★', 600, 334);
+            ctx.fillText(`★ VERIFIED BUREAU OPERATIVE // ${currentRank} • ${postponementsCount} ${dispatchWord} FILED ★`, 600, 334);
+            ctx.fillStyle = '#111111';
+        } else {
+            ctx.fillStyle = '#555555';
+            ctx.fillText(`★ ACCREDITED CLEARANCE: ${currentRank} • ${postponementsCount} ${dispatchWord} FILED ★`, 600, 334);
             ctx.fillStyle = '#111111';
         }
 
         ctx.font = '400 17px "Space Mono", monospace';
         const verbDeclaration = isPanicMode ? 'HAS BROKEN DOWN AND UNDERTAKEN EMERGENCY EFFORTS ON:' : 'HAS OFFICIALLY AND LAWFULLY DODGED THE OBLIGATION DECLARED BELOW:';
-        ctx.fillText(verbDeclaration, 600, gatorTag ? 370 : 365);
+        ctx.fillText(verbDeclaration, 600, 370);
 
         // Task Box
         ctx.fillStyle = '#EBEBEB';
@@ -1840,6 +1876,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return canvas;
     };
+    window.generateCertificateImage = generateCertificateImage;
 
     const showShareSlip = (task, isPanicMode) => {
         if (!shareCard) return;
@@ -2550,8 +2587,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (clickerBtn) {
         clickerBtn.addEventListener('click', () => {
-            clickerCount++;
-            try { localStorage.setItem('lg_clicker_count', clickerCount.toString()); } catch (e) {}
+            postponementsCount++;
+            clickerCount = postponementsCount;
+            try { localStorage.setItem('lg_postponements_count', postponementsCount.toString()); } catch (e) {}
             playClickerSound();
             spawnClickerParticle();
             if (navigator.vibrate) {
@@ -2568,9 +2606,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (clickerResetBtn) {
         clickerResetBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            if (confirm("Reset your wasted clicks tally back to zero?")) {
+            if (confirm("Reset your postponement tally back to zero?")) {
+                postponementsCount = 0;
                 clickerCount = 0;
-                try { localStorage.setItem('lg_clicker_count', '0'); } catch (e) {}
+                try { localStorage.setItem('lg_postponements_count', '0'); } catch (e) {}
                 prevRank = getClickerRank(0);
                 updateClickerUI();
             }
@@ -3046,13 +3085,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#111111';
         ctx.fillText(rankName.toUpperCase(), 60, 292);
 
-        // Field 3: DELAY RECORD
+        // Field 3: RECORD OF NON-PERFORMANCE
         ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillStyle = '#555555';
         ctx.fillText('RECORD OF NON-PERFORMANCE:', 60, 326);
-        ctx.font = '700 14px "Space Mono", monospace';
+        ctx.font = '700 13px "Space Mono", monospace';
         ctx.fillStyle = '#111111';
-        ctx.fillText(`${clicks} TASKS EVADED ${timeStr} • STRATEGIC NON-ACTION`, 60, 348);
+        const dispWord = clicks === 1 ? 'DISPATCH' : 'DISPATCHES';
+        ctx.fillText(`${clicks} ${dispWord} FILED • ${timeStr} STOLEN FROM WORK`, 60, 348);
 
         // Field 4: IDENTIFIER & DATE
         ctx.font = '700 12px "Space Mono", monospace';
@@ -3060,7 +3100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText('CLEARANCE CODE & ISSUE DATE:', 60, 382);
         ctx.font = '700 13px "Space Mono", monospace';
         ctx.fillStyle = '#111111';
-        const certCode = `SLOTH-${Math.abs((clicks * 7919) ^ 0xABCD).toString(16).toUpperCase().padStart(8, '0')}`;
+        const certCode = `SLOTH-${Math.abs(((clicks + 1) * 7919) ^ 0xABCD).toString(16).toUpperCase().padStart(8, '0')}`;
         const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }).toUpperCase();
         const tagClearance = gatorTag ? `TAG: @${gatorTag.toUpperCase()} • ` : '';
         ctx.fillText(`${certCode} • ${tagClearance}${dateStr}`, 60, 404);
@@ -3149,14 +3189,12 @@ document.addEventListener('DOMContentLoaded', () => {
             authorName = `@${(currentGator.displayTag || currentGator.tag).replace(/^@/, '')}`;
         }
         authorName = authorName || 'Anonymous Slacker';
+        authorName = authorName.replace(/^\[[^\]]+\]\s*/, '');
 
-        const effectiveClicks = Math.max(clickerCount || 0, 15);
-        const rankText = (typeof getClickerRank === 'function')
-            ? getClickerRank(effectiveClicks).replace('RANK: ', '').trim()
-            : 'CERTIFIED PROCRASTINATOR';
-        const timeStr = formatWastedTime(effectiveClicks);
+        const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
+        const timeStr = formatTimeStolen(timeStolenSeconds);
 
-        generateCredentialCard(credentialCanvas, authorName, rankText, effectiveClicks, timeStr);
+        generateCredentialCard(credentialCanvas, authorName, rankText, postponementsCount, timeStr);
 
         const credentialShareBtn = document.getElementById('credential-share-btn');
         if (credentialShareBtn && navigator.share) {
@@ -3206,8 +3244,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if (credentialShareBtn) {
         credentialShareBtn.addEventListener('click', async () => {
             if (!navigator.share) return;
-            const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-            const shareText = `I have been officially certified as "${rankText}" with ${clickerCount} tasks evaded on Later, Gator. My diplomatic immunity is legally binding.`;
+            const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
+            const timeStr = formatTimeStolen(timeStolenSeconds);
+            const dispWord = postponementsCount === 1 ? 'dispatch' : 'dispatches';
+            const shareText = `I have been officially accredited as "${rankText}" with ${postponementsCount} ${dispWord} filed and ${timeStr} stolen from work on Later, Gator. My diplomatic immunity is legally binding.`;
             const shareUrl = getShareUrl();
 
             if (credentialCanvas && credentialCanvas.toBlob && navigator.canShare) {
@@ -3253,8 +3293,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.href = credentialCanvas.toDataURL('image/png');
                 link.click();
             }
-            const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-            const text = `I have been officially certified as "${rankText}" with ${clickerCount} tasks evaded on @thelatergators. My diplomatic immunity is legally binding.`;
+            const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
+            const timeStr = formatTimeStolen(timeStolenSeconds);
+            const dispWord = postponementsCount === 1 ? 'dispatch' : 'dispatches';
+            const text = `I have been officially accredited as "${rankText}" with ${postponementsCount} ${dispWord} filed and ${timeStr} stolen from work on @thelatergators. Diplomatic immunity granted.`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         });
@@ -3263,10 +3305,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (credentialCopyBtn) {
         credentialCopyBtn.addEventListener('click', async () => {
             const userNameInput = document.getElementById('user-name');
-            const authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '') || 'Anonymous Slacker';
-            const rankText = getClickerRank(clickerCount).replace('RANK: ', '').trim();
-            const timeStr = formatWastedTime(clickerCount);
-            const summary = `★ OFFICIAL SLOTH CREDENTIAL // BUREAU OF IDLENESS ★\nBEARER: ${authorName.toUpperCase()}\nRANK: ${rankText}\nDIRECTIVES EVADED: ${clickerCount} ${timeStr}\nSTATUS: FULL DIPLOMATIC IMMUNITY FROM WORK\nVERIFY: ${getShareUrl()}`;
+            let authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '') || 'Anonymous Slacker';
+            authorName = authorName.replace(/^\[[^\]]+\]\s*/, '');
+            const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
+            const timeStr = formatTimeStolen(timeStolenSeconds);
+            const dispWord = postponementsCount === 1 ? 'DISPATCH' : 'DISPATCHES';
+            const summary = `★ OFFICIAL SLOTH CREDENTIAL // BUREAU OF IDLENESS ★\nBEARER: ${authorName.toUpperCase()}\nRANK: ${rankText}\nRECORD: ${postponementsCount} ${dispWord} FILED • ${timeStr} STOLEN FROM WORK\nSTATUS: FULL DIPLOMATIC IMMUNITY FROM WORK\nVERIFY: ${getShareUrl()}`;
             try {
                 await navigator.clipboard.writeText(summary);
                 credentialCopyBtn.textContent = "COPIED! ✓";
@@ -4404,8 +4448,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const count = data.dispatches.length;
             const total = data.totalSympathy || 0;
+            postponementsCount = Math.max(postponementsCount, count);
+            clickerCount = postponementsCount;
+            try { localStorage.setItem('lg_postponements_count', postponementsCount.toString()); } catch (e) {}
+
+            const operativeRank = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '');
             if (dossierSummaryEl) {
-                dossierSummaryEl.textContent = `${count} OPEN ${count === 1 ? 'CASE' : 'CASES'} • ${total} TOTAL SYMPATHY`;
+                dossierSummaryEl.textContent = `${count} ${count === 1 ? 'DISPATCH' : 'DISPATCHES'} • ${operativeRank} • ${total} TOTAL SYMPATHY`;
             }
 
             if (count === 0) {
