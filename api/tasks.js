@@ -162,15 +162,42 @@ export default async function handler(req, res) {
             } else {
                 res.setHeader('Cache-Control', 'public, s-maxage=2, stale-while-revalidate=10');
             }
-            const queryLimit = Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 10), 300);
+            let queryLimit = 3000;
+            if (req.query.limit) {
+                if (req.query.limit === 'all') {
+                    queryLimit = 10000;
+                } else {
+                    const parsed = parseInt(req.query.limit, 10);
+                    if (!isNaN(parsed) && parsed > 0) {
+                        queryLimit = Math.min(parsed, 10000);
+                    }
+                }
+            }
 
-            const { data: tasks, error } = await supabase
+            let { data: tasks, error } = await supabase
                 .from('tasks')
                 .select('*')
                 .order('created_at', { ascending: false })
-                .limit(queryLimit);
+                .limit(Math.min(queryLimit, 1000));
                 
             if (error) throw error;
+
+            // If queryLimit > 1000 and we hit PostgREST's 1000-row batch limit, fetch older batches
+            if (tasks && tasks.length === 1000 && queryLimit > 1000) {
+                let offset = 1000;
+                while (offset < queryLimit) {
+                    const end = Math.min(offset + 999, queryLimit - 1);
+                    const { data: moreTasks, error: moreErr } = await supabase
+                        .from('tasks')
+                        .select('*')
+                        .order('created_at', { ascending: false })
+                        .range(offset, end);
+                    if (moreErr || !moreTasks || moreTasks.length === 0) break;
+                    tasks = tasks.concat(moreTasks);
+                    if (moreTasks.length < 1000) break;
+                    offset += moreTasks.length;
+                }
+            }
 
             // Instantly purge any banned IP tasks, inappropriate language, or gibberish from the public feed
             const badTaskIds = [];

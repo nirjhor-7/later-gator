@@ -535,14 +535,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const existingItems = feedContainer.querySelectorAll('.feed-item[data-task-id]:not([data-task-id^="opt-"])');
 
-        // 1. Initial Load or reset when no feed items are present
-        if (existingItems.length === 0 || renderedTopId === null) {
+        // Check if DOM is missing older historical tasks (e.g. after fast initial localStorage cache paint)
+        const lastExistingItem = existingItems.length > 0 ? existingItems[existingItems.length - 1] : null;
+        const currentDomBottomId = lastExistingItem ? Number(lastExistingItem.getAttribute('data-task-id')) : null;
+        const targetOldestId = (tasks.length > 0 && tasks[tasks.length - 1]?.id) ? Number(tasks[tasks.length - 1].id) : null;
+        const missingHistorical = currentDomBottomId !== null && targetOldestId !== null && currentDomBottomId > targetOldestId;
+
+        // 1. Initial Load, reset when empty, or rehydrate when server returns full history beyond local cache
+        if (existingItems.length === 0 || renderedTopId === null || missingHistorical) {
+            const prevScrollTop = feedContainer.scrollTop;
+            const isScrolled = prevScrollTop > 20;
+
             const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + `
                 <div style="text-align: center; padding: 18px 0 8px 0; font-size: 0.7rem; color: var(--ink-light); letter-spacing: 1px; font-family: 'Space Mono', monospace;">
                     // END OF WIRE ARCHIVES — YOU REACHED DISPATCH NO. 1 //
                 </div>
             `;
             feedContainer.innerHTML = feedHtml;
+
+            if (isScrolled) {
+                feedContainer.scrollTop = prevScrollTop;
+            }
+
             renderedTopId = tasks[0].id;
             renderedCount = tasks.length;
             lastTopTaskId = tasks[0].id;
@@ -970,7 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchTasks = async (forceFresh = false) => {
         try {
-            const url = forceFresh ? `/api/tasks?limit=200&_t=${Date.now()}` : '/api/tasks?limit=200';
+            const url = forceFresh ? `/api/tasks?limit=all&_t=${Date.now()}` : '/api/tasks?limit=all';
             const response = await fetch(url);
             if (response.ok) {
                 const tasks = await response.json();

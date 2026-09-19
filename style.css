@@ -3525,22 +3525,23 @@ body.sepia-edition .footer-credit {
         gap: 6px;
         padding: 2px 28px 8px 2px;   /* right padding keeps last chip clear of fade+arrow */
         scrollbar-width: thin;
-        scrollbar-color: var(--ink) transparent;
+        scrollbar-color: var(--ink) rgba(0, 0, 0, 0.12);
         mask-image: linear-gradient(to right, black calc(100% - 36px), transparent 100%);
         -webkit-mask-image: linear-gradient(to right, black calc(100% - 36px), transparent 100%);
     }
 
     .quick-chips::-webkit-scrollbar {
-        height: 3px;
+        height: 4px;
     }
 
     .quick-chips::-webkit-scrollbar-track {
-        background: transparent;
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 2px;
     }
 
     .quick-chips::-webkit-scrollbar-thumb {
         background: var(--ink);
-        border-radius: 0;
+        border-radius: 2px;
     }
 
     .chip-btn {
