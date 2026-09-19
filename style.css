@@ -3254,6 +3254,13 @@ body.sepia-edition .footer-credit {
         color: var(--paper);
     }
 
+    .tab-icon-stats {
+        font-size: 0.9rem;
+        line-height: 1;
+        font-style: normal;
+        letter-spacing: 0;
+    }
+
     .wire-live-badge {
         background: #b91c1c;
         color: #fff;
