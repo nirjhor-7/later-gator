@@ -99,23 +99,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return pool;
     };
 
-    const setButtonLabels = (laterText, panicText = "DO IT NOW (PANIC)") => {
+    const setButtonLabels = (laterText = "POST TO THE WIRE ➔", panicText = "⚡ DO IT NOW (PANIC MODE)") => {
         if (laterBtnText) {
-            laterBtnText.style.opacity = '0';
-            laterBtnText.style.transform = 'translateY(-2px)';
-            setTimeout(() => {
-                laterBtnText.textContent = laterText;
-                laterBtnText.style.opacity = '1';
-                laterBtnText.style.transform = 'translateY(0)';
-            }, 100);
+            laterBtnText.textContent = "POST TO THE WIRE ➔";
         } else if (laterBtn) {
-            laterBtn.textContent = laterText;
+            laterBtn.textContent = "POST TO THE WIRE ➔";
         }
 
         if (panicBtnText) {
-            panicBtnText.textContent = panicText;
+            panicBtnText.textContent = panicText || "⚡ DO IT NOW (PANIC MODE)";
         } else if (panicBtn) {
-            panicBtn.textContent = panicText;
+            panicBtn.textContent = panicText || "⚡ DO IT NOW (PANIC MODE)";
         }
     };
 
@@ -128,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveEvasionPhrase = selected;
         isTaskReactiveActive = false;
-        setButtonLabels(selected, "DO IT NOW (PANIC)");
+        setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
 
         if (isUserInitiated && shufflePhraseBtn) {
             shufflePhraseBtn.classList.remove('spinning');
@@ -143,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTaskReactiveButtons = (rawText) => {
         if (!rawText || rawText.trim().length === 0) {
             if (isTaskReactiveActive) {
-                setButtonLabels(currentActiveEvasionPhrase, "DO IT NOW (PANIC)");
+                setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
                 isTaskReactiveActive = false;
             }
             return;
@@ -164,9 +158,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matched) {
             isTaskReactiveActive = true;
-            setButtonLabels(matched.later, matched.panic);
+            setButtonLabels("POST TO THE WIRE ➔", matched.panic || "⚡ DO IT NOW (PANIC MODE)");
         } else if (isTaskReactiveActive) {
-            setButtonLabels(currentActiveEvasionPhrase, "DO IT NOW (PANIC)");
+            setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
             isTaskReactiveActive = false;
         }
     };
@@ -1398,9 +1392,9 @@ document.addEventListener('DOMContentLoaded', () => {
             else panicBtn.textContent = "FINE. DOING IT.";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            if (laterBtnText) laterBtnText.textContent = "EVADED ✓";
-            else laterBtn.textContent = "POSTPONED ✓";
-            statusMessage.textContent = "SUCCESSFULLY EVADED.";
+            if (laterBtnText) laterBtnText.textContent = "POSTED TO THE WIRE ✓";
+            else laterBtn.textContent = "POSTED TO THE WIRE ✓";
+            statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
         }
 
         // 3. Dispatch network request in parallel
@@ -1425,7 +1419,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeBtn.disabled = false;
                 statusMessage.textContent = "";
 
-                // Roll a fresh evasion phrase for the next task!
+                // Reset button text
+                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
+                if (panicBtnText) panicBtnText.textContent = "⚡ DO IT NOW (PANIC MODE)";
                 rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate

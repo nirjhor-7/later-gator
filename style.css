@@ -584,56 +584,82 @@ textarea:focus {
 .action-buttons {
     display: flex;
     flex-direction: column;
-    gap: 15px;
-    margin-top: 20px;
+    gap: 10px;
+    margin-top: 18px;
 }
 
-.primary-action-row {
-    display: flex;
-    align-items: stretch;
-    gap: 8px;
+.btn-post-wire {
     width: 100%;
-}
-
-.primary-action-row .btn-heavy {
-    flex: 1;
-    min-width: 0;
+    min-height: 52px;
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.85);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
 }
 
-#later-btn-text,
-#panic-btn-text {
-    display: inline-block;
-    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+.btn-post-wire:hover {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+    transform: translate(1px, 1px);
 }
 
-.btn-dice {
-    display: inline-flex;
+.btn-post-wire:active {
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.85);
+}
+
+.btn-post-wire:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.btn-panic-clean {
+    width: 100%;
+    min-height: 38px;
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 14px;
     background: var(--paper);
     color: var(--ink);
     border: 2px solid var(--ink);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
     cursor: pointer;
-    font-size: 1.25rem;
     transition: all 0.15s ease;
-    flex-shrink: 0;
+    user-select: none;
 }
 
-.btn-dice:hover {
+.btn-panic-clean:hover {
     background: var(--ink);
     color: var(--paper);
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+    transform: translate(1px, 1px);
 }
 
-.btn-dice:active {
+.btn-panic-clean:active {
     transform: translate(2px, 2px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.85);
 }
 
-.btn-dice.spinning .dice-icon {
-    animation: diceSpin 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.btn-panic-clean:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
 }
 
 @keyframes diceSpin {
@@ -3292,42 +3318,23 @@ body.sepia-edition .footer-credit {
     /* Action Buttons */
     .action-buttons {
         margin-top: 10px;
+        gap: 8px;
     }
 
-    .primary-action-row {
-        display: flex;
-        gap: 6px;
+    .btn-post-wire {
         width: 100%;
+        min-height: 50px;
+        font-size: clamp(1.05rem, 4.5vw, 1.25rem);
+        padding: 10px 14px;
+        letter-spacing: 1.5px;
     }
 
-    .btn-heavy {
-        flex: 1;
-        min-height: 48px;
-        font-size: clamp(0.92rem, 3.6vw, 1.05rem);
+    .btn-panic-clean {
+        width: 100%;
+        min-height: 38px;
+        font-size: clamp(0.82rem, 3.2vw, 0.92rem);
         padding: 8px 10px;
-        letter-spacing: 0.4px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .btn-dice {
-        min-width: 48px;
-        min-height: 48px;
-        font-size: 1.3rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0;
-        flex-shrink: 0;
-    }
-
-    .btn-outline {
-        width: 100%;
-        min-height: 40px;
-        font-size: clamp(0.8rem, 3vw, 0.9rem);
-        margin-top: 6px;
-        padding: 8px 8px;
+        letter-spacing: 0.8px;
     }
 
     /* Public Wire & Cards */
@@ -3722,22 +3729,14 @@ body.sepia-edition .footer-credit {
         margin-bottom: 6px;
     }
 
-    .primary-action-row {
-        gap: 6px;
-    }
-
-    .btn-heavy {
+    .btn-post-wire {
         min-height: 48px;
         font-size: 1.05rem;
     }
 
-    .btn-dice {
-        min-width: 48px;
-        min-height: 48px;
-    }
-
-    .btn-outline {
-        min-height: 42px;
+    .btn-panic-clean {
+        min-height: 36px;
+        font-size: 0.85rem;
     }
 }
 
