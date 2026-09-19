@@ -1098,6 +1098,7 @@ button {
     height: 850px;
     max-height: 850px;
     overflow-y: auto;
+    overscroll-behavior-y: contain;
     padding: 15px;
     border: 2px solid var(--ink);
     scrollbar-width: thin;
@@ -3654,10 +3655,11 @@ body.sepia-edition .footer-credit {
 
     .feed-container {
         height: auto;
-        max-height: min(55dvh, 520px);
+        max-height: min(70dvh, 650px);
         overflow-y: scroll;   /* always show scrollbar track so users see it scrolls */
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: contain;
         border: 2px solid var(--ink);
         padding: 10px 14px 10px 10px;
         box-sizing: border-box;

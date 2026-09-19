@@ -984,7 +984,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchTasks = async (forceFresh = false) => {
         try {
-            const url = forceFresh ? `/api/tasks?limit=all&_t=${Date.now()}` : '/api/tasks?limit=all';
+            const url = `/api/tasks?limit=all&_t=${Date.now()}`;
             const response = await fetch(url);
             if (response.ok) {
                 const tasks = await response.json();
@@ -993,7 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderLeadStory(tasks);
                 if (Array.isArray(tasks) && tasks.length > 0) {
                     try {
-                        localStorage.setItem('lg_cached_tasks', JSON.stringify(tasks.slice(0, 100)));
+                        localStorage.setItem('lg_cached_tasks', JSON.stringify(tasks.slice(0, 500)));
                     } catch (e) {}
                 }
             }
