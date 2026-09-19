@@ -243,7 +243,7 @@ body.sepia-edition .ticker-badge {
     position: relative;
     box-sizing: border-box;
     box-shadow: 4px 4px 0px rgba(17, 17, 17, 0.12);
-    transition: background-color 0.25s ease, border-color 0.25s ease;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .lead-story-header {
@@ -1394,8 +1394,10 @@ button {
     text-transform: uppercase;
     cursor: pointer;
     box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
-    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease, box-shadow 0.1s ease;
+    transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease, box-shadow 0.08s ease;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     box-sizing: border-box;
     width: 100%;
     max-width: 320px;
@@ -1462,8 +1464,10 @@ body.midnight-edition .feed-back-to-top-btn:hover {
     opacity: 0;
     transform: translateY(10px) scale(0.92);
     pointer-events: none;
-    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.15s ease, color 0.15s ease;
+    transition: opacity 0.16s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background 0.12s ease, color 0.12s ease;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 .wire-jump-latest-btn.visible {
@@ -1750,8 +1754,10 @@ body.midnight-edition .wire-jump-latest-btn:hover {
     letter-spacing: 0.5px;
     cursor: pointer;
     font-family: 'Space Mono', monospace;
-    transition: all 0.15s ease;
+    transition: background 0.1s ease, color 0.1s ease;
     white-space: nowrap;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .div-tab:first-child {
@@ -1772,6 +1778,10 @@ body.midnight-edition .wire-jump-latest-btn:hover {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+}
+
+.tab-panel.active {
+    animation: mobileTabFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Clicker styles */
@@ -3379,6 +3389,7 @@ body.sepia-edition .footer-credit {
         z-index: 100;
         width: 100%;
         box-sizing: border-box;
+        touch-action: manipulation;
     }
 
     .mobile-tab-btn {
@@ -3397,11 +3408,16 @@ body.sepia-edition .footer-credit {
         align-items: center;
         justify-content: center;
         gap: 6px;
-        transition: background 0.15s ease, color 0.15s ease;
+        transition: background 0.1s ease, color 0.1s ease, transform 0.08s ease;
         letter-spacing: 0.5px;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
         box-sizing: border-box;
+    }
+
+    .mobile-tab-btn:active {
+        transform: scale(0.96);
     }
 
     .mobile-tab-btn:last-child {
@@ -3562,6 +3578,39 @@ body.sepia-edition .footer-credit {
         margin-bottom: 20px;
     }
 
+    /* Fast & Smooth Hardware-Accelerated Tab Enter Animations */
+    @keyframes mobileTabFadeIn {
+        0% {
+            opacity: 0;
+            transform: translate3d(0, 6px, 0);
+        }
+        100% {
+            opacity: 1;
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+    body.mobile-view-dispatch #box-input,
+    body.mobile-view-wire #lead-story-banner,
+    body.mobile-view-wire .right-col,
+    body.mobile-view-stats #box-stats,
+    body.mobile-view-stats #box-index,
+    body.mobile-view-stats #box-visitors {
+        animation: mobileTabFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+        will-change: opacity, transform;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        body.mobile-view-dispatch #box-input,
+        body.mobile-view-wire #lead-story-banner,
+        body.mobile-view-wire .right-col,
+        body.mobile-view-stats #box-stats,
+        body.mobile-view-stats #box-index,
+        body.mobile-view-stats #box-visitors {
+            animation: none !important;
+        }
+    }
+
     /* Mobile Floating Action Button (FAB) */
     .mobile-fab-post {
         position: fixed;
@@ -3581,8 +3630,9 @@ body.sepia-edition .footer-credit {
         align-items: center;
         gap: 6px;
         cursor: pointer;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
         -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     }
 
     .mobile-fab-post:active {
@@ -3612,10 +3662,11 @@ body.sepia-edition .footer-credit {
         gap: 6px;
         cursor: pointer;
         opacity: 0;
-        transform: translateY(14px) scale(0.92);
+        transform: translateY(12px) scale(0.94);
         pointer-events: none;
-        transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transition: opacity 0.16s ease, transform 0.16s cubic-bezier(0.16, 1, 0.3, 1);
         -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     }
 
     body.mobile-view-wire .wire-jump-latest-btn.visible {
@@ -4920,7 +4971,9 @@ body.midnight-edition .comic-page-num {
     cursor: pointer;
     color: var(--ink);
     border-right: 1.5px solid var(--ink);
-    transition: background 0.15s, color 0.15s;
+    transition: background 0.1s, color 0.1s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
     box-sizing: border-box;
 }
 .bureau-tab:last-child { border-right: none; }

@@ -831,15 +831,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (topBtn) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (typeof playClickerSound === 'function') playClickerSound();
-                if (navigator.vibrate) {
-                    try { navigator.vibrate(15); } catch (err) {}
-                }
-                feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
-                const wireBox = document.getElementById('box-wire');
-                if (wireBox && window.innerWidth <= 768) {
-                    wireBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                scrollToLatestDispatch();
                 return;
             }
 
@@ -859,6 +851,56 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // High-performance smooth scroll (240ms cubic ease-out)
+    function fastSmoothScroll(target, to = 0, duration = 240) {
+        if (!target) return;
+        const isWin = (target === window || target === document.documentElement || target === document.body);
+        const start = isWin ? (window.pageYOffset || document.documentElement.scrollTop || 0) : target.scrollTop;
+        if (Math.abs(start - to) < 2) return;
+        const startTime = performance.now();
+        const change = to - start;
+
+        function step(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            const val = start + change * ease;
+            if (isWin) {
+                window.scrollTo(0, val);
+            } else {
+                target.scrollTop = val;
+            }
+            if (progress < 1) {
+                requestAnimationFrame(step);
+            }
+        }
+        requestAnimationFrame(step);
+    }
+
+    const scrollToLatestDispatch = () => {
+        if (typeof playClickerSound === 'function') playClickerSound();
+        if (navigator.vibrate) {
+            try { navigator.vibrate(15); } catch (err) {}
+        }
+        if (feedContainer && feedContainer.scrollTop > 0) {
+            fastSmoothScroll(feedContainer, 0, 240);
+        }
+        if (window.innerWidth <= 768) {
+            const wireBox = document.getElementById('box-wire');
+            if (wireBox) {
+                const rect = wireBox.getBoundingClientRect();
+                const targetScrollY = window.pageYOffset + rect.top - 8;
+                if (Math.abs(window.pageYOffset - targetScrollY) > 5) {
+                    fastSmoothScroll(window, Math.max(0, targetScrollY), 240);
+                }
+            } else if (window.scrollY > 0) {
+                fastSmoothScroll(window, 0, 240);
+            }
+        } else if (window.scrollY > 0) {
+            fastSmoothScroll(window, 0, 240);
+        }
+    };
 
     // Floating Jump to Latest Dispatch Indicator
     const wireJumpLatestBtn = document.getElementById('wire-jump-latest-btn');
@@ -899,21 +941,8 @@ document.addEventListener('DOMContentLoaded', () => {
         wireJumpLatestBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
-            // Instantly hide the button as soon as tapped
             wireJumpLatestBtn.classList.remove('visible');
-            if (typeof playClickerSound === 'function') playClickerSound();
-            if (navigator.vibrate) {
-                try { navigator.vibrate(15); } catch (err) {}
-            }
-            if (feedContainer) {
-                feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-            const wireBox = document.getElementById('box-wire');
-            if (wireBox && window.innerWidth <= 768) {
-                wireBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            } else {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
+            scrollToLatestDispatch();
         });
     }
 
@@ -3757,20 +3786,30 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try { sessionStorage.setItem('lg_mobile_tab', tabName); } catch(e) {}
-            if (smoothScroll) {
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Instant, non-blocking viewport reset (no sluggish scroll delay)
+            if (smoothScroll && window.scrollY > 0) {
+                window.scrollTo(0, 0);
             }
             if (typeof updateJumpLatestVisibility === 'function') updateJumpLatestVisibility(true);
         };
 
         if (tabDispatchBtn) {
-            tabDispatchBtn.addEventListener('click', () => setMobileTab('dispatch'));
+            tabDispatchBtn.addEventListener('click', () => {
+                if (navigator.vibrate) { try { navigator.vibrate(8); } catch(e) {} }
+                setMobileTab('dispatch');
+            });
         }
         if (tabWireBtn) {
-            tabWireBtn.addEventListener('click', () => setMobileTab('wire'));
+            tabWireBtn.addEventListener('click', () => {
+                if (navigator.vibrate) { try { navigator.vibrate(8); } catch(e) {} }
+                setMobileTab('wire');
+            });
         }
         if (tabStatsBtn) {
-            tabStatsBtn.addEventListener('click', () => setMobileTab('stats'));
+            tabStatsBtn.addEventListener('click', () => {
+                if (navigator.vibrate) { try { navigator.vibrate(8); } catch(e) {} }
+                setMobileTab('stats');
+            });
         }
         if (mobileFabPost) {
             mobileFabPost.addEventListener('click', () => {
