@@ -3495,6 +3495,23 @@ body.sepia-edition .footer-credit {
         margin-bottom: 8px;
     }
 
+    /* Right-edge fade + "more" arrow hint */
+    .quick-chips-wrapper::after {
+        content: '›';
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+        pointer-events: none;
+        line-height: 1;
+        opacity: 0.7;
+        /* sits inside the fade zone */
+        margin-top: 4px; /* nudge past the label */
+    }
+
     .chips-label {
         font-size: 0.62rem;
         margin-bottom: 4px;
@@ -3506,13 +3523,24 @@ body.sepia-edition .footer-credit {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         gap: 6px;
-        padding: 2px 2px 6px 2px;
-        scrollbar-width: none;
-        mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
-        -webkit-mask-image: linear-gradient(to right, black calc(100% - 24px), transparent 100%);
+        padding: 2px 28px 8px 2px;   /* right padding keeps last chip clear of fade+arrow */
+        scrollbar-width: thin;
+        scrollbar-color: var(--ink) transparent;
+        mask-image: linear-gradient(to right, black calc(100% - 36px), transparent 100%);
+        -webkit-mask-image: linear-gradient(to right, black calc(100% - 36px), transparent 100%);
     }
+
     .quick-chips::-webkit-scrollbar {
-        display: none;
+        height: 3px;
+    }
+
+    .quick-chips::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .quick-chips::-webkit-scrollbar-thumb {
+        background: var(--ink);
+        border-radius: 0;
     }
 
     .chip-btn {
@@ -3625,14 +3653,13 @@ body.sepia-edition .footer-credit {
 
     .feed-container {
         height: auto;
-        max-height: 420px;
-        overflow-y: auto;
+        max-height: min(55dvh, 520px);
+        overflow-y: scroll;   /* always show scrollbar track so users see it scrolls */
         overflow-x: hidden;
         -webkit-overflow-scrolling: touch;
         border: 2px solid var(--ink);
-        padding: 10px 12px 10px 10px;
+        padding: 10px 14px 10px 10px;
         box-sizing: border-box;
-        /* Native scrollbar visible on mobile */
         scrollbar-width: thin;
         scrollbar-color: var(--ink) var(--paper);
     }
