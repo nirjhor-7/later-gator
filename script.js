@@ -860,6 +860,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Floating Jump to Latest Dispatch Indicator
+    const wireJumpLatestBtn = document.getElementById('wire-jump-latest-btn');
+
+    const updateJumpLatestVisibility = () => {
+        if (!wireJumpLatestBtn) return;
+        const feedScroll = feedContainer ? feedContainer.scrollTop : 0;
+        const isMobile = window.innerWidth <= 768;
+        const isWireTab = !isMobile || document.body.classList.contains('mobile-view-wire');
+
+        // Show when scrolled > 200px into feed or > 250px down page
+        const isDeep = feedScroll > 200 || (isMobile && isWireTab && window.scrollY > 250);
+
+        if (isDeep && isWireTab) {
+            wireJumpLatestBtn.classList.add('visible');
+        } else {
+            wireJumpLatestBtn.classList.remove('visible');
+        }
+    };
+
+    if (feedContainer) {
+        feedContainer.addEventListener('scroll', updateJumpLatestVisibility, { passive: true });
+    }
+    window.addEventListener('scroll', updateJumpLatestVisibility, { passive: true });
+
+    if (wireJumpLatestBtn) {
+        wireJumpLatestBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof playClickerSound === 'function') playClickerSound();
+            if (navigator.vibrate) {
+                try { navigator.vibrate(15); } catch (err) {}
+            }
+            if (feedContainer) {
+                feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            const wireBox = document.getElementById('box-wire');
+            if (wireBox && window.innerWidth <= 768) {
+                wireBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            setTimeout(updateJumpLatestVisibility, 150);
+        });
+    }
+
     // ==========================================
     // FRONT-PAGE LEAD STORY OF THE DAY (CROWN DISPATCH)
     // ==========================================
@@ -3698,6 +3743,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (smoothScroll) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
+            if (typeof updateJumpLatestVisibility === 'function') updateJumpLatestVisibility();
         };
 
         if (tabDispatchBtn) {

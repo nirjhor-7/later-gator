@@ -1436,6 +1436,77 @@ body.midnight-edition .feed-back-to-top-btn:hover {
     color: #111111 !important;
 }
 
+/* Floating "Jump to Latest Dispatch" Button */
+.wire-box {
+    position: relative;
+}
+
+.wire-jump-latest-btn {
+    position: absolute;
+    bottom: 22px;
+    right: 24px;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.74rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 24px;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+    z-index: 25;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px) scale(0.92);
+    pointer-events: none;
+    transition: opacity 0.22s ease, transform 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275), background 0.15s ease, color 0.15s ease;
+    user-select: none;
+}
+
+.wire-jump-latest-btn.visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.wire-jump-latest-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.6);
+    transform: translateY(-1px);
+}
+
+.wire-jump-latest-btn:active {
+    transform: translateY(1px);
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.4);
+}
+
+body.sepia-edition .wire-jump-latest-btn {
+    background: #F6EED9 !important;
+    color: #21150A !important;
+    border-color: #21150A !important;
+    box-shadow: 2px 2px 0 rgba(33, 21, 10, 0.4) !important;
+}
+body.sepia-edition .wire-jump-latest-btn:hover {
+    background: #21150A !important;
+    color: #F6EED9 !important;
+}
+
+body.midnight-edition .wire-jump-latest-btn {
+    background: #221d17 !important;
+    color: #eae1d1 !important;
+    border-color: #665544 !important;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.8) !important;
+}
+body.midnight-edition .wire-jump-latest-btn:hover {
+    background: #d4a373 !important;
+    border-color: #d4a373 !important;
+    color: #111111 !important;
+}
+
 /* Newspaper Clipping Modal & Canvas */
 .clipping-modal .credential-modal-dialog {
     max-width: 680px;
@@ -3401,7 +3472,8 @@ body.sepia-edition .footer-credit {
     body.mobile-view-dispatch #box-stats,
     body.mobile-view-dispatch #box-index,
     body.mobile-view-dispatch #box-visitors,
-    body.mobile-view-dispatch .mobile-fab-post {
+    body.mobile-view-dispatch .mobile-fab-post,
+    body.mobile-view-dispatch .wire-jump-latest-btn {
         display: none !important;
     }
 
@@ -3462,7 +3534,8 @@ body.sepia-edition .footer-credit {
     body.mobile-view-stats #hall-of-shame,
     body.mobile-view-stats #box-dispatch,
     body.mobile-view-stats .right-col,
-    body.mobile-view-stats .mobile-fab-post {
+    body.mobile-view-stats .mobile-fab-post,
+    body.mobile-view-stats .wire-jump-latest-btn {
         display: none !important;
     }
 
@@ -3513,6 +3586,46 @@ body.sepia-edition .footer-credit {
     }
 
     .mobile-fab-post:active {
+        transform: scale(0.94) translate(1px, 1px);
+    }
+
+    /* Mobile Floating Jump to Latest Button */
+    .wire-jump-latest-btn {
+        position: fixed;
+        bottom: 20px;
+        left: 18px;
+        right: auto !important;
+        width: auto !important;
+        max-width: fit-content;
+        background: var(--paper);
+        color: var(--ink);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.78rem;
+        font-weight: bold;
+        padding: 11px 18px;
+        border: 2px solid var(--ink);
+        border-radius: 30px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 2px 2px 0 var(--ink);
+        z-index: 990;
+        display: none;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(14px) scale(0.92);
+        pointer-events: none;
+        transition: opacity 0.2s ease, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body.mobile-view-wire .wire-jump-latest-btn.visible {
+        display: inline-flex !important;
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+    }
+
+    .wire-jump-latest-btn:active {
         transform: scale(0.94) translate(1px, 1px);
     }
 
