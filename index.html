@@ -93,6 +93,16 @@
             </div>
         </div>
 
+        <!-- Mobile Segmented View Switcher (Hidden on Desktop) -->
+        <nav class="mobile-segmented-bar" id="mobile-segmented-bar" aria-label="Mobile View Switcher">
+            <button type="button" class="mobile-tab-btn active" id="tab-dispatch-btn" data-tab="dispatch">
+                <span class="tab-icon">✍️</span> <span class="tab-label">FILE DISPATCH</span>
+            </button>
+            <button type="button" class="mobile-tab-btn" id="tab-wire-btn" data-tab="wire">
+                <span class="tab-icon">⚡</span> <span class="tab-label">THE WIRE</span> <span class="wire-live-badge">LIVE</span>
+            </button>
+        </nav>
+
         <!-- Front Page Lead Story of the Day (Crown Dispatch) -->
         <section class="lead-story-banner" id="lead-story-banner" aria-label="Lead Story of the Day">
             <div class="lead-story-header">
@@ -207,6 +217,9 @@
                             
                             <button type="button" id="share-cert-btn" class="share-btn-cert">
                                 [ DOWNLOAD OFFICIAL CERTIFICATE (.PNG) ]
+                            </button>
+                            <button type="button" id="share-view-wire-btn" class="share-btn-wire">
+                                [ ⚡ VIEW ON THE LIVE WIRE ➔ ]
                             </button>
 
                             <div class="share-card-actions">
@@ -447,6 +460,11 @@
             </div>
         </div>
     </div>
+
+    <!-- Floating Action Button for Mobile: Quick Return to Dispatch -->
+    <button type="button" id="mobile-fab-post" class="mobile-fab-post" aria-label="Post a dispatch">
+        <span class="fab-icon">✍️</span> <span class="fab-label">POST DISPATCH</span>
+    </button>
 
     <script type="module">
         import { inject } from 'https://cdn.jsdelivr.net/npm/@vercel/analytics@2/+esm';

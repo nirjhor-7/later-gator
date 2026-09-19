@@ -1574,6 +1574,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (shareCloseBtn) {
         shareCloseBtn.addEventListener('click', () => {
             if (shareCard) shareCard.style.display = 'none';
+            if (window.innerWidth <= 768 && typeof window.setMobileTab === 'function') {
+                window.setMobileTab('wire');
+            }
         });
     }
 
@@ -1644,6 +1647,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (shareCard && shareCard.style.display !== 'none') {
                 shareCard.style.display = 'none';
+                if (window.innerWidth <= 768 && typeof window.setMobileTab === 'function') {
+                    window.setMobileTab('wire');
+                }
             }
         } else if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey) {
             const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
@@ -3618,7 +3624,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // ==========================================
+    // MOBILE VIEW SEGMENTED CONTROLLER (v3.0.0)
+    // ==========================================
+    const initMobileSegmentedController = () => {
+        const tabDispatchBtn = document.getElementById('tab-dispatch-btn');
+        const tabWireBtn = document.getElementById('tab-wire-btn');
+        const mobileFabPost = document.getElementById('mobile-fab-post');
+        const shareViewWireBtn = document.getElementById('share-view-wire-btn');
 
+        const setMobileTab = (tabName, smoothScroll = true) => {
+            if (window.innerWidth > 768) return; // Keep desktop unconstrained
+
+            if (tabName === 'wire') {
+                document.body.classList.remove('mobile-view-dispatch');
+                document.body.classList.add('mobile-view-wire');
+                if (tabDispatchBtn) tabDispatchBtn.classList.remove('active');
+                if (tabWireBtn) tabWireBtn.classList.add('active');
+                try { sessionStorage.setItem('lg_mobile_tab', 'wire'); } catch(e) {}
+                if (smoothScroll) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            } else {
+                document.body.classList.remove('mobile-view-wire');
+                document.body.classList.add('mobile-view-dispatch');
+                if (tabWireBtn) tabWireBtn.classList.remove('active');
+                if (tabDispatchBtn) tabDispatchBtn.classList.add('active');
+                try { sessionStorage.setItem('lg_mobile_tab', 'dispatch'); } catch(e) {}
+                if (smoothScroll) {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+            }
+        };
+
+        if (tabDispatchBtn) {
+            tabDispatchBtn.addEventListener('click', () => setMobileTab('dispatch'));
+        }
+        if (tabWireBtn) {
+            tabWireBtn.addEventListener('click', () => setMobileTab('wire'));
+        }
+        if (mobileFabPost) {
+            mobileFabPost.addEventListener('click', () => {
+                setMobileTab('dispatch');
+                if (taskInput) {
+                    setTimeout(() => taskInput.focus(), 150);
+                }
+            });
+        }
+        if (shareViewWireBtn) {
+            shareViewWireBtn.addEventListener('click', () => {
+                if (shareCard) shareCard.style.display = 'none';
+                setMobileTab('wire');
+            });
+        }
+
+        // Initialize state on mobile screens
+        if (window.innerWidth <= 768) {
+            const savedTab = (() => {
+                try { return sessionStorage.getItem('lg_mobile_tab'); } catch(e) { return null; }
+            })();
+            setMobileTab(savedTab === 'wire' ? 'wire' : 'dispatch', false);
+        }
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                document.body.classList.remove('mobile-view-dispatch', 'mobile-view-wire');
+            } else if (!document.body.classList.contains('mobile-view-dispatch') && !document.body.classList.contains('mobile-view-wire')) {
+                setMobileTab('dispatch', false);
+            }
+        });
+
+        // Expose globally for share card or external dispatch transitions
+        window.setMobileTab = setMobileTab;
+    };
+
+    initMobileSegmentedController();
     initBureauAuth();
     initVideoFacade();
     restoreCachedData();

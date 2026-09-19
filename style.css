@@ -581,6 +581,13 @@ textarea:focus {
     color: var(--paper);
 }
 
+/* Mobile-specific controls hidden by default on desktop */
+.mobile-segmented-bar,
+.mobile-fab-post,
+.share-btn-wire {
+    display: none;
+}
+
 .action-buttons {
     display: flex;
     flex-direction: column;
@@ -2992,29 +2999,29 @@ body.sepia-edition .footer-credit {
     }
 
     .page-border {
-        margin: 6px clamp(2px, 1.5vw, 6px);
-        padding: 12px clamp(8px, 2.5vw, 14px) 16px clamp(8px, 2.5vw, 14px);
-        box-shadow: 4px 4px 0px var(--ink);
+        margin: 4px auto;
+        padding: 8px clamp(8px, 2.5vw, 12px) 14px clamp(8px, 2.5vw, 12px);
+        box-shadow: 3px 3px 0px var(--ink);
         outline: 1.5px solid var(--ink);
-        outline-offset: 2px;
+        outline-offset: 1.5px;
         max-width: 100%;
         box-sizing: border-box;
     }
 
     /* Compact 2-Line Masthead */
     .masthead {
-        margin-bottom: 12px;
-        padding-bottom: 8px;
+        margin-bottom: 6px;
+        padding-bottom: 4px;
     }
 
     .masthead-meta {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
         align-items: center;
         text-align: center;
-        font-size: clamp(0.62rem, 2.2vw, 0.68rem);
-        padding: 5px 2px;
+        font-size: clamp(0.6rem, 2.2vw, 0.66rem);
+        padding: 3px 2px;
     }
 
     .meta-row-left {
@@ -3044,7 +3051,7 @@ body.sepia-edition .footer-credit {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 6px;
+        gap: 4px;
         width: 100%;
     }
 
@@ -3065,25 +3072,25 @@ body.sepia-edition .footer-credit {
     }
 
     h1 {
-        font-size: clamp(2.4rem, 10.5vw, 3.2rem);
+        font-size: clamp(2rem, 9.5vw, 2.6rem);
         letter-spacing: clamp(0.3px, 0.4vw, 0.8px);
         line-height: 0.95;
-        margin: 4px 0;
+        margin: 2px 0;
         text-align: center;
     }
 
     .subtitle {
-        font-size: clamp(0.66rem, 2.4vw, 0.74rem);
-        padding: 3px 0;
-        margin-bottom: 14px;
+        font-size: clamp(0.62rem, 2.2vw, 0.68rem);
+        padding: 2px 0;
+        margin-bottom: 8px;
         letter-spacing: clamp(0.5px, 0.3vw, 1.2px);
     }
 
     /* Telegraph Wire Ticker */
     .telegraph-ticker {
-        height: 26px;
-        font-size: 0.62rem;
-        margin-bottom: 14px;
+        height: 24px;
+        font-size: 0.6rem;
+        margin-bottom: 8px;
     }
 
     .ticker-badge {
@@ -3179,8 +3186,68 @@ body.sepia-edition .footer-credit {
     }
 
     /* ==========================================
-       CONTENT HIERARCHY REORDERING (Mobile Flaw #4 Fix)
+       MOBILE SEGMENTED CONTROLLER & VIEW STATES
        ========================================== */
+    .mobile-segmented-bar {
+        display: flex;
+        gap: 0;
+        margin: 0 0 10px 0;
+        border: 2px solid var(--ink);
+        background: var(--paper);
+        box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.85);
+        overflow: hidden;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+
+    .mobile-tab-btn {
+        flex: 1;
+        padding: 9px 4px;
+        font-family: 'Space Mono', monospace;
+        font-size: clamp(0.72rem, 3.1vw, 0.8rem);
+        font-weight: 700;
+        text-align: center;
+        background: transparent;
+        color: var(--ink);
+        border: none;
+        border-right: 2px solid var(--ink);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        transition: background 0.15s ease, color 0.15s ease;
+        letter-spacing: 0.5px;
+        user-select: none;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-tab-btn:last-child {
+        border-right: none;
+    }
+
+    .mobile-tab-btn.active {
+        background: var(--ink);
+        color: var(--paper);
+    }
+
+    .wire-live-badge {
+        background: #b91c1c;
+        color: #fff;
+        font-size: 0.55rem;
+        padding: 1px 5px;
+        border-radius: 2px;
+        font-weight: bold;
+        letter-spacing: 0.5px;
+        animation: livePulse 2s ease-in-out infinite;
+    }
+
+    @keyframes livePulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.7; transform: scale(0.96); }
+    }
+
     .newspaper-grid {
         display: flex;
         flex-direction: column;
@@ -3188,53 +3255,125 @@ body.sepia-edition .footer-credit {
     }
 
     .left-col, .right-col {
-        display: contents; /* Flattens columns into a single unified flex flow */
+        display: contents;
     }
 
-    /* Mobile Order:
-       1. Input Form
-       2. Wall of Shame
-       3. The Public Wire (Directly visible without scrolling through 10 countries!)
-       4. Live Statistics
-       5. Global Index
-       6. Unique Visitors
-       7. Daily Diversions
-       8. Commercial Break
-    */
-    #box-input {
+    /* 1. DISPATCH TAB MODE (Clean, Focused Hero Desk) */
+    body.mobile-view-dispatch #lead-story-banner,
+    body.mobile-view-dispatch .right-col,
+    body.mobile-view-dispatch #box-wire,
+    body.mobile-view-dispatch #hall-of-shame,
+    body.mobile-view-dispatch #box-dispatch,
+    body.mobile-view-dispatch #box-stats,
+    body.mobile-view-dispatch #box-index,
+    body.mobile-view-dispatch #box-visitors,
+    body.mobile-view-dispatch .mobile-fab-post {
+        display: none !important;
+    }
+
+    body.mobile-view-dispatch #box-input {
+        display: block !important;
+        margin-bottom: 12px;
+    }
+
+    /* 2. WIRE TAB MODE (Full-Screen Live Public Wire) */
+    body.mobile-view-wire #box-input {
+        display: none !important;
+    }
+
+    body.mobile-view-wire #lead-story-banner {
+        display: block !important;
+        margin-bottom: 12px;
+    }
+
+    body.mobile-view-wire .right-col,
+    body.mobile-view-wire #box-wire,
+    body.mobile-view-wire #hall-of-shame,
+    body.mobile-view-wire #box-dispatch,
+    body.mobile-view-wire #box-stats,
+    body.mobile-view-wire #box-index,
+    body.mobile-view-wire #box-visitors {
+        display: block !important;
+    }
+
+    body.mobile-view-wire #hall-of-shame {
         order: 1;
-        margin-bottom: 22px;
+        margin-bottom: 14px;
     }
 
-    #hall-of-shame {
+    body.mobile-view-wire #box-wire {
         order: 2;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
     }
 
-    #box-wire {
+    body.mobile-view-wire #box-dispatch {
         order: 3;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
-    #box-stats {
+    body.mobile-view-wire #box-stats {
         order: 4;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
     }
 
-    #box-index {
+    body.mobile-view-wire #box-index {
         order: 5;
-        margin-bottom: 18px;
+        margin-bottom: 20px;
     }
 
-    #box-visitors {
+    body.mobile-view-wire #box-visitors {
         order: 6;
-        margin-top: 0;
-        margin-bottom: 22px;
+        margin-bottom: 20px;
     }
 
-    #box-dispatch {
-        order: 7;
-        margin-bottom: 22px;
+    body.mobile-view-wire .mobile-fab-post {
+        display: flex !important;
+    }
+
+    /* Mobile Floating Action Button (FAB) */
+    .mobile-fab-post {
+        position: fixed;
+        bottom: 20px;
+        right: 18px;
+        background: var(--ink);
+        color: var(--paper);
+        font-family: 'Space Mono', monospace;
+        font-size: 0.82rem;
+        font-weight: bold;
+        padding: 11px 18px;
+        border: 2px solid var(--paper);
+        border-radius: 30px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 2px 2px 0 rgba(0, 0, 0, 0.85);
+        z-index: 990;
+        display: none;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .mobile-fab-post:active {
+        transform: scale(0.94) translate(1px, 1px);
+    }
+
+    .share-btn-wire {
+        width: 100%;
+        margin-top: 8px;
+        padding: 10px;
+        font-family: 'Space Mono', monospace;
+        font-size: 0.82rem;
+        font-weight: bold;
+        background: var(--ink);
+        color: var(--paper);
+        border: 2px solid var(--ink);
+        cursor: pointer;
+        transition: all 0.15s ease;
+    }
+
+    .share-btn-wire:hover {
+        background: var(--paper);
+        color: var(--ink);
     }
 
     /* Input Section & Inputs */
@@ -3340,9 +3479,9 @@ body.sepia-edition .footer-credit {
     /* Public Wire & Cards */
     .feed-container {
         height: auto;
-        max-height: clamp(340px, 46vh, 420px);
+        max-height: none;
+        overflow: visible;
         -webkit-overflow-scrolling: touch;
-        overscroll-behavior-y: contain;
         border-width: 2px;
     }
 
@@ -3380,15 +3519,20 @@ body.sepia-edition .footer-credit {
     .feed-reactions .reaction-stamp-btn {
         flex: 1 1 0;
         min-width: 0;
-        min-height: 34px;
-        font-size: clamp(0.58rem, 2vw, 0.65rem);
-        padding: 4px 1px;
+        min-height: 36px;
+        font-size: clamp(0.6rem, 2.2vw, 0.68rem);
+        padding: 6px 2px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border-width: 1.5px;
-        letter-spacing: -0.2px;
+    }
+
+    .feed-clip-btn {
+        min-height: 36px;
+        font-size: clamp(0.6rem, 2.2vw, 0.68rem);
+        padding: 6px 6px;
     }
 
     @keyframes fresh-wire-flash {
