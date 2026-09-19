@@ -92,6 +92,16 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
 .meta-sep {
     color: var(--ink-light);
 }
+.meta-mobile-date,
+.meta-mobile-sep,
+.btn-text-short {
+    display: none;
+}
+.meta-desktop-date,
+.meta-desktop-sep,
+.btn-text-full {
+    display: inline;
+}
 .midnight-toggle-btn {
     background: transparent;
     color: var(--ink);
@@ -2974,7 +2984,7 @@ body.sepia-edition .footer-credit {
     .masthead-meta {
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 6px;
         align-items: center;
         text-align: center;
         font-size: clamp(0.62rem, 2.2vw, 0.68rem);
@@ -2990,18 +3000,42 @@ body.sepia-edition .footer-credit {
         flex-wrap: nowrap;
     }
 
+    .meta-mobile-date,
+    .meta-mobile-sep,
+    .btn-text-short,
+    .meta-title-short {
+        display: inline !important;
+    }
+
+    .meta-desktop-date,
+    .meta-desktop-sep,
+    .btn-text-full,
+    .meta-title-full {
+        display: none !important;
+    }
+
     .meta-row-right {
         display: flex;
         align-items: center;
-        justify-content: center;
-        gap: 8px;
+        justify-content: space-between;
+        gap: 6px;
         width: 100%;
     }
 
-    .midnight-toggle-btn {
-        padding: 3px clamp(5px, 1.5vw, 8px);
-        font-size: clamp(0.6rem, 2.2vw, 0.65rem);
+    .meta-row-right .header-pass-btn,
+    .meta-row-right .midnight-toggle-btn,
+    .meta-row-right .header-auth-btn {
+        flex: 1 1 0;
+        min-width: 0;
         min-height: 28px;
+        padding: 3px 2px;
+        font-size: clamp(0.56rem, 2vw, 0.63rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
+        text-align: center;
+        box-sizing: border-box;
     }
 
     h1 {
@@ -3043,22 +3077,23 @@ body.sepia-edition .footer-credit {
         animation-duration: 90s;
     }
 
-    /* Front-Page Lead Story of the Day (Single-line Eyebrow + Touch Reactions) */
+    /* Front-Page Lead Story of the Day (Condensed Editorial Bulletin) */
     .lead-story-banner {
-        padding: 10px clamp(6px, 2vw, 10px) 12px clamp(6px, 2vw, 10px);
-        margin-bottom: 16px;
+        padding: 8px clamp(6px, 2vw, 10px) 10px clamp(6px, 2vw, 10px);
+        margin-bottom: 14px;
+        border-width: 1.5px;
     }
 
     .lead-story-header {
-        font-size: 0.62rem;
+        font-size: 0.6rem;
         gap: 4px;
-        margin-bottom: 4px;
+        margin-bottom: 3px;
     }
 
     .lead-story-eyebrow {
-        font-size: clamp(0.58rem, 2vw, 0.62rem);
-        padding: 2px clamp(4px, 1.5vw, 8px);
-        letter-spacing: 0.6px;
+        font-size: clamp(0.56rem, 2vw, 0.6rem);
+        padding: 2px clamp(4px, 1.5vw, 6px);
+        letter-spacing: 0.5px;
         white-space: nowrap;
     }
 
@@ -3071,50 +3106,50 @@ body.sepia-edition .footer-credit {
     }
 
     .lead-story-headline {
-        font-size: clamp(1.2rem, 5vw, 1.45rem);
-        line-height: 1.15;
-        margin: 5px 0 6px 0;
+        font-size: clamp(1.05rem, 4.2vw, 1.25rem);
+        line-height: 1.2;
+        margin: 4px 0 5px 0;
         text-wrap: balance;
     }
 
     .lead-story-meta {
-        font-size: 0.62rem;
+        font-size: 0.6rem;
         gap: 4px;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .lead-story-badge {
-        font-size: 0.6rem;
-        padding: 2px 5px;
+        font-size: 0.58rem;
+        padding: 1px 4px;
     }
 
     .lead-story-actions {
         flex-direction: column;
         align-items: stretch;
-        gap: 6px;
-        padding-top: 8px;
+        gap: 4px;
+        padding-top: 4px;
     }
 
     .lead-stamp-prompt {
-        text-align: center;
-        font-size: 0.62rem;
+        display: none !important; /* Hide redundant label on mobile to save vertical space */
     }
 
     .lead-reactions {
         display: flex;
         width: 100%;
-        gap: 6px;
+        gap: 4px;
     }
 
     .lead-reactions .reaction-stamp-btn {
         flex: 1;
-        min-height: 40px;
-        font-size: 0.68rem;
-        padding: 6px 2px;
+        min-height: 34px;
+        font-size: clamp(0.6rem, 2.2vw, 0.66rem);
+        padding: 4px 2px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        border-width: 1.5px;
     }
 
     /* ==========================================
@@ -3194,84 +3229,92 @@ body.sepia-edition .footer-credit {
 
     .byline-input-row input {
         font-size: 16px !important; /* Critical: Prevent iOS Safari auto-zoom */
-        padding: 10px 8px;
+        padding: 8px 8px;
     }
 
     .byline-tag {
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         padding: 0 8px;
     }
 
     textarea {
-        padding: 10px 10px;
-        height: 82px;
+        padding: 8px 10px;
+        height: 68px;
+        min-height: 68px;
         border-width: 1.5px;
     }
 
-    /* Quick Chips: 3 Neat Columns with >= 38px Touch Targets */
+    /* Quick Chips: Single-row horizontal scroll ribbon on mobile! */
     .quick-chips-wrapper {
-        margin-top: 10px;
+        margin-top: 8px;
         margin-bottom: 8px;
     }
 
     .chips-label {
-        font-size: 0.64rem;
-        margin-bottom: 6px;
+        font-size: 0.62rem;
+        margin-bottom: 4px;
     }
 
     .quick-chips {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
         gap: 6px;
+        padding: 2px 2px 6px 2px;
+        scrollbar-width: none;
+    }
+    .quick-chips::-webkit-scrollbar {
+        display: none;
     }
 
     .chip-btn {
         font-size: clamp(0.64rem, 2.2vw, 0.72rem);
-        padding: 8px clamp(2px, 1vw, 4px);
-        min-height: 38px;
-        flex: 1 1 calc(33.333% - 6px);
-        display: flex;
+        padding: 6px 12px;
+        min-height: 34px;
+        flex: 0 0 auto;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
         text-align: center;
         white-space: nowrap;
-        letter-spacing: -0.2px;
     }
 
     .chip-random {
-        flex: 1 1 100%;
-        min-height: 38px;
+        flex: 0 0 auto;
+        min-height: 34px;
         font-weight: 700;
-        margin-top: 2px;
+        margin-top: 0;
+        padding: 6px 12px;
     }
 
-    /* Action Buttons (Generous Touch Targets >= 48px) */
+    /* Action Buttons */
     .action-buttons {
-        margin-top: 12px;
+        margin-top: 10px;
     }
 
     .primary-action-row {
         display: flex;
-        gap: 8px;
+        gap: 6px;
         width: 100%;
     }
 
     .btn-heavy {
         flex: 1;
-        min-height: 52px;
-        font-size: clamp(0.95rem, 3.8vw, 1.15rem);
-        padding: 10px clamp(4px, 1.5vw, 8px);
-        letter-spacing: clamp(0.2px, 0.3vw, 0.5px);
+        min-height: 48px;
+        font-size: clamp(0.92rem, 3.6vw, 1.05rem);
+        padding: 8px 10px;
+        letter-spacing: 0.4px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
     }
 
     .btn-dice {
-        min-width: 52px;
-        min-height: 52px;
-        font-size: 1.4rem;
+        min-width: 48px;
+        min-height: 48px;
+        font-size: 1.3rem;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -3281,82 +3324,116 @@ body.sepia-edition .footer-credit {
 
     .btn-outline {
         width: 100%;
-        min-height: 46px;
-        font-size: clamp(0.85rem, 3.2vw, 1rem);
-        margin-top: 8px;
-        padding: 10px 8px;
+        min-height: 40px;
+        font-size: clamp(0.8rem, 3vw, 0.9rem);
+        margin-top: 6px;
+        padding: 8px 8px;
     }
 
-    /* Public Wire & Cards (Scroll Trap Fix) */
+    /* Public Wire & Cards */
     .feed-container {
         height: auto;
-        max-height: clamp(380px, 50vh, 480px);
+        max-height: clamp(340px, 46vh, 420px);
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
         border-width: 2px;
     }
 
     .feed-item {
-        padding: 12px 10px;
+        padding: 10px 10px;
     }
 
     .feed-item-meta {
-        font-size: 0.65rem;
-        margin-bottom: 4px;
+        font-size: 0.64rem;
+        margin-bottom: 3px;
     }
 
     .feed-item-text {
-        font-size: 0.95rem;
+        font-size: 0.92rem;
         line-height: 1.35;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .feed-item-footer {
         flex-direction: column;
         align-items: stretch;
-        gap: 8px;
+        gap: 6px;
     }
 
     .feed-item-time {
-        font-size: 0.65rem;
+        font-size: 0.63rem;
     }
 
     .feed-reactions {
         display: flex;
         width: 100%;
-        gap: clamp(3px, 1.2vw, 6px);
+        gap: 4px;
     }
 
     .feed-reactions .reaction-stamp-btn {
         flex: 1 1 0;
         min-width: 0;
-        min-height: 40px; /* High tactile touch targets (was 19px) */
-        font-size: clamp(0.6rem, 2.2vw, 0.68rem);
-        padding: 6px 1px;
+        min-height: 34px;
+        font-size: clamp(0.58rem, 2vw, 0.65rem);
+        padding: 4px 1px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border-width: 1.5px;
-        letter-spacing: -0.3px;
+        letter-spacing: -0.2px;
     }
 
-    /* Statistics & Leaderboards */
+    @keyframes fresh-wire-flash {
+        0% { background-color: var(--highlight, #ffe58f); }
+        100% { background-color: transparent; }
+    }
+    .feed-item.just-dispatched {
+        animation: fresh-wire-flash 2.5s ease-out;
+    }
+
+    /* Statistics & Leaderboards - Compact 2-Column Grid */
+    .stats-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        padding: 4px 0;
+    }
+
+    .stat-group {
+        padding: 8px 4px;
+        text-align: center;
+        border: 1px solid var(--ink);
+        background: var(--paper-tint, rgba(0,0,0,0.02));
+    }
+
+    .stat-value {
+        font-size: clamp(1.3rem, 5.5vw, 1.7rem);
+        font-weight: 700;
+        line-height: 1.1;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.4px;
+        margin-top: 3px;
+    }
+
     .visitor-counter {
         width: 100%;
         padding: 8px 10px;
         box-sizing: border-box;
-        font-size: 0.75rem;
+        font-size: 0.72rem;
         justify-content: center;
     }
 
     .counter-label {
-        font-size: 0.68rem;
+        font-size: 0.65rem;
         text-align: center;
     }
 
     .counter-value {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
     }
 
     /* Diversions */
@@ -3423,15 +3500,7 @@ body.sepia-edition .footer-credit {
     }
 
     .footer-share-btn {
-        width: 100%;
-        max-width: 460px;
-        margin: 0 auto;
-        box-sizing: border-box;
-        font-size: clamp(0.72rem, 2.9vw, 0.82rem);
-        letter-spacing: clamp(0.2px, 0.5vw, 0.8px);
-        padding: 12px clamp(6px, 2vw, 12px);
-        min-height: 46px;
-        white-space: nowrap;
+        display: none !important; /* Avoid duplicate share controls under dispatch desk on mobile */
     }
 
     .footer-quote {
@@ -3524,21 +3593,24 @@ body.sepia-edition .footer-credit {
     }
 
     .quick-chips {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 5px;
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
 
     .chip-btn {
-        font-size: 0.64rem;
-        min-height: 36px;
-        padding: 6px 2px;
-        flex: none;
-        width: 100%;
+        font-size: 0.62rem;
+        min-height: 32px;
+        padding: 5px 8px;
+        flex: 0 0 auto;
+        width: auto;
     }
 
     .chip-random {
-        grid-column: 1 / -1;
+        grid-column: auto;
+        flex: 0 0 auto;
+        min-height: 32px;
+        padding: 5px 8px;
     }
 
     .feed-reactions {
@@ -3546,16 +3618,10 @@ body.sepia-edition .footer-credit {
     }
 
     .feed-reactions .reaction-stamp-btn {
-        font-size: 0.58rem;
-        padding: 6px 1px;
-        letter-spacing: -0.4px;
-        min-height: 38px;
-    }
-
-    .footer-share-btn {
-        font-size: 0.68rem;
-        padding: 10px 4px;
-        letter-spacing: 0.2px;
+        font-size: 0.56rem;
+        padding: 4px 1px;
+        letter-spacing: -0.3px;
+        min-height: 32px;
     }
 
     .comic-panel-art {

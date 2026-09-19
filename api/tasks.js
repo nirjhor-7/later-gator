@@ -157,7 +157,11 @@ export default async function handler(req, res) {
 
     if (req.method === 'GET') {
         try {
-            res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=60');
+            if (req.query._t) {
+                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            } else {
+                res.setHeader('Cache-Control', 'public, s-maxage=2, stale-while-revalidate=10');
+            }
             const queryLimit = Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 10), 300);
 
             const { data: tasks, error } = await supabase

@@ -591,11 +591,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let verb = "";
+        const numericId = parseInt(task.id, 10) || 0;
         if (isPanic) {
-            const verbIndex = task.id % panicVerbs.length;
+            const verbIndex = Math.abs(numericId) % panicVerbs.length;
             verb = panicVerbs[verbIndex];
         } else {
-            const verbIndex = task.id % evasionVerbs.length;
+            const verbIndex = Math.abs(numericId) % evasionVerbs.length;
             verb = evasionVerbs[verbIndex];
         }
 
@@ -603,7 +604,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // User reaction status for this dispatch
         const myStamp = userStamps[task.id] || null;
-        const defaultRot = ((task.id * 17) % 7 - 3.2).toFixed(2);
+        const defaultRot = ((Math.abs(numericId) * 17) % 7 - 3.2).toFixed(2);
         const sameCount = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
         const validCount = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
         const ripCount = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
@@ -632,6 +633,35 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
     };
 
+    const prependFeedTask = (task) => {
+        if (!feedContainer) return null;
+        if (task && task.id) {
+            allKnownTasks.set(task.id, task);
+        }
+
+        // Clean up empty / loading placeholder
+        const emptyEl = feedContainer.querySelector('.loading, .feed-item:not([data-task-id])');
+        if (emptyEl) emptyEl.remove();
+
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = buildFeedItemHtml(task, true);
+        const newEl = tempDiv.firstElementChild;
+        if (!newEl) return null;
+
+        newEl.classList.add('fresh-wire-dispatch');
+
+        const firstExisting = feedContainer.querySelector('.feed-item[data-task-id]');
+        if (firstExisting) {
+            feedContainer.insertBefore(newEl, firstExisting);
+        } else {
+            feedContainer.prepend(newEl);
+        }
+
+        // Smooth scroll to top of feed so user immediately sees their dispatch
+        feedContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        return newEl;
+    };
+
     const updateRelativeTimestamps = () => {
         if (!feedContainer) return;
         const timeEls = feedContainer.querySelectorAll('.feed-item-time[data-created-at]');
@@ -655,7 +685,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (t && t.id) allKnownTasks.set(Number(t.id), t);
         });
 
-        const existingItems = feedContainer.querySelectorAll('.feed-item[data-task-id]');
+        // Clean up any optimistic items that match text of newly arrived server tasks
+        const existingOptItems = feedContainer.querySelectorAll('.feed-item[data-task-id^="opt-"]');
+        existingOptItems.forEach(optEl => {
+            const optText = optEl.querySelector('.feed-item-text')?.textContent || '';
+            const matchingReal = tasks.find(t => (t.text || '').replace('[PANIC] ', '') === optText);
+            if (matchingReal) {
+                optEl.remove();
+            }
+        });
+
+        const existingItems = feedContainer.querySelectorAll('.feed-item[data-task-id]:not([data-task-id^="opt-"])');
 
         // 1. Initial Load or reset when no feed items are present
         if (existingItems.length === 0 || renderedTopId === null) {
@@ -1090,9 +1130,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const fetchTasks = async () => {
+    const fetchTasks = async (forceFresh = false) => {
         try {
-            const response = await fetch('/api/tasks');
+            const url = forceFresh ? `/api/tasks?_t=${Date.now()}` : '/api/tasks';
+            const response = await fetch(url);
             if (response.ok) {
                 const tasks = await response.json();
                 renderFeed(tasks);
@@ -1626,7 +1667,22 @@ document.addEventListener('DOMContentLoaded', () => {
         currentIsPanic = isPanic;
         currentSubmittedName = submittedAuthorName;
 
-        // 1. INSTANT STAMP SLAM & DESK SHOCKWAVE (Zero latency!)
+        const optId = 'opt-' + Date.now();
+        const optimisticTask = {
+            id: optId,
+            text: text,
+            city: submittedAuthorName || 'Anonymous',
+            country: (currentGator && (currentGator.displayTag || currentGator.tag)) ? 'Bureau Operative' : 'Local Dispatch',
+            created_at: new Date().toISOString(),
+            same_count: 0,
+            valid_count: 0,
+            rip_count: 0
+        };
+
+        // 1. INSTANTLY prepend to the live wire feed (0ms latency!)
+        const optEl = prependFeedTask(optimisticTask);
+
+        // 2. INSTANT STAMP SLAM & DESK SHOCKWAVE (Zero latency!)
         triggerRubberStamp(isPanic);
 
         if (isPanic) {
@@ -1639,7 +1695,7 @@ document.addEventListener('DOMContentLoaded', () => {
             statusMessage.textContent = "SUCCESSFULLY EVADED.";
         }
 
-        // 2. Dispatch network request in parallel
+        // 3. Dispatch network request in parallel
         const postPayload = { text, name: submittedAuthorName, sessionId: SESSION_ID };
         if (currentGator && currentGator.gatorId) {
             postPayload.gatorId = currentGator.gatorId;
@@ -1653,7 +1709,7 @@ document.addEventListener('DOMContentLoaded', () => {
             body: JSON.stringify(postPayload)
         }).catch(err => ({ ok: false, error: err }));
 
-        // 3. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
+        // 4. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
         setTimeout(async () => {
             dismissRubberStamp(() => {
                 taskInput.value = '';
@@ -1671,11 +1727,27 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await postPromise;
                 if (response && response.ok) {
-                    fetchAll();
+                    const newTask = await response.json().catch(() => null);
+                    if (newTask && newTask.id) {
+                        allKnownTasks.delete(optId);
+                        allKnownTasks.set(Number(newTask.id), newTask);
+                        if (optEl && optEl.parentNode) {
+                            optEl.setAttribute('data-task-id', newTask.id);
+                            const clipBtn = optEl.querySelector('.feed-clip-btn');
+                            if (clipBtn) clipBtn.setAttribute('data-task-id', newTask.id);
+                            const rxContainer = optEl.querySelector('.feed-reactions');
+                            if (rxContainer) rxContainer.setAttribute('data-task-id', newTask.id);
+                        }
+                        renderedTopId = Math.max(renderedTopId || 0, Number(newTask.id));
+                    }
+                    fetchTasks(true);
+                    fetchStats();
                     if (typeof fetchDossier === 'function') fetchDossier();
                 } else if (response && response.json) {
                     const errData = await response.json().catch(() => ({}));
                     if (errData.error) {
+                        if (optEl && optEl.parentNode) optEl.remove();
+                        allKnownTasks.delete(optId);
                         statusMessage.textContent = errData.error.toUpperCase();
                         setTimeout(() => { statusMessage.textContent = ""; }, 4000);
                     }

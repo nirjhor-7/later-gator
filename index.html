@@ -49,17 +49,20 @@
                         <span class="meta-title-full">GLOBAL PROCRASTINATION JOURNAL</span>
                         <span class="meta-title-short">GLOBAL PROCRASTINATION</span>
                     </span>
+                    <span class="meta-sep meta-mobile-sep">•</span>
+                    <span id="mobile-date" class="meta-mobile-date">Today</span>
                 </div>
                 <div class="meta-row-right">
-                    <span id="current-date">Today</span>
+                    <span id="current-date" class="meta-desktop-date">Today</span>
                     <button type="button" id="header-pass-btn" class="header-pass-btn" title="View Official Sloth Credential & Press Pass" aria-label="Official Press Pass">
-                        🪪 PRESS PASS
+                        <span class="btn-text-full">🪪 PRESS PASS</span>
+                        <span class="btn-text-short">🪪 PASS</span>
                     </button>
-                    <span class="meta-sep">•</span>
+                    <span class="meta-sep meta-desktop-sep">•</span>
                     <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
                         <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
                     </button>
-                    <span class="meta-sep">•</span>
+                    <span class="meta-sep meta-desktop-sep">•</span>
                     <button type="button" id="header-auth-btn" class="header-auth-btn" title="Bureau Dossier & Gator Tag">
                         [ LOGIN ]
                     </button>
@@ -449,7 +452,13 @@
     <script src="script.js?v=2.8.0" defer></script>
 
     <script>
-        document.getElementById('current-date').textContent = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+        const _now = new Date();
+        const _longDate = _now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+        const _shortDate = _now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
+        const _dEl = document.getElementById('current-date');
+        if (_dEl) _dEl.textContent = _longDate;
+        const _mEl = document.getElementById('mobile-date');
+        if (_mEl) _mEl.textContent = _shortDate;
     </script>
 </body>
 </html>
