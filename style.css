@@ -3325,7 +3325,10 @@ body.sepia-edition .footer-credit {
         padding-bottom: 76px; /* Clearance so FAB never obstructs bottom content */
     }
 
-    body.mobile-view-wire #box-input {
+    body.mobile-view-wire #box-input,
+    body.mobile-view-wire #box-stats,
+    body.mobile-view-wire #box-index,
+    body.mobile-view-wire #box-visitors {
         display: none !important;
     }
 
@@ -3345,15 +3348,50 @@ body.sepia-edition .footer-credit {
     }
 
     body.mobile-view-wire #box-wire,
-    body.mobile-view-wire #box-dispatch,
-    body.mobile-view-wire #box-stats,
-    body.mobile-view-wire #box-index,
-    body.mobile-view-wire #box-visitors {
+    body.mobile-view-wire #box-dispatch {
         display: block !important;
     }
 
     body.mobile-view-wire .mobile-fab-post {
         display: flex !important;
+    }
+
+    /* 3. STATS TAB MODE (Live Stats, Global Index, Procrastinator Count) */
+    body.mobile-view-stats {
+        padding-bottom: 20px;
+    }
+
+    body.mobile-view-stats #lead-story-banner,
+    body.mobile-view-stats #box-input,
+    body.mobile-view-stats #box-wire,
+    body.mobile-view-stats #hall-of-shame,
+    body.mobile-view-stats #box-dispatch,
+    body.mobile-view-stats .right-col,
+    body.mobile-view-stats .mobile-fab-post {
+        display: none !important;
+    }
+
+    body.mobile-view-stats .left-col {
+        order: 1;
+        display: block !important;
+    }
+
+    body.mobile-view-stats #box-stats,
+    body.mobile-view-stats #box-index,
+    body.mobile-view-stats #box-visitors {
+        display: block !important;
+    }
+
+    body.mobile-view-stats #box-stats {
+        margin-bottom: 20px;
+    }
+
+    body.mobile-view-stats #box-index {
+        margin-bottom: 20px;
+    }
+
+    body.mobile-view-stats #box-visitors {
+        margin-bottom: 20px;
     }
 
     /* Mobile Floating Action Button (FAB) */

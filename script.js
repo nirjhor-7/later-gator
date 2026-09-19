@@ -3630,30 +3630,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const initMobileSegmentedController = () => {
         const tabDispatchBtn = document.getElementById('tab-dispatch-btn');
         const tabWireBtn = document.getElementById('tab-wire-btn');
+        const tabStatsBtn = document.getElementById('tab-stats-btn');
         const mobileFabPost = document.getElementById('mobile-fab-post');
         const shareViewWireBtn = document.getElementById('share-view-wire-btn');
+
+        const ALL_TABS = ['dispatch', 'wire', 'stats'];
 
         const setMobileTab = (tabName, smoothScroll = true) => {
             if (window.innerWidth > 768) return; // Keep desktop unconstrained
 
+            // Remove all mobile-view-* body classes
+            document.body.classList.remove('mobile-view-dispatch', 'mobile-view-wire', 'mobile-view-stats');
+
+            // Deactivate all tab buttons
+            if (tabDispatchBtn) tabDispatchBtn.classList.remove('active');
+            if (tabWireBtn) tabWireBtn.classList.remove('active');
+            if (tabStatsBtn) tabStatsBtn.classList.remove('active');
+
             if (tabName === 'wire') {
-                document.body.classList.remove('mobile-view-dispatch');
                 document.body.classList.add('mobile-view-wire');
-                if (tabDispatchBtn) tabDispatchBtn.classList.remove('active');
                 if (tabWireBtn) tabWireBtn.classList.add('active');
-                try { sessionStorage.setItem('lg_mobile_tab', 'wire'); } catch(e) {}
-                if (smoothScroll) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+            } else if (tabName === 'stats') {
+                document.body.classList.add('mobile-view-stats');
+                if (tabStatsBtn) tabStatsBtn.classList.add('active');
             } else {
-                document.body.classList.remove('mobile-view-wire');
                 document.body.classList.add('mobile-view-dispatch');
-                if (tabWireBtn) tabWireBtn.classList.remove('active');
                 if (tabDispatchBtn) tabDispatchBtn.classList.add('active');
-                try { sessionStorage.setItem('lg_mobile_tab', 'dispatch'); } catch(e) {}
-                if (smoothScroll) {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }
+                tabName = 'dispatch';
+            }
+
+            try { sessionStorage.setItem('lg_mobile_tab', tabName); } catch(e) {}
+            if (smoothScroll) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         };
 
@@ -3662,6 +3670,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (tabWireBtn) {
             tabWireBtn.addEventListener('click', () => setMobileTab('wire'));
+        }
+        if (tabStatsBtn) {
+            tabStatsBtn.addEventListener('click', () => setMobileTab('stats'));
         }
         if (mobileFabPost) {
             mobileFabPost.addEventListener('click', () => {
@@ -3683,13 +3694,14 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedTab = (() => {
                 try { return sessionStorage.getItem('lg_mobile_tab'); } catch(e) { return null; }
             })();
-            setMobileTab(savedTab === 'wire' ? 'wire' : 'dispatch', false);
+            const validTabs = ['wire', 'stats'];
+            setMobileTab(validTabs.includes(savedTab) ? savedTab : 'dispatch', false);
         }
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
-                document.body.classList.remove('mobile-view-dispatch', 'mobile-view-wire');
-            } else if (!document.body.classList.contains('mobile-view-dispatch') && !document.body.classList.contains('mobile-view-wire')) {
+                document.body.classList.remove('mobile-view-dispatch', 'mobile-view-wire', 'mobile-view-stats');
+            } else if (!ALL_TABS.some(t => document.body.classList.contains(`mobile-view-${t}`))) {
                 setMobileTab('dispatch', false);
             }
         });
