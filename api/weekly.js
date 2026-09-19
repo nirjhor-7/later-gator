@@ -25,6 +25,7 @@ export default async function handler(req, res) {
         const counts = {};
         let maxTask = { text: 'Nothing yet!', count: 0 };
         tasks.forEach(task => {
+            if (!task || typeof task.text !== 'string' || !task.text.trim()) return;
             const normalized = task.text.toLowerCase().trim();
             counts[normalized] = (counts[normalized] || 0) + 1;
             if (counts[normalized] > maxTask.count) maxTask = { text: task.text, count: counts[normalized] }; 

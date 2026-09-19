@@ -1220,7 +1220,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch('/api/weekly');
             if (response.ok) {
                 const data = await response.json();
-                if (data.count > 0) {
+                if (data && data.count > 0 && typeof data.text === 'string' && data.text.trim()) {
                     let taskName = data.text;
                     if (taskName.startsWith('[PANIC] ')) taskName = taskName.replace('[PANIC] ', '');
                     
@@ -1253,12 +1253,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                     countryLeaderboard.innerHTML = countries.map((c, index) => {
                         const rank = String(index + 1).padStart(2, '0');
+                        const cName = typeof c === 'string' ? c : (c && c.country ? c.country : 'PARTS UNKNOWN');
+                        const cCount = typeof c === 'object' && c && c.count != null ? c.count : '';
                         return `
                         <div class="leaderboard-row">
                             <span class="leaderboard-rank">${rank}.</span>
-                            <span class="leaderboard-country" title="${escapeHtml(c.country)}">${escapeHtml(c.country)}</span>
+                            <span class="leaderboard-country" title="${escapeHtml(cName)}">${escapeHtml(cName)}</span>
                             <span class="leaderboard-dots"></span>
-                            <span class="leaderboard-count">${c.count}</span>
+                            <span class="leaderboard-count">${cCount}</span>
                         </div>
                         `;
                     }).join('');
@@ -3221,7 +3223,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const cachedWeekly = localStorage.getItem('lg_cached_weekly');
             if (cachedWeekly) {
                 const data = JSON.parse(cachedWeekly);
-                if (data && data.count > 0 && shameContainer && shameTask && shameCount) {
+                if (data && data.count > 0 && typeof data.text === 'string' && data.text.trim() && shameContainer && shameTask && shameCount) {
                     let taskName = data.text;
                     if (taskName.startsWith('[PANIC] ')) taskName = taskName.replace('[PANIC] ', '');
                     shameContainer.style.display = 'block';
@@ -3236,11 +3238,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (Array.isArray(countries) && countries.length > 0) {
                     countryLeaderboard.innerHTML = countries.map((c, index) => {
                         const rank = String(index + 1).padStart(2, '0');
+                        const cName = typeof c === 'string' ? c : (c && c.country ? c.country : 'PARTS UNKNOWN');
+                        const cCount = typeof c === 'object' && c && c.count != null ? c.count : '';
                         return `
                         <div class="leaderboard-row">
-                            <span class="leaderboard-rank">${rank}</span>
-                            <span class="leaderboard-country">${escapeHtml(c.country)}</span>
-                            <span class="leaderboard-count">${c.count}</span>
+                            <span class="leaderboard-rank">${rank}.</span>
+                            <span class="leaderboard-country" title="${escapeHtml(cName)}">${escapeHtml(cName)}</span>
+                            <span class="leaderboard-dots"></span>
+                            <span class="leaderboard-count">${cCount}</span>
                         </div>
                         `;
                     }).join('');
