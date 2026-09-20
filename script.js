@@ -250,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // Post box placeholder left empty to avoid redundancy with the 'WHAT ARE YOU PUTTING OFF?' header
+    // Post box placeholder left empty to avoid redundancy with the 'WHAT ARE YOU AVOIDING?' header
     taskInput.placeholder = "";
 
     const evasionVerbs = [
