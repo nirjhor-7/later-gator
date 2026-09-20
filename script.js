@@ -2001,6 +2001,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (dispatchIgBtn) {
+        let igResetTimer = null;
+        const origIgHtml = dispatchIgBtn.innerHTML;
         dispatchIgBtn.addEventListener('click', async () => {
             const shareUrl = getShareUrl();
             if (navigator.share) {
@@ -2017,9 +2019,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             const copySuccess = () => {
-                const orig = dispatchIgBtn.textContent;
-                dispatchIgBtn.textContent = '✓ LINK COPIED! PASTE IN IG STORY';
-                setTimeout(() => { dispatchIgBtn.textContent = orig; }, 2500);
+                if (igResetTimer) clearTimeout(igResetTimer);
+                const label = dispatchIgBtn.querySelector('.dispatch-btn-label');
+                if (label) {
+                    label.textContent = 'LINK COPIED! PASTE IN IG STORY';
+                } else {
+                    dispatchIgBtn.textContent = '✓ LINK COPIED! PASTE IN IG STORY';
+                }
+                igResetTimer = setTimeout(() => {
+                    dispatchIgBtn.innerHTML = origIgHtml;
+                    igResetTimer = null;
+                }, 2500);
             };
 
             try {
@@ -2035,7 +2045,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.body.removeChild(ta);
                     copySuccess();
                 } catch (e) {
-                    dispatchIgBtn.textContent = '✓ LINK: ' + shareUrl;
+                    const label = dispatchIgBtn.querySelector('.dispatch-btn-label');
+                    if (label) {
+                        label.textContent = 'LINK: ' + shareUrl;
+                    } else {
+                        dispatchIgBtn.textContent = '✓ LINK: ' + shareUrl;
+                    }
                 }
             }
         });

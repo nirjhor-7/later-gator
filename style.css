@@ -5386,7 +5386,7 @@ body.midnight-edition .bureau-logout-btn {
 }
 
 .dispatch-act-btn {
-    padding: 11px 10px;
+    padding: 11px 12px;
     font-family: 'Space Mono', monospace;
     font-size: 0.72rem;
     font-weight: 700;
@@ -5399,11 +5399,27 @@ body.midnight-edition .bureau-logout-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
+    line-height: 1;
     transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
     user-select: none;
     box-sizing: border-box;
     white-space: nowrap;
+}
+
+.dispatch-btn-icon {
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+    flex-shrink: 0;
+    fill: currentColor;
+    vertical-align: middle;
+}
+
+.dispatch-btn-label {
+    display: inline-block;
+    line-height: 1;
+    letter-spacing: 0.5px;
 }
 
 .dispatch-ig-btn {
