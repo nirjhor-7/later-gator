@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const statTotal = document.getElementById('stat-total');
     const statVisitors = document.getElementById('stat-visitors');
 
-    // Slacker Rank & Time Stolen (Global Local State)
+    // Slacker Rank, Time Stolen & Sympathy Reactions (Global Local State)
     // Clear out legacy clicker count if present
     try { localStorage.removeItem('lg_clicker_count'); } catch (e) {}
 
@@ -25,10 +25,22 @@ document.addEventListener('DOMContentLoaded', () => {
         try { return parseInt(localStorage.getItem('lg_time_stolen_seconds') || '0', 10); } catch (e) { return 0; }
     })();
 
+    let totalSympathyCount = (() => {
+        try { return parseInt(localStorage.getItem('lg_total_sympathy') || '0', 10); } catch (e) { return 0; }
+    })();
+
+    let myTaskIds = (() => {
+        try {
+            const raw = localStorage.getItem('lg_my_task_ids');
+            return raw ? JSON.parse(raw) : [];
+        } catch (e) { return []; }
+    })();
+
     // Active time spent on site avoiding work (increments every 5s while tab is visible)
     setInterval(() => {
         if (document.visibilityState === 'visible') {
             timeStolenSeconds += 5;
+            window.timeStolenSeconds = timeStolenSeconds;
             try { localStorage.setItem('lg_time_stolen_seconds', timeStolenSeconds.toString()); } catch (e) {}
         }
     }, 5000);
@@ -44,19 +56,35 @@ document.addEventListener('DOMContentLoaded', () => {
         return `~${hrs}h`;
     };
 
-    const getSlackerScore = (dispatches = postponementsCount, timeSecs = timeStolenSeconds) => {
-        return (dispatches * 5) + Math.floor(timeSecs / 120);
+    const getSlackerScore = (dispatches, sympathy, timeSecs) => {
+        const curDisp = dispatches !== undefined ? dispatches : ((window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount);
+        let curSymp = sympathy !== undefined ? sympathy : ((window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount);
+        let curTime = timeSecs !== undefined ? timeSecs : ((window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds);
+
+        if (typeof curSymp === 'object' && curSymp !== null) {
+            curTime = curSymp.timeSecs !== undefined ? curSymp.timeSecs : curTime;
+            curSymp = curSymp.sympathy !== undefined ? curSymp.sympathy : ((window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount);
+        }
+        return (Number(curDisp) || 0) * 10 + (Number(curSymp) || 0) * 3 + Math.floor((Number(curTime) || 0) / 120);
     };
 
-    const getSlackerRank = (dispatches = postponementsCount, timeSecs = timeStolenSeconds) => {
-        const score = getSlackerScore(dispatches, timeSecs);
-        if (score >= 150 || dispatches >= 30) return "RANK: TRANSCENDENT VOID DWELLER ✦";
-        if (score >= 75 || dispatches >= 15) return "RANK: SUPREME TIME BENDER ★★★";
-        if (score >= 40 || dispatches >= 8) return "RANK: ARCHBISHOP OF APATHY ★★";
-        if (score >= 20 || dispatches >= 5) return "RANK: GRAND MASTER OF DELAY ★";
-        if (score >= 10 || dispatches >= 3) return "RANK: EXECUTIVE SLOTH";
-        if (score >= 5 || dispatches >= 2) return "RANK: PROFESSIONAL TIME BANDIT";
-        if (score >= 1 || dispatches >= 1 || timeSecs >= 60) return "RANK: CERTIFIED PROCRASTINATOR";
+    const getSlackerRank = (dispatches, sympathy, timeSecs) => {
+        const curDisp = dispatches !== undefined ? dispatches : ((window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount);
+        let curSymp = sympathy !== undefined ? sympathy : ((window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount);
+        let curTime = timeSecs !== undefined ? timeSecs : ((window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds);
+
+        if (typeof curSymp === 'object' && curSymp !== null) {
+            curTime = curSymp.timeSecs !== undefined ? curSymp.timeSecs : curTime;
+            curSymp = curSymp.sympathy !== undefined ? curSymp.sympathy : ((window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount);
+        }
+        const score = getSlackerScore(curDisp, curSymp, curTime);
+        if (score >= 800 || curDisp >= 25) return "RANK: TRANSCENDENT VOID DWELLER ✦";
+        if (score >= 400 || curDisp >= 15) return "RANK: SUPREME TIME BENDER ★★★";
+        if (score >= 200 || curDisp >= 8) return "RANK: ARCHBISHOP OF APATHY ★★";
+        if (score >= 100 || curDisp >= 5) return "RANK: GRAND MASTER OF DELAY ★";
+        if (score >= 50 || curDisp >= 3) return "RANK: EXECUTIVE SLOTH";
+        if (score >= 25 || curDisp >= 2) return "RANK: PROFESSIONAL TIME BANDIT";
+        if (score >= 10 || curDisp >= 1 || curTime >= 60) return "RANK: CERTIFIED PROCRASTINATOR";
         return "RANK: NOVICE DODGER";
     };
 
@@ -65,6 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
     window.getSlackerScore = getSlackerScore;
     window.postponementsCount = postponementsCount;
     window.timeStolenSeconds = timeStolenSeconds;
+    window.totalSympathyCount = totalSympathyCount;
+    window.myTaskIds = myTaskIds;
 
     // Sub-modules & Services (Audio, Evasion, Canvas)
     const GatorAudio = window.GatorAudio || {};
@@ -73,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Backward compatibility aliases
     let clickerCount = postponementsCount;
-    const getClickerRank = () => getSlackerRank(postponementsCount, timeStolenSeconds);
+    const getClickerRank = () => getSlackerRank(postponementsCount, totalSympathyCount, timeStolenSeconds);
     const formatWastedTime = () => formatTimeStolen(timeStolenSeconds);
 
     // ==========================================
@@ -1084,6 +1114,29 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const updateUserSympathyFromFeed = (tasksList) => {
+        const tasks = Array.isArray(tasksList) ? tasksList : Array.from(allKnownTasks.values());
+        if (!Array.isArray(tasks) || tasks.length === 0) return;
+        const currentMyIds = (Array.isArray(window.myTaskIds) && window.myTaskIds.length > 0) ? window.myTaskIds : myTaskIds;
+        if (!Array.isArray(currentMyIds) || currentMyIds.length === 0) return;
+
+        let sympathySum = 0;
+        const idSet = new Set(currentMyIds.map(Number));
+        for (const t of tasks) {
+            if (t && idSet.has(Number(t.id))) {
+                sympathySum += (Number(t.same_count) || 0) + (Number(t.valid_count) || 0) + (Number(t.rip_count) || 0);
+            }
+        }
+
+        if (sympathySum > totalSympathyCount) {
+            totalSympathyCount = sympathySum;
+            window.totalSympathyCount = totalSympathyCount;
+            try { localStorage.setItem('lg_total_sympathy', totalSympathyCount.toString()); } catch (e) {}
+            if (typeof updateClickerUI === 'function') updateClickerUI();
+        }
+    };
+    window.updateUserSympathyFromFeed = updateUserSympathyFromFeed;
+
     const fetchTasks = async (forceFresh = false) => {
         try {
             const url = `/api/tasks?limit=all&_t=${Date.now()}`;
@@ -1093,6 +1146,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderFeed(tasks);
                 renderTicker(tasks);
                 renderLeadStory(tasks);
+                updateUserSympathyFromFeed(tasks);
                 if (Array.isArray(tasks) && tasks.length > 0) {
                     try {
                         localStorage.setItem('lg_cached_tasks', JSON.stringify(tasks.slice(0, 500)));
@@ -1553,6 +1607,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (newTask && newTask.id) {
                         allKnownTasks.delete(optId);
                         allKnownTasks.set(Number(newTask.id), newTask);
+                        const numId = Number(newTask.id);
+                        if (!myTaskIds.includes(numId)) {
+                            myTaskIds.push(numId);
+                            window.myTaskIds = myTaskIds;
+                            try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+                        }
                         if (optEl && optEl.parentNode) {
                             optEl.setAttribute('data-task-id', newTask.id);
                             const clipBtn = optEl.querySelector('.feed-clip-btn');
@@ -1598,8 +1658,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const getShareUrl = () => window.location.origin && window.location.origin !== 'null' ? window.location.origin : 'https://latergators.live';
 
     const generateCertificateImage = (taskText, isPanicMode, holderName) => {
+        const curDisp = (window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount;
+        const curSymp = (window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount;
+        const curTime = (window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds;
         return GatorCanvas.generateCertificateImage
-            ? GatorCanvas.generateCertificateImage(taskText, isPanicMode, holderName, { postponementsCount, timeStolenSeconds })
+            ? GatorCanvas.generateCertificateImage(taskText, isPanicMode, holderName, {
+                postponementsCount: curDisp,
+                totalSympathyCount: curSymp,
+                sympathyCount: curSymp,
+                timeStolenSeconds: curTime
+            })
             : document.createElement('canvas');
     };
     window.generateCertificateImage = generateCertificateImage;
@@ -2514,9 +2582,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (camoStopBtn) camoStopBtn.addEventListener('click', stopCamouflage);
 
     // --- Perk 3: Official Sloth Credential & Press Pass (Canvas via GatorCanvas) ---
-    const generateCredentialCard = (targetCanvas, holderName, rankName, clicks, timeStr) => {
+    const generateCredentialCard = (targetCanvas, holderName, rankName, clicks, timeStr, options) => {
         return GatorCanvas.generateCredentialCard
-            ? GatorCanvas.generateCredentialCard(targetCanvas, holderName, rankName, clicks, timeStr)
+            ? GatorCanvas.generateCredentialCard(targetCanvas, holderName, rankName, clicks, timeStr, options)
             : targetCanvas;
     };
 
@@ -2530,10 +2598,16 @@ document.addEventListener('DOMContentLoaded', () => {
         authorName = authorName || 'Anonymous Slacker';
         authorName = authorName.replace(/^\[[^\]]+\]\s*/, '');
 
-        const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
-        const timeStr = formatTimeStolen(timeStolenSeconds);
+        const curPostponements = (window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount;
+        const curSympathy = (window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount;
+        const curTime = (window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds;
 
-        generateCredentialCard(credentialCanvas, authorName, rankText, postponementsCount, timeStr);
+        const rankText = getSlackerRank(curPostponements, curSympathy, curTime).replace('RANK: ', '').trim();
+        const timeStr = formatTimeStolen(curTime);
+
+        generateCredentialCard(credentialCanvas, authorName, rankText, curPostponements, timeStr, {
+            sympathyCount: curSympathy
+        });
 
         const credentialShareBtn = document.getElementById('credential-share-btn');
         if (credentialShareBtn && navigator.share) {
@@ -2583,10 +2657,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (credentialShareBtn) {
         credentialShareBtn.addEventListener('click', async () => {
             if (!navigator.share) return;
-            const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
-            const timeStr = formatTimeStolen(timeStolenSeconds);
-            const dispWord = postponementsCount === 1 ? 'dispatch' : 'dispatches';
-            const shareText = `I have been officially accredited as "${rankText}" with ${postponementsCount} ${dispWord} filed and ${timeStr} stolen from work on Later, Gator. My diplomatic immunity is legally binding.`;
+            const curPostponements = (window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount;
+            const curSympathy = (window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount;
+            const curTime = (window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds;
+
+            const rankText = getSlackerRank(curPostponements, curSympathy, curTime).replace('RANK: ', '').trim();
+            const timeStr = formatTimeStolen(curTime);
+            const dispWord = curPostponements === 1 ? 'dispatch' : 'dispatches';
+            const sympathyPhrase = curSympathy > 0 ? `, ${curSympathy} sympathy earned,` : '';
+            const shareText = `I have been officially accredited as "${rankText}" with ${curPostponements} ${dispWord} filed${sympathyPhrase} and ${timeStr} stolen from work on Later, Gator. My diplomatic immunity is legally binding.`;
             const shareUrl = getShareUrl();
 
             if (credentialCanvas && credentialCanvas.toBlob && navigator.canShare) {
@@ -2632,10 +2711,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 link.href = credentialCanvas.toDataURL('image/png');
                 link.click();
             }
-            const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
-            const timeStr = formatTimeStolen(timeStolenSeconds);
-            const dispWord = postponementsCount === 1 ? 'dispatch' : 'dispatches';
-            const text = `I have been officially accredited as "${rankText}" with ${postponementsCount} ${dispWord} filed and ${timeStr} stolen from work on @thelatergators. Diplomatic immunity granted.`;
+            const curPostponements = (window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount;
+            const curSympathy = (window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount;
+            const curTime = (window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds;
+
+            const rankText = getSlackerRank(curPostponements, curSympathy, curTime).replace('RANK: ', '').trim();
+            const timeStr = formatTimeStolen(curTime);
+            const dispWord = curPostponements === 1 ? 'dispatch' : 'dispatches';
+            const sympathyPhrase = curSympathy > 0 ? `, ${curSympathy} sympathy earned,` : '';
+            const text = `I have been officially accredited as "${rankText}" with ${curPostponements} ${dispWord} filed${sympathyPhrase} and ${timeStr} stolen from work on @thelatergators. Diplomatic immunity granted.`;
             const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(getShareUrl())}`;
             window.open(url, '_blank', 'noopener,noreferrer');
         });
@@ -2646,10 +2730,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const userNameInput = document.getElementById('user-name');
             let authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '') || 'Anonymous Slacker';
             authorName = authorName.replace(/^\[[^\]]+\]\s*/, '');
-            const rankText = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '').trim();
-            const timeStr = formatTimeStolen(timeStolenSeconds);
-            const dispWord = postponementsCount === 1 ? 'DISPATCH' : 'DISPATCHES';
-            const summary = `★ OFFICIAL SLOTH CREDENTIAL // BUREAU OF IDLENESS ★\nBEARER: ${authorName.toUpperCase()}\nRANK: ${rankText}\nRECORD: ${postponementsCount} ${dispWord} FILED • ${timeStr} STOLEN FROM WORK\nSTATUS: FULL DIPLOMATIC IMMUNITY FROM WORK\nVERIFY: ${getShareUrl()}`;
+            const curPostponements = (window.postponementsCount !== undefined) ? window.postponementsCount : postponementsCount;
+            const curSympathy = (window.totalSympathyCount !== undefined) ? window.totalSympathyCount : totalSympathyCount;
+            const curTime = (window.timeStolenSeconds !== undefined) ? window.timeStolenSeconds : timeStolenSeconds;
+
+            const rankText = getSlackerRank(curPostponements, curSympathy, curTime).replace('RANK: ', '').trim();
+            const timeStr = formatTimeStolen(curTime);
+            const dispWord = curPostponements === 1 ? 'DISPATCH' : 'DISPATCHES';
+            const sympathyText = curSympathy > 0 ? ` • ${curSympathy} SYMPATHY` : '';
+            const summary = `★ OFFICIAL SLOTH CREDENTIAL // BUREAU OF IDLENESS ★\nBEARER: ${authorName.toUpperCase()}\nRANK: ${rankText}\nRECORD: ${curPostponements} ${dispWord} FILED${sympathyText} • ${timeStr} STOLEN FROM WORK\nSTATUS: FULL DIPLOMATIC IMMUNITY FROM WORK\nVERIFY: ${getShareUrl()}`;
             try {
                 await navigator.clipboard.writeText(summary);
                 credentialCopyBtn.textContent = "COPIED! ✓";
@@ -3422,11 +3511,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const total = data.totalSympathy || 0;
             postponementsCount = Math.max(postponementsCount, count);
             clickerCount = postponementsCount;
-            try { localStorage.setItem('lg_postponements_count', postponementsCount.toString()); } catch (e) {}
+            totalSympathyCount = Math.max(totalSympathyCount, total);
+            window.postponementsCount = postponementsCount;
+            window.totalSympathyCount = totalSympathyCount;
+            try {
+                localStorage.setItem('lg_postponements_count', postponementsCount.toString());
+                localStorage.setItem('lg_total_sympathy', totalSympathyCount.toString());
+            } catch (e) {}
 
-            const operativeRank = getSlackerRank(postponementsCount, timeStolenSeconds).replace('RANK: ', '');
+            const operativeRank = getSlackerRank(postponementsCount, totalSympathyCount, timeStolenSeconds).replace('RANK: ', '');
             if (dossierSummaryEl) {
-                dossierSummaryEl.textContent = `${count} ${count === 1 ? 'DISPATCH' : 'DISPATCHES'} • ${operativeRank} • ${total} TOTAL SYMPATHY`;
+                dossierSummaryEl.textContent = `${count} ${count === 1 ? 'DISPATCH' : 'DISPATCHES'} • ${total} SYMPATHY • ${operativeRank}`;
             }
 
             if (count === 0) {

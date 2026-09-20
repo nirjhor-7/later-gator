@@ -45,6 +45,9 @@
         const postponementsCount = options.postponementsCount !== undefined
             ? options.postponementsCount
             : (window.postponementsCount || 0);
+        const sympathyCount = options.sympathyCount !== undefined
+            ? options.sympathyCount
+            : (options.totalSympathyCount !== undefined ? options.totalSympathyCount : (window.totalSympathyCount || 0));
         const timeStolenSeconds = options.timeStolenSeconds !== undefined
             ? options.timeStolenSeconds
             : (window.timeStolenSeconds || 0);
@@ -128,18 +131,19 @@
         ctx.fillText(`[ ${displayHolder} ]`, 600, 312);
 
         const currentRank = (typeof window.getSlackerRank === 'function'
-            ? window.getSlackerRank(postponementsCount, timeStolenSeconds)
+            ? window.getSlackerRank(postponementsCount, sympathyCount, timeStolenSeconds)
             : 'ACCREDITED DELAYER').replace('RANK: ', '').trim();
         const dispatchWord = postponementsCount === 1 ? 'DISPATCH' : 'DISPATCHES';
+        const sympathyStr = sympathyCount > 0 ? ` • ${sympathyCount} SYMPATHY` : '';
 
         ctx.font = '700 11px "Space Mono", monospace';
         if (gatorTag) {
             ctx.fillStyle = '#b91c1c';
-            ctx.fillText(`★ VERIFIED BUREAU OPERATIVE // ${currentRank} • ${postponementsCount} ${dispatchWord} FILED ★`, 600, 334);
+            ctx.fillText(`★ VERIFIED BUREAU OPERATIVE // ${currentRank} • ${postponementsCount} ${dispatchWord} FILED${sympathyStr} ★`, 600, 334);
             ctx.fillStyle = '#111111';
         } else {
             ctx.fillStyle = '#555555';
-            ctx.fillText(`★ ACCREDITED CLEARANCE: ${currentRank} • ${postponementsCount} ${dispatchWord} FILED ★`, 600, 334);
+            ctx.fillText(`★ ACCREDITED CLEARANCE: ${currentRank} • ${postponementsCount} ${dispatchWord} FILED${sympathyStr} ★`, 600, 334);
             ctx.fillStyle = '#111111';
         }
 
@@ -225,7 +229,7 @@
     /**
      * Generates Official Sloth Credential & Press Pass (1000x620)
      */
-    const generateCredentialCard = (targetCanvas, holderName, rankName, clicks, timeStr) => {
+    const generateCredentialCard = (targetCanvas, holderName, rankName, clicks, timeStr, options = {}) => {
         const canvas = targetCanvas || document.createElement('canvas');
         canvas.width = 1000;
         canvas.height = 620;
@@ -330,7 +334,11 @@
         ctx.font = '700 13px "Space Mono", monospace';
         ctx.fillStyle = '#111111';
         const dispWord = clicks === 1 ? 'DISPATCH' : 'DISPATCHES';
-        ctx.fillText(`${clicks} ${dispWord} FILED • ${timeStr} STOLEN FROM WORK`, 60, 348);
+        const sympathyVal = (typeof options === 'object' && options && options.sympathyCount !== undefined)
+            ? options.sympathyCount
+            : (typeof options === 'number' ? options : (window.totalSympathyCount || 0));
+        const sympathyText = sympathyVal > 0 ? ` • ${sympathyVal} SYMPATHY` : '';
+        ctx.fillText(`${clicks} ${dispWord} FILED${sympathyText} • ${timeStr} STOLEN`, 60, 348);
 
         // Field 4: IDENTIFIER & DATE
         ctx.font = '700 12px "Space Mono", monospace';
