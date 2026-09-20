@@ -250,17 +250,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // Random placeholders
+    // Clear, focused placeholders
     const placeholders = [
-        "Declare your intent to procrastinate here...",
-        "What are you actively avoiding right now?",
-        "Type the thing you'll definitely do tomorrow...",
-        "What responsibility are you running from?",
-        "Confess your neglected task...",
-        "What is giving you low-level anxiety right now?",
-        "Enter the chore you are currently ignoring..."
+        "What are you avoiding? (e.g. studying, laundry, emails)...",
+        "What are you avoiding right now?",
+        "What task are you putting off today?",
+        "Type the chore you're running away from...",
+        "What are you putting off until tomorrow?",
+        "Confess the thing you should be doing instead..."
     ];
-    taskInput.placeholder = placeholders[Math.floor(Math.random() * placeholders.length)];
+    taskInput.placeholder = "What are you avoiding? (e.g. studying, laundry, emails)...";
 
     const evasionVerbs = [
         "POSTPONED",
@@ -2365,8 +2364,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
             if (mastheadSub) mastheadSub.textContent = 'PRINTED UNDER GASLIGHT FOR THE PROFOUNDLY AWAKE';
-            if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('Declare your intent'))) {
-                taskInput.placeholder = "Why are you awake at this hour? Confess your midnight evasion...";
+            if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('avoiding'))) {
+                taskInput.placeholder = "Why are you awake at this hour? What are you avoiding?...";
             }
         } else {
             document.body.classList.remove('midnight-edition');
@@ -2379,7 +2378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
             if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('awake at this hour'))) {
-                taskInput.placeholder = "Declare your intent to procrastinate here...";
+                taskInput.placeholder = "What are you avoiding? (e.g. studying, laundry, emails)...";
             }
         }
 

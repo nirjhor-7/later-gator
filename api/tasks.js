@@ -45,7 +45,14 @@ function containsInappropriate(str) {
         /\b(whore\w*|slut\w*)\b/i,
         /\b(bastard\w*)\b/i,
 
-        // 2. Common spaced / leetspeak obfuscations with word boundaries
+        // Bodily excretions, vulgarities & scatological terms
+        /\b(fart\w*|queef\w*)\b/i,
+        /\b(shit\w*|shite\w*|bullshit\w*|horseshit\w*|dipshit\w*|shithole\w*|batshit\w*|apeshit\w*|sh\*t|sh!t|sh1t|shyt)\b/i,
+        /\b(poop\w*|p00p\w*|turd\w*|diarrhe\w*|diarrho\w*)\b/i,
+        /\b(crap\w*|crappy\w*|cr@p|cr\*p)\b/i,
+        /\b(piss\w*|pissed\w*|pissing\w*|p!ss|p\*ss)\b/i,
+
+        // 2. Common spaced / leetspeak / elongated obfuscations with word boundaries
         /\b(s[\s._\-*]*[3e][\s._\-*]*x+)\b/i,
         /\b([4a][\s._\-*]*n[\s._\-*]*[4a][\s._\-*]*l)\b/i,
         /\b(p[\s._\-*]*[0o][\s._\-*]*r[\s._\-*]*n)\b/i,
@@ -53,7 +60,14 @@ function containsInappropriate(str) {
         /\b(d[\s._\-*]*[1!i][\s._\-*]*c[\s._\-*]*k+)\b/i,
         /\b(b[\s._\-*]*[1!i][\s._\-*]*t[\s._\-*]*c[\s._\-*]*h+)\b/i,
         /\b(c[\s._\-*]*[u*][\s._\-*]*n[\s._\-*]*t+)\b/i,
-        /\b(p[\s._\-*]*[u*][\s._\-*]*s+[\s._\-*]*[y!1])\b/i
+        /\b(p[\s._\-*]*[u*][\s._\-*]*s+[\s._\-*]*[y!1])\b/i,
+        /\b(s[\s._\-*]*h[\s._\-*]*[i!1y*][\s._\-*]*t+)\b/i,
+        /\b(f[\s._\-*]*[a@*][\s._\-*]*r[\s._\-*]*t+)\b/i,
+        /\b(p[\s._\-*]*[o0*][\s._\-*]*[o0*][\s._\-*]*p+)\b/i,
+        /\b(p[\s._\-*]*[i!1*][\s._\-*]*s+)\b/i,
+        /\b(s+h+[i1!y*]+t+)\b/i,
+        /\b(f+a+r+t+s*)\b/i,
+        /\b(p+o+o+p+s*)\b/i
     ];
 
     for (const rx of explicitWords) {

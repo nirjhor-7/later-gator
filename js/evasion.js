@@ -120,7 +120,7 @@
     ];
 
     // Regex for inline broadsheet redacting
-    const NSFW_REGEX = /\b(sex|sexual|anal|porn|porno|hentai|nude|nudes|boob|boobs|tit|tits|penis|dick|dicks|cock|cocks|vagina|pussy|pussies|clit|clitoris|masturbat\w*|horny|orgasm|orgasms|ejaculat\w*|ass|asshole|assholes|butthole|anus|blowjob\w*|handjob\w*|rimjob\w*|deepthroat\w*|creampie\w*|pegging|cum|cumming|onlyfans|fuck\w*|bitch\w*|cunt\w*|whore\w*|slut\w*|dildo\w*)\b/gi;
+    const NSFW_REGEX = /\b(sex|sexual|anal|porn|porno|hentai|nude|nudes|boob|boobs|tit|tits|penis|dick|dicks|cock|cocks|vagina|pussy|pussies|clit|clitoris|masturbat\w*|horny|orgasm|orgasms|ejaculat\w*|ass|asshole|assholes|butthole|anus|blowjob\w*|handjob\w*|rimjob\w*|deepthroat\w*|creampie\w*|pegging|cum|cumming|onlyfans|fuck\w*|bitch\w*|cunt\w*|whore\w*|slut\w*|dildo\w*|shit\w*|shite\w*|bullshit\w*|horseshit\w*|dipshit\w*|shithole\w*|batshit\w*|apeshit\w*|fart\w*|queef\w*|poop\w*|turd\w*|diarrhe\w*|diarrho\w*|crap\w*|piss\w*)\b/gi;
 
     /**
      * Checks if text contains vulgarities, sexual content, or racial slurs
@@ -156,7 +156,14 @@
             /\b(whore\w*|slut\w*)\b/i,
             /\b(bastard\w*)\b/i,
 
-            // Common spaced / leetspeak obfuscations
+            // Bodily excretions, vulgarities & scatological terms
+            /\b(fart\w*|queef\w*)\b/i,
+            /\b(shit\w*|shite\w*|bullshit\w*|horseshit\w*|dipshit\w*|shithole\w*|batshit\w*|apeshit\w*|sh\*t|sh!t|sh1t|shyt)\b/i,
+            /\b(poop\w*|p00p\w*|turd\w*|diarrhe\w*|diarrho\w*)\b/i,
+            /\b(crap\w*|crappy\w*|cr@p|cr\*p)\b/i,
+            /\b(piss\w*|pissed\w*|pissing\w*|p!ss|p\*ss)\b/i,
+
+            // Common spaced / leetspeak / elongated obfuscations
             /\b(s[\s._\-*]*[3e][\s._\-*]*x+)\b/i,
             /\b([4a][\s._\-*]*n[\s._\-*]*[4a][\s._\-*]*l)\b/i,
             /\b(p[\s._\-*]*[0o][\s._\-*]*r[\s._\-*]*n)\b/i,
@@ -164,7 +171,14 @@
             /\b(d[\s._\-*]*[1!i][\s._\-*]*c[\s._\-*]*k+)\b/i,
             /\b(b[\s._\-*]*[1!i][\s._\-*]*t[\s._\-*]*c[\s._\-*]*h+)\b/i,
             /\b(c[\s._\-*]*[u*][\s._\-*]*n[\s._\-*]*t+)\b/i,
-            /\b(p[\s._\-*]*[u*][\s._\-*]*s+[\s._\-*]*[y!1])\b/i
+            /\b(p[\s._\-*]*[u*][\s._\-*]*s+[\s._\-*]*[y!1])\b/i,
+            /\b(s[\s._\-*]*h[\s._\-*]*[i!1y*][\s._\-*]*t+)\b/i,
+            /\b(f[\s._\-*]*[a@*][\s._\-*]*r[\s._\-*]*t+)\b/i,
+            /\b(p[\s._\-*]*[o0*][\s._\-*]*[o0*][\s._\-*]*p+)\b/i,
+            /\b(p[\s._\-*]*[i!1*][\s._\-*]*s+)\b/i,
+            /\b(s+h+[i1!y*]+t+)\b/i,
+            /\b(f+a+r+t+s*)\b/i,
+            /\b(p+o+o+p+s*)\b/i
         ];
 
         for (const rx of explicitWords) {
