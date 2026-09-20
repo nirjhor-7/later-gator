@@ -1525,9 +1525,9 @@ body.midnight-edition .feed-back-to-top-btn:hover {
 }
 
 .wire-jump-latest-btn {
-    position: absolute;
-    bottom: 22px;
-    right: 24px;
+    position: fixed;
+    bottom: 24px;
+    right: max(24px, calc((100vw - 1280px) / 2 + 24px));
     background: var(--paper);
     color: var(--ink);
     font-family: 'Space Mono', monospace;
@@ -1537,7 +1537,7 @@ body.midnight-edition .feed-back-to-top-btn:hover {
     border: 2px solid var(--ink);
     border-radius: 24px;
     box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
-    z-index: 25;
+    z-index: 990;
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -3735,7 +3735,7 @@ body.sepia-edition .footer-credit {
     /* Mobile Floating Jump to Latest Button */
     .wire-jump-latest-btn {
         position: fixed;
-        bottom: 20px;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
         left: 18px;
         right: auto !important;
         width: auto !important;
@@ -5011,12 +5011,12 @@ body.midnight-edition .comic-page-num {
 }
 .bureau-pass-btn {
     width: 100%;
-    padding: 9px 12px;
+    padding: 8px 10px;
     background: var(--paper);
     color: var(--ink);
     border: 2px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: 0.76rem;
+    font-size: clamp(0.66rem, 2.5vw, 0.74rem);
     font-weight: 700;
     cursor: pointer;
     text-transform: uppercase;
@@ -5025,8 +5025,9 @@ body.midnight-edition .comic-page-num {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     box-sizing: border-box;
+    white-space: nowrap;
 }
 .bureau-pass-btn:hover {
     background: #b91c1c;
@@ -5045,20 +5046,46 @@ body.midnight-edition .comic-page-num {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
     border-bottom: 2px solid var(--ink);
-    padding-bottom: 10px;
-    margin-bottom: 16px;
-    font-size: 0.78rem;
+    padding-bottom: 8px;
+    margin-bottom: 14px;
+    font-size: clamp(0.68rem, 2.7vw, 0.78rem);
     font-weight: 700;
     letter-spacing: 0.5px;
     width: 100%;
     box-sizing: border-box;
+    white-space: nowrap;
+}
+.bureau-modal-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.2;
+}
+.bureau-title-short {
+    display: none;
+}
+.bureau-title-full {
+    display: inline;
+}
+.pass-btn-short {
+    display: none;
+}
+.pass-btn-full {
+    display: inline;
 }
 .bureau-dialog .share-close-btn {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     line-height: 1;
     padding: 0;
     margin: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
     cursor: pointer;
 }
 .bureau-modal-body {
@@ -5242,26 +5269,32 @@ body.midnight-edition .comic-page-num {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
     border-bottom: 1.5px solid var(--ink);
+    gap: 8px;
 }
 .bureau-op-tag {
-    font-size: 10px;
-    letter-spacing: 2px;
+    font-size: clamp(9px, 2.6vw, 10px);
+    letter-spacing: 1px;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .bureau-logout-btn {
     font-family: 'Space Mono', monospace;
     font-size: 9px;
     letter-spacing: 1px;
-    padding: 4px 6px;
+    padding: 3px 6px;
     background: transparent;
     border: 1px solid var(--ink-light);
     color: var(--ink-light);
     cursor: pointer;
+    flex-shrink: 0;
+    white-space: nowrap;
     transition: border-color 0.15s, color 0.15s;
 }
 .bureau-logout-btn:hover {
@@ -5283,12 +5316,18 @@ body.midnight-edition .comic-page-num {
     color: var(--ink);
 }
 .dossier-summary {
-    font-size: 10px;
-    letter-spacing: 1px;
+    font-size: clamp(8.5px, 2.4vw, 10px);
+    letter-spacing: 0.5px;
     color: var(--ink-light);
     margin-bottom: 10px;
     text-align: center;
     text-transform: uppercase;
+    line-height: 1.4;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 4px 6px;
 }
 .dossier-list {
     display: flex;
@@ -5372,6 +5411,16 @@ body.sepia-edition .bureau-logout-btn {
     border-color: #6d533b !important;
     color: #6d533b !important;
 }
+body.sepia-edition .bureau-pass-btn {
+    background: #f4ead2 !important;
+    border-color: #2d2319 !important;
+    color: #2d2319 !important;
+}
+body.sepia-edition .bureau-pass-btn:hover {
+    background: #b91c1c !important;
+    border-color: #b91c1c !important;
+    color: #ffffff !important;
+}
 
 /* ── Bureau Operative — Midnight Broadsheet Overrides ── */
 body.midnight-edition .bureau-tagline,
@@ -5417,6 +5466,51 @@ body.midnight-edition .dossier-item {
 body.midnight-edition .bureau-logout-btn {
     border-color: #a89885 !important;
     color: #a89885 !important;
+}
+body.midnight-edition .bureau-pass-btn {
+    background: #28221c !important;
+    border-color: #6e5c49 !important;
+    color: #efe3d3 !important;
+}
+body.midnight-edition .bureau-pass-btn:hover {
+    background: #b91c1c !important;
+    border-color: #b91c1c !important;
+    color: #ffffff !important;
+}
+
+/* ── Bureau Operative — Mobile & Responsive Refinements ── */
+@media (max-width: 768px) {
+    .bureau-dialog {
+        width: min(94vw, 420px) !important;
+        max-width: 420px !important;
+        padding: 14px 12px !important;
+        box-shadow: 6px 6px 0px var(--ink) !important;
+        outline: 2px solid var(--ink) !important;
+        outline-offset: 2px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .bureau-title-full {
+        display: none !important;
+    }
+    .bureau-title-short {
+        display: inline !important;
+    }
+    .pass-btn-full {
+        display: none !important;
+    }
+    .pass-btn-short {
+        display: inline !important;
+    }
+}
+
+@media (max-width: 380px) {
+    .bureau-dialog {
+        padding: 12px 10px !important;
+        box-shadow: 4px 4px 0px var(--ink) !important;
+        outline-offset: 1.5px !important;
+    }
 }
 
 /* ============================================================

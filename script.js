@@ -2338,6 +2338,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const camoStopBtn = document.getElementById('camo-stop-btn');
     const secretColumn = document.getElementById('secret-column');
 
+    let closeCredentialModal = () => {};
+    let closeClippingModal = () => {};
+    let closeBureauModal = () => {};
+    let openCredentialModal = () => {};
+    let openClippingModal = () => {};
+    let openBureauModal = () => {};
+
+    const syncModalOverflow = () => {
+        const cModal = document.getElementById('credential-modal');
+        const clModal = document.getElementById('clipping-modal');
+        const bModal = document.getElementById('bureau-modal');
+        const anyOpen = (cModal && cModal.style.display === 'flex') ||
+                        (clModal && clModal.style.display === 'flex') ||
+                        (bModal && bModal.style.display === 'flex');
+        document.body.style.overflow = anyOpen ? 'hidden' : '';
+    };
+
     const credentialModal = document.getElementById('credential-modal');
     const credentialBackdrop = document.getElementById('credential-backdrop');
     const credentialCloseBtn = document.getElementById('credential-close-btn');
@@ -2616,8 +2633,11 @@ document.addEventListener('DOMContentLoaded', () => {
             : targetCanvas;
     };
 
-    const openCredentialModal = () => {
+    openCredentialModal = () => {
         if (!credentialModal || !credentialCanvas) return;
+        closeBureauModal();
+        closeClippingModal();
+
         const userNameInput = document.getElementById('user-name');
         let authorName = currentSubmittedName || (userNameInput ? userNameInput.value.trim() : '');
         if (!authorName && currentGator && (currentGator.displayTag || currentGator.tag)) {
@@ -2643,11 +2663,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         credentialModal.style.display = 'flex';
+        syncModalOverflow();
     };
     window.openCredentialModal = openCredentialModal;
 
-    const closeCredentialModal = () => {
+    closeCredentialModal = () => {
         if (credentialModal) credentialModal.style.display = 'none';
+        syncModalOverflow();
     };
 
     if (claimPassBtn) claimPassBtn.addEventListener('click', openCredentialModal);
@@ -2799,8 +2821,10 @@ document.addEventListener('DOMContentLoaded', () => {
             : canvas;
     };
 
-    const openClippingModal = (task) => {
+    openClippingModal = (task) => {
         if (!clippingModal || !clippingCanvas || !task) return;
+        closeBureauModal();
+        closeCredentialModal();
         currentClippingTask = task;
         generateNewspaperClipping(clippingCanvas, task);
 
@@ -2809,12 +2833,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         clippingModal.style.display = 'flex';
+        syncModalOverflow();
     };
     window.openClippingModal = openClippingModal;
 
-    const closeClippingModal = () => {
+    closeClippingModal = () => {
         if (clippingModal) clippingModal.style.display = 'none';
         currentClippingTask = null;
+        syncModalOverflow();
     };
 
     refreshClippingTheme = () => {
@@ -2834,6 +2860,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (credentialModal && credentialModal.style.display === 'flex') {
                 closeCredentialModal();
+            }
+            const bModal = document.getElementById('bureau-modal');
+            if (bModal && bModal.style.display === 'flex') {
+                closeBureauModal();
             }
         }
     });
@@ -3500,10 +3530,12 @@ document.addEventListener('DOMContentLoaded', () => {
     let tagCheckTimeout = null;
     let isTagValid = false;
 
-    const openBureauModal = (preferredTab = null) => {
+    openBureauModal = (preferredTab = null) => {
         if (!bureauModal) return;
+        closeCredentialModal();
+        closeClippingModal();
         bureauModal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
+        syncModalOverflow();
 
         if (preferredTab && bureauTabs) {
             bureauTabs.forEach(t => {
@@ -3516,12 +3548,14 @@ document.addEventListener('DOMContentLoaded', () => {
             window.fetchDossier();
         }
     };
+    window.openBureauModal = openBureauModal;
 
-    const closeBureauModal = () => {
+    closeBureauModal = () => {
         if (!bureauModal) return;
         bureauModal.style.display = 'none';
-        document.body.style.overflow = '';
+        syncModalOverflow();
     };
+    window.closeBureauModal = closeBureauModal;
 
     window.fetchDossier = async () => {
         if (!gatorToken || !dossierListEl) return;
