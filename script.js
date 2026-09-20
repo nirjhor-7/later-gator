@@ -2671,6 +2671,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (credentialModal) credentialModal.style.display = 'none';
         syncModalOverflow();
     };
+    window.closeCredentialModal = closeCredentialModal;
 
     if (claimPassBtn) claimPassBtn.addEventListener('click', openCredentialModal);
     const headerPassBtn = document.getElementById('header-pass-btn');
@@ -2842,6 +2843,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentClippingTask = null;
         syncModalOverflow();
     };
+    window.closeClippingModal = closeClippingModal;
 
     refreshClippingTheme = () => {
         if (clippingModal && clippingModal.style.display === 'flex' && currentClippingTask && clippingCanvas) {
