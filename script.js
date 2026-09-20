@@ -252,14 +252,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear, focused placeholders
     const placeholders = [
-        "What are you avoiding? (e.g. studying, laundry, emails)...",
+        "What are you avoiding?...",
         "What are you avoiding right now?",
         "What task are you putting off today?",
         "Type the chore you're running away from...",
         "What are you putting off until tomorrow?",
         "Confess the thing you should be doing instead..."
     ];
-    taskInput.placeholder = "What are you avoiding? (e.g. studying, laundry, emails)...";
+    taskInput.placeholder = "What are you avoiding?...";
 
     const evasionVerbs = [
         "POSTPONED",
@@ -2378,7 +2378,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
             if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('awake at this hour'))) {
-                taskInput.placeholder = "What are you avoiding? (e.g. studying, laundry, emails)...";
+                taskInput.placeholder = "What are you avoiding?...";
             }
         }
 
