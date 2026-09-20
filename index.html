@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.8.3">
+    <link rel="stylesheet" href="style.css?v=3.8.4">
 
     <link rel="canonical" href="https://latergators.live/">
 
@@ -51,7 +51,7 @@
         
         <header class="masthead">
             <div class="masthead-meta">
-                <div class="meta-row-left">
+                <div class="meta-col-left meta-row-left">
                     <span id="masthead-vol">VOL. 1</span>
                     <span class="meta-sep">•</span>
                     <span class="meta-journal-title">
@@ -61,20 +61,22 @@
                     <span class="meta-sep meta-mobile-sep">•</span>
                     <span id="mobile-date" class="meta-mobile-date">Today</span>
                 </div>
-                <div class="meta-row-right">
-                    <span id="current-date" class="meta-desktop-date">Today</span>
+                <div class="meta-col-center">
+                    <span id="current-date" class="meta-desktop-date">
+                        <span class="date-full">Today</span>
+                        <span class="date-short">Today</span>
+                    </span>
+                </div>
+                <div class="meta-col-right meta-row-right">
                     <button type="button" id="header-pass-btn" class="header-pass-btn" title="View Official Sloth Credential & Press Pass" aria-label="Official Press Pass">
                         <span class="btn-text-full">🪪 PRESS PASS</span>
                         <span class="btn-text-short">🪪 PASS</span>
                     </button>
-                    <span class="meta-sep meta-desktop-sep">•</span>
                     <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
                         <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
                     </button>
-                    <span class="meta-sep meta-desktop-sep">•</span>
                     <button type="button" id="header-auth-btn" class="header-auth-btn" title="Bureau Dossier & Gator Tag">[ LOGIN ]</button>
                 </div>
-
             </div>
             <h1>LATER, GATORS</h1>
             <div class="masthead-sub" id="masthead-sub">PUBLISHED DAILY (EVENTUALLY)</div>
@@ -489,14 +491,20 @@
     <script src="js/audio.js?v=3.8.1" defer></script>
     <script src="js/evasion.js?v=3.7.0" defer></script>
     <script src="js/canvas.js?v=3.8.0" defer></script>
-    <script src="script.js?v=3.8.3" defer></script>
+    <script src="script.js?v=3.8.4" defer></script>
 
     <script>
         const _now = new Date();
         const _longDate = _now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).toUpperCase();
+        const _midDate = _now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' }).toUpperCase();
         const _shortDate = _now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }).toUpperCase();
+
+        const _dFull = document.querySelector('#current-date .date-full');
+        if (_dFull) _dFull.textContent = _longDate;
+        const _dShort = document.querySelector('#current-date .date-short');
+        if (_dShort) _dShort.textContent = _midDate;
         const _dEl = document.getElementById('current-date');
-        if (_dEl) _dEl.textContent = _longDate;
+        if (_dEl && !_dFull) _dEl.textContent = _longDate;
         const _mEl = document.getElementById('mobile-date');
         if (_mEl) _mEl.textContent = _shortDate;
     </script>

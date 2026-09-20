@@ -84,56 +84,60 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
 }
 
 .masthead-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
-    justify-content: center;
     border-top: 1px solid var(--ink);
     border-bottom: 1px solid var(--ink);
     padding: 6px 0;
     margin-bottom: 15px;
-    font-size: 0.74rem;
+    font-size: 0.70rem;
     font-weight: bold;
     text-transform: uppercase;
     white-space: nowrap;
+    width: 100%;
+    box-sizing: border-box;
 }
+.meta-col-left,
 .meta-row-left {
+    justify-self: start;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+.meta-col-center {
+    justify-self: center;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    gap: 12px;
+    text-align: center;
     white-space: nowrap;
-    letter-spacing: 0.6px;
+    letter-spacing: 0.5px;
+    padding: 0 10px;
 }
+.meta-col-right,
 .meta-row-right {
+    justify-self: end;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 100%;
-    gap: 10px;
+    gap: 8px;
     white-space: nowrap;
-    border-top: 1px dashed rgba(17, 17, 17, 0.2);
-    padding-top: 6px;
-}
-body.midnight-edition .meta-row-right {
-    border-top-color: rgba(234, 225, 209, 0.2);
-}
-body.sepia-edition .meta-row-right {
-    border-top-color: rgba(90, 62, 38, 0.25);
 }
 .meta-sep {
     color: var(--ink-light);
 }
 .meta-mobile-date,
 .meta-mobile-sep,
-.btn-text-short {
+.btn-text-short,
+.meta-title-short,
+.date-short {
     display: none;
 }
 .meta-desktop-date,
-.meta-desktop-sep,
-.btn-text-full {
+.btn-text-full,
+.meta-title-full,
+.date-full {
     display: inline;
 }
 .midnight-toggle-btn {
@@ -141,17 +145,19 @@ body.sepia-edition .meta-row-right {
     color: var(--ink);
     border: 1px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.63rem;
     font-weight: 700;
     padding: 2px 7px;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
-    white-space: nowrap;
+    white-space: nowrap !important;
     flex-shrink: 0;
     transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
     user-select: none;
+    box-sizing: border-box;
 }
 .midnight-toggle-btn:hover {
     background: var(--ink);
@@ -3286,6 +3292,10 @@ body.sepia-edition .footer-credit {
         flex-wrap: nowrap;
     }
 
+    .meta-col-center {
+        display: none !important;
+    }
+
     .meta-mobile-date,
     .meta-mobile-sep,
     .btn-text-short,
@@ -3296,7 +3306,9 @@ body.sepia-edition .footer-credit {
     .meta-desktop-date,
     .meta-desktop-sep,
     .btn-text-full,
-    .meta-title-full {
+    .meta-title-full,
+    .date-full,
+    .date-short {
         display: none !important;
     }
 
@@ -4466,9 +4478,38 @@ body.sepia-edition .footer-credit {
         max-width: 95%;
     }
 
-    .meta-row-left,
+    .masthead-meta {
+        font-size: 0.65rem;
+        padding: 5px 0;
+    }
+
+    .meta-col-left,
+    .meta-row-left {
+        gap: 5px;
+    }
+
+    .meta-col-right,
     .meta-row-right {
-        font-size: 0.72rem;
+        gap: 6px;
+    }
+
+    .meta-title-full,
+    .date-full,
+    .btn-text-full {
+        display: none !important;
+    }
+
+    .meta-title-short,
+    .date-short,
+    .btn-text-short {
+        display: inline !important;
+    }
+
+    .header-auth-btn,
+    .header-pass-btn,
+    .midnight-toggle-btn {
+        padding: 2px 5px !important;
+        font-size: 0.60rem !important;
     }
 
     .newspaper-grid {
@@ -4911,12 +4952,12 @@ body.midnight-edition .comic-page-num {
 
 .header-auth-btn {
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: 0.63rem;
     font-weight: 700;
     color: var(--ink);
     background: transparent;
-    border: 1.5px solid var(--ink);
-    padding: 3px 8px;
+    border: 1px solid var(--ink);
+    padding: 2px 7px;
     cursor: pointer;
     text-transform: uppercase;
     transition: background 0.15s, color 0.15s;
@@ -4927,6 +4968,7 @@ body.midnight-edition .comic-page-num {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 .header-auth-btn:hover {
     background: var(--ink);
@@ -4935,12 +4977,12 @@ body.midnight-edition .comic-page-num {
 
 .header-pass-btn {
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: 0.63rem;
     font-weight: 700;
     color: var(--ink);
     background: transparent;
-    border: 1.5px solid var(--ink);
-    padding: 3px 8px;
+    border: 1px solid var(--ink);
+    padding: 2px 7px;
     cursor: pointer;
     text-transform: uppercase;
     transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -4953,6 +4995,7 @@ body.midnight-edition .comic-page-num {
     justify-content: center;
     gap: 4px;
     user-select: none;
+    box-sizing: border-box;
 }
 .header-pass-btn:hover {
     background: #b91c1c;
