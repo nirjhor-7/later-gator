@@ -85,25 +85,43 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
 
 .masthead-meta {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 6px;
     align-items: center;
+    justify-content: center;
     border-top: 1px solid var(--ink);
     border-bottom: 1px solid var(--ink);
-    padding: 4px 0;
+    padding: 6px 0;
     margin-bottom: 15px;
-    font-size: 0.75rem;
+    font-size: 0.74rem;
     font-weight: bold;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 .meta-row-left {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    gap: 12px;
+    white-space: nowrap;
+    letter-spacing: 0.6px;
 }
 .meta-row-right {
     display: flex;
     align-items: center;
+    justify-content: center;
+    width: 100%;
     gap: 10px;
+    white-space: nowrap;
+    border-top: 1px dashed rgba(17, 17, 17, 0.2);
+    padding-top: 6px;
+}
+body.midnight-edition .meta-row-right {
+    border-top-color: rgba(234, 225, 209, 0.2);
+}
+body.sepia-edition .meta-row-right {
+    border-top-color: rgba(90, 62, 38, 0.25);
 }
 .meta-sep {
     color: var(--ink-light);
@@ -130,6 +148,8 @@ h2, h3, .btn-heavy, .shame-task, .stat-value {
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
     transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
     user-select: none;
 }
@@ -1147,10 +1167,12 @@ button {
     max-height: 850px;
     overflow-y: auto;
     overscroll-behavior-y: contain;
-    padding: 15px;
+    padding: 18px 20px;
     border: 2px solid var(--ink);
     scrollbar-width: thin;
     scrollbar-color: var(--ink) var(--paper);
+    scrollbar-gutter: stable;
+    box-sizing: border-box;
 }
 
 .feed-container::-webkit-scrollbar {
@@ -1168,7 +1190,7 @@ button {
 
 .feed-item {
     margin-bottom: 20px;
-    padding-bottom: 15px;
+    padding-bottom: 18px;
     border-bottom: 1px solid var(--ink);
 }
 
@@ -1176,12 +1198,17 @@ button {
     font-size: 0.75rem;
     font-weight: bold;
     text-transform: uppercase;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    line-height: 1.45;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .feed-item-text {
     font-size: 1.2rem;
     line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* Broadsheet Newspaper Redaction (NSFW Censorship) */
@@ -3280,6 +3307,8 @@ body.sepia-edition .footer-credit {
         gap: 4px;
         width: 100%;
         margin-top: 1px;
+        border-top: none;
+        padding-top: 0;
     }
 
     .meta-row-right .header-pass-btn,
@@ -3965,10 +3994,11 @@ body.sepia-edition .footer-credit {
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
         border: 2px solid var(--ink);
-        padding: 10px 14px 10px 10px;
+        padding: 14px 18px 14px 16px;
         box-sizing: border-box;
         scrollbar-width: thin;
         scrollbar-color: var(--ink) var(--paper);
+        scrollbar-gutter: stable;
     }
 
     .feed-container::-webkit-scrollbar {
@@ -3986,18 +4016,24 @@ body.sepia-edition .footer-credit {
     }
 
     .feed-item {
-        padding: 10px 0;
+        padding: 12px 0 16px 0;
+        margin-bottom: 8px;
     }
 
     .feed-item-meta {
-        font-size: 0.64rem;
-        margin-bottom: 3px;
+        font-size: 0.65rem;
+        line-height: 1.45;
+        margin-bottom: 5px;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
     .feed-item-text {
-        font-size: 0.92rem;
-        line-height: 1.35;
-        margin-bottom: 6px;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        word-break: break-word;
+        overflow-wrap: break-word;
     }
 
     .feed-item-footer {
@@ -4428,6 +4464,11 @@ body.sepia-edition .footer-credit {
         margin: 16px auto;
         padding: 18px 16px 28px 16px;
         max-width: 95%;
+    }
+
+    .meta-row-left,
+    .meta-row-right {
+        font-size: 0.72rem;
     }
 
     .newspaper-grid {
@@ -4881,6 +4922,11 @@ body.midnight-edition .comic-page-num {
     transition: background 0.15s, color 0.15s;
     letter-spacing: 0.5px;
     line-height: 1.2;
+    white-space: nowrap !important;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 .header-auth-btn:hover {
     background: var(--ink);
@@ -4900,8 +4946,11 @@ body.midnight-edition .comic-page-num {
     transition: background 0.15s, color 0.15s, border-color 0.15s;
     letter-spacing: 0.5px;
     line-height: 1.2;
+    white-space: nowrap !important;
+    flex-shrink: 0;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 4px;
     user-select: none;
 }
