@@ -428,30 +428,55 @@ body.sepia-edition .midnight-toggle-btn:hover {
     text-transform: uppercase;
 }
 
+.task-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
 textarea {
     width: 100%;
     box-sizing: border-box;
-    height: 86px;
-    background-color: rgba(23, 23, 23, 0.02);
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 25px,
-        rgba(23, 23, 23, 0.09) 26px
-    );
-    line-height: 26px;
+    height: 80px;
+    background: transparent;
     border: 1.5px solid var(--ink);
-    padding: 4px 10px;
-    font-size: 0.95rem;
+    padding: 10px;
+    font-size: 1rem;
     resize: none;
     outline: none;
     font-family: 'Space Mono', monospace;
     color: var(--ink);
-    transition: background-color 0.15s, border-color 0.15s;
+    transition: background 0.15s, border-color 0.15s;
+    display: block;
 }
 
 textarea:focus {
-    background-color: rgba(23, 23, 23, 0.05);
+    background: rgba(23, 23, 23, 0.05);
+}
+
+.task-idle-cursor {
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    width: 2px;
+    height: 1.15rem;
+    background-color: var(--ink);
+    pointer-events: none;
+    animation: blinkCaret 1s steps(2, start) infinite;
+    z-index: 2;
+    transition: opacity 0.1s ease;
+}
+
+@keyframes blinkCaret {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+/* Hide cursor when textarea is focused or has content */
+textarea:focus ~ .task-idle-cursor,
+.task-input-wrap.has-value .task-idle-cursor {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    animation: none !important;
 }
 
 .byline-input-row {
@@ -2395,24 +2420,15 @@ body.sepia-edition .subtitle {
 
 /* Form Inputs & Buttons */
 body.sepia-edition input[type="text"],
+body.sepia-edition textarea,
 body.sepia-edition select {
     background-color: #F6EED9 !important;
     color: #21150A !important;
     border-color: #21150A !important;
 }
 
-body.sepia-edition textarea {
-    background-color: #F6EED9 !important;
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 25px,
-        rgba(33, 21, 10, 0.12) 26px
-    ) !important;
-    color: #21150A !important;
-    border-color: #21150A !important;
-    line-height: 26px !important;
-    padding: 4px 10px !important;
+body.sepia-edition .task-idle-cursor {
+    background-color: #21150A !important;
 }
 
 body.sepia-edition .byline-input-row {
@@ -3737,10 +3753,9 @@ body.sepia-edition .footer-credit {
 
     textarea {
         width: 100%;
-        padding: 4px 10px;
-        height: 84px;
-        min-height: 84px;
-        line-height: 26px;
+        padding: 10px 10px;
+        height: 76px;
+        min-height: 76px;
         font-size: 16px !important; /* Critical: Prevent iOS Safari auto-zoom */
         border: 2px solid var(--ink);
         box-sizing: border-box;
@@ -4366,7 +4381,7 @@ body.sepia-edition .footer-credit {
     }
 
     textarea {
-        height: 84px;
+        height: 68px;
     }
 
     .byline-input-row input {
@@ -4519,24 +4534,15 @@ body.midnight-edition .subtitle {
 }
 
 body.midnight-edition input[type="text"],
+body.midnight-edition textarea,
 body.midnight-edition select {
     background: #25201A !important;
     color: #EFE3D3 !important;
     border-color: #6E5C49 !important;
 }
 
-body.midnight-edition textarea {
-    background-color: #25201A !important;
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent,
-        transparent 25px,
-        rgba(239, 227, 211, 0.08) 26px
-    ) !important;
-    color: #EFE3D3 !important;
-    border-color: #6E5C49 !important;
-    line-height: 26px !important;
-    padding: 4px 10px !important;
+body.midnight-edition .task-idle-cursor {
+    background-color: #EFE3D3 !important;
 }
 
 body.midnight-edition .byline-input-row {

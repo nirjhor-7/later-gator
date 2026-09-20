@@ -153,7 +153,10 @@
                     <div class="input-section">
                         <!-- 1. The Avoided Task (Hero Input) -->
                         <div class="field-group task-field-group">
-                            <textarea id="task-input" aria-label="What are you avoiding?" placeholder="" maxlength="150"></textarea>
+                            <div class="task-input-wrap" id="task-input-wrap">
+                                <textarea id="task-input" aria-label="What are you avoiding?" placeholder="" maxlength="150"></textarea>
+                                <span class="task-idle-cursor" id="task-idle-cursor" aria-hidden="true"></span>
+                            </div>
                             <div class="task-char-bar">
                                 <span id="task-char-count" class="task-char-count">[ 0 / 150 LETTERS ]</span>
                                 <span class="desktop-hint">ENTER ↵ TO DELAY • CTRL+ENTER TO PANIC</span>

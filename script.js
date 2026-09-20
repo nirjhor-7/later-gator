@@ -204,11 +204,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Broadsheet Character Counter
+    const taskInputWrap = document.getElementById('task-input-wrap');
     const updateCharCount = () => {
         if (!taskCharCount || !taskInput) return;
         const len = taskInput.value.length;
         taskCharCount.textContent = `[ ${len} / 150 LETTERS ]`;
         taskCharCount.classList.toggle('near-limit', len >= 130);
+        if (taskInputWrap) {
+            taskInputWrap.classList.toggle('has-value', len > 0);
+        }
     };
 
     if (taskInput) {
