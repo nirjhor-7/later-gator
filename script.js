@@ -2393,6 +2393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const applySepiaMode = (enable) => {
+        document.body.classList.add('theme-transitioning');
         document.body.classList.toggle('sepia-edition', enable);
         document.documentElement.classList.toggle('sepia-edition', enable);
         if (sepiaToggleBtn) {
@@ -2410,15 +2411,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
         }
+        if (taskInput) {
+            taskInput.placeholder = "";
+        }
         try {
             localStorage.setItem('lg_sepia_mode', enable ? 'true' : 'false');
         } catch (e) {}
         refreshClippingTheme();
+        requestAnimationFrame(() => {
+            document.body.classList.remove('theme-transitioning');
+        });
     };
 
     const applyMidnightMode = (enable, playSound = false) => {
+        document.body.classList.add('theme-transitioning');
         if (enable) {
             document.body.classList.add('midnight-edition');
+            document.documentElement.classList.add('midnight-edition');
             // If sepia mode was on, turn off sepia so themes do not clash
             if (document.body.classList.contains('sepia-edition')) {
                 document.body.classList.remove('sepia-edition');
@@ -2428,11 +2437,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
             if (mastheadSub) mastheadSub.textContent = 'PRINTED UNDER GASLIGHT FOR THE PROFOUNDLY AWAKE';
-            if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('avoiding'))) {
-                taskInput.placeholder = "Why are you awake at this hour? What are you avoiding?...";
+            if (taskInput) {
+                taskInput.placeholder = "";
             }
         } else {
             document.body.classList.remove('midnight-edition');
+            document.documentElement.classList.remove('midnight-edition');
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: OFF';
             const savedSepia = localStorage.getItem('lg_sepia_mode') === 'true';
             if (savedSepia) {
@@ -2441,7 +2451,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
                 if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
-            if (taskInput && (!taskInput.value || taskInput.value.trim() === '' || taskInput.placeholder.includes('awake at this hour'))) {
+            if (taskInput) {
                 taskInput.placeholder = "";
             }
         }
@@ -2451,9 +2461,12 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
 
         if (playSound) {
-            playMidnightGaslightSound(enable);
+            setTimeout(() => playMidnightGaslightSound(enable), 0);
         }
         refreshClippingTheme();
+        requestAnimationFrame(() => {
+            document.body.classList.remove('theme-transitioning');
+        });
     };
 
     const initMidnightMode = () => {

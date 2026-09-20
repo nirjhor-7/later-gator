@@ -7,18 +7,23 @@
 (function () {
     'use strict';
 
-    let camoAudioCtx = null;
+    let sharedAudioCtx = null;
+    let midnightNoiseBufferOn = null;
+    let midnightNoiseBufferOff = null;
+    let stampSlamBuffer = null;
+    let rubberStampBuffer = null;
 
-    const getCamoAudioContext = () => {
-        if (!camoAudioCtx) {
+    const getSharedAudioContext = () => {
+        if (!sharedAudioCtx) {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (AudioCtx) camoAudioCtx = new AudioCtx();
+            if (AudioCtx) sharedAudioCtx = new AudioCtx();
         }
-        if (camoAudioCtx && camoAudioCtx.state === 'suspended') {
-            camoAudioCtx.resume().catch(() => {});
+        if (sharedAudioCtx && sharedAudioCtx.state === 'suspended') {
+            sharedAudioCtx.resume().catch(() => {});
         }
-        return camoAudioCtx;
+        return sharedAudioCtx;
     };
+    const getCamoAudioContext = getSharedAudioContext;
 
     /**
      * Tactile Rubber Stamp Sound Generator
@@ -26,10 +31,8 @@
      */
     const playRubberStampSound = () => {
         try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
 
             const now = ctx.currentTime;
 
@@ -48,15 +51,17 @@
             osc.start(now);
             osc.stop(now + 0.15);
 
-            // Paper slap / impact noise burst
-            const bufLen = Math.floor(ctx.sampleRate * 0.04);
-            const buf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-            const data = buf.getChannelData(0);
-            for (let i = 0; i < bufLen; i++) {
-                data[i] = (Math.random() * 2 - 1) * 0.15;
+            // Paper slap / impact noise burst (cached)
+            if (!rubberStampBuffer) {
+                const bufLen = Math.floor(ctx.sampleRate * 0.04);
+                rubberStampBuffer = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+                const data = rubberStampBuffer.getChannelData(0);
+                for (let i = 0; i < bufLen; i++) {
+                    data[i] = (Math.random() * 2 - 1) * 0.15;
+                }
             }
             const noise = ctx.createBufferSource();
-            noise.buffer = buf;
+            noise.buffer = rubberStampBuffer;
             const noiseGain = ctx.createGain();
             noiseGain.gain.setValueAtTime(0.2, now);
             noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
@@ -74,10 +79,8 @@
      */
     const playStampSlamSound = () => {
         try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
 
             const now = ctx.currentTime;
 
@@ -93,18 +96,20 @@
 
             osc.connect(gain);
             gain.connect(ctx.destination);
-            osc.start();
+            osc.start(now);
             osc.stop(now + 0.085);
 
-            // 2. High snap / slap burst for tactile wood-on-paper feeling
-            const bufferSize = Math.floor(ctx.sampleRate * 0.025);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+            // 2. High snap / slap burst for tactile wood-on-paper feeling (cached)
+            if (!stampSlamBuffer) {
+                const bufferSize = Math.floor(ctx.sampleRate * 0.025);
+                stampSlamBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = stampSlamBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.25));
+                }
             }
             const noise = ctx.createBufferSource();
-            noise.buffer = buffer;
+            noise.buffer = stampSlamBuffer;
             const filter = ctx.createBiquadFilter();
             filter.type = 'bandpass';
             filter.frequency.value = 550;
@@ -115,7 +120,7 @@
             noise.connect(filter);
             filter.connect(noiseGain);
             noiseGain.connect(ctx.destination);
-            noise.start();
+            noise.start(now);
         } catch (e) {}
     };
 
@@ -125,26 +130,25 @@
      */
     const playClickerSound = (clickerCount = 0) => {
         try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
 
+            const now = ctx.currentTime;
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
 
             osc.type = 'triangle';
             const baseFreq = 160 + Math.min((clickerCount || 0) * 2, 400);
-            osc.frequency.setValueAtTime(baseFreq, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.035);
+            osc.frequency.setValueAtTime(baseFreq, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.035);
 
-            gain.gain.setValueAtTime(0.08, ctx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.035);
+            gain.gain.setValueAtTime(0.08, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.035);
 
             osc.connect(gain);
             gain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + 0.035);
+            osc.start(now);
+            osc.stop(now + 0.035);
         } catch (e) {}
     };
 
@@ -154,48 +158,54 @@
      */
     const playMidnightGaslightSound = (isActivating = true) => {
         try {
-            const AudioCtx = window.AudioContext || window.webkitAudioContext;
-            if (!AudioCtx) return;
-            const ctx = new AudioCtx();
-            if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
 
-            // 1. Soft breathy gaslight strike hiss
+            const now = ctx.currentTime;
             const duration = isActivating ? 0.22 : 0.14;
-            const bufferSize = Math.floor(ctx.sampleRate * duration);
-            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-            const data = buffer.getChannelData(0);
-            for (let i = 0; i < bufferSize; i++) {
-                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+
+            // 1. Cached soft breathy gaslight strike hiss
+            let buffer = isActivating ? midnightNoiseBufferOn : midnightNoiseBufferOff;
+            if (!buffer) {
+                const bufferSize = Math.floor(ctx.sampleRate * duration);
+                buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.35));
+                }
+                if (isActivating) midnightNoiseBufferOn = buffer;
+                else midnightNoiseBufferOff = buffer;
             }
+
             const noise = ctx.createBufferSource();
             noise.buffer = buffer;
             const filter = ctx.createBiquadFilter();
             filter.type = 'bandpass';
-            filter.frequency.setValueAtTime(isActivating ? 320 : 440, ctx.currentTime);
-            filter.frequency.exponentialRampToValueAtTime(isActivating ? 140 : 220, ctx.currentTime + duration);
+            filter.frequency.setValueAtTime(isActivating ? 320 : 440, now);
+            filter.frequency.exponentialRampToValueAtTime(isActivating ? 140 : 220, now + duration);
 
             const noiseGain = ctx.createGain();
-            noiseGain.gain.setValueAtTime(0.2, ctx.currentTime);
-            noiseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
+            noiseGain.gain.setValueAtTime(0.2, now);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, now + duration);
 
             noise.connect(filter);
             filter.connect(noiseGain);
             noiseGain.connect(ctx.destination);
-            noise.start();
+            noise.start(now);
 
             // 2. Warm nocturnal resonance chime
             const osc = ctx.createOscillator();
             const oscGain = ctx.createGain();
             osc.type = 'sine';
             const freq = isActivating ? 523.25 : 392.0; // C5 or G4
-            osc.frequency.setValueAtTime(freq, ctx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(freq * 0.85, ctx.currentTime + duration);
-            oscGain.gain.setValueAtTime(0.1, ctx.currentTime);
-            oscGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+            osc.frequency.setValueAtTime(freq, now);
+            osc.frequency.exponentialRampToValueAtTime(freq * 0.85, now + duration);
+            oscGain.gain.setValueAtTime(0.1, now);
+            oscGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
             osc.connect(oscGain);
             oscGain.connect(ctx.destination);
-            osc.start();
-            osc.stop(ctx.currentTime + duration);
+            osc.start(now);
+            osc.stop(now + duration);
         } catch (e) {}
     };
 
