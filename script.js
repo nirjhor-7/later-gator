@@ -402,8 +402,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) return;
             const data = await res.json();
             if (data && data.reactions && typeof data.reactions === 'object') {
-                // Merge server state into local (server is source of truth)
-                Object.assign(userStamps, data.reactions);
+                // Full overwrite — server is source of truth.
+                // Object.assign only adds/overwrites but never removes
+                // stale keys (e.g. stamps removed on another device).
+                const serverReactions = data.reactions;
+                // Clear all keys not in server response
+                for (const key of Object.keys(userStamps)) {
+                    if (!(key in serverReactions)) {
+                        delete userStamps[key];
+                    }
+                }
+                // Apply server state
+                Object.assign(userStamps, serverReactions);
                 saveUserStamps();
                 syncAllReactionButtonsInDOM();
             }
@@ -468,9 +478,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // User reaction status for this dispatch
         const myStamp = userStamps[task.id] || null;
         const defaultRot = ((Math.abs(numericId) * 17) % 7 - 3.2).toFixed(2);
-        const sameCount = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
-        const validCount = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
-        const ripCount = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
+        const sameCount = Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0);
+        const validCount = Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0);
+        const ripCount = Math.max(task.rip_count != null ? task.rip_count : 0, myStamp === 'rip' ? 1 : 0);
 
         return `
         <div class="feed-item ${animationClass}" data-task-id="${task.id}">
@@ -652,14 +662,19 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks.forEach(task => {
             const reactionsEl = feedContainer.querySelector(`.feed-reactions[data-task-id="${task.id}"]`);
             if (reactionsEl) {
+                const lastStampedAt = recentLocalStamps.get(Number(task.id)) || 0;
+                if (Date.now() - lastStampedAt < 5000) {
+                    // Skip in-place count overwrite for recently stamped task to allow server write propagation (FIX 6)
+                    return;
+                }
                 const myStamp = userStamps[task.id] || null;
                 const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
                 const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
                 const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
 
-                if (sameEl) sameEl.textContent = (task.same_count != null ? task.same_count : (myStamp === 'same' ? 1 : 0));
-                if (validEl) validEl.textContent = (task.valid_count != null ? task.valid_count : (myStamp === 'valid' ? 1 : 0));
-                if (ripEl) ripEl.textContent = (task.rip_count != null ? task.rip_count : (myStamp === 'rip' ? 1 : 0));
+                if (sameEl) sameEl.textContent = Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0);
+                if (validEl) validEl.textContent = Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0);
+                if (ripEl) ripEl.textContent = Math.max(task.rip_count != null ? task.rip_count : 0, myStamp === 'rip' ? 1 : 0);
             }
         });
     };
@@ -667,6 +682,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     // SYNCHRONIZED REACTION STAMPS (WIRE & LEAD STORY)
     // ==========================================
+    const inFlightReactions = new Set();
+    const lastReactionTime = new Map();
+    const recentLocalStamps = new Map();
+
     const syncReactionInDOM = (taskId, reactionType, isStamped, newCount, clearedType = null, rot = null) => {
         const containers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
         containers.forEach(container => {
@@ -709,13 +728,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const reactionsContainer = btn.closest('.feed-reactions');
         if (!reactionsContainer) return;
 
-        const taskId = parseInt(reactionsContainer.getAttribute('data-task-id'), 10);
-        const reactionType = btn.getAttribute('data-type');
-        if (!taskId || !reactionType) return;
+        const rawTaskId = reactionsContainer.getAttribute('data-task-id');
+        // FIX 5: Prevent clicking stamps on optimistic cards before server assignment
+        if (!rawTaskId || rawTaskId.startsWith('opt-')) {
+            return;
+        }
 
+        const taskId = parseInt(rawTaskId, 10);
+        const reactionType = btn.getAttribute('data-type');
+        if (!taskId || isNaN(taskId) || taskId <= 0 || !reactionType) return;
+
+        // FIX 1 & FIX 8: Concurrency lock & 300ms cooldown per task
+        const now = Date.now();
+        const lastClick = lastReactionTime.get(taskId) || 0;
+        if (inFlightReactions.has(taskId) || (now - lastClick < 300)) {
+            return;
+        }
+        lastReactionTime.set(taskId, now);
+        inFlightReactions.add(taskId);
+
+        // Lock pointer-events on buttons for this task during flight
+        const relatedBtns = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"] .reaction-stamp-btn`);
+        relatedBtns.forEach(b => b.style.setProperty('pointer-events', 'none'));
+
+        // Save snapshot of previous state for rollback on error (FIX 10)
+        const prevActiveType = userStamps[taskId] || null;
         const isAlreadyStamped = btn.classList.contains('stamped');
         const countEl = btn.querySelector('.reaction-count');
-        let currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
+        const currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
+
+        let prevClearedCount = null;
+        if (!isAlreadyStamped && prevActiveType && prevActiveType !== reactionType) {
+            const prevActiveBtn = reactionsContainer.querySelector(`.reaction-stamp-btn[data-type="${prevActiveType}"]`);
+            if (prevActiveBtn) {
+                const cEl = prevActiveBtn.querySelector('.reaction-count');
+                prevClearedCount = cEl ? parseInt(cEl.textContent, 10) || 0 : 0;
+            }
+        }
+
+        recentLocalStamps.set(taskId, now);
 
         // 1. Tactile sound & mobile vibration
         playStampSlamSound();
@@ -766,18 +817,9 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.style.removeProperty('--stamp-rot');
             syncReactionInDOM(taskId, reactionType, false, newCount);
         } else {
-            const prevActiveType = userStamps[taskId];
             if (prevActiveType && prevActiveType !== reactionType) {
                 clearedType = prevActiveType;
-                const clearPayload = { taskId, reactionType: clearedType, action: 'remove', sessionId: SESSION_ID };
-                if (currentGator && currentGator.gatorId) clearPayload.gatorId = currentGator.gatorId;
-                fetch('/api/react', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clearPayload)
-                }).catch(() => {});
             }
-
             userStamps[taskId] = reactionType;
             newCount = currentCount + 1;
             syncReactionInDOM(taskId, reactionType, true, newCount, clearedType, rot);
@@ -785,8 +827,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveUserStamps();
 
-        // 4. Background sync to /api/react
+        // 4. Background sync to /api/react with rollback on failure
         try {
+            // FIX 2a: If switching stamps, await removal of old stamp before adding new one
+            if (clearedType) {
+                const clearPayload = { taskId, reactionType: clearedType, action: 'remove', sessionId: SESSION_ID };
+                if (currentGator && currentGator.gatorId) clearPayload.gatorId = currentGator.gatorId;
+                const clearRes = await fetch('/api/react', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(clearPayload)
+                });
+                if (!clearRes.ok) {
+                    console.warn('Removal of previous stamp returned HTTP', clearRes.status);
+                }
+            }
+
             const reactPayload = { taskId, reactionType, action, sessionId: SESSION_ID };
             if (currentGator && currentGator.gatorId) reactPayload.gatorId = currentGator.gatorId;
             const res = await fetch('/api/react', {
@@ -794,14 +850,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reactPayload)
             });
+
             if (res.ok) {
                 const data = await res.json();
                 if (data && data.counts && data.counts[reactionType] != null) {
                     syncReactionInDOM(taskId, reactionType, !isAlreadyStamped, data.counts[reactionType], null, rot);
+                    // Also update cleared type count if present in server response
+                    if (clearedType && data.counts[clearedType] != null) {
+                        const containers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
+                        containers.forEach(c => {
+                            const prevEl = c.querySelector(`.reaction-stamp-btn[data-type="${clearedType}"] .reaction-count`);
+                            if (prevEl) prevEl.textContent = data.counts[clearedType];
+                        });
+                    }
                 }
+            } else {
+                throw new Error(`API responded with status ${res.status}`);
             }
         } catch (err) {
-            // Optimistic local state remains intact
+            console.error('Reaction sync failed, rolling back optimistic state:', err);
+            // FIX 10: Rollback optimistic updates on failure
+            if (prevActiveType) {
+                userStamps[taskId] = prevActiveType;
+            } else {
+                delete userStamps[taskId];
+            }
+            saveUserStamps();
+
+            // Revert DOM state
+            syncReactionInDOM(taskId, reactionType, isAlreadyStamped, currentCount);
+            if (clearedType && prevClearedCount != null) {
+                syncReactionInDOM(taskId, clearedType, true, prevClearedCount);
+            }
+
+            // Visual rejection shake feedback
+            btn.classList.remove('stamp-slam');
+            btn.classList.add('stamp-rejected');
+            setTimeout(() => {
+                btn.classList.remove('stamp-rejected');
+            }, 600);
+        } finally {
+            inFlightReactions.delete(taskId);
+            relatedBtns.forEach(b => b.style.removeProperty('pointer-events'));
         }
     };
 
@@ -1083,34 +1173,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const myStamp = userStamps[topTask.id] || null;
         const defaultRot = ((topTask.id * 17) % 7 - 3.2).toFixed(2);
-        const sameCount = (topTask.same_count != null ? topTask.same_count : (myStamp === 'same' ? 1 : 0));
-        const validCount = (topTask.valid_count != null ? topTask.valid_count : (myStamp === 'valid' ? 1 : 0));
-        const ripCount = (topTask.rip_count != null ? topTask.rip_count : (myStamp === 'rip' ? 1 : 0));
+        const sameCount = Math.max(topTask.same_count != null ? topTask.same_count : 0, myStamp === 'same' ? 1 : 0);
+        const validCount = Math.max(topTask.valid_count != null ? topTask.valid_count : 0, myStamp === 'valid' ? 1 : 0);
+        const ripCount = Math.max(topTask.rip_count != null ? topTask.rip_count : 0, myStamp === 'rip' ? 1 : 0);
 
         const sameBtn = leadReactions.querySelector('[data-type="same"]');
         const validBtn = leadReactions.querySelector('[data-type="valid"]');
         const ripBtn = leadReactions.querySelector('[data-type="rip"]');
+        const isRecentLeadStamp = (Date.now() - (recentLocalStamps.get(Number(topTask.id)) || 0)) < 5000;
 
         if (sameBtn) {
             sameBtn.className = `reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}`;
             if (myStamp === 'same') sameBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
             else sameBtn.style.removeProperty('--stamp-rot');
-            const c = sameBtn.querySelector('.reaction-count');
-            if (c) c.textContent = sameCount;
+            if (!isRecentLeadStamp) {
+                const c = sameBtn.querySelector('.reaction-count');
+                if (c) c.textContent = sameCount;
+            }
         }
         if (validBtn) {
             validBtn.className = `reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}`;
             if (myStamp === 'valid') validBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
             else validBtn.style.removeProperty('--stamp-rot');
-            const c = validBtn.querySelector('.reaction-count');
-            if (c) c.textContent = validCount;
+            if (!isRecentLeadStamp) {
+                const c = validBtn.querySelector('.reaction-count');
+                if (c) c.textContent = validCount;
+            }
         }
         if (ripBtn) {
             ripBtn.className = `reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}`;
             if (myStamp === 'rip') ripBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
             else ripBtn.style.removeProperty('--stamp-rot');
-            const c = ripBtn.querySelector('.reaction-count');
-            if (c) c.textContent = ripCount;
+            if (!isRecentLeadStamp) {
+                const c = ripBtn.querySelector('.reaction-count');
+                if (c) c.textContent = ripCount;
+            }
         }
     };
 

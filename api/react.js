@@ -79,6 +79,7 @@ module.exports = async function handler(req, res) {
         const delta = action === 'remove' ? -1 : 1;
 
         // ── 1. Update global reaction counts on the task ──────────────────────
+        // Read current counts first
         const { data: task, error: fetchErr } = await supabase
             .from('tasks')
             .select('id, same_count, valid_count, rip_count')
@@ -103,13 +104,15 @@ module.exports = async function handler(req, res) {
         await supabase.from('tasks').update(updateObj).eq('id', taskId);
 
         // ── 2. Update per-session reaction record ─────────────────────────────
+        // IMPORTANT: delete filter includes reaction_type to prevent
+        // switching races from nuking the newly-added reaction
         if (sessionId || gatorId) {
             if (action === 'remove') {
                 let q = supabase.from('user_reactions').delete();
                 if (gatorId) {
-                    q = q.eq('gator_id', gatorId).eq('task_id', taskId);
+                    q = q.eq('gator_id', gatorId).eq('task_id', taskId).eq('reaction_type', reactionType);
                 } else {
-                    q = q.eq('session_id', sessionId).eq('task_id', taskId);
+                    q = q.eq('session_id', sessionId).eq('task_id', taskId).eq('reaction_type', reactionType);
                 }
                 await q;
             } else {
@@ -130,15 +133,23 @@ module.exports = async function handler(req, res) {
             }
         }
 
+        // ── 3. Re-read counts after write for accurate response ───────────────
+        const { data: updated } = await supabase
+            .from('tasks')
+            .select('same_count, valid_count, rip_count')
+            .eq('id', taskId)
+            .single();
+
+        const freshCounts = updated || task;
 
         return res.status(200).json({
             ok: true,
             taskId,
             reactionType,
             counts: {
-                same: reactionType === 'same' ? newVal : (task.same_count || 0),
-                valid: reactionType === 'valid' ? newVal : (task.valid_count || 0),
-                rip: reactionType === 'rip' ? newVal : (task.rip_count || 0)
+                same: freshCounts.same_count || 0,
+                valid: freshCounts.valid_count || 0,
+                rip: freshCounts.rip_count || 0
             }
         });
 

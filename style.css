@@ -1338,6 +1338,18 @@ button {
     animation: stampSlamImpact 0.42s cubic-bezier(0.2, 0.8, 0.2, 1.25) forwards;
 }
 
+.reaction-stamp-btn.stamp-rejected {
+    animation: stampRejectedShake 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: #ef4444 !important;
+}
+
+@keyframes stampRejectedShake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+}
+
 @keyframes stampSlamImpact {
     0% {
         transform: scale(1.65) rotate(calc(var(--stamp-rot, -1.8deg) * 2.2));
@@ -4349,14 +4361,15 @@ body.sepia-edition .footer-credit {
     }
 
     .feed-reactions {
-        gap: 3px;
+        gap: 4px;
     }
 
-    .feed-reactions .reaction-stamp-btn {
-        font-size: 0.56rem;
-        padding: 4px 1px;
-        letter-spacing: -0.3px;
-        min-height: 32px;
+    .feed-reactions .reaction-stamp-btn,
+    .feed-reactions .feed-clip-btn {
+        font-size: clamp(0.55rem, 2.2vw, 0.62rem);
+        padding: 4px 2px;
+        letter-spacing: -0.2px;
+        min-height: 36px;
     }
 
     .comic-panel-art {
