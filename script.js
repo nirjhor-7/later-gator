@@ -4151,6 +4151,10 @@ document.addEventListener('DOMContentLoaded', () => {
         window.__lgDismissMemo = dismissMemo;
 
         const shouldShowMemo = () => {
+            // URL param to bypass memo for inspection/testing
+            try {
+                if (new URLSearchParams(window.location.search).get('nomemo') === '1') return false;
+            } catch (e) {}
             // Already acknowledged on this device
             try {
                 if (localStorage.getItem('lg_welcomed')) return false;
