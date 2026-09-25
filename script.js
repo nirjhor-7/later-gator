@@ -2607,7 +2607,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const initMidnightMode = () => {
         try {
             const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('theme') === 'standard' || urlParams.get('midnight') === '0') {
+            if (urlParams.get('theme') === 'standard' || urlParams.get('midnight') === '0' || urlParams.get('theme') === 'sepia') {
                 applyMidnightMode(false, false);
                 return;
             }
@@ -2643,6 +2643,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Perk 1: 1890s Sepia Newsprint Edition ---
     const restoreSepiaMode = () => {
         try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('theme') === 'sepia') {
+                applySepiaMode(true);
+                return;
+            }
             const isSepia = localStorage.getItem('lg_sepia_mode') === 'true';
             if (isSepia && !document.body.classList.contains('midnight-edition')) {
                 applySepiaMode(true);
