@@ -4174,6 +4174,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (ackBtn) {
             ackBtn.addEventListener('click', dismissMemo);
         }
+
+        // Close button (X)
+        const closeBtn = document.getElementById('memo-close-btn');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', dismissMemo);
+        }
     };
 
     initWelcomeMemo();
