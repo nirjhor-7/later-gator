@@ -5733,6 +5733,29 @@ body.midnight-edition .dispatch-desk-footer {
     }
 }
 
+/* Mobile-specific variants bake in translateX(-50%) so centering + slide don't conflict */
+@keyframes memoSlideInCentered {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(28px) scale(0.97);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+@keyframes memoSlideOutCentered {
+    from {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px) scale(0.96);
+    }
+}
+
 /* ── Container ──────────────────────────────────────────────────── */
 .welcome-memo {
     position: fixed;
@@ -5970,56 +5993,58 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     }
 }
 
-/* ── Mobile (≤ 480px): compact floating card, centered ───────────── */
+/* ── Mobile (≤ 480px): centered floating memo card ───────────────── */
 @media (max-width: 480px) {
     .welcome-memo {
-        /* Float it — centered with margins, not full-width */
-        left: 12px;
-        right: 12px;
-        bottom: 16px;
-        width: auto;
-        max-width: calc(100vw - 24px);
-        /* Compact height — fits the memo without dominating the screen */
+        /* True horizontal center — not full-width */
+        left: 50%;
+        right: auto;
+        bottom: 24px;
+        width: 300px;
+        max-width: calc(100vw - 56px);
         max-height: 62vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        /* Keep all borders and shadow */
+        /* Combine X centering into the animation so slide-up works */
+        transform: translateX(-50%);
+        animation: memoSlideInCentered 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+        /* Full border + shadow on all sides */
         border: 2px solid var(--ink);
         box-shadow: 5px 5px 0 var(--ink);
-        /* Remove any bottom-sheet overrides */
-        border-top: 2px solid var(--ink);
-        border-left: 2px solid var(--ink);
-        border-right: 2px solid var(--ink);
-        border-bottom: 2px solid var(--ink);
-        /* Safe area bottom clearance for notched phones */
+        /* Notched phone safe area */
         margin-bottom: env(safe-area-inset-bottom, 0px);
     }
+    .welcome-memo.memo-hiding {
+        animation: memoSlideOutCentered 0.28s ease-in both;
+    }
     .welcome-memo-inner {
-        padding: 18px 18px 16px;
+        padding: 18px 16px 16px;
     }
     .memo-fields {
-        grid-template-columns: 82px 1fr;
+        grid-template-columns: 78px 1fr;
         row-gap: 3px;
     }
     .memo-header-stamp {
-        font-size: 0.68rem;
+        font-size: 0.66rem;
         padding-bottom: 10px;
         margin-bottom: 10px;
+        letter-spacing: 0.18em;
     }
     .memo-label,
     .memo-value {
-        font-size: 0.68rem;
+        font-size: 0.67rem;
         line-height: 1.4;
     }
     .memo-body {
-        font-size: 0.69rem;
+        font-size: 0.68rem;
+        line-height: 1.55;
     }
     .memo-lede {
         margin-bottom: 10px;
     }
     .memo-instruction,
     .memo-instruction-title {
-        font-size: 0.68rem;
+        font-size: 0.67rem;
     }
     .memo-instructions {
         margin-bottom: 10px;
@@ -6027,11 +6052,14 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     .memo-rule {
         margin: 10px 0;
     }
+    .memo-autodismiss {
+        font-size: 0.58rem;
+    }
     .memo-ack-btn {
-        font-size: 0.72rem;
-        padding: 11px 14px;
-        /* Comfortable tap target */
+        font-size: 0.7rem;
+        padding: 11px 12px;
         min-height: 44px;
+        letter-spacing: 0.08em;
     }
     body.sepia-edition .welcome-memo {
         border-color: #5c3d1a;
@@ -6046,17 +6074,16 @@ body.midnight-edition .memo-ack-btn:focus-visible {
 /* ── Very small phones (≤ 360px) ────────────────────────────────── */
 @media (max-width: 360px) {
     .welcome-memo {
-        left: 10px;
-        right: 10px;
-        bottom: 12px;
+        width: 280px;
+        max-width: calc(100vw - 48px);
+        bottom: 18px;
         max-height: 65vh;
-        max-width: calc(100vw - 20px);
     }
     .welcome-memo-inner {
-        padding: 16px 15px 14px;
+        padding: 16px 14px 14px;
     }
     .memo-fields {
-        grid-template-columns: 76px 1fr;
+        grid-template-columns: 72px 1fr;
     }
     .memo-header-stamp,
     .memo-label,
@@ -6064,11 +6091,11 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     .memo-body,
     .memo-instruction,
     .memo-instruction-title {
-        font-size: 0.65rem;
+        font-size: 0.63rem;
     }
     .memo-ack-btn {
-        font-size: 0.68rem;
-        padding: 10px 12px;
+        font-size: 0.65rem;
+        padding: 10px 10px;
     }
 }
 
