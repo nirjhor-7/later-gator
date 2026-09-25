@@ -5707,3 +5707,232 @@ body.midnight-edition .dispatch-desk-footer {
 }
 
 
+/* ═══════════════════════════════════════════════════════════════════════
+   BUREAU OF IDLENESS — NEW OPERATIVE GREETINGS MEMO
+   ═══════════════════════════════════════════════════════════════════════ */
+
+@keyframes memoSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes memoSlideOut {
+    from {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(16px) scale(0.97);
+    }
+}
+
+.welcome-memo {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9000;
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100vh - 48px);
+    overflow-y: auto;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    font-family: 'Courier New', Courier, monospace;
+    color: var(--ink);
+    animation: memoSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.welcome-memo.memo-hiding {
+    animation: memoSlideOut 0.28s ease-in both;
+    pointer-events: none;
+}
+
+.welcome-memo-inner {
+    padding: 20px 20px 18px;
+}
+
+.memo-header-stamp {
+    font-size: 0.65rem;
+    font-weight: bold;
+    letter-spacing: 0.25em;
+    text-align: center;
+    padding: 4px 0 10px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 12px;
+}
+
+.memo-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    margin-bottom: 10px;
+}
+
+.memo-field {
+    display: flex;
+    gap: 6px;
+    font-size: 0.67rem;
+    line-height: 1.4;
+}
+
+.memo-label {
+    font-weight: bold;
+    min-width: 76px;
+    flex-shrink: 0;
+    letter-spacing: 0.05em;
+}
+
+.memo-value {
+    opacity: 0.85;
+    letter-spacing: 0.03em;
+}
+
+.memo-rule {
+    border: none;
+    border-top: 1px solid var(--ink);
+    margin: 10px 0;
+    opacity: 0.5;
+}
+
+.memo-body {
+    font-size: 0.68rem;
+    line-height: 1.55;
+}
+
+.memo-lede {
+    margin: 0 0 10px;
+    opacity: 0.9;
+}
+
+.memo-instructions {
+    margin-bottom: 10px;
+}
+
+.memo-instruction-title {
+    font-weight: bold;
+    letter-spacing: 0.08em;
+    margin: 0 0 5px;
+    font-size: 0.65rem;
+}
+
+.memo-instruction {
+    margin: 0 0 4px;
+    display: flex;
+    gap: 6px;
+    opacity: 0.88;
+}
+
+.memo-num {
+    font-weight: bold;
+    min-width: 20px;
+    flex-shrink: 0;
+}
+
+.memo-autodismiss {
+    margin: 0;
+    font-size: 0.6rem;
+    letter-spacing: 0.06em;
+    opacity: 0.55;
+    font-style: italic;
+}
+
+.memo-footer {
+    padding-top: 4px;
+    text-align: center;
+}
+
+.memo-ack-btn {
+    background: none;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.72rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    padding: 7px 14px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.15s, color 0.15s;
+}
+
+.memo-ack-btn:hover,
+.memo-ack-btn:focus-visible {
+    background: var(--ink);
+    color: var(--paper);
+    outline: none;
+}
+
+.memo-ack-btn:active {
+    opacity: 0.8;
+}
+
+/* Sepia theme adaptations */
+body.sepia-edition .welcome-memo {
+    border-color: #5c3d1a;
+    box-shadow: 6px 6px 0 #5c3d1a;
+}
+body.sepia-edition .memo-header-stamp {
+    border-bottom-color: #5c3d1a;
+}
+body.sepia-edition .memo-ack-btn {
+    border-color: #5c3d1a;
+    color: #5c3d1a;
+}
+body.sepia-edition .memo-ack-btn:hover,
+body.sepia-edition .memo-ack-btn:focus-visible {
+    background: #5c3d1a;
+    color: var(--paper);
+}
+
+/* Midnight theme adaptations */
+body.midnight-edition .welcome-memo {
+    background: #1a1209;
+    border-color: #c9a84c;
+    box-shadow: 6px 6px 0 #c9a84c;
+    color: #e8d5b0;
+}
+body.midnight-edition .memo-header-stamp {
+    border-bottom-color: #c9a84c;
+    color: #c9a84c;
+}
+body.midnight-edition .memo-ack-btn {
+    border-color: #c9a84c;
+    color: #c9a84c;
+}
+body.midnight-edition .memo-ack-btn:hover,
+body.midnight-edition .memo-ack-btn:focus-visible {
+    background: #c9a84c;
+    color: #1a1209;
+}
+
+/* Mobile: full-width at bottom */
+@media (max-width: 480px) {
+    .welcome-memo {
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        box-shadow: 0 -4px 0 var(--ink);
+        border-radius: 0;
+        max-height: 75vh;
+    }
+    body.sepia-edition .welcome-memo {
+        box-shadow: 0 -4px 0 #5c3d1a;
+    }
+    body.midnight-edition .welcome-memo {
+        box-shadow: 0 -4px 0 #c9a84c;
+    }
+}
+

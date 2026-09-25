@@ -747,6 +747,9 @@ document.addEventListener('DOMContentLoaded', () => {
         lastReactionTime.set(taskId, now);
         inFlightReactions.add(taskId);
 
+        // Auto-archive welcome memo on first stamp
+        if (typeof window.__lgDismissMemo === 'function') window.__lgDismissMemo();
+
         // Lock pointer-events on buttons for this task during flight
         const relatedBtns = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"] .reaction-stamp-btn`);
         relatedBtns.forEach(b => b.style.setProperty('pointer-events', 'none'));
@@ -1665,6 +1668,9 @@ document.addEventListener('DOMContentLoaded', () => {
             else laterBtn.textContent = "POSTED TO THE WIRE ✓";
             statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
         }
+
+        // Auto-archive welcome memo on first dispatch
+        if (typeof window.__lgDismissMemo === 'function') window.__lgDismissMemo();
 
         // 3. Dispatch network request in parallel
         const postPayload = { text, name: submittedAuthorName, sessionId: SESSION_ID };
@@ -4098,6 +4104,79 @@ document.addEventListener('DOMContentLoaded', () => {
         window.setMobileTab = setMobileTab;
     };
 
+    // ═══════════════════════════════════════════════════════════════════
+    // BUREAU OF IDLENESS — NEW OPERATIVE GREETINGS MEMO
+    // ═══════════════════════════════════════════════════════════════════
+    const initWelcomeMemo = () => {
+        const memoEl = document.getElementById('welcome-memo');
+        if (!memoEl) return;
+
+        // Populate the date field
+        const memoDateEl = document.getElementById('memo-date');
+        if (memoDateEl) {
+            const now = new Date();
+            memoDateEl.textContent = now.toLocaleDateString('en-US', {
+                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+            }).toUpperCase();
+        }
+
+        let memoDismissed = false;
+
+        const dismissMemo = () => {
+            if (memoDismissed) return;
+            memoDismissed = true;
+            try { localStorage.setItem('lg_welcomed', '1'); } catch (e) {}
+            memoEl.classList.add('memo-hiding');
+            setTimeout(() => {
+                memoEl.style.display = 'none';
+                memoEl.classList.remove('memo-hiding');
+            }, 320);
+        };
+
+        // Expose so reaction + submit handlers can call it
+        window.__lgDismissMemo = dismissMemo;
+
+        const shouldShowMemo = () => {
+            // Already acknowledged on this device
+            try {
+                if (localStorage.getItem('lg_welcomed')) return false;
+            } catch (e) {}
+            // Logged-in operatives are not newcomers
+            if (currentGator && gatorToken) return false;
+            // Already has local stamps from prior activity (same device)
+            if (Object.keys(userStamps).length > 0) return false;
+            return true;
+        };
+
+        if (!shouldShowMemo()) return;
+
+        // Show after a short delay so page content loads first
+        setTimeout(() => {
+            // Re-check: after 800ms, if server sync has already populated stamps,
+            // they are a returning operative — don't show
+            if (Object.keys(userStamps).length > 0) return;
+            if (currentGator && gatorToken) return;
+            try { if (localStorage.getItem('lg_welcomed')) return; } catch (e) {}
+
+            memoEl.style.display = 'block';
+        }, 800);
+
+        // The server sync fires at 1500ms — if it reveals prior reactions,
+        // quietly dismiss the memo even if it's already showing
+        setTimeout(() => {
+            if (Object.keys(userStamps).length > 0) {
+                dismissMemo();
+            }
+        }, 2000);
+
+        // Acknowledge button
+        const ackBtn = document.getElementById('memo-ack-btn');
+        if (ackBtn) {
+            ackBtn.addEventListener('click', dismissMemo);
+        }
+    };
+
+    initWelcomeMemo();
     initMobileSegmentedController();
     initBureauAuth();
     initVideoFacade();
