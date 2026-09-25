@@ -30,7 +30,7 @@ module.exports = async function handler(req, res) {
             const { data, error } = await query;
 
             if (error) {
-                return res.status(200).json({ reactions: {} });
+                return res.status(200).json({ reactions: {}, error: error.message || error });
             }
 
             const reactions = {};
@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
             });
             return res.status(200).json({ reactions });
         } catch (err) {
-            return res.status(200).json({ reactions: {} });
+            return res.status(200).json({ reactions: {}, catchError: err.message });
         }
     }
 
@@ -117,18 +117,21 @@ module.exports = async function handler(req, res) {
                 await q;
             } else {
                 const upsertPayload = { task_id: taskId, reaction_type: reactionType };
+                let upsertErr = null;
                 if (gatorId) {
                     upsertPayload.gator_id = gatorId;
-                    await supabase.from('user_reactions').upsert(
+                    const upRes = await supabase.from('user_reactions').upsert(
                         upsertPayload,
                         { onConflict: 'gator_id,task_id' }
                     );
+                    if (upRes.error) upsertErr = upRes.error;
                 }
                 if (sessionId) {
-                    await supabase.from('user_reactions').upsert(
+                    const upRes = await supabase.from('user_reactions').upsert(
                         { ...upsertPayload, session_id: sessionId },
                         { onConflict: 'session_id,task_id' }
                     );
+                    if (upRes.error) upsertErr = upRes.error;
                 }
             }
         }
@@ -146,6 +149,7 @@ module.exports = async function handler(req, res) {
             ok: true,
             taskId,
             reactionType,
+            upsertError: upsertErr ? (upsertErr.message || upsertErr) : null,
             counts: {
                 same: freshCounts.same_count || 0,
                 valid: freshCounts.valid_count || 0,
