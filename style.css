@@ -5746,8 +5746,8 @@ body.midnight-edition .dispatch-desk-footer {
     transform: translate(-50%, -50%);
     z-index: 9000;
 
-    /* Sweet squared telegraph card proportions */
-    width: 345px;
+    /* Sweet squared telegraph card proportions - increased for readability */
+    width: 400px;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 40px);
     overflow-y: auto;
@@ -5771,15 +5771,15 @@ body.midnight-edition .dispatch-desk-footer {
 /* ── Close Button (✕) ───────────────────────────────────────────── */
 .telegraph-close-btn {
     position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 24px;
-    height: 24px;
+    top: 8px;
+    right: 8px;
+    width: 28px;
+    height: 28px;
     background: transparent;
     border: 1px solid transparent;
     color: var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -5801,30 +5801,30 @@ body.midnight-edition .dispatch-desk-footer {
 
 /* ── Card Inner Padding ─────────────────────────────────────────── */
 .telegraph-card-inner {
-    padding: 18px 18px 16px;
+    padding: 22px 22px 18px;
     position: relative;
 }
 
 /* ── Telegraph Header ───────────────────────────────────────────── */
 .telegraph-header {
     text-align: center;
-    padding: 0 16px 8px;
+    padding: 0 24px 10px;
     border-bottom: 2px solid var(--ink);
-    margin-bottom: 9px;
+    margin-bottom: 12px;
 }
 
 .telegraph-brand {
-    font-size: 0.74rem;
+    font-size: 0.88rem;
     font-weight: 700;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
 }
 
 .telegraph-sub {
-    font-size: 0.54rem;
-    letter-spacing: 0.1em;
-    opacity: 0.65;
-    margin-top: 2px;
+    font-size: 0.64rem;
+    letter-spacing: 0.08em;
+    opacity: 0.7;
+    margin-top: 3px;
     text-transform: uppercase;
 }
 
@@ -5833,7 +5833,7 @@ body.midnight-edition .dispatch-desk-footer {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     border: 1px solid var(--ink);
-    margin-bottom: 11px;
+    margin-bottom: 14px;
     background: rgba(0, 0, 0, 0.035);
 }
 
@@ -5841,9 +5841,9 @@ body.midnight-edition .dispatch-desk-footer {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 4px;
-    padding: 4px 2px;
-    font-size: 0.58rem;
+    gap: 5px;
+    padding: 6px 4px;
+    font-size: 0.68rem;
     font-weight: 700;
     text-align: center;
     border-right: 1px solid var(--ink);
@@ -5856,46 +5856,52 @@ body.midnight-edition .dispatch-desk-footer {
 
 .t-label {
     opacity: 0.55;
-    font-size: 0.5rem;
+    font-size: 0.58rem;
     font-weight: 400;
 }
 
 .t-val {
     font-weight: 700;
+    font-size: 0.70rem;
 }
 
 /* ── Cablegram Body & Orders ────────────────────────────────────── */
 .telegraph-msg {
-    font-size: 0.67rem;
-    line-height: 1.5;
-    letter-spacing: 0.02em;
-    margin: 0 0 9px;
-    opacity: 0.92;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    margin: 0 0 12px;
+    opacity: 0.95;
     text-wrap: balance;
 }
 
 .telegraph-orders {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 7px;
     background: rgba(0, 0, 0, 0.035);
-    padding: 8px 10px;
+    padding: 10px 14px;
     border-left: 3px solid var(--ink);
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
 .t-order {
     display: grid;
-    grid-template-columns: 16px 1fr;
+    grid-template-columns: 20px 1fr;
     align-items: baseline;
-    font-size: 0.65rem;
-    line-height: 1.45;
+    font-size: 0.76rem;
+    line-height: 1.5;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+
+.t-order strong {
     font-weight: 700;
-    letter-spacing: 0.02em;
 }
 
 .t-num {
     opacity: 0.6;
+    font-weight: 700;
 }
 
 .t-text {
@@ -5914,11 +5920,11 @@ body.midnight-edition .dispatch-desk-footer {
     color: var(--paper);
     border: 2px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: 0.74rem;
+    font-size: 0.82rem;
     font-weight: 700;
     letter-spacing: 0.12em;
-    padding: 10px 14px;
-    min-height: 42px;
+    padding: 12px 18px;
+    min-height: 46px;
     cursor: pointer;
     text-align: center;
     transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease, color 0.12s ease;
@@ -5991,39 +5997,53 @@ body.midnight-edition .telegraph-ack-btn:hover {
 /* ── Mobile (≤ 480px): sweet squared telegraph card ──────────────── */
 @media (max-width: 480px) {
     .welcome-memo.telegraph-card {
-        width: 315px;
-        max-width: calc(100vw - 32px);
+        width: 350px;
+        max-width: calc(100vw - 28px);
         max-height: 82vh;
-        box-shadow: 5px 5px 0 var(--ink);
+        box-shadow: 6px 6px 0 var(--ink);
     }
     body.midnight-edition .welcome-memo.telegraph-card {
-        box-shadow: 5px 5px 0 #060504;
+        box-shadow: 6px 6px 0 #060504;
     }
     .telegraph-card-inner {
-        padding: 16px 14px 14px;
+        padding: 18px 16px 15px;
     }
     .telegraph-brand {
-        font-size: 0.7rem;
-        letter-spacing: 0.12em;
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
     }
     .telegraph-sub {
-        font-size: 0.5rem;
+        font-size: 0.58rem;
     }
     .t-meta-cell {
+        font-size: 0.62rem;
+        padding: 5px 3px;
+    }
+    .t-label {
         font-size: 0.54rem;
-        padding: 3px 2px;
+    }
+    .t-val {
+        font-size: 0.66rem;
     }
     .telegraph-msg {
-        font-size: 0.65rem;
+        font-size: 0.76rem;
+        line-height: 1.5;
+        margin-bottom: 10px;
+    }
+    .telegraph-orders {
+        padding: 8px 11px;
+        margin-bottom: 13px;
+        gap: 6px;
     }
     .t-order {
-        font-size: 0.63rem;
-        grid-template-columns: 16px 1fr;
+        font-size: 0.71rem;
+        grid-template-columns: 18px 1fr;
+        line-height: 1.45;
     }
     .telegraph-ack-btn {
-        font-size: 0.71rem;
-        padding: 10px 12px;
-        min-height: 42px;
+        font-size: 0.78rem;
+        padding: 11px 14px;
+        min-height: 44px;
         letter-spacing: 0.08em;
     }
 }
@@ -6031,17 +6051,18 @@ body.midnight-edition .telegraph-ack-btn:hover {
 /* ── Very small phones (≤ 360px) ────────────────────────────────── */
 @media (max-width: 360px) {
     .welcome-memo.telegraph-card {
-        width: 290px;
-        max-width: calc(100vw - 20px);
+        width: 320px;
+        max-width: calc(100vw - 16px);
         max-height: 85vh;
-        box-shadow: 4px 4px 0 var(--ink);
+        box-shadow: 5px 5px 0 var(--ink);
     }
     body.midnight-edition .welcome-memo.telegraph-card {
-        box-shadow: 4px 4px 0 #060504;
+        box-shadow: 5px 5px 0 #060504;
     }
-    .telegraph-card-inner { padding: 14px 12px 12px; }
-    .telegraph-brand { font-size: 0.66rem; }
-    .telegraph-msg { font-size: 0.62rem; }
-    .t-order { font-size: 0.6rem; grid-template-columns: 15px 1fr; }
-    .telegraph-ack-btn { font-size: 0.67rem; padding: 9px 10px; min-height: 38px; }
+    .telegraph-card-inner { padding: 15px 12px 13px; }
+    .telegraph-brand { font-size: 0.76rem; }
+    .telegraph-sub { font-size: 0.54rem; }
+    .telegraph-msg { font-size: 0.70rem; }
+    .t-order { font-size: 0.67rem; grid-template-columns: 16px 1fr; }
+    .telegraph-ack-btn { font-size: 0.72rem; padding: 10px 12px; min-height: 40px; }
 }
