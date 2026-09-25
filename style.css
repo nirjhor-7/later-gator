@@ -5707,89 +5707,78 @@ body.midnight-edition .dispatch-desk-footer {
 }
 
 
+
 /* ═══════════════════════════════════════════════════════════════════════
    BUREAU OF IDLENESS — NEW OPERATIVE GREETINGS MEMO
    ═══════════════════════════════════════════════════════════════════════ */
 
-@keyframes memoSlideIn {
+/*
+ * Positioning strategy: true viewport center via top/left 50% +
+ * transform: translate(-50%, -50%). Every animation keyframe bakes in
+ * BOTH offsets so the slide doesn't fight the centering.
+ */
+
+@keyframes memoAppear {
     from {
         opacity: 0;
-        transform: translateY(28px) scale(0.97);
+        transform: translate(-50%, calc(-50% + 18px)) scale(0.96);
     }
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
 }
 
-@keyframes memoSlideOut {
+@keyframes memoDisappear {
     from {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translate(-50%, -50%) scale(1);
     }
     to {
         opacity: 0;
-        transform: translateY(20px) scale(0.96);
-    }
-}
-
-/* Mobile-specific variants bake in translateX(-50%) so centering + slide don't conflict */
-@keyframes memoSlideInCentered {
-    from {
-        opacity: 0;
-        transform: translateX(-50%) translateY(28px) scale(0.97);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0) scale(1);
-    }
-}
-
-@keyframes memoSlideOutCentered {
-    from {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0) scale(1);
-    }
-    to {
-        opacity: 0;
-        transform: translateX(-50%) translateY(20px) scale(0.96);
+        transform: translate(-50%, calc(-50% + 14px)) scale(0.97);
     }
 }
 
 /* ── Container ──────────────────────────────────────────────────── */
 .welcome-memo {
     position: fixed;
-    bottom: 28px;
-    right: 28px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     z-index: 9000;
-    width: 440px;
-    max-width: calc(100vw - 40px);
-    max-height: calc(100vh - 56px);
+
+    /* Memo paper proportions — portrait-ish, compact */
+    width: 400px;
+    max-width: calc(100vw - 48px);
+    max-height: calc(100vh - 80px);
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
     background: var(--paper);
     border: 2px solid var(--ink);
     box-shadow: 8px 8px 0 var(--ink);
     font-family: 'Courier New', Courier, monospace;
     color: var(--ink);
-    animation: memoSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
-    /* Smooth scroll inside on touch */
-    -webkit-overflow-scrolling: touch;
+
+    animation: memoAppear 0.36s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .welcome-memo.memo-hiding {
-    animation: memoSlideOut 0.28s ease-in both;
+    animation: memoDisappear 0.26s ease-in both;
     pointer-events: none;
 }
 
+/* ── Inner padding ──────────────────────────────────────────────── */
 .welcome-memo-inner {
-    padding: 24px 26px 22px;
+    padding: 26px 28px 24px;
 }
 
 /* ── Header ─────────────────────────────────────────────────────── */
 .memo-header-stamp {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     font-weight: bold;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.24em;
     text-align: center;
     padding-bottom: 12px;
     border-bottom: 2px solid var(--ink);
@@ -5798,99 +5787,96 @@ body.midnight-edition .dispatch-desk-footer {
 }
 
 /* ── Field rows (TO / FROM / RE / DATE / CLEARANCE) ─────────────── */
+/*
+ * display:contents on .memo-field lets the two child spans (label + value)
+ * participate directly in the parent 2-column grid — no wrapping, ever.
+ */
 .memo-fields {
     display: grid;
-    /* Label column: wide enough for "CLEARANCE:" in bold Courier */
-    grid-template-columns: 100px 1fr;
+    grid-template-columns: 96px 1fr;
     row-gap: 4px;
-    column-gap: 0;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
-/* Each field is a 2-column subgrid spanning both columns */
 .memo-field {
-    display: contents; /* lets children participate in parent grid */
+    display: contents;
 }
 
 .memo-label {
     font-weight: bold;
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     line-height: 1.45;
     letter-spacing: 0.04em;
-    /* Align label top with value top when value wraps */
     align-self: start;
-    padding-right: 8px;
+    padding-right: 6px;
 }
 
 .memo-value {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     line-height: 1.45;
     opacity: 0.82;
     letter-spacing: 0.02em;
     align-self: start;
 }
 
-/* ── Divider rule ───────────────────────────────────────────────── */
+/* ── Divider ────────────────────────────────────────────────────── */
 .memo-rule {
     border: none;
     border-top: 1px solid var(--ink);
-    margin: 13px 0;
-    opacity: 0.45;
+    margin: 12px 0;
+    opacity: 0.4;
 }
 
 /* ── Body copy ──────────────────────────────────────────────────── */
 .memo-body {
-    font-size: 0.73rem;
+    font-size: 0.7rem;
     line-height: 1.6;
 }
 
 .memo-lede {
-    margin: 0 0 12px;
+    margin: 0 0 11px;
     opacity: 0.88;
 }
 
 /* ── Standing orders ─────────────────────────────────────────────── */
 .memo-instructions {
-    margin-bottom: 12px;
+    margin-bottom: 11px;
 }
 
 .memo-instruction-title {
     font-weight: bold;
     letter-spacing: 0.1em;
+    font-size: 0.68rem;
     margin: 0 0 6px;
-    font-size: 0.72rem;
 }
 
-/* Grid: numeral col | text col — text col handles inline rich content cleanly */
+/*
+ * Grid layout: numeral (28px) | text (1fr)
+ * The text cell is a normal block, so <strong> tags inside flow inline
+ * without any flex fragmentation.
+ */
 .memo-instruction {
     display: grid;
-    grid-template-columns: 28px 1fr;
-    gap: 0;
+    grid-template-columns: 26px 1fr;
     margin: 0 0 5px;
-    font-size: 0.73rem;
+    font-size: 0.7rem;
     line-height: 1.55;
-    opacity: 0.88;
+    opacity: 0.87;
 }
 
 .memo-num {
     font-weight: bold;
-    /* Align numeral baseline with first line of text */
-    padding-top: 0;
     align-self: start;
-}
-
-.memo-text {
-    /* Normal inline flow — strong tags, commas, spaces all work naturally */
 }
 
 .memo-text strong {
     font-weight: bold;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
 }
 
 .memo-autodismiss {
-    margin: 2px 0 0;
-    font-size: 0.63rem;
+    margin: 3px 0 0;
+    font-size: 0.6rem;
     letter-spacing: 0.06em;
     opacity: 0.5;
     font-style: italic;
@@ -5908,14 +5894,13 @@ body.midnight-edition .dispatch-desk-footer {
     border: 2px solid var(--ink);
     color: var(--ink);
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     font-weight: bold;
     letter-spacing: 0.12em;
     padding: 10px 16px;
     cursor: pointer;
     text-align: center;
-    transition: background 0.14s ease, color 0.14s ease;
-    /* Prevent tap-highlight flash on mobile */
+    transition: background 0.13s ease, color 0.13s ease;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -5976,127 +5961,74 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     color: #1a1209;
 }
 
-/* ── Tablet: slightly narrower but still card-style ─────────────── */
-/* ── Tablet (481–768px): narrower floating card ─────────────────── */
-@media (max-width: 768px) and (min-width: 481px) {
+/* ── Tablet (≤ 768px): slightly narrower, same center ───────────── */
+@media (max-width: 768px) {
     .welcome-memo {
-        width: 380px;
-        right: 16px;
-        bottom: 16px;
+        width: 360px;
+        max-width: calc(100vw - 40px);
         box-shadow: 6px 6px 0 var(--ink);
     }
-    body.sepia-edition .welcome-memo {
-        box-shadow: 6px 6px 0 #5c3d1a;
-    }
-    body.midnight-edition .welcome-memo {
-        box-shadow: 6px 6px 0 #c9a84c;
-    }
+    body.sepia-edition .welcome-memo  { box-shadow: 6px 6px 0 #5c3d1a; }
+    body.midnight-edition .welcome-memo { box-shadow: 6px 6px 0 #c9a84c; }
 }
 
-/* ── Mobile (≤ 480px): centered floating memo card ───────────────── */
+/* ── Mobile (≤ 480px): compact centered card ────────────────────── */
 @media (max-width: 480px) {
     .welcome-memo {
-        /* True horizontal center — not full-width */
-        left: 50%;
-        right: auto;
-        bottom: 24px;
-        width: 300px;
-        max-width: calc(100vw - 56px);
-        max-height: 62vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        /* Combine X centering into the animation so slide-up works */
-        transform: translateX(-50%);
-        animation: memoSlideInCentered 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
-        /* Full border + shadow on all sides */
-        border: 2px solid var(--ink);
+        width: 88vw;
+        max-width: 340px;
+        max-height: 82vh;
         box-shadow: 5px 5px 0 var(--ink);
-        /* Notched phone safe area */
-        margin-bottom: env(safe-area-inset-bottom, 0px);
-    }
-    .welcome-memo.memo-hiding {
-        animation: memoSlideOutCentered 0.28s ease-in both;
     }
     .welcome-memo-inner {
-        padding: 18px 16px 16px;
+        padding: 20px 18px 18px;
     }
     .memo-fields {
-        grid-template-columns: 78px 1fr;
+        grid-template-columns: 82px 1fr;
         row-gap: 3px;
     }
     .memo-header-stamp {
-        font-size: 0.66rem;
-        padding-bottom: 10px;
-        margin-bottom: 10px;
+        font-size: 0.65rem;
         letter-spacing: 0.18em;
+        padding-bottom: 10px;
+        margin-bottom: 12px;
     }
     .memo-label,
-    .memo-value {
-        font-size: 0.67rem;
-        line-height: 1.4;
-    }
-    .memo-body {
-        font-size: 0.68rem;
-        line-height: 1.55;
-    }
-    .memo-lede {
-        margin-bottom: 10px;
-    }
+    .memo-value,
+    .memo-lede,
     .memo-instruction,
     .memo-instruction-title {
         font-size: 0.67rem;
     }
-    .memo-instructions {
-        margin-bottom: 10px;
-    }
-    .memo-rule {
-        margin: 10px 0;
-    }
-    .memo-autodismiss {
-        font-size: 0.58rem;
-    }
+    .memo-body { font-size: 0.67rem; }
+    .memo-rule { margin: 10px 0; }
+    .memo-instructions { margin-bottom: 10px; }
+    .memo-lede { margin-bottom: 10px; }
+    .memo-autodismiss { font-size: 0.57rem; }
     .memo-ack-btn {
         font-size: 0.7rem;
-        padding: 11px 12px;
+        padding: 11px 14px;
         min-height: 44px;
         letter-spacing: 0.08em;
     }
-    body.sepia-edition .welcome-memo {
-        border-color: #5c3d1a;
-        box-shadow: 5px 5px 0 #5c3d1a;
-    }
-    body.midnight-edition .welcome-memo {
-        border-color: #c9a84c;
-        box-shadow: 5px 5px 0 #c9a84c;
-    }
+    body.sepia-edition .welcome-memo  { box-shadow: 5px 5px 0 #5c3d1a; }
+    body.midnight-edition .welcome-memo { box-shadow: 5px 5px 0 #c9a84c; }
 }
 
 /* ── Very small phones (≤ 360px) ────────────────────────────────── */
 @media (max-width: 360px) {
     .welcome-memo {
-        width: 280px;
-        max-width: calc(100vw - 48px);
-        bottom: 18px;
-        max-height: 65vh;
+        width: 90vw;
+        max-width: 310px;
+        max-height: 84vh;
     }
-    .welcome-memo-inner {
-        padding: 16px 14px 14px;
-    }
-    .memo-fields {
-        grid-template-columns: 72px 1fr;
-    }
+    .welcome-memo-inner { padding: 16px 15px 15px; }
+    .memo-fields { grid-template-columns: 74px 1fr; }
     .memo-header-stamp,
     .memo-label,
     .memo-value,
     .memo-body,
     .memo-instruction,
-    .memo-instruction-title {
-        font-size: 0.63rem;
-    }
-    .memo-ack-btn {
-        font-size: 0.65rem;
-        padding: 10px 10px;
-    }
+    .memo-instruction-title { font-size: 0.63rem; }
+    .memo-ack-btn { font-size: 0.66rem; padding: 10px 12px; }
 }
-
-
