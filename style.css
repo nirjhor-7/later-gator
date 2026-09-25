@@ -5954,11 +5954,12 @@ body.midnight-edition .memo-ack-btn:focus-visible {
 }
 
 /* ── Tablet: slightly narrower but still card-style ─────────────── */
+/* ── Tablet (481–768px): narrower floating card ─────────────────── */
 @media (max-width: 768px) and (min-width: 481px) {
     .welcome-memo {
-        width: 400px;
-        right: 20px;
-        bottom: 20px;
+        width: 380px;
+        right: 16px;
+        bottom: 16px;
         box-shadow: 6px 6px 0 var(--ink);
     }
     body.sepia-edition .welcome-memo {
@@ -5969,62 +5970,105 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     }
 }
 
-/* ── Mobile: full-width bottom sheet ───────────────────────────── */
+/* ── Mobile (≤ 480px): compact floating card, centered ───────────── */
 @media (max-width: 480px) {
     .welcome-memo {
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 100%;
-        max-width: 100%;
-        max-height: 72vh;
+        /* Float it — centered with margins, not full-width */
+        left: 12px;
+        right: 12px;
+        bottom: 16px;
+        width: auto;
+        max-width: calc(100vw - 24px);
+        /* Compact height — fits the memo without dominating the screen */
+        max-height: 62vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        /* Keep all borders and shadow */
+        border: 2px solid var(--ink);
+        box-shadow: 5px 5px 0 var(--ink);
+        /* Remove any bottom-sheet overrides */
         border-top: 2px solid var(--ink);
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        box-shadow: 0 -6px 0 var(--ink);
-        /* Safe area for notched/pill phones */
-        padding-bottom: env(safe-area-inset-bottom, 0px);
+        border-left: 2px solid var(--ink);
+        border-right: 2px solid var(--ink);
+        border-bottom: 2px solid var(--ink);
+        /* Safe area bottom clearance for notched phones */
+        margin-bottom: env(safe-area-inset-bottom, 0px);
     }
     .welcome-memo-inner {
-        padding: 20px 20px 16px;
+        padding: 18px 18px 16px;
     }
-    /* Slightly smaller label column on narrow screens */
     .memo-fields {
-        grid-template-columns: 88px 1fr;
+        grid-template-columns: 82px 1fr;
+        row-gap: 3px;
+    }
+    .memo-header-stamp {
+        font-size: 0.68rem;
+        padding-bottom: 10px;
+        margin-bottom: 10px;
     }
     .memo-label,
-    .memo-value,
-    .memo-body,
+    .memo-value {
+        font-size: 0.68rem;
+        line-height: 1.4;
+    }
+    .memo-body {
+        font-size: 0.69rem;
+    }
+    .memo-lede {
+        margin-bottom: 10px;
+    }
     .memo-instruction,
-    .memo-instruction-title,
-    .memo-header-stamp {
-        font-size: 0.7rem;
+    .memo-instruction-title {
+        font-size: 0.68rem;
+    }
+    .memo-instructions {
+        margin-bottom: 10px;
+    }
+    .memo-rule {
+        margin: 10px 0;
     }
     .memo-ack-btn {
-        font-size: 0.75rem;
-        padding: 12px 16px;
+        font-size: 0.72rem;
+        padding: 11px 14px;
+        /* Comfortable tap target */
+        min-height: 44px;
     }
     body.sepia-edition .welcome-memo {
-        border-top-color: #5c3d1a;
-        box-shadow: 0 -6px 0 #5c3d1a;
+        border-color: #5c3d1a;
+        box-shadow: 5px 5px 0 #5c3d1a;
     }
     body.midnight-edition .welcome-memo {
-        border-top-color: #c9a84c;
-        box-shadow: 0 -6px 0 #c9a84c;
+        border-color: #c9a84c;
+        box-shadow: 5px 5px 0 #c9a84c;
     }
 }
 
 /* ── Very small phones (≤ 360px) ────────────────────────────────── */
 @media (max-width: 360px) {
     .welcome-memo {
-        max-height: 80vh;
+        left: 10px;
+        right: 10px;
+        bottom: 12px;
+        max-height: 65vh;
+        max-width: calc(100vw - 20px);
     }
     .welcome-memo-inner {
-        padding: 16px 16px 14px;
+        padding: 16px 15px 14px;
     }
     .memo-fields {
-        grid-template-columns: 80px 1fr;
+        grid-template-columns: 76px 1fr;
+    }
+    .memo-header-stamp,
+    .memo-label,
+    .memo-value,
+    .memo-body,
+    .memo-instruction,
+    .memo-instruction-title {
+        font-size: 0.65rem;
+    }
+    .memo-ack-btn {
+        font-size: 0.68rem;
+        padding: 10px 12px;
     }
 }
 
