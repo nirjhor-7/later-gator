@@ -98,3 +98,13 @@ CREATE POLICY "Allow API all on dispatch_notifications" ON dispatch_notification
 -- Policies for user_reactions
 DROP POLICY IF EXISTS "Allow API all on user_reactions" ON user_reactions;
 CREATE POLICY "Allow API all on user_reactions" ON user_reactions FOR ALL USING (true) WITH CHECK (true);
+
+-- Policies for tasks (guarantees DELETE works when called with either anon key or service role)
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tasks') THEN
+        ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
+        DROP POLICY IF EXISTS "Allow API all on tasks" ON tasks;
+        CREATE POLICY "Allow API all on tasks" ON tasks FOR ALL USING (true) WITH CHECK (true);
+    END IF;
+END $$;

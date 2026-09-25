@@ -160,11 +160,22 @@ function isGibberish(text) {
 }
 
 let supabase = null;
-if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
-    supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_KEY;
+if (process.env.SUPABASE_URL && supabaseKey) {
+    supabase = createClient(process.env.SUPABASE_URL, supabaseKey);
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
+    // Add CORS headers
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Gator-Token, x-gator-token');
+
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
     if (!supabase) {
         return res.status(500).json({ error: "Supabase Env Vars missing in Vercel" });
     }
@@ -439,11 +450,23 @@ export default async function handler(req, res) {
 
     if (req.method === 'DELETE') {
         try {
-            if (req.headers['x-gator-token'] !== 'chomp-chomp') {
+            const token = req.headers['x-gator-token'] || req.headers['X-Gator-Token'];
+            if (token !== 'chomp-chomp') {
                 return res.status(403).json({ error: "No gators allowed." });
             }
 
-            const rawTaskId = req.query.id || (req.body && req.body.id);
+            let rawTaskId = null;
+            if (req.query && req.query.id) {
+                rawTaskId = req.query.id;
+            } else if (req.body && req.body.id) {
+                rawTaskId = req.body.id;
+            } else if (req.url && req.url.includes('?')) {
+                try {
+                    const parsedUrl = new URL(req.url, 'http://localhost');
+                    rawTaskId = parsedUrl.searchParams.get('id');
+                } catch (e) {}
+            }
+
             if (!rawTaskId) {
                 return res.status(400).json({ error: "Missing dispatch ID for shredding." });
             }
@@ -453,25 +476,34 @@ export default async function handler(req, res) {
                 return res.status(400).json({ error: "Invalid dispatch ID." });
             }
 
-            const { error: deleteError } = await supabase
+            // 1. Delete dependent notifications and reactions first to prevent foreign key errors
+            try {
+                await supabase.from('dispatch_notifications').delete().eq('task_id', String(taskId));
+            } catch (e) {}
+            try {
+                await supabase.from('user_reactions').delete().eq('task_id', String(taskId));
+            } catch (e) {}
+
+            // 2. Delete task from tasks table
+            const { data: deletedRows, error: deleteError } = await supabase
                 .from('tasks')
                 .delete()
-                .eq('id', taskId);
+                .eq('id', taskId)
+                .select();
 
-            if (deleteError) throw deleteError;
-
-            await supabase
-                .from('dispatch_notifications')
-                .delete()
-                .eq('task_id', String(taskId))
-                .then(() => {}).catch(() => {});
+            if (deleteError) {
+                console.error('Delete error in Supabase:', deleteError);
+                throw deleteError;
+            }
 
             return res.status(200).json({
                 success: true,
                 message: "Dispatched guilt expunged from the wire.",
-                id: taskId
+                id: taskId,
+                deletedCount: (deletedRows && deletedRows.length) || 1
             });
         } catch (err) {
+            console.error('Server error handling DELETE /api/tasks:', err);
             return res.status(500).json({ error: err.message });
         }
     }

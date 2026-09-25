@@ -35,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return raw ? JSON.parse(raw) : [];
         } catch (e) { return []; }
     })();
+    const optToRealIdMap = new Map();
 
     // Active time spent on site avoiding work (increments every 5s while tab is visible)
     setInterval(() => {
@@ -1734,7 +1735,11 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (clipBtn) clipBtn.setAttribute('data-task-id', newTask.id);
                             const rxContainer = optEl.querySelector('.feed-reactions');
                             if (rxContainer) rxContainer.setAttribute('data-task-id', newTask.id);
+                            const feedShredBtn = optEl.querySelector('.feed-shred-btn');
+                            if (feedShredBtn) feedShredBtn.setAttribute('data-task-id', newTask.id);
                         }
+                        optToRealIdMap.set(optId, newTask.id);
+                        optToRealIdMap.set(String(optId), newTask.id);
                         renderedTopId = Math.max(renderedTopId || 0, Number(newTask.id));
                     }
                     fetchTasks(true);
@@ -1946,14 +1951,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const absolutionCode = document.getElementById('absolution-code');
     const shredTallyNumber = document.getElementById('shred-tally-number');
     const absolutionDismissBtn = document.getElementById('absolution-dismiss-btn');
-    const absolutionShredMoreBtn = document.getElementById('absolution-shred-more-btn');
     const disposalControls = document.getElementById('disposal-controls');
     const disposalCrankBtn = document.getElementById('disposal-crank-btn');
     const crankBtnIcon = document.getElementById('crank-btn-icon');
     const crankBtnText = document.getElementById('crank-btn-text');
-    const shredBtn = document.getElementById('shred-btn');
 
-    let currentDisposalItem = { text: '', taskId: null, source: 'input' };
+    let currentDisposalItem = { text: '', taskId: null, source: 'wire' };
     let disposalMode = 'shredder';
     try {
         const savedMode = localStorage.getItem('lg_disposal_mode');
@@ -2006,8 +2009,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    const openDisposalUnit = ({ text, taskId = null, source = 'input' }) => {
-        if (!disposalModal) return;
+    const openDisposalUnit = ({ text, taskId = null, source = 'wire' }) => {
+        if (!disposalModal || !taskId) return;
 
         let cleanText = (text || '').trim();
         if (!cleanText) {
@@ -2022,15 +2025,11 @@ document.addEventListener('DOMContentLoaded', () => {
             cleanText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
         }
 
-        currentDisposalItem = { text: cleanText, taskId, source };
+        currentDisposalItem = { text: cleanText, taskId, source: 'wire' };
 
         if (disposalTaskText) disposalTaskText.textContent = `"${cleanText.toUpperCase()}"`;
         if (disposalTaskMeta) {
-            if (taskId) {
-                disposalTaskMeta.textContent = `Live on Wire (ID #${taskId}) • Action: Strike from Record • Classification: Expunge`;
-            } else {
-                disposalTaskMeta.textContent = `Unfiled Draft • Classification: Severe Avoidance • Status: Unbroadcast`;
-            }
+            disposalTaskMeta.textContent = `Live Wire Dispatch (ID #${taskId}) • Action: Obliterate & Expunge • Archive: Struck`;
         }
 
         if (shredTallyNumber) shredTallyNumber.textContent = String(shredTally);
@@ -2080,39 +2079,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         setTimeout(async () => {
-            if (currentDisposalItem.taskId) {
-                const targetId = currentDisposalItem.taskId;
-                
-                if (feedContainer) {
-                    const feedItem = feedContainer.querySelector(`.feed-item[data-task-id="${targetId}"]`);
-                    if (feedItem) {
-                        feedItem.classList.add('shredding-out');
-                        setTimeout(() => { if (feedItem.parentNode) feedItem.remove(); }, 620);
-                    }
-                }
-
-                allKnownTasks.delete(Number(targetId));
-                allKnownTasks.delete(String(targetId));
-                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId));
-                try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
-
-                try {
-                    fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-Gator-Token': 'chomp-chomp'
-                        }
-                    }).catch(() => {});
-                } catch (e) {}
-
-                fetchStats();
+            let targetId = currentDisposalItem.taskId;
+            if (targetId && String(targetId).startsWith('opt-') && optToRealIdMap.has(String(targetId))) {
+                targetId = optToRealIdMap.get(String(targetId));
             }
 
-            if (currentDisposalItem.source === 'input') {
-                if (taskInput) {
-                    taskInput.value = '';
-                    updateCharCount();
+            if (targetId) {
+                // 1. Instantly animate and remove from wire feed in DOM
+                if (feedContainer) {
+                    const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${currentDisposalItem.taskId}"]`);
+                    feedItems.forEach(item => {
+                        item.classList.add('shredding-out');
+                        setTimeout(() => { if (item.parentNode) item.remove(); }, 620);
+                    });
                 }
+
+                // 2. Clear from in-memory records and local storage tracking
+                allKnownTasks.delete(Number(targetId));
+                allKnownTasks.delete(String(targetId));
+                if (currentDisposalItem.taskId) {
+                    allKnownTasks.delete(Number(currentDisposalItem.taskId));
+                    allKnownTasks.delete(String(currentDisposalItem.taskId));
+                }
+
+                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentDisposalItem.taskId));
+                window.myTaskIds = myTaskIds;
+                try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+
+                // Purge from cached tasks in localStorage
+                try {
+                    const rawCache = localStorage.getItem('lg_cached_tasks');
+                    if (rawCache) {
+                        const cached = JSON.parse(rawCache);
+                        if (Array.isArray(cached)) {
+                            const updated = cached.filter(t => 
+                                String(t.id) !== String(targetId) && String(t.id) !== String(currentDisposalItem.taskId)
+                            );
+                            localStorage.setItem('lg_cached_tasks', JSON.stringify(updated));
+                        }
+                    }
+                } catch (e) {}
+
+                // 3. Remove from dossier if operative dossier open
+                if (dossierListEl) {
+                    const dossierItems = dossierListEl.querySelectorAll(`.dossier-item[data-task-id="${targetId}"], .dossier-item[data-task-id="${currentDisposalItem.taskId}"]`);
+                    dossierItems.forEach(d => d.remove());
+                }
+
+                // 4. Send DELETE to backend database and AWAIT
+                try {
+                    const delRes = await fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Gator-Token': 'chomp-chomp'
+                        },
+                        body: JSON.stringify({ id: targetId })
+                    });
+                    if (!delRes.ok) {
+                        const err = await delRes.text().catch(() => '');
+                        console.error('Failed to expunge task on server:', delRes.status, err);
+                    } else {
+                        console.log('Task successfully shredded from database archives:', targetId);
+                    }
+                } catch (netErr) {
+                    console.error('Network error during task shredding:', netErr);
+                }
+
+                fetchStats();
+                if (typeof window.fetchDossier === 'function') window.fetchDossier();
+                fetchTasks(true);
             }
 
             shredTally++;
@@ -2123,17 +2159,13 @@ document.addEventListener('DOMContentLoaded', () => {
             if (disposalControls) disposalControls.style.display = 'none';
 
             if (absolutionMsg) {
-                if (currentDisposalItem.taskId) {
-                    absolutionMsg.textContent = "Your dispatch has been shredded into oblivion and struck from the public wire. No trace remains in the bureau archives.";
-                } else if (isFurnace) {
-                    absolutionMsg.textContent = "Your avoided task was incinerated at 1,400°F. The ashes have scattered to the wind. You are legally excused for the next 45 minutes.";
-                } else {
-                    absolutionMsg.textContent = "Your avoided task has been reduced to 0.4 grams of confetti. You are legally excused from thinking about it for at least 45 minutes.";
-                }
+                absolutionMsg.textContent = isFurnace
+                    ? "Your avoided task was incinerated at 1,400°F and permanently expunged from the wire archives. No trace remains in the bureau."
+                    : "Your avoided task was sliced into 14 confetti strips and permanently expunged from the wire archives. No trace remains in the bureau.";
             }
 
             if (absolutionHeadline) {
-                absolutionHeadline.textContent = currentDisposalItem.taskId ? "EXPUNGED FROM THE WIRE" : "GUILT OFFICIALLY EXPUNGED";
+                absolutionHeadline.textContent = "EXPUNGED FROM THE WIRE";
             }
             if (absolutionCode) {
                 absolutionCode.textContent = `PERMIT #${Math.floor(1000 + Math.random() * 9000)}-ABSOLVED`;
@@ -2147,8 +2179,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     function handleFeedShredClick(feedShredBtn) {
-        const taskId = feedShredBtn.getAttribute('data-task-id');
+        let taskId = feedShredBtn.getAttribute('data-task-id');
         if (!taskId) return;
+        if (taskId.startsWith('opt-') && optToRealIdMap.has(taskId)) {
+            taskId = optToRealIdMap.get(taskId);
+        }
         const feedItem = feedShredBtn.closest('.feed-item');
         let taskText = '';
         if (feedItem) {
@@ -2166,24 +2201,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    if (shredBtn) {
-        shredBtn.addEventListener('click', () => {
-            const text = (taskInput ? taskInput.value : '').trim();
-            openDisposalUnit({ text, taskId: null, source: 'input' });
-        });
-    }
-
     if (modeShredderBtn) modeShredderBtn.addEventListener('click', () => updateDisposalMode('shredder'));
     if (modeFurnaceBtn) modeFurnaceBtn.addEventListener('click', () => updateDisposalMode('furnace'));
     if (disposalCrankBtn) disposalCrankBtn.addEventListener('click', executeDestruction);
     if (disposalCloseBtn) disposalCloseBtn.addEventListener('click', closeDisposalUnit);
     if (disposalBackdrop) disposalBackdrop.addEventListener('click', closeDisposalUnit);
     if (absolutionDismissBtn) absolutionDismissBtn.addEventListener('click', closeDisposalUnit);
-    if (absolutionShredMoreBtn) {
-        absolutionShredMoreBtn.addEventListener('click', () => {
-            openDisposalUnit({ text: '', taskId: null, source: 'input' });
-        });
-    }
 
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));
@@ -3985,6 +4008,36 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (dossierEmptyEl) dossierEmptyEl.style.display = 'block';
                 dossierListEl.innerHTML = '';
             } else {
+                let idsUpdated = false;
+                data.dispatches.forEach(d => {
+                    const nid = Number(d.id);
+                    if (!isNaN(nid) && !myTaskIds.includes(nid)) {
+                        myTaskIds.push(nid);
+                        idsUpdated = true;
+                    }
+                });
+                if (idsUpdated) {
+                    window.myTaskIds = myTaskIds;
+                    try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+                    if (feedContainer) {
+                        myTaskIds.forEach(id => {
+                            const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
+                            if (item && !item.querySelector('.feed-shred-btn')) {
+                                const rx = item.querySelector('.feed-reactions');
+                                if (rx) {
+                                    const btn = document.createElement('button');
+                                    btn.type = 'button';
+                                    btn.className = 'feed-shred-btn';
+                                    btn.setAttribute('data-task-id', String(id));
+                                    btn.title = 'Expunge & Shred This Dispatch from the Wire';
+                                    btn.setAttribute('aria-label', 'Shred Dispatch');
+                                    btn.innerHTML = '🗄️ SHRED';
+                                    rx.appendChild(btn);
+                                }
+                            }
+                        });
+                    }
+                }
                 if (dossierEmptyEl) dossierEmptyEl.style.display = 'none';
                 dossierListEl.innerHTML = data.dispatches.map(t => {
                     const taskText = escapeHtml(t.task || t.text || '');

@@ -709,8 +709,8 @@ textarea:focus ~ .task-idle-cursor,
 
 .btn-panic-clean {
     width: 100%;
-    min-height: 38px;
-    font-size: 0.92rem;
+    min-height: 42px;
+    font-size: 0.98rem;
     font-weight: 700;
     letter-spacing: 1.2px;
     display: flex;
@@ -719,7 +719,7 @@ textarea:focus ~ .task-idle-cursor,
     background: var(--paper);
     color: var(--ink);
     border: 2px solid var(--ink);
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.45);
     cursor: pointer;
     transition: all 0.15s ease;
     user-select: none;
