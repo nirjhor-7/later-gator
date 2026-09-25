@@ -372,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.feed-reactions').forEach(container => {
             const taskId = container.getAttribute('data-task-id');
             if (!taskId) return;
-            const myStamp = userStamps[taskId] || null;
+            const myStamp = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
             ['same', 'valid', 'rip'].forEach(type => {
                 const btn = container.querySelector(`.reaction-stamp-btn[data-type="${type}"]`);
                 if (btn) {
@@ -402,20 +402,20 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) return;
             const data = await res.json();
             if (data && data.reactions && typeof data.reactions === 'object') {
-                // Full overwrite — server is source of truth.
-                // Object.assign only adds/overwrites but never removes
-                // stale keys (e.g. stamps removed on another device).
                 const serverReactions = data.reactions;
-                // Clear all keys not in server response
-                for (const key of Object.keys(userStamps)) {
-                    if (!(key in serverReactions)) {
-                        delete userStamps[key];
+                // Merge server state into local — server reactions augment local stamps,
+                // but NEVER delete local stamps on this device.
+                let hasChanges = false;
+                for (const [taskId, rType] of Object.entries(serverReactions)) {
+                    if (rType && userStamps[taskId] !== rType) {
+                        userStamps[taskId] = rType;
+                        hasChanges = true;
                     }
                 }
-                // Apply server state
-                Object.assign(userStamps, serverReactions);
-                saveUserStamps();
-                syncAllReactionButtonsInDOM();
+                if (hasChanges) {
+                    saveUserStamps();
+                    syncAllReactionButtonsInDOM();
+                }
             }
         } catch (e) {
             // Fall back to localStorage silently
@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const animationClass = isNew ? 'slide-in' : '';
 
         // User reaction status for this dispatch
-        const myStamp = userStamps[task.id] || null;
+        const myStamp = userStamps[task.id] || userStamps[String(task.id)] || userStamps[Number(task.id)] || null;
         const defaultRot = ((Math.abs(numericId) * 17) % 7 - 3.2).toFixed(2);
         const sameCount = Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0);
         const validCount = Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0);
@@ -667,7 +667,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Skip in-place count overwrite for recently stamped task to allow server write propagation (FIX 6)
                     return;
                 }
-                const myStamp = userStamps[task.id] || null;
+                const myStamp = userStamps[task.id] || userStamps[String(task.id)] || userStamps[Number(task.id)] || null;
                 const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
                 const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
                 const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
@@ -752,7 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
         relatedBtns.forEach(b => b.style.setProperty('pointer-events', 'none'));
 
         // Save snapshot of previous state for rollback on error (FIX 10)
-        const prevActiveType = userStamps[taskId] || null;
+        const prevActiveType = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
         const isAlreadyStamped = btn.classList.contains('stamped');
         const countEl = btn.querySelector('.reaction-count');
         const currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
@@ -1171,7 +1171,7 @@ document.addEventListener('DOMContentLoaded', () => {
             leadClipBtn.setAttribute('data-task-id', topTask.id);
         }
 
-        const myStamp = userStamps[topTask.id] || null;
+        const myStamp = userStamps[topTask.id] || userStamps[String(topTask.id)] || userStamps[Number(topTask.id)] || null;
         const defaultRot = ((topTask.id * 17) % 7 - 3.2).toFixed(2);
         const sameCount = Math.max(topTask.same_count != null ? topTask.same_count : 0, myStamp === 'same' ? 1 : 0);
         const validCount = Math.max(topTask.valid_count != null ? topTask.valid_count : 0, myStamp === 'valid' ? 1 : 0);

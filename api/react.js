@@ -30,16 +30,17 @@ module.exports = async function handler(req, res) {
             const { data, error } = await query;
 
             if (error) {
-                return res.status(200).json({ reactions: {}, error: error.message || error });
+                return res.status(200).json({ reactions: {} });
             }
 
             const reactions = {};
             (data || []).forEach(row => {
                 reactions[row.task_id] = row.reaction_type;
+                reactions[String(row.task_id)] = row.reaction_type;
             });
             return res.status(200).json({ reactions });
         } catch (err) {
-            return res.status(200).json({ reactions: {}, catchError: err.message });
+            return res.status(200).json({ reactions: {} });
         }
     }
 
@@ -104,35 +105,37 @@ module.exports = async function handler(req, res) {
         await supabase.from('tasks').update(updateObj).eq('id', taskId);
 
         // ── 2. Update per-session reaction record ─────────────────────────────
-        // IMPORTANT: delete filter includes reaction_type to prevent
-        // switching races from nuking the newly-added reaction
         if (sessionId || gatorId) {
-            if (action === 'remove') {
-                let q = supabase.from('user_reactions').delete();
-                if (gatorId) {
-                    q = q.eq('gator_id', gatorId).eq('task_id', taskId).eq('reaction_type', reactionType);
+            try {
+                if (action === 'remove') {
+                    let q = supabase.from('user_reactions').delete();
+                    if (gatorId) {
+                        q = q.eq('gator_id', gatorId).eq('task_id', String(taskId)).eq('reaction_type', reactionType);
+                    } else {
+                        q = q.eq('session_id', sessionId).eq('task_id', String(taskId)).eq('reaction_type', reactionType);
+                    }
+                    await q;
                 } else {
-                    q = q.eq('session_id', sessionId).eq('task_id', taskId).eq('reaction_type', reactionType);
+                    // Safe delete-then-insert: removes any existing reaction on this task for this session/gator
+                    let delQ = supabase.from('user_reactions').delete().eq('task_id', String(taskId));
+                    if (gatorId) {
+                        delQ = delQ.eq('gator_id', gatorId);
+                    } else {
+                        delQ = delQ.eq('session_id', sessionId);
+                    }
+                    await delQ;
+
+                    const insertRow = {
+                        task_id: String(taskId),
+                        reaction_type: reactionType
+                    };
+                    if (gatorId) insertRow.gator_id = gatorId;
+                    if (sessionId) insertRow.session_id = sessionId;
+
+                    await supabase.from('user_reactions').insert(insertRow);
                 }
-                await q;
-            } else {
-                const upsertPayload = { task_id: taskId, reaction_type: reactionType };
-                let upsertErr = null;
-                if (gatorId) {
-                    upsertPayload.gator_id = gatorId;
-                    const upRes = await supabase.from('user_reactions').upsert(
-                        upsertPayload,
-                        { onConflict: 'gator_id,task_id' }
-                    );
-                    if (upRes.error) upsertErr = upRes.error;
-                }
-                if (sessionId) {
-                    const upRes = await supabase.from('user_reactions').upsert(
-                        { ...upsertPayload, session_id: sessionId },
-                        { onConflict: 'session_id,task_id' }
-                    );
-                    if (upRes.error) upsertErr = upRes.error;
-                }
+            } catch (userRxErr) {
+                console.warn('user_reactions non-fatal error:', userRxErr.message);
             }
         }
 
@@ -149,7 +152,6 @@ module.exports = async function handler(req, res) {
             ok: true,
             taskId,
             reactionType,
-            upsertError: upsertErr ? (upsertErr.message || upsertErr) : null,
             counts: {
                 same: freshCounts.same_count || 0,
                 valid: freshCounts.valid_count || 0,
