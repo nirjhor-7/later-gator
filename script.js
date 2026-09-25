@@ -2606,6 +2606,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const initMidnightMode = () => {
         try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('theme') === 'standard' || urlParams.get('midnight') === '0') {
+                applyMidnightMode(false, false);
+                return;
+            }
+            if (urlParams.get('theme') === 'midnight' || urlParams.get('midnight') === '1') {
+                applyMidnightMode(true, false);
+                return;
+            }
             const saved = localStorage.getItem('lg_midnight_mode');
             if (saved !== null) {
                 applyMidnightMode(saved === 'true', false);
