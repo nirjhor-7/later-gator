@@ -5714,7 +5714,7 @@ body.midnight-edition .dispatch-desk-footer {
 @keyframes memoSlideIn {
     from {
         opacity: 0;
-        transform: translateY(24px) scale(0.98);
+        transform: translateY(28px) scale(0.97);
     }
     to {
         opacity: 1;
@@ -5729,25 +5729,28 @@ body.midnight-edition .dispatch-desk-footer {
     }
     to {
         opacity: 0;
-        transform: translateY(16px) scale(0.97);
+        transform: translateY(20px) scale(0.96);
     }
 }
 
+/* ── Container ──────────────────────────────────────────────────── */
 .welcome-memo {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: 28px;
+    right: 28px;
     z-index: 9000;
-    width: 360px;
-    max-width: calc(100vw - 32px);
-    max-height: calc(100vh - 48px);
+    width: 440px;
+    max-width: calc(100vw - 40px);
+    max-height: calc(100vh - 56px);
     overflow-y: auto;
     background: var(--paper);
     border: 2px solid var(--ink);
-    box-shadow: 6px 6px 0 var(--ink);
+    box-shadow: 8px 8px 0 var(--ink);
     font-family: 'Courier New', Courier, monospace;
     color: var(--ink);
-    animation: memoSlideIn 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: memoSlideIn 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    /* Smooth scroll inside on touch */
+    -webkit-overflow-scrolling: touch;
 }
 
 .welcome-memo.memo-hiding {
@@ -5756,111 +5759,141 @@ body.midnight-edition .dispatch-desk-footer {
 }
 
 .welcome-memo-inner {
-    padding: 20px 20px 18px;
+    padding: 24px 26px 22px;
 }
 
+/* ── Header ─────────────────────────────────────────────────────── */
 .memo-header-stamp {
-    font-size: 0.65rem;
+    font-size: 0.72rem;
     font-weight: bold;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.22em;
     text-align: center;
-    padding: 4px 0 10px;
+    padding-bottom: 12px;
     border-bottom: 2px solid var(--ink);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+}
+
+/* ── Field rows (TO / FROM / RE / DATE / CLEARANCE) ─────────────── */
+.memo-fields {
+    display: grid;
+    /* Label column: wide enough for "CLEARANCE:" in bold Courier */
+    grid-template-columns: 100px 1fr;
+    row-gap: 4px;
+    column-gap: 0;
     margin-bottom: 12px;
 }
 
-.memo-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    margin-bottom: 10px;
-}
-
+/* Each field is a 2-column subgrid spanning both columns */
 .memo-field {
-    display: flex;
-    gap: 6px;
-    font-size: 0.67rem;
-    line-height: 1.4;
+    display: contents; /* lets children participate in parent grid */
 }
 
 .memo-label {
     font-weight: bold;
-    min-width: 76px;
-    flex-shrink: 0;
-    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    letter-spacing: 0.04em;
+    /* Align label top with value top when value wraps */
+    align-self: start;
+    padding-right: 8px;
 }
 
 .memo-value {
-    opacity: 0.85;
-    letter-spacing: 0.03em;
+    font-size: 0.72rem;
+    line-height: 1.45;
+    opacity: 0.82;
+    letter-spacing: 0.02em;
+    align-self: start;
 }
 
+/* ── Divider rule ───────────────────────────────────────────────── */
 .memo-rule {
     border: none;
     border-top: 1px solid var(--ink);
-    margin: 10px 0;
-    opacity: 0.5;
+    margin: 13px 0;
+    opacity: 0.45;
 }
 
+/* ── Body copy ──────────────────────────────────────────────────── */
 .memo-body {
-    font-size: 0.68rem;
-    line-height: 1.55;
+    font-size: 0.73rem;
+    line-height: 1.6;
 }
 
 .memo-lede {
-    margin: 0 0 10px;
-    opacity: 0.9;
+    margin: 0 0 12px;
+    opacity: 0.88;
 }
 
+/* ── Standing orders ─────────────────────────────────────────────── */
 .memo-instructions {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
 }
 
 .memo-instruction-title {
     font-weight: bold;
-    letter-spacing: 0.08em;
-    margin: 0 0 5px;
-    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    margin: 0 0 6px;
+    font-size: 0.72rem;
 }
 
+/* Grid: numeral col | text col — text col handles inline rich content cleanly */
 .memo-instruction {
-    margin: 0 0 4px;
-    display: flex;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 0;
+    margin: 0 0 5px;
+    font-size: 0.73rem;
+    line-height: 1.55;
     opacity: 0.88;
 }
 
 .memo-num {
     font-weight: bold;
-    min-width: 20px;
-    flex-shrink: 0;
+    /* Align numeral baseline with first line of text */
+    padding-top: 0;
+    align-self: start;
+}
+
+.memo-text {
+    /* Normal inline flow — strong tags, commas, spaces all work naturally */
+}
+
+.memo-text strong {
+    font-weight: bold;
+    letter-spacing: 0.04em;
 }
 
 .memo-autodismiss {
-    margin: 0;
-    font-size: 0.6rem;
+    margin: 2px 0 0;
+    font-size: 0.63rem;
     letter-spacing: 0.06em;
-    opacity: 0.55;
+    opacity: 0.5;
     font-style: italic;
 }
 
+/* ── Acknowledge button ─────────────────────────────────────────── */
 .memo-footer {
-    padding-top: 4px;
-    text-align: center;
+    padding-top: 2px;
 }
 
 .memo-ack-btn {
+    display: block;
+    width: 100%;
     background: none;
     border: 2px solid var(--ink);
     color: var(--ink);
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: bold;
-    letter-spacing: 0.1em;
-    padding: 7px 14px;
+    letter-spacing: 0.12em;
+    padding: 10px 16px;
     cursor: pointer;
-    width: 100%;
-    transition: background 0.15s, color 0.15s;
+    text-align: center;
+    transition: background 0.14s ease, color 0.14s ease;
+    /* Prevent tap-highlight flash on mobile */
+    -webkit-tap-highlight-color: transparent;
 }
 
 .memo-ack-btn:hover,
@@ -5871,16 +5904,19 @@ body.midnight-edition .dispatch-desk-footer {
 }
 
 .memo-ack-btn:active {
-    opacity: 0.8;
+    opacity: 0.75;
 }
 
-/* Sepia theme adaptations */
+/* ── Sepia Edition ─────────────────────────────────────────────── */
 body.sepia-edition .welcome-memo {
     border-color: #5c3d1a;
-    box-shadow: 6px 6px 0 #5c3d1a;
+    box-shadow: 8px 8px 0 #5c3d1a;
 }
 body.sepia-edition .memo-header-stamp {
     border-bottom-color: #5c3d1a;
+}
+body.sepia-edition .memo-rule {
+    border-top-color: #5c3d1a;
 }
 body.sepia-edition .memo-ack-btn {
     border-color: #5c3d1a;
@@ -5892,16 +5928,20 @@ body.sepia-edition .memo-ack-btn:focus-visible {
     color: var(--paper);
 }
 
-/* Midnight theme adaptations */
+/* ── Midnight Edition ──────────────────────────────────────────── */
 body.midnight-edition .welcome-memo {
     background: #1a1209;
     border-color: #c9a84c;
-    box-shadow: 6px 6px 0 #c9a84c;
+    box-shadow: 8px 8px 0 #c9a84c;
     color: #e8d5b0;
 }
 body.midnight-edition .memo-header-stamp {
     border-bottom-color: #c9a84c;
     color: #c9a84c;
+}
+body.midnight-edition .memo-rule {
+    border-top-color: #c9a84c;
+    opacity: 0.3;
 }
 body.midnight-edition .memo-ack-btn {
     border-color: #c9a84c;
@@ -5913,7 +5953,23 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     color: #1a1209;
 }
 
-/* Mobile: full-width at bottom */
+/* ── Tablet: slightly narrower but still card-style ─────────────── */
+@media (max-width: 768px) and (min-width: 481px) {
+    .welcome-memo {
+        width: 400px;
+        right: 20px;
+        bottom: 20px;
+        box-shadow: 6px 6px 0 var(--ink);
+    }
+    body.sepia-edition .welcome-memo {
+        box-shadow: 6px 6px 0 #5c3d1a;
+    }
+    body.midnight-edition .welcome-memo {
+        box-shadow: 6px 6px 0 #c9a84c;
+    }
+}
+
+/* ── Mobile: full-width bottom sheet ───────────────────────────── */
 @media (max-width: 480px) {
     .welcome-memo {
         bottom: 0;
@@ -5921,18 +5977,55 @@ body.midnight-edition .memo-ack-btn:focus-visible {
         left: 0;
         width: 100%;
         max-width: 100%;
+        max-height: 72vh;
+        border-top: 2px solid var(--ink);
         border-left: none;
         border-right: none;
         border-bottom: none;
-        box-shadow: 0 -4px 0 var(--ink);
-        border-radius: 0;
-        max-height: 75vh;
+        box-shadow: 0 -6px 0 var(--ink);
+        /* Safe area for notched/pill phones */
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    .welcome-memo-inner {
+        padding: 20px 20px 16px;
+    }
+    /* Slightly smaller label column on narrow screens */
+    .memo-fields {
+        grid-template-columns: 88px 1fr;
+    }
+    .memo-label,
+    .memo-value,
+    .memo-body,
+    .memo-instruction,
+    .memo-instruction-title,
+    .memo-header-stamp {
+        font-size: 0.7rem;
+    }
+    .memo-ack-btn {
+        font-size: 0.75rem;
+        padding: 12px 16px;
     }
     body.sepia-edition .welcome-memo {
-        box-shadow: 0 -4px 0 #5c3d1a;
+        border-top-color: #5c3d1a;
+        box-shadow: 0 -6px 0 #5c3d1a;
     }
     body.midnight-edition .welcome-memo {
-        box-shadow: 0 -4px 0 #c9a84c;
+        border-top-color: #c9a84c;
+        box-shadow: 0 -6px 0 #c9a84c;
     }
 }
+
+/* ── Very small phones (≤ 360px) ────────────────────────────────── */
+@media (max-width: 360px) {
+    .welcome-memo {
+        max-height: 80vh;
+    }
+    .welcome-memo-inner {
+        padding: 16px 16px 14px;
+    }
+    .memo-fields {
+        grid-template-columns: 80px 1fr;
+    }
+}
+
 
