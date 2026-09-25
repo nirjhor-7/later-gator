@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.9.3">
+    <link rel="stylesheet" href="style.css?v=3.9.4">
 
     <link rel="canonical" href="https://latergators.live/">
 
@@ -48,33 +48,48 @@
 </head>
 <body>
 
-    <!-- Bureau of Idleness — Vintage Telegraph Cablegram Card -->
-    <div id="welcome-memo" class="welcome-memo telegraph-card" style="display:none;" role="dialog" aria-modal="false" aria-label="Telegraph Wire Service Cablegram">
-        <button type="button" class="memo-close-btn telegraph-close-btn" id="memo-close-btn" aria-label="Close telegram" title="Dismiss">✕</button>
-        <div class="telegraph-card-inner">
-            <div class="telegraph-header">
-                <div class="telegraph-brand">⚡ TELEGRAPH WIRE SERVICE ⚡</div>
-                <div class="telegraph-sub">BUREAU OF IDLENESS • CABLEGRAM</div>
+    <!-- Bureau of Idleness — New Operative Dispatch Memo -->
+    <div id="welcome-memo" class="welcome-memo" style="display:none;" role="dialog" aria-modal="false" aria-label="Bureau of Idleness Welcome Memo">
+        <div class="memo-top-banner">
+            <span class="memo-banner-title">⚡ BUREAU OF IDLENESS • DISPATCH DESK</span>
+            <button type="button" class="memo-close-btn" id="memo-close-btn" aria-label="Close memo" title="Dismiss">✕</button>
+        </div>
+        <div class="welcome-memo-inner">
+            <div class="memo-header-stamp">
+                <span class="memo-meta-pill">VOL. 1</span>
+                <span class="memo-headline">INTEROFFICE MEMORANDUM</span>
+                <span class="memo-meta-pill">REF. 001</span>
             </div>
-
-            <div class="telegraph-meta-grid">
-                <div class="t-meta-cell"><span class="t-label">NO.</span> 001-OP</div>
-                <div class="t-meta-cell"><span class="t-label">CLASS</span> IMMEDIATE</div>
-                <div class="t-meta-cell"><span class="t-label">FILED</span> GLOBAL</div>
+            <div class="memo-fields">
+                <div class="memo-field"><span class="memo-label">TO:</span><span class="memo-value">NEW OPERATIVE (CLEARANCE: ZERO)</span></div>
+                <div class="memo-field"><span class="memo-label">FROM:</span><span class="memo-value">BUREAU OF IDLENESS</span></div>
+                <div class="memo-field"><span class="memo-label">RE:</span><span class="memo-value">MANDATORY DELAY ORDER</span></div>
             </div>
-
-            <div class="telegraph-body">
-                <div class="telegraph-msg">
-                    WORLDWIDE TRANSMISSIONS OF TASKS CURRENTLY BEING AVOIDED. STAMP GUILT. RECEIVE SYMPATHY.
+            <div class="memo-rule"></div>
+            <div class="memo-body">
+                <p class="memo-lede">Welcome to the live wire. People worldwide transmit what they're avoiding. You stamp their guilt. They stamp yours.</p>
+                <div class="memo-instructions">
+                    <div class="memo-instruction">
+                        <span class="memo-num">①</span>
+                        <span class="memo-text"><strong>TRANSMIT:</strong> Post what you're dodging above.</span>
+                    </div>
+                    <div class="memo-instruction">
+                        <span class="memo-num">②</span>
+                        <span class="memo-text">
+                            <strong>STAMP GUILT:</strong> Cast editorial sympathy:
+                            <span class="memo-stamp-group">
+                                <span class="memo-stamp-chip stamp-same">SAME</span>
+                                <span class="memo-stamp-chip stamp-valid">VALID</span>
+                                <span class="memo-stamp-chip stamp-rip">RIP</span>
+                            </span>
+                        </span>
+                    </div>
                 </div>
-                <div class="telegraph-orders">
-                    <div class="t-order"><span class="t-num">1.</span> FILE YOUR POSTPONED TASK ABOVE.</div>
-                    <div class="t-order"><span class="t-num">2.</span> STAMP DISPATCHES WITH [ SAME / VALID / RIP ].</div>
-                </div>
             </div>
-
-            <div class="telegraph-footer">
-                <button type="button" id="memo-ack-btn" class="memo-ack-btn telegraph-ack-btn">[ ACKNOWLEDGE &amp; ENTER WIRE ➔ ]</button>
+            <div class="memo-rule"></div>
+            <div class="memo-footer">
+                <button type="button" id="memo-ack-btn" class="memo-ack-btn">[ ENTER THE WIRE ➔ ]</button>
+                <div class="memo-footnote">*Reading this memo legally counts as procrastinating.</div>
             </div>
         </div>
     </div>
@@ -529,7 +544,7 @@
     <script src="js/audio.js?v=3.8.1" defer></script>
     <script src="js/evasion.js?v=3.7.0" defer></script>
     <script src="js/canvas.js?v=3.8.0" defer></script>
-    <script src="script.js?v=3.9.3" defer></script>
+    <script src="script.js?v=3.9.4" defer></script>
 
     <script>
         const _now = new Date();

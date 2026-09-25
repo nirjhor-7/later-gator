@@ -5738,28 +5738,26 @@ body.midnight-edition .dispatch-desk-footer {
         transform: translate(-50%, calc(-50% + 12px)) scale(0.97);
     }
 }
-
-/* ── Container: Vintage Telegraph Manila Cardstock ───────────────── */
-.welcome-memo.telegraph-card {
+/* ── Container: Broadsheet Newsroom Memo ────────────────────────── */
+.welcome-memo {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     z-index: 9000;
 
-    /* Sweet squared telegraph card proportions */
-    width: 340px;
+    /* Sweet squared memo proportions */
+    width: 345px;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 40px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
 
-    /* Manila telegram paper styling */
-    background: #fbf2cf;
-    color: #1a1208;
-    border: 3px double #1a1208;
-    box-shadow: 6px 6px 0 #1a1208;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: 7px 7px 0 var(--ink);
     font-family: 'Space Mono', 'Courier New', monospace;
+    color: var(--ink);
 
     animation: memoAppear 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -5769,142 +5767,204 @@ body.midnight-edition .dispatch-desk-footer {
     pointer-events: none;
 }
 
-/* ── Close Button (✕) ───────────────────────────────────────────── */
-.telegraph-close-btn {
-    position: absolute;
-    top: 6px;
-    right: 6px;
-    width: 24px;
-    height: 24px;
-    background: transparent;
-    border: 1px solid transparent;
-    color: currentColor;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.82rem;
-    font-weight: bold;
+/* ── Top Newsroom Banner Bar ────────────────────────────────────── */
+.memo-top-banner {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 7px 10px 7px 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+}
+
+.memo-banner-title {
+    font-size: 0.61rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.memo-close-btn {
+    background: transparent;
+    border: none;
+    color: var(--paper);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.85rem;
+    font-weight: bold;
     cursor: pointer;
-    opacity: 0.5;
-    transition: opacity 0.15s, border-color 0.15s;
     line-height: 1;
-    padding: 0;
-    z-index: 3;
+    padding: 0 4px;
+    opacity: 0.75;
+    transition: opacity 0.15s, transform 0.15s;
     -webkit-tap-highlight-color: transparent;
 }
 
-.telegraph-close-btn:hover {
+.memo-close-btn:hover {
     opacity: 1;
-    border-color: currentColor;
+    transform: scale(1.15);
 }
 
-/* ── Card Inner Padding ─────────────────────────────────────────── */
-.telegraph-card-inner {
-    padding: 20px 20px 18px;
+/* ── Card Inner ─────────────────────────────────────────────────── */
+.welcome-memo-inner {
+    padding: 16px 20px 16px;
     position: relative;
 }
 
-/* ── Telegraph Header ───────────────────────────────────────────── */
-.telegraph-header {
-    text-align: center;
-    padding-bottom: 8px;
-    border-bottom: 2px solid currentColor;
-    margin-bottom: 9px;
+/* ── Broadsheet Header Row ──────────────────────────────────────── */
+.memo-header-stamp {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 7px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 10px;
 }
 
-.telegraph-brand {
-    font-size: 0.74rem;
+.memo-meta-pill {
+    font-size: 0.54rem;
+    font-weight: 700;
+    opacity: 0.65;
+    letter-spacing: 0.08em;
+    border: 1px solid var(--ink);
+    padding: 1px 4px;
+    line-height: 1.2;
+}
+
+.memo-headline {
+    font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
 }
 
-.telegraph-sub {
-    font-size: 0.54rem;
-    letter-spacing: 0.1em;
-    opacity: 0.65;
-    margin-top: 2px;
-    text-transform: uppercase;
-}
-
-/* ── Meta Grid Slip ─────────────────────────────────────────────── */
-.telegraph-meta-grid {
+/* ── Field Rows (TO / FROM / RE) ────────────────────────────────── */
+.memo-fields {
     display: grid;
-    grid-template-columns: 1fr 1.15fr 1fr;
-    border: 1px solid currentColor;
-    margin-bottom: 11px;
-    background: rgba(0, 0, 0, 0.035);
-}
-
-.t-meta-cell {
-    padding: 4px 6px;
-    font-size: 0.58rem;
-    font-weight: 700;
-    text-align: center;
-    border-right: 1px solid currentColor;
-    letter-spacing: 0.04em;
-}
-
-.t-meta-cell:last-child {
-    border-right: none;
-}
-
-.t-label {
-    opacity: 0.55;
-    font-size: 0.5rem;
-    margin-right: 3px;
-    font-weight: 400;
-}
-
-/* ── Cablegram Body & Orders ────────────────────────────────────── */
-.telegraph-msg {
-    font-size: 0.68rem;
-    line-height: 1.5;
-    letter-spacing: 0.02em;
+    grid-template-columns: 50px 1fr;
+    row-gap: 3px;
     margin-bottom: 10px;
-    opacity: 0.92;
 }
 
-.telegraph-orders {
+.memo-field {
+    display: contents;
+}
+
+.memo-label {
+    font-weight: bold;
+    font-size: 0.71rem;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    align-self: start;
+}
+
+.memo-value {
+    font-size: 0.71rem;
+    line-height: 1.4;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
+    align-self: start;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ── Divider ────────────────────────────────────────────────────── */
+.memo-rule {
+    border: none;
+    border-top: 1px solid var(--ink);
+    margin: 9px 0;
+    opacity: 0.35;
+}
+
+/* ── Body Copy ──────────────────────────────────────────────────── */
+.memo-body {
+    font-size: 0.71rem;
+    line-height: 1.5;
+}
+
+.memo-lede {
+    margin: 0 0 8px;
+    opacity: 0.9;
+}
+
+/* ── Quick Actions & Stamps ─────────────────────────────────────── */
+.memo-instructions {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    background: rgba(0, 0, 0, 0.04);
-    padding: 8px 10px;
-    border-left: 3px solid currentColor;
-    margin-bottom: 12px;
+    margin-bottom: 0;
 }
 
-.t-order {
-    font-size: 0.65rem;
+.memo-instruction {
+    display: grid;
+    grid-template-columns: 20px 1fr;
+    align-items: baseline;
+    font-size: 0.7rem;
     line-height: 1.45;
+    opacity: 0.9;
+}
+
+.memo-num {
+    font-weight: bold;
+}
+
+.memo-text strong {
+    font-weight: bold;
+    letter-spacing: 0.03em;
+}
+
+.memo-stamp-group {
+    display: inline-flex;
+    gap: 4px;
+    margin-top: 3px;
+    vertical-align: middle;
+}
+
+.memo-stamp-chip {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 0.6rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    line-height: 1.3;
+    border-radius: 1px;
 }
 
-.t-num {
-    opacity: 0.6;
-    margin-right: 4px;
+.memo-stamp-chip.stamp-same {
+    border-color: #27ae60;
+    color: #27ae60;
 }
 
-/* ── Telegraph Action Button ────────────────────────────────────── */
-.telegraph-footer {
+.memo-stamp-chip.stamp-valid {
+    border-color: #2980b9;
+    color: #2980b9;
+}
+
+.memo-stamp-chip.stamp-rip {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+/* ── Action Button & Footnote ───────────────────────────────────── */
+.memo-footer {
     padding-top: 2px;
 }
 
-.telegraph-ack-btn {
+.memo-ack-btn {
     display: block;
     width: 100%;
-    background: #1a1208;
-    color: #fbf2cf;
-    border: 2px solid #1a1208;
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    color: var(--paper);
     font-family: 'Space Mono', monospace;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     font-weight: 700;
     letter-spacing: 0.12em;
-    padding: 10px 14px;
-    min-height: 42px;
+    padding: 9px 14px;
+    min-height: 40px;
     cursor: pointer;
     text-align: center;
     transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
@@ -5912,102 +5972,166 @@ body.midnight-edition .dispatch-desk-footer {
     -webkit-tap-highlight-color: transparent;
 }
 
-.telegraph-ack-btn:hover {
+.memo-ack-btn:hover {
     transform: translate(-1px, -1px);
     box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.35);
 }
 
-.telegraph-ack-btn:active {
+.memo-ack-btn:active {
     transform: translate(1px, 1px);
     box-shadow: 0 0 0 transparent;
     opacity: 0.85;
 }
 
-/* ── Sepia Edition ─────────────────────────────────────────────── */
-body.sepia-edition .welcome-memo.telegraph-card {
-    background: #f4e3b2;
-    color: #2b1704;
-    border-color: #4a2f13;
-    box-shadow: 6px 6px 0 #4a2f13;
-}
-body.sepia-edition .telegraph-ack-btn {
-    background: #4a2f13;
-    color: #f4e3b2;
-    border-color: #4a2f13;
-    box-shadow: 2px 2px 0 rgba(74, 47, 19, 0.3);
+.memo-footnote {
+    font-size: 0.58rem;
+    font-style: italic;
+    opacity: 0.5;
+    text-align: center;
+    margin-top: 7px;
+    letter-spacing: 0.02em;
 }
 
-/* ── Midnight Edition ──────────────────────────────────────────── */
-body.midnight-edition .welcome-memo.telegraph-card {
-    background: #1e170e;
-    color: #f0deb4;
+/* ── Sepia Edition ─────────────────────────────────────────────── */
+body.sepia-edition .welcome-memo {
+    background: #f7edd8;
+    border-color: #5c3d1a;
+    box-shadow: 7px 7px 0 #5c3d1a;
+    color: #2b1704;
+}
+body.sepia-edition .memo-top-banner {
+    background: #5c3d1a;
+    color: #f7edd8;
+    border-bottom-color: #5c3d1a;
+}
+body.sepia-edition .memo-close-btn {
+    color: #f7edd8;
+}
+body.sepia-edition .memo-meta-pill {
+    border-color: #5c3d1a;
+}
+body.sepia-edition .memo-header-stamp {
+    border-bottom-color: #5c3d1a;
+}
+body.sepia-edition .memo-rule {
+    border-top-color: #5c3d1a;
+}
+body.sepia-edition .memo-ack-btn {
+    background: #5c3d1a;
+    border-color: #5c3d1a;
+    color: #f7edd8;
+    box-shadow: 2px 2px 0 rgba(92, 61, 26, 0.3);
+}
+
+/* ── Midnight Edition ──────────────────────────────────── */
+body.midnight-edition .welcome-memo {
+    background: #1a1209;
     border-color: #c9a84c;
-    box-shadow: 6px 6px 0 #c9a84c;
+    box-shadow: 7px 7px 0 #c9a84c;
+    color: #e8d5b0;
 }
-body.midnight-edition .telegraph-meta-grid {
-    background: rgba(201, 168, 76, 0.08);
-}
-body.midnight-edition .telegraph-orders {
-    background: rgba(201, 168, 76, 0.08);
-}
-body.midnight-edition .telegraph-ack-btn {
+body.midnight-edition .memo-top-banner {
     background: #c9a84c;
-    color: #1a1208;
+    color: #1a1209;
+    border-bottom-color: #c9a84c;
+}
+body.midnight-edition .memo-close-btn {
+    color: #1a1209;
+}
+body.midnight-edition .memo-meta-pill {
     border-color: #c9a84c;
+}
+body.midnight-edition .memo-header-stamp {
+    border-bottom-color: #c9a84c;
+}
+body.midnight-edition .memo-rule {
+    border-top-color: #c9a84c;
+    opacity: 0.25;
+}
+body.midnight-edition .memo-stamp-chip.stamp-same {
+    border-color: #2ecc71;
+    color: #2ecc71;
+}
+body.midnight-edition .memo-stamp-chip.stamp-valid {
+    border-color: #3498db;
+    color: #3498db;
+}
+body.midnight-edition .memo-stamp-chip.stamp-rip {
+    border-color: #ff6b57;
+    color: #ff6b57;
+}
+body.midnight-edition .memo-ack-btn {
+    background: #c9a84c;
+    border-color: #c9a84c;
+    color: #1a1209;
     box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
 }
-body.midnight-edition .telegraph-ack-btn:hover {
+body.midnight-edition .memo-ack-btn:hover {
     background: #deb853;
 }
 
-/* ── Mobile (≤ 480px): sweet squared telegraph card ──────────────── */
+/* ── Mobile (≤ 480px): sweet squared memo card ───────────────────── */
 @media (max-width: 480px) {
-    .welcome-memo.telegraph-card {
-        width: 315px;
+    .welcome-memo {
+        width: 320px;
         max-width: calc(100vw - 32px);
         max-height: 82vh;
-        box-shadow: 5px 5px 0 currentColor;
+        box-shadow: 5px 5px 0 var(--ink);
     }
-    .telegraph-card-inner {
-        padding: 18px 16px 16px;
+    .welcome-memo-inner {
+        padding: 14px 16px 14px;
     }
-    .telegraph-brand {
-        font-size: 0.7rem;
-        letter-spacing: 0.12em;
+    .memo-banner-title {
+        font-size: 0.58rem;
     }
-    .telegraph-sub {
+    .memo-fields {
+        grid-template-columns: 48px 1fr;
+        row-gap: 3px;
+        margin-bottom: 9px;
+    }
+    .memo-headline {
+        font-size: 0.68rem;
+    }
+    .memo-meta-pill {
         font-size: 0.5rem;
     }
-    .t-meta-cell {
-        font-size: 0.54rem;
-        padding: 3px 4px;
+    .memo-label,
+    .memo-value,
+    .memo-lede,
+    .memo-instruction {
+        font-size: 0.69rem;
     }
-    .telegraph-msg {
-        font-size: 0.65rem;
-    }
-    .t-order {
-        font-size: 0.63rem;
-    }
-    .telegraph-ack-btn {
-        font-size: 0.71rem;
+    .memo-body { font-size: 0.69rem; }
+    .memo-rule { margin: 8px 0; }
+    .memo-lede { margin-bottom: 7px; }
+    .memo-ack-btn {
+        font-size: 0.73rem;
         padding: 10px 12px;
         min-height: 42px;
         letter-spacing: 0.08em;
     }
+    body.sepia-edition .welcome-memo  { box-shadow: 5px 5px 0 #5c3d1a; }
+    body.midnight-edition .welcome-memo { box-shadow: 5px 5px 0 #c9a84c; }
 }
 
 /* ── Very small phones (≤ 360px) ────────────────────────────────── */
 @media (max-width: 360px) {
-    .welcome-memo.telegraph-card {
+    .welcome-memo {
         width: 290px;
         max-width: calc(100vw - 20px);
         max-height: 85vh;
-        box-shadow: 4px 4px 0 currentColor;
+        box-shadow: 4px 4px 0 var(--ink);
     }
-    .telegraph-card-inner { padding: 15px 14px 14px; }
-    .telegraph-brand { font-size: 0.66rem; }
-    .telegraph-msg { font-size: 0.62rem; }
-    .t-order { font-size: 0.6rem; }
-    .telegraph-ack-btn { font-size: 0.67rem; padding: 9px 10px; min-height: 38px; }
+    .welcome-memo-inner { padding: 12px 12px 12px; }
+    .memo-banner-title { font-size: 0.52rem; }
+    .memo-fields { grid-template-columns: 44px 1fr; }
+    .memo-headline { font-size: 0.63rem; }
+    .memo-label,
+    .memo-value,
+    .memo-body,
+    .memo-instruction { font-size: 0.64rem; }
+    .memo-stamp-chip { font-size: 0.55rem; padding: 1px 3px; }
+    .memo-ack-btn { font-size: 0.68rem; padding: 9px 10px; min-height: 38px; }
+    body.sepia-edition .welcome-memo  { box-shadow: 4px 4px 0 #5c3d1a; }
+    body.midnight-edition .welcome-memo { box-shadow: 4px 4px 0 #c9a84c; }
 }
-
