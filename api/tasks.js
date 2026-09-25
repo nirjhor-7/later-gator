@@ -437,5 +437,44 @@ export default async function handler(req, res) {
         }
     }
 
+    if (req.method === 'DELETE') {
+        try {
+            if (req.headers['x-gator-token'] !== 'chomp-chomp') {
+                return res.status(403).json({ error: "No gators allowed." });
+            }
+
+            const rawTaskId = req.query.id || (req.body && req.body.id);
+            if (!rawTaskId) {
+                return res.status(400).json({ error: "Missing dispatch ID for shredding." });
+            }
+
+            const taskId = parseInt(rawTaskId, 10);
+            if (isNaN(taskId)) {
+                return res.status(400).json({ error: "Invalid dispatch ID." });
+            }
+
+            const { error: deleteError } = await supabase
+                .from('tasks')
+                .delete()
+                .eq('id', taskId);
+
+            if (deleteError) throw deleteError;
+
+            await supabase
+                .from('dispatch_notifications')
+                .delete()
+                .eq('task_id', String(taskId))
+                .then(() => {}).catch(() => {});
+
+            return res.status(200).json({
+                success: true,
+                message: "Dispatched guilt expunged from the wire.",
+                id: taskId
+            });
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
     return res.status(405).json({ error: 'Method not allowed' });
 }

@@ -743,6 +743,80 @@ textarea:focus ~ .task-idle-cursor,
     transform: none;
 }
 
+.action-sub-row {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.action-sub-row > button {
+    flex: 1;
+    min-width: 0;
+}
+
+.btn-shred-guilt {
+    width: 100%;
+    min-height: 38px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px dashed var(--ink);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+.btn-shred-guilt:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-style: solid;
+    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
+    transform: translate(1px, 1px);
+}
+
+.btn-shred-guilt:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.85);
+}
+
+.btn-shred-guilt .shred-icon {
+    font-size: 1rem;
+}
+
+.feed-shred-btn {
+    background: transparent;
+    border: 1px dashed var(--ink);
+    color: var(--ink);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    opacity: 0.8;
+    text-transform: uppercase;
+    line-height: 1.2;
+}
+
+.feed-shred-btn:hover {
+    background: #A31D1D;
+    border-color: #A31D1D;
+    color: #FFFFFF;
+    opacity: 1;
+    transform: scale(1.04);
+}
+
 @keyframes diceSpin {
     0% { transform: rotate(0deg) scale(1); }
     50% { transform: rotate(180deg) scale(1.25); }
@@ -6158,4 +6232,651 @@ body.midnight-edition .telegraph-ack-btn:hover {
     .telegraph-msg { font-size: 0.70rem; }
     .t-order { font-size: 0.67rem; grid-template-columns: 16px 1fr; }
     .telegraph-ack-btn { font-size: 0.72rem; padding: 10px 12px; min-height: 40px; }
+}
+
+/* ──────────────────────────────────────────────────────────────────
+   BUREAU CONFIDENTIAL GUILT DISPOSAL UNIT (SHREDDER & BLAST FURNACE)
+   ────────────────────────────────────────────────────────────────── */
+.disposal-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 16px;
+}
+
+.disposal-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.disposal-dialog {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 480px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--ink);
+    padding: 20px 22px 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modal-pop 0.18s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes modal-pop {
+    0% { transform: scale(0.92); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.disposal-nameplate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+}
+
+.nameplate-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.nameplate-seal {
+    font-family: 'Space Mono', monospace;
+    font-weight: 900;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+}
+
+.nameplate-model {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.62rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.disposal-close-btn {
+    background: transparent;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: all 0.1s ease;
+    padding: 0;
+    line-height: 1;
+}
+
+.disposal-close-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0 var(--ink);
+}
+
+.disposal-mode-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.mode-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    opacity: 0.8;
+}
+
+.mode-toggles {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+}
+
+.disposal-mode-btn {
+    flex: 1;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 8px 6px;
+    border: 2px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
+    user-select: none;
+}
+
+.disposal-mode-btn:hover {
+    background: rgba(0, 0, 0, 0.06);
+}
+
+.disposal-mode-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.disposal-chamber {
+    position: relative;
+    height: 240px;
+    background: rgba(0, 0, 0, 0.03);
+    border: 2px solid var(--ink);
+    padding: 14px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+/* Memo Sheet Document */
+.disposal-memo-sheet {
+    position: relative;
+    z-index: 5;
+    width: 90%;
+    background: #FFFEEA;
+    border: 2px solid #2B261F;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.12);
+    padding: 12px 14px;
+    box-sizing: border-box;
+    font-family: 'Space Mono', monospace;
+    color: #1B1B1B;
+    transition: transform 0.3s ease;
+}
+
+.memo-sheet-stamp {
+    display: inline-block;
+    font-size: 0.58rem;
+    font-weight: 700;
+    border: 1.5px solid #A31D1D;
+    color: #A31D1D;
+    padding: 1px 5px;
+    margin-bottom: 6px;
+    transform: rotate(-1deg);
+    letter-spacing: 0.05em;
+}
+
+.memo-sheet-title {
+    font-size: 0.60rem;
+    opacity: 0.7;
+    margin-bottom: 3px;
+    letter-spacing: 0.04em;
+}
+
+.memo-sheet-task {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 1.45rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    color: #1B1B1B;
+    line-height: 1.1;
+    margin-bottom: 6px;
+    word-break: break-word;
+    letter-spacing: 0.5px;
+}
+
+.memo-sheet-meta {
+    font-size: 0.58rem;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+.memo-sheet-hazard-stripe {
+    height: 5px;
+    margin-top: 8px;
+    background: repeating-linear-gradient(45deg, #1b1b1b, #1b1b1b 6px, #FFDD55 6px, #FFDD55 12px);
+}
+
+/* Slicing & Shredding Animation */
+.disposal-memo-sheet.feeding-down {
+    animation: memo-feed-slot 2.3s cubic-bezier(0.4, 0, 0.8, 1) forwards;
+}
+
+@keyframes memo-feed-slot {
+    0% { transform: translateY(0); opacity: 1; }
+    80% { transform: translateY(160px); opacity: 0.8; }
+    100% { transform: translateY(220px); opacity: 0; }
+}
+
+.shredder-strips-container {
+    position: absolute;
+    bottom: 46px;
+    left: 8%;
+    width: 84%;
+    height: 170px;
+    z-index: 6;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.shred-strip {
+    position: absolute;
+    top: 0;
+    width: 7%;
+    background: #FFFEEA;
+    border-left: 1px solid #D6D5BF;
+    border-right: 1px solid #D6D5BF;
+    box-sizing: border-box;
+    opacity: 0;
+}
+
+.shred-strip.slicing {
+    animation: strip-slice 2.1s cubic-bezier(0.2, 0, 0.3, 1) forwards;
+}
+
+@keyframes strip-slice {
+    0% { height: 0; transform: translateY(0) rotate(0deg); opacity: 1; }
+    60% { height: 110px; transform: translateY(45px) rotate(var(--strip-rot, 2deg)); opacity: 1; }
+    100% { height: 130px; transform: translateY(85px) rotate(var(--strip-rot, 4deg)); opacity: 0.85; }
+}
+
+/* Shredder Mouth (Mechanical Bottom Bar) */
+.shredder-mouth {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 46px;
+    background: #1B1B1B;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    border-top: 3px solid #333333;
+    box-sizing: border-box;
+}
+
+.shredder-teeth-track {
+    width: 88%;
+    height: 7px;
+    background: repeating-linear-gradient(90deg, #666 0px, #666 5px, #111 5px, #111 10px);
+    border-radius: 2px;
+    margin-bottom: 4px;
+}
+
+.shredder-slot-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #CCCCCC;
+}
+
+/* Furnace Stage & Flames */
+.furnace-viewport {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, #FF5500 0%, #3A0D00 65%, #150500 100%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.furnace-door {
+    width: 78%;
+    height: 190px;
+    background: #252322;
+    border: 4px solid #141211;
+    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.95);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 8;
+    transform-origin: left center;
+    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.furnace-door.door-open {
+    transform: perspective(600px) rotateY(-85deg);
+}
+
+.door-grille {
+    display: flex;
+    gap: 8px;
+    padding: 6px 14px;
+    background: #11100F;
+    border: 2px solid #3A3532;
+}
+
+.fire-glow-pip {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #FF5500;
+    box-shadow: 0 0 8px #FF8800;
+    animation: pip-pulse 0.8s infinite alternate;
+}
+
+.fire-glow-pip:nth-child(2) { animation-delay: 0.25s; }
+.fire-glow-pip:nth-child(3) { animation-delay: 0.5s; }
+
+@keyframes pip-pulse {
+    0% { background: #FF3300; box-shadow: 0 0 4px #FF3300; }
+    100% { background: #FFAA00; box-shadow: 0 0 12px #FFAA00; }
+}
+
+.door-handle {
+    width: 24px;
+    height: 8px;
+    background: #4A4440;
+    border: 1px solid #111;
+    margin-top: 14px;
+}
+
+.furnace-fire {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 150px;
+    background: radial-gradient(ellipse at bottom, #FFEE44 15%, #FF5500 55%, transparent 80%);
+    animation: flame-pulse 0.2s infinite alternate;
+    pointer-events: none;
+    z-index: 5;
+}
+
+@keyframes flame-pulse {
+    0% { filter: brightness(1) drop-shadow(0 0 12px #FF5500); transform: scaleY(1); }
+    100% { filter: brightness(1.3) drop-shadow(0 0 28px #FF8800); transform: scaleY(1.08); }
+}
+
+.disposal-memo-sheet.burning-up {
+    animation: burn-to-ash 2.3s forwards;
+}
+
+@keyframes burn-to-ash {
+    0% { transform: scale(1) translateY(0); filter: brightness(1); }
+    25% { transform: scale(0.95) translateY(18px) rotate(1deg); filter: contrast(1.5) sepia(1) hue-rotate(-20deg) brightness(0.9); }
+    60% { transform: scale(0.82) translateY(38px) rotate(3deg); filter: contrast(2) brightness(0.4) saturate(2); }
+    100% { transform: scale(0.4) translateY(65px) rotate(-6deg); opacity: 0; filter: contrast(3) brightness(0.05); }
+}
+
+/* Absolution Certificate Card */
+.disposal-absolution-card {
+    background: var(--paper);
+    border: 3px double var(--ink);
+    padding: 16px 18px;
+    text-align: center;
+    box-sizing: border-box;
+    margin-bottom: 14px;
+    animation: absolution-reveal 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+@keyframes absolution-reveal {
+    0% { transform: scale(0.85); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.absolution-stamp {
+    display: inline-block;
+    border: 3px solid #A31D1D;
+    color: #A31D1D;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+    transform: rotate(-1.5deg);
+    font-family: 'Space Mono', monospace;
+    background: rgba(163, 29, 29, 0.04);
+}
+
+.absolution-stamp .stamp-star {
+    font-size: 0.65rem;
+    letter-spacing: 4px;
+    margin-bottom: 2px;
+}
+
+.absolution-stamp .stamp-headline {
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+.absolution-stamp .stamp-subline {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    margin-top: 3px;
+}
+
+.absolution-stamp .stamp-code {
+    font-size: 0.55rem;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.absolution-msg {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.74rem;
+    line-height: 1.45;
+    margin-bottom: 12px;
+    color: var(--ink);
+}
+
+.absolution-tally {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 14px;
+    opacity: 0.85;
+}
+
+.absolution-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.absolution-close-btn {
+    width: 100%;
+    min-height: 42px;
+    font-size: 0.85rem;
+    font-weight: 900;
+}
+
+.absolution-shred-more-btn {
+    width: 100%;
+    min-height: 36px;
+    font-size: 0.75rem;
+}
+
+/* Disposal Controls */
+.disposal-controls {
+    width: 100%;
+}
+
+.disposal-crank-btn {
+    width: 100%;
+    min-height: 48px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Wire Retraction Animation */
+@keyframes feed-item-shred-dissolve {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+        filter: none;
+    }
+    40% {
+        transform: translateY(4px) scale(0.98);
+        opacity: 0.8;
+        filter: contrast(1.4);
+    }
+    100% {
+        transform: translateY(25px) scale(0.92);
+        opacity: 0;
+        filter: blur(4px) grayscale(1);
+        height: 0;
+        margin-bottom: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        border-width: 0;
+    }
+}
+
+.feed-item.shredding-out {
+    animation: feed-item-shred-dissolve 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Theme Overrides: Midnight Edition */
+body.midnight-edition .disposal-dialog {
+    background: #1A1714;
+    color: #EFE3D3;
+    border-color: #EFE3D3;
+    box-shadow: 10px 10px 0 #060504;
+}
+
+body.midnight-edition .disposal-nameplate {
+    border-bottom-color: #EFE3D3;
+}
+
+body.midnight-edition .nameplate-seal {
+    color: #EFE3D3;
+}
+
+body.midnight-edition .disposal-close-btn {
+    border-color: #EFE3D3;
+    color: #EFE3D3;
+    box-shadow: 2px 2px 0 #060504;
+}
+
+body.midnight-edition .disposal-close-btn:hover {
+    background: #EFE3D3;
+    color: #1A1714;
+}
+
+body.midnight-edition .disposal-mode-btn {
+    border-color: #EFE3D3;
+    color: #EFE3D3;
+}
+
+body.midnight-edition .disposal-mode-btn.active {
+    background: #EFE3D3;
+    color: #1A1714;
+}
+
+body.midnight-edition .disposal-chamber {
+    border-color: #EFE3D3;
+    background: rgba(239, 227, 211, 0.02);
+}
+
+body.midnight-edition .disposal-memo-sheet {
+    background: #2A2521;
+    border-color: #4A423C;
+    color: #EFE3D3;
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.4);
+}
+
+body.midnight-edition .memo-sheet-task {
+    color: #EFE3D3;
+}
+
+body.midnight-edition .shred-strip {
+    background: #2A2521;
+    border-color: #3D352F;
+}
+
+body.midnight-edition .disposal-absolution-card {
+    background: #1F1B18;
+    border-color: #EFE3D3;
+    color: #EFE3D3;
+}
+
+body.midnight-edition .absolution-stamp {
+    border-color: #E5A93C;
+    color: #E5A93C;
+    background: rgba(229, 169, 60, 0.05);
+}
+
+body.midnight-edition .btn-shred-guilt {
+    background: #1A1714;
+    color: #EFE3D3;
+    border-color: #EFE3D3;
+    box-shadow: 2px 2px 0 #060504;
+}
+
+body.midnight-edition .btn-shred-guilt:hover {
+    background: #EFE3D3;
+    color: #1A1714;
+}
+
+body.midnight-edition .feed-shred-btn {
+    border-color: #8C8074;
+    color: #8C8074;
+}
+
+body.midnight-edition .feed-shred-btn:hover {
+    background: #A31D1D;
+    border-color: #A31D1D;
+    color: #FFFFFF;
+}
+
+/* Theme Overrides: Sepia Edition */
+body.sepia-edition .disposal-dialog {
+    background: #F6EED9;
+    color: #21150A;
+    border-color: #21150A;
+    box-shadow: 10px 10px 0 #21150A;
+}
+
+body.sepia-edition .btn-shred-guilt {
+    background: #F6EED9;
+    color: #21150A;
+    border-color: #21150A;
+    box-shadow: 2px 2px 0 #21150A;
+}
+
+body.sepia-edition .btn-shred-guilt:hover {
+    background: #21150A;
+    color: #F6EED9;
 }

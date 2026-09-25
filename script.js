@@ -501,6 +501,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
                         ✂ CLIP
                     </button>
+                    ${((Array.isArray(myTaskIds) && (myTaskIds.includes(Number(task.id)) || myTaskIds.includes(String(task.id)))) || (typeof task.id === 'string' && task.id.startsWith('opt-'))) ? `
+                    <button type="button" class="feed-shred-btn" data-task-id="${task.id}" title="Expunge & Shred This Dispatch from the Wire" aria-label="Shred Dispatch">
+                        🗄️ SHRED
+                    </button>` : ''}
                 </div>
             </div>
         </div>`;
@@ -958,6 +962,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 e.stopPropagation();
                 handleClipClick(clipBtn);
+                return;
+            }
+
+            const shredBtn = e.target.closest('.feed-shred-btn');
+            if (shredBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleFeedShredClick(shredBtn);
                 return;
             }
 
@@ -1912,6 +1924,267 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ──────────────────────────────────────────────────────────────────
+    // BUREAU CONFIDENTIAL GUILT DISPOSAL UNIT (SHREDDER & BLAST FURNACE)
+    // ──────────────────────────────────────────────────────────────────
+    const disposalModal = document.getElementById('disposal-modal');
+    const disposalBackdrop = document.getElementById('disposal-backdrop');
+    const disposalCloseBtn = document.getElementById('disposal-close-btn');
+    const modeShredderBtn = document.getElementById('mode-shredder-btn');
+    const modeFurnaceBtn = document.getElementById('mode-furnace-btn');
+    const disposalChamber = document.getElementById('disposal-chamber');
+    const disposalMemoSheet = document.getElementById('disposal-memo-sheet');
+    const disposalTaskText = document.getElementById('disposal-task-text');
+    const disposalTaskMeta = document.getElementById('disposal-task-meta');
+    const shredderStripsContainer = document.getElementById('shredder-strips-container');
+    const furnaceViewport = document.getElementById('furnace-viewport');
+    const furnaceDoor = document.getElementById('furnace-door');
+    const shredderMouth = document.getElementById('shredder-mouth');
+    const disposalAbsolutionCard = document.getElementById('disposal-absolution-card');
+    const absolutionMsg = document.getElementById('absolution-msg');
+    const absolutionHeadline = document.getElementById('absolution-headline');
+    const absolutionCode = document.getElementById('absolution-code');
+    const shredTallyNumber = document.getElementById('shred-tally-number');
+    const absolutionDismissBtn = document.getElementById('absolution-dismiss-btn');
+    const absolutionShredMoreBtn = document.getElementById('absolution-shred-more-btn');
+    const disposalControls = document.getElementById('disposal-controls');
+    const disposalCrankBtn = document.getElementById('disposal-crank-btn');
+    const crankBtnIcon = document.getElementById('crank-btn-icon');
+    const crankBtnText = document.getElementById('crank-btn-text');
+    const shredBtn = document.getElementById('shred-btn');
+
+    let currentDisposalItem = { text: '', taskId: null, source: 'input' };
+    let disposalMode = 'shredder';
+    try {
+        const savedMode = localStorage.getItem('lg_disposal_mode');
+        if (savedMode === 'furnace' || savedMode === 'shredder') disposalMode = savedMode;
+    } catch (e) {}
+
+    let shredTally = 0;
+    try {
+        shredTally = parseInt(localStorage.getItem('lg_guilt_shredded_count') || '0', 10);
+    } catch (e) {}
+
+    const updateDisposalMode = (mode) => {
+        disposalMode = mode;
+        try { localStorage.setItem('lg_disposal_mode', mode); } catch (e) {}
+
+        if (mode === 'shredder') {
+            if (modeShredderBtn) modeShredderBtn.classList.add('active');
+            if (modeFurnaceBtn) modeFurnaceBtn.classList.remove('active');
+            if (shredderMouth) shredderMouth.style.display = 'flex';
+            if (furnaceViewport) furnaceViewport.style.display = 'none';
+            if (crankBtnIcon) crankBtnIcon.textContent = '⚙️';
+            if (crankBtnText) crankBtnText.textContent = 'CRANK MECHANICAL SHREDDER';
+        } else {
+            if (modeFurnaceBtn) modeFurnaceBtn.classList.add('active');
+            if (modeShredderBtn) modeShredderBtn.classList.remove('active');
+            if (shredderMouth) shredderMouth.style.display = 'none';
+            if (furnaceViewport) furnaceViewport.style.display = 'flex';
+            if (crankBtnIcon) crankBtnIcon.textContent = '🔥';
+            if (crankBtnText) crankBtnText.textContent = 'IGNITE BLAST FURNACE';
+        }
+    };
+
+    const resetDisposalChamber = () => {
+        if (disposalMemoSheet) {
+            disposalMemoSheet.classList.remove('feeding-down', 'burning-up');
+            disposalMemoSheet.style.display = 'block';
+        }
+        if (shredderStripsContainer) {
+            shredderStripsContainer.innerHTML = '';
+            shredderStripsContainer.style.display = 'none';
+        }
+        if (furnaceDoor) {
+            furnaceDoor.classList.remove('door-open');
+        }
+        if (disposalChamber) disposalChamber.style.display = 'flex';
+        if (disposalControls) disposalControls.style.display = 'block';
+        if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'none';
+        if (disposalCrankBtn) {
+            disposalCrankBtn.disabled = false;
+        }
+    };
+
+    const openDisposalUnit = ({ text, taskId = null, source = 'input' }) => {
+        if (!disposalModal) return;
+
+        let cleanText = (text || '').trim();
+        if (!cleanText) {
+            const fallbacks = [
+                "FOLDING THE MOUNTAIN OF LAUNDRY",
+                "REPLYING TO THAT 3-WEEK-OLD EMAIL",
+                "DOING TAXES & PAPERWORK",
+                "DECIDING WHAT TO DO WITH MY LIFE",
+                "ORGANIZING THE DESK INSTEAD OF WORKING",
+                "CHECKING SOCIAL MEDIA FOR THE 40TH TIME TODAY"
+            ];
+            cleanText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        }
+
+        currentDisposalItem = { text: cleanText, taskId, source };
+
+        if (disposalTaskText) disposalTaskText.textContent = `"${cleanText.toUpperCase()}"`;
+        if (disposalTaskMeta) {
+            if (taskId) {
+                disposalTaskMeta.textContent = `Live on Wire (ID #${taskId}) • Action: Strike from Record • Classification: Expunge`;
+            } else {
+                disposalTaskMeta.textContent = `Unfiled Draft • Classification: Severe Avoidance • Status: Unbroadcast`;
+            }
+        }
+
+        if (shredTallyNumber) shredTallyNumber.textContent = String(shredTally);
+
+        resetDisposalChamber();
+        updateDisposalMode(disposalMode);
+
+        disposalModal.style.display = 'flex';
+    };
+
+    const closeDisposalUnit = () => {
+        if (disposalModal) disposalModal.style.display = 'none';
+        resetDisposalChamber();
+    };
+
+    const executeDestruction = () => {
+        if (!disposalCrankBtn || disposalCrankBtn.disabled) return;
+        disposalCrankBtn.disabled = true;
+
+        const isFurnace = disposalMode === 'furnace';
+
+        if (isFurnace) {
+            if (window.GatorAudio && typeof window.GatorAudio.playFurnaceSound === 'function') {
+                window.GatorAudio.playFurnaceSound(2.6);
+            }
+            if (furnaceDoor) furnaceDoor.classList.add('door-open');
+            setTimeout(() => {
+                if (disposalMemoSheet) disposalMemoSheet.classList.add('burning-up');
+            }, 250);
+        } else {
+            if (window.GatorAudio && typeof window.GatorAudio.playShredderSound === 'function') {
+                window.GatorAudio.playShredderSound(2.4);
+            }
+            if (shredderStripsContainer) {
+                shredderStripsContainer.innerHTML = '';
+                shredderStripsContainer.style.display = 'block';
+                for (let i = 0; i < 14; i++) {
+                    const strip = document.createElement('div');
+                    strip.className = 'shred-strip slicing';
+                    strip.style.left = `${(i * 7)}%`;
+                    strip.style.setProperty('--strip-rot', `${(Math.random() * 12 - 6).toFixed(1)}deg`);
+                    strip.style.animationDelay = `${(0.12 + i * 0.04).toFixed(2)}s`;
+                    shredderStripsContainer.appendChild(strip);
+                }
+            }
+            if (disposalMemoSheet) disposalMemoSheet.classList.add('feeding-down');
+        }
+
+        setTimeout(async () => {
+            if (currentDisposalItem.taskId) {
+                const targetId = currentDisposalItem.taskId;
+                
+                if (feedContainer) {
+                    const feedItem = feedContainer.querySelector(`.feed-item[data-task-id="${targetId}"]`);
+                    if (feedItem) {
+                        feedItem.classList.add('shredding-out');
+                        setTimeout(() => { if (feedItem.parentNode) feedItem.remove(); }, 620);
+                    }
+                }
+
+                allKnownTasks.delete(Number(targetId));
+                allKnownTasks.delete(String(targetId));
+                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId));
+                try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+
+                try {
+                    fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'X-Gator-Token': 'chomp-chomp'
+                        }
+                    }).catch(() => {});
+                } catch (e) {}
+
+                fetchStats();
+            }
+
+            if (currentDisposalItem.source === 'input') {
+                if (taskInput) {
+                    taskInput.value = '';
+                    updateCharCount();
+                }
+            }
+
+            shredTally++;
+            try { localStorage.setItem('lg_guilt_shredded_count', String(shredTally)); } catch (e) {}
+            if (shredTallyNumber) shredTallyNumber.textContent = String(shredTally);
+
+            if (disposalChamber) disposalChamber.style.display = 'none';
+            if (disposalControls) disposalControls.style.display = 'none';
+
+            if (absolutionMsg) {
+                if (currentDisposalItem.taskId) {
+                    absolutionMsg.textContent = "Your dispatch has been shredded into oblivion and struck from the public wire. No trace remains in the bureau archives.";
+                } else if (isFurnace) {
+                    absolutionMsg.textContent = "Your avoided task was incinerated at 1,400°F. The ashes have scattered to the wind. You are legally excused for the next 45 minutes.";
+                } else {
+                    absolutionMsg.textContent = "Your avoided task has been reduced to 0.4 grams of confetti. You are legally excused from thinking about it for at least 45 minutes.";
+                }
+            }
+
+            if (absolutionHeadline) {
+                absolutionHeadline.textContent = currentDisposalItem.taskId ? "EXPUNGED FROM THE WIRE" : "GUILT OFFICIALLY EXPUNGED";
+            }
+            if (absolutionCode) {
+                absolutionCode.textContent = `PERMIT #${Math.floor(1000 + Math.random() * 9000)}-ABSOLVED`;
+            }
+
+            if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'block';
+            if (window.GatorAudio && typeof window.GatorAudio.playStampSlamSound === 'function') {
+                window.GatorAudio.playStampSlamSound();
+            }
+        }, 2250);
+    };
+
+    function handleFeedShredClick(feedShredBtn) {
+        const taskId = feedShredBtn.getAttribute('data-task-id');
+        if (!taskId) return;
+        const feedItem = feedShredBtn.closest('.feed-item');
+        let taskText = '';
+        if (feedItem) {
+            const textEl = feedItem.querySelector('.feed-item-text');
+            if (textEl) taskText = textEl.textContent.trim();
+        }
+        if (!taskText && allKnownTasks.has(Number(taskId))) {
+            const known = allKnownTasks.get(Number(taskId));
+            taskText = (known.text || '').replace('[PANIC] ', '').trim();
+        }
+        openDisposalUnit({
+            text: taskText || 'AVOIDED DISPATCH',
+            taskId: taskId,
+            source: 'wire'
+        });
+    }
+
+    if (shredBtn) {
+        shredBtn.addEventListener('click', () => {
+            const text = (taskInput ? taskInput.value : '').trim();
+            openDisposalUnit({ text, taskId: null, source: 'input' });
+        });
+    }
+
+    if (modeShredderBtn) modeShredderBtn.addEventListener('click', () => updateDisposalMode('shredder'));
+    if (modeFurnaceBtn) modeFurnaceBtn.addEventListener('click', () => updateDisposalMode('furnace'));
+    if (disposalCrankBtn) disposalCrankBtn.addEventListener('click', executeDestruction);
+    if (disposalCloseBtn) disposalCloseBtn.addEventListener('click', closeDisposalUnit);
+    if (disposalBackdrop) disposalBackdrop.addEventListener('click', closeDisposalUnit);
+    if (absolutionDismissBtn) absolutionDismissBtn.addEventListener('click', closeDisposalUnit);
+    if (absolutionShredMoreBtn) {
+        absolutionShredMoreBtn.addEventListener('click', () => {
+            openDisposalUnit({ text: '', taskId: null, source: 'input' });
+        });
+    }
+
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));
     
@@ -1939,6 +2212,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (window.innerWidth <= 768 && typeof window.setMobileTab === 'function') {
                     window.setMobileTab('wire');
                 }
+            }
+            if (disposalModal && disposalModal.style.display !== 'none') {
+                closeDisposalUnit();
             }
         } else if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey && !e.altKey) {
             const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
