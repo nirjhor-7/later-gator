@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.9.1">
+    <link rel="stylesheet" href="style.css?v=3.9.2">
 
     <link rel="canonical" href="https://latergators.live/">
 
@@ -52,29 +52,43 @@
     <div id="welcome-memo" class="welcome-memo" style="display:none;" role="dialog" aria-modal="false" aria-label="Bureau of Idleness Welcome Memo">
         <button type="button" class="memo-close-btn" id="memo-close-btn" aria-label="Close memo" title="Dismiss">✕</button>
         <div class="welcome-memo-inner">
-            <div class="memo-header-stamp">INTEROFFICE MEMORANDUM</div>
+            <div class="memo-header-top">
+                <span class="memo-rubber-stamp">TOP SECRET</span>
+                <span class="memo-dept">DEPT. OF PROCRASTINATION</span>
+            </div>
+            <div class="memo-header-stamp">
+                <span class="memo-ornament">❖</span> INTEROFFICE MEMORANDUM <span class="memo-ornament">❖</span>
+            </div>
             <div class="memo-fields">
-                <div class="memo-field"><span class="memo-label">TO:</span><span class="memo-value">NEW OPERATIVE</span></div>
+                <div class="memo-field"><span class="memo-label">TO:</span><span class="memo-value">NEW OPERATIVE (CLEARANCE: ZERO)</span></div>
                 <div class="memo-field"><span class="memo-label">FROM:</span><span class="memo-value">BUREAU OF IDLENESS</span></div>
-                <div class="memo-field"><span class="memo-label">RE:</span><span class="memo-value">YOUR INITIATION</span></div>
+                <div class="memo-field"><span class="memo-label">RE:</span><span class="memo-value">MANDATORY DELAY ORDER</span></div>
             </div>
             <div class="memo-rule"></div>
             <div class="memo-body">
-                <p class="memo-lede">The world's live feed of procrastination. People post what they're avoiding. You stamp theirs. They stamp yours.</p>
+                <p class="memo-lede">Welcome to the live wire. People worldwide transmit what they're avoiding. You stamp their guilt. They stamp yours.</p>
                 <div class="memo-instructions">
                     <div class="memo-instruction">
                         <span class="memo-num">①</span>
-                        <span class="memo-text">POST what you're avoiding above.</span>
+                        <span class="memo-text"><strong>TRANSMIT:</strong> Post what you're dodging above.</span>
                     </div>
                     <div class="memo-instruction">
                         <span class="memo-num">②</span>
-                        <span class="memo-text">STAMP dispatches — <strong>SAME</strong>, <strong>VALID</strong>, or <strong>RIP</strong>.</span>
+                        <span class="memo-text">
+                            <strong>STAMP GUILT:</strong> Cast editorial sympathy:
+                            <span class="memo-stamp-group">
+                                <span class="memo-stamp-chip stamp-same">SAME</span>
+                                <span class="memo-stamp-chip stamp-valid">VALID</span>
+                                <span class="memo-stamp-chip stamp-rip">RIP</span>
+                            </span>
+                        </span>
                     </div>
                 </div>
             </div>
             <div class="memo-rule"></div>
             <div class="memo-footer">
-                <button type="button" id="memo-ack-btn" class="memo-ack-btn">[ REPORT FOR DUTY ]</button>
+                <button type="button" id="memo-ack-btn" class="memo-ack-btn">[ ENTER THE WIRE ➔ ]</button>
+                <div class="memo-footnote">*Reading this memo legally counts as procrastinating.</div>
             </div>
         </div>
     </div>
@@ -529,7 +543,7 @@
     <script src="js/audio.js?v=3.8.1" defer></script>
     <script src="js/evasion.js?v=3.7.0" defer></script>
     <script src="js/canvas.js?v=3.8.0" defer></script>
-    <script src="script.js?v=3.9.1" defer></script>
+    <script src="script.js?v=3.9.2" defer></script>
 
     <script>
         const _now = new Date();

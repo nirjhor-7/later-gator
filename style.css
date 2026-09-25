@@ -5714,7 +5714,7 @@ body.midnight-edition .dispatch-desk-footer {
 
 /*
  * True viewport center positioning via top/left 50% + translate(-50%, -50%).
- * Keyframes bake in both X & Y translations so the entrance doesn't fight centering.
+ * Keyframes bake in both X & Y translations so entrance animation stays centered.
  */
 
 @keyframes memoAppear {
@@ -5748,7 +5748,7 @@ body.midnight-edition .dispatch-desk-footer {
     z-index: 9000;
 
     /* Sweet squared memo proportions */
-    width: 340px;
+    width: 345px;
     max-width: calc(100vw - 32px);
     max-height: calc(100vh - 40px);
     overflow-y: auto;
@@ -5768,18 +5768,52 @@ body.midnight-edition .dispatch-desk-footer {
     pointer-events: none;
 }
 
+/* ── Top Header Row (Stamp + Dept Name) ─────────────────────────── */
+.memo-header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    padding-right: 18px; /* Clearance for close button */
+}
+
+.memo-rubber-stamp {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    color: #c0392b;
+    border: 1.5px dashed #c0392b;
+    padding: 1px 6px;
+    transform: rotate(-3deg);
+    text-transform: uppercase;
+    opacity: 0.92;
+    user-select: none;
+    pointer-events: none;
+    border-radius: 2px;
+    line-height: 1.3;
+}
+
+.memo-dept {
+    font-size: 0.55rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    opacity: 0.5;
+    text-transform: uppercase;
+}
+
 /* ── Dismiss / Close Button (X) ─────────────────────────────────── */
 .memo-close-btn {
     position: absolute;
     top: 6px;
     right: 6px;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     background: transparent;
     border: 1px solid transparent;
     color: var(--ink);
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     font-weight: bold;
     display: flex;
     align-items: center;
@@ -5789,7 +5823,7 @@ body.midnight-edition .dispatch-desk-footer {
     transition: opacity 0.15s, border-color 0.15s, background-color 0.15s;
     line-height: 1;
     padding: 0;
-    z-index: 2;
+    z-index: 3;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -5805,28 +5839,35 @@ body.midnight-edition .dispatch-desk-footer {
 
 /* ── Inner Padding ──────────────────────────────────────────────── */
 .welcome-memo-inner {
-    padding: 22px 22px 18px;
+    padding: 18px 22px 18px;
     position: relative;
 }
 
 /* ── Header ─────────────────────────────────────────────────────── */
 .memo-header-stamp {
-    font-size: 0.7rem;
+    font-size: 0.71rem;
     font-weight: bold;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.18em;
     text-align: center;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     border-bottom: 2px solid var(--ink);
-    margin-bottom: 12px;
+    margin-bottom: 11px;
     text-transform: uppercase;
+}
+
+.memo-ornament {
+    opacity: 0.45;
+    font-size: 0.6rem;
+    margin: 0 4px;
+    vertical-align: middle;
 }
 
 /* ── Field Rows (TO / FROM / RE) ────────────────────────────────── */
 .memo-fields {
     display: grid;
-    grid-template-columns: 52px 1fr;
+    grid-template-columns: 50px 1fr;
     row-gap: 3px;
-    margin-bottom: 10px;
+    margin-bottom: 11px;
 }
 
 .memo-field {
@@ -5871,11 +5912,11 @@ body.midnight-edition .dispatch-desk-footer {
     opacity: 0.9;
 }
 
-/* ── Quick Actions ──────────────────────────────────────────────── */
+/* ── Quick Actions & Mini Rubber Stamps ─────────────────────────── */
 .memo-instructions {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 6px;
     margin-bottom: 0;
 }
 
@@ -5897,7 +5938,41 @@ body.midnight-edition .dispatch-desk-footer {
     letter-spacing: 0.03em;
 }
 
-/* ── Acknowledge Button ─────────────────────────────────────────── */
+.memo-stamp-group {
+    display: inline-flex;
+    gap: 4px;
+    margin-top: 4px;
+    vertical-align: middle;
+}
+
+.memo-stamp-chip {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 1px 5px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    line-height: 1.3;
+    border-radius: 1px;
+}
+
+.memo-stamp-chip.stamp-same {
+    border-color: #27ae60;
+    color: #27ae60;
+}
+
+.memo-stamp-chip.stamp-valid {
+    border-color: #2980b9;
+    color: #2980b9;
+}
+
+.memo-stamp-chip.stamp-rip {
+    border-color: #c0392b;
+    color: #c0392b;
+}
+
+/* ── Acknowledge Button & Footnote ──────────────────────────────── */
 .memo-footer {
     padding-top: 2px;
 }
@@ -5905,30 +5980,40 @@ body.midnight-edition .dispatch-desk-footer {
 .memo-ack-btn {
     display: block;
     width: 100%;
-    background: none;
+    background: var(--ink);
     border: 2px solid var(--ink);
-    color: var(--ink);
+    color: var(--paper);
     font-family: 'Courier New', Courier, monospace;
-    font-size: 0.74rem;
+    font-size: 0.76rem;
     font-weight: bold;
     letter-spacing: 0.12em;
     padding: 9px 14px;
     min-height: 40px;
     cursor: pointer;
     text-align: center;
-    transition: background 0.13s ease, color 0.13s ease;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.2);
     -webkit-tap-highlight-color: transparent;
 }
 
-.memo-ack-btn:hover,
-.memo-ack-btn:focus-visible {
-    background: var(--ink);
-    color: var(--paper);
-    outline: none;
+.memo-ack-btn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.3);
 }
 
 .memo-ack-btn:active {
-    opacity: 0.75;
+    transform: translate(1px, 1px);
+    box-shadow: 0 0 0 transparent;
+    opacity: 0.85;
+}
+
+.memo-footnote {
+    font-size: 0.58rem;
+    font-style: italic;
+    opacity: 0.5;
+    text-align: center;
+    margin-top: 7px;
+    letter-spacing: 0.02em;
 }
 
 /* ── Sepia Edition ─────────────────────────────────────────────── */
@@ -5942,6 +6027,10 @@ body.sepia-edition .memo-header-stamp {
 body.sepia-edition .memo-rule {
     border-top-color: #5c3d1a;
 }
+body.sepia-edition .memo-rubber-stamp {
+    color: #a83220;
+    border-color: #a83220;
+}
 body.sepia-edition .memo-close-btn {
     color: #5c3d1a;
 }
@@ -5949,13 +6038,10 @@ body.sepia-edition .memo-close-btn:hover {
     border-color: #5c3d1a;
 }
 body.sepia-edition .memo-ack-btn {
-    border-color: #5c3d1a;
-    color: #5c3d1a;
-}
-body.sepia-edition .memo-ack-btn:hover,
-body.sepia-edition .memo-ack-btn:focus-visible {
     background: #5c3d1a;
-    color: var(--paper);
+    border-color: #5c3d1a;
+    color: #f7edd8;
+    box-shadow: 2px 2px 0 rgba(92, 61, 26, 0.3);
 }
 
 /* ── Midnight Edition ──────────────────────────────────────────── */
@@ -5973,6 +6059,23 @@ body.midnight-edition .memo-rule {
     border-top-color: #c9a84c;
     opacity: 0.3;
 }
+body.midnight-edition .memo-rubber-stamp {
+    color: #ff6b57;
+    border-color: #ff6b57;
+    box-shadow: 0 0 6px rgba(255, 107, 87, 0.25);
+}
+body.midnight-edition .memo-stamp-chip.stamp-same {
+    border-color: #2ecc71;
+    color: #2ecc71;
+}
+body.midnight-edition .memo-stamp-chip.stamp-valid {
+    border-color: #3498db;
+    color: #3498db;
+}
+body.midnight-edition .memo-stamp-chip.stamp-rip {
+    border-color: #ff6b57;
+    color: #ff6b57;
+}
 body.midnight-edition .memo-close-btn {
     color: #c9a84c;
 }
@@ -5980,34 +6083,41 @@ body.midnight-edition .memo-close-btn:hover {
     border-color: #c9a84c;
 }
 body.midnight-edition .memo-ack-btn {
-    border-color: #c9a84c;
-    color: #c9a84c;
-}
-body.midnight-edition .memo-ack-btn:hover,
-body.midnight-edition .memo-ack-btn:focus-visible {
     background: #c9a84c;
+    border-color: #c9a84c;
     color: #1a1209;
+    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.4);
+}
+body.midnight-edition .memo-ack-btn:hover {
+    background: #deb853;
 }
 
 /* ── Mobile (≤ 480px): sweet squared memo card ───────────────────── */
 @media (max-width: 480px) {
     .welcome-memo {
-        width: 315px;
+        width: 320px;
         max-width: calc(100vw - 32px);
-        max-height: 80vh;
+        max-height: 82vh;
         box-shadow: 5px 5px 0 var(--ink);
     }
     .welcome-memo-inner {
         padding: 18px 18px 16px;
     }
+    .memo-rubber-stamp {
+        font-size: 0.54rem;
+        padding: 1px 5px;
+    }
+    .memo-dept {
+        font-size: 0.52rem;
+    }
     .memo-fields {
-        grid-template-columns: 50px 1fr;
+        grid-template-columns: 48px 1fr;
         row-gap: 3px;
         margin-bottom: 9px;
     }
     .memo-header-stamp {
-        font-size: 0.67rem;
-        letter-spacing: 0.18em;
+        font-size: 0.68rem;
+        letter-spacing: 0.16em;
         padding-bottom: 8px;
         margin-bottom: 10px;
     }
@@ -6021,7 +6131,7 @@ body.midnight-edition .memo-ack-btn:focus-visible {
     .memo-rule { margin: 9px 0; }
     .memo-lede { margin-bottom: 8px; }
     .memo-ack-btn {
-        font-size: 0.72rem;
+        font-size: 0.73rem;
         padding: 10px 12px;
         min-height: 42px;
         letter-spacing: 0.08em;
@@ -6033,19 +6143,28 @@ body.midnight-edition .memo-ack-btn:focus-visible {
 /* ── Very small phones (≤ 360px) ────────────────────────────────── */
 @media (max-width: 360px) {
     .welcome-memo {
-        width: 285px;
+        width: 290px;
         max-width: calc(100vw - 20px);
-        max-height: 84vh;
+        max-height: 85vh;
         box-shadow: 4px 4px 0 var(--ink);
     }
     .welcome-memo-inner { padding: 15px 14px 14px; }
-    .memo-fields { grid-template-columns: 46px 1fr; }
+    .memo-rubber-stamp {
+        font-size: 0.5rem;
+        padding: 1px 4px;
+    }
+    .memo-dept {
+        font-size: 0.48rem;
+    }
+    .memo-fields { grid-template-columns: 44px 1fr; }
     .memo-header-stamp,
     .memo-label,
     .memo-value,
     .memo-body,
     .memo-instruction { font-size: 0.64rem; }
+    .memo-stamp-chip { font-size: 0.55rem; padding: 1px 3px; }
     .memo-ack-btn { font-size: 0.68rem; padding: 9px 10px; min-height: 38px; }
     body.sepia-edition .welcome-memo  { box-shadow: 4px 4px 0 #5c3d1a; }
     body.midnight-edition .welcome-memo { box-shadow: 4px 4px 0 #c9a84c; }
 }
+
