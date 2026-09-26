@@ -347,7 +347,7 @@
 
     /**
      * Mechanical Paper Shredder Sound Generator
-     * Dual-tone electric motor whine + rhythmic paper-chewing blade teeth modulation.
+     * Dual-tone electric motor whine + rhythmic paper-chewing blade teeth modulation + fiber crunch.
      */
     const playShredderSound = (duration = 2.4) => {
         try {
@@ -355,34 +355,42 @@
             if (!ctx) return;
             const now = ctx.currentTime;
 
-            // 1. Electric Motor Whine
+            // 1. Electric Motor Whine with load pitch deflection
             const motorOsc = ctx.createOscillator();
             const motorGain = ctx.createGain();
-            motorOsc.type = 'triangle';
+            motorOsc.type = 'sawtooth';
             motorOsc.frequency.setValueAtTime(80, now);
-            motorOsc.frequency.linearRampToValueAtTime(140, now + 0.3);
-            motorOsc.frequency.setValueAtTime(140, now + duration - 0.4);
-            motorOsc.frequency.exponentialRampToValueAtTime(35, now + duration);
+            motorOsc.frequency.linearRampToValueAtTime(145, now + 0.25);
+            motorOsc.frequency.linearRampToValueAtTime(130, now + 0.6);
+            motorOsc.frequency.linearRampToValueAtTime(142, now + 1.2);
+            motorOsc.frequency.setValueAtTime(142, now + duration - 0.45);
+            motorOsc.frequency.exponentialRampToValueAtTime(30, now + duration);
+
+            const motorFilter = ctx.createBiquadFilter();
+            motorFilter.type = 'lowpass';
+            motorFilter.frequency.setValueAtTime(450, now);
 
             motorGain.gain.setValueAtTime(0.01, now);
-            motorGain.gain.linearRampToValueAtTime(0.18, now + 0.2);
-            motorGain.gain.setValueAtTime(0.18, now + duration - 0.4);
+            motorGain.gain.linearRampToValueAtTime(0.16, now + 0.2);
+            motorGain.gain.setValueAtTime(0.16, now + duration - 0.4);
             motorGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-            motorOsc.connect(motorGain);
+            motorOsc.connect(motorFilter);
+            motorFilter.connect(motorGain);
             motorGain.connect(ctx.destination);
             motorOsc.start(now);
             motorOsc.stop(now + duration);
 
-            // 2. Paper Slicing / Serrated Blade Chewing Noise
+            // 2. Paper Slicing / Serrated Blade Chewing & Fiber Crunch
             const bufferSize = Math.floor(ctx.sampleRate * duration);
             const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
             const output = noiseBuffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
                 const t = i / ctx.sampleRate;
-                const toothMod = (t * 24) % 1;
+                const toothMod = (t * 26) % 1;
                 const jitter = (Math.random() * 2 - 1);
-                output[i] = jitter * (0.4 + toothMod * 0.6);
+                const tearSpike = Math.random() < 0.04 ? (Math.random() * 1.5 - 0.75) : 0;
+                output[i] = (jitter * (0.35 + toothMod * 0.65)) + tearSpike;
             }
 
             const noiseSource = ctx.createBufferSource();
@@ -390,13 +398,13 @@
 
             const bandpass = ctx.createBiquadFilter();
             bandpass.type = 'bandpass';
-            bandpass.frequency.setValueAtTime(1800, now);
-            bandpass.Q.setValueAtTime(2.2, now);
+            bandpass.frequency.setValueAtTime(1900, now);
+            bandpass.Q.setValueAtTime(2.4, now);
 
             const noiseGain = ctx.createGain();
             noiseGain.gain.setValueAtTime(0.01, now);
-            noiseGain.gain.linearRampToValueAtTime(0.28, now + 0.25);
-            noiseGain.gain.setValueAtTime(0.28, now + duration - 0.5);
+            noiseGain.gain.linearRampToValueAtTime(0.3, now + 0.25);
+            noiseGain.gain.setValueAtTime(0.3, now + duration - 0.5);
             noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
             noiseSource.connect(bandpass);
@@ -410,7 +418,7 @@
 
     /**
      * Iron Blast Furnace Incineration Sound Generator
-     * Metallic door latch clang + combustion roar (FWHOOOOSH) + crackling embers + door slam.
+     * Sub-bass burner blast + turbulent combustion roar (FWHOOOOSH) + sizzling ember crackles + twin iron blast doors slam.
      */
     const playFurnaceSound = (duration = 2.6) => {
         try {
@@ -418,22 +426,22 @@
             if (!ctx) return;
             const now = ctx.currentTime;
 
-            // 1. Heavy Iron Door Creak & Clang
-            const clangOsc = ctx.createOscillator();
-            const clangGain = ctx.createGain();
-            clangOsc.type = 'triangle';
-            clangOsc.frequency.setValueAtTime(110, now);
-            clangOsc.frequency.exponentialRampToValueAtTime(32, now + 0.14);
+            // 1. Sub-Bass Burner Ignition Blast (Punchy low explosion thump)
+            const ignitionOsc = ctx.createOscillator();
+            const ignitionGain = ctx.createGain();
+            ignitionOsc.type = 'sine';
+            ignitionOsc.frequency.setValueAtTime(75, now);
+            ignitionOsc.frequency.exponentialRampToValueAtTime(28, now + 0.25);
 
-            clangGain.gain.setValueAtTime(0.35, now);
-            clangGain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+            ignitionGain.gain.setValueAtTime(0.45, now);
+            ignitionGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
 
-            clangOsc.connect(clangGain);
-            clangGain.connect(ctx.destination);
-            clangOsc.start(now);
-            clangOsc.stop(now + 0.18);
+            ignitionOsc.connect(ignitionGain);
+            ignitionGain.connect(ctx.destination);
+            ignitionOsc.start(now);
+            ignitionOsc.stop(now + 0.3);
 
-            // 2. Combustion Roar (Low-frequency fire rush / FWHOOOSH)
+            // 2. Turbulent Dual-Filter Combustion Inferno Roar (FWHOOOOOSH)
             const bufferSize = Math.floor(ctx.sampleRate * duration);
             const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
             const output = noiseBuffer.getChannelData(0);
@@ -441,43 +449,99 @@
                 output[i] = Math.random() * 2 - 1;
             }
 
-            const noiseSource = ctx.createBufferSource();
-            noiseSource.buffer = noiseBuffer;
+            const fireSource = ctx.createBufferSource();
+            fireSource.buffer = noiseBuffer;
 
+            // Low-end rumble
             const lowpass = ctx.createBiquadFilter();
             lowpass.type = 'lowpass';
-            lowpass.frequency.setValueAtTime(250, now);
-            lowpass.frequency.exponentialRampToValueAtTime(1600, now + 0.6);
-            lowpass.frequency.exponentialRampToValueAtTime(300, now + duration - 0.3);
+            lowpass.frequency.setValueAtTime(180, now);
+            lowpass.frequency.exponentialRampToValueAtTime(800, now + 0.5);
+            lowpass.frequency.setValueAtTime(800, now + duration - 0.7);
+            lowpass.frequency.exponentialRampToValueAtTime(200, now + duration - 0.2);
 
+            // Resonant mid roar
+            const bandpass = ctx.createBiquadFilter();
+            bandpass.type = 'bandpass';
+            bandpass.frequency.setValueAtTime(440, now);
+            bandpass.Q.setValueAtTime(1.8, now);
+
+            // Flame gain envelope
             const fireGain = ctx.createGain();
-            fireGain.gain.setValueAtTime(0.01, now + 0.1);
-            fireGain.gain.linearRampToValueAtTime(0.38, now + 0.7);
-            fireGain.gain.setValueAtTime(0.32, now + duration - 0.6);
-            fireGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            fireGain.gain.setValueAtTime(0.01, now);
+            fireGain.gain.linearRampToValueAtTime(0.42, now + 0.35);
+            fireGain.gain.setValueAtTime(0.38, now + duration - 0.6);
+            fireGain.gain.exponentialRampToValueAtTime(0.001, now + duration - 0.2);
 
-            noiseSource.connect(lowpass);
-            lowpass.connect(fireGain);
+            fireSource.connect(lowpass);
+            lowpass.connect(bandpass);
+            bandpass.connect(fireGain);
             fireGain.connect(ctx.destination);
 
-            noiseSource.start(now + 0.08);
-            noiseSource.stop(now + duration);
+            fireSource.start(now);
+            fireSource.stop(now + duration);
 
-            // 3. Heavy Iron Door Slam at conclusion
-            const slamTime = now + duration - 0.3;
-            const slamOsc = ctx.createOscillator();
-            const slamGain = ctx.createGain();
-            slamOsc.type = 'triangle';
-            slamOsc.frequency.setValueAtTime(95, slamTime);
-            slamOsc.frequency.exponentialRampToValueAtTime(24, slamTime + 0.18);
+            // 3. Sizzling Embers & Paper Crackle Pops
+            const crackleBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const crackleData = crackleBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                crackleData[i] = Math.random() < 0.008 ? (Math.random() * 2 - 1) : 0;
+            }
+            const crackleSource = ctx.createBufferSource();
+            crackleSource.buffer = crackleBuffer;
 
-            slamGain.gain.setValueAtTime(0.4, slamTime);
-            slamGain.gain.exponentialRampToValueAtTime(0.001, slamTime + 0.22);
+            const crackleFilter = ctx.createBiquadFilter();
+            crackleFilter.type = 'highpass';
+            crackleFilter.frequency.setValueAtTime(2400, now);
 
-            slamOsc.connect(slamGain);
-            slamGain.connect(ctx.destination);
-            slamOsc.start(slamTime);
-            slamOsc.stop(slamTime + 0.25);
+            const crackleGain = ctx.createGain();
+            crackleGain.gain.setValueAtTime(0.01, now);
+            crackleGain.gain.linearRampToValueAtTime(0.32, now + 0.3);
+            crackleGain.gain.setValueAtTime(0.32, now + duration - 0.6);
+            crackleGain.gain.exponentialRampToValueAtTime(0.001, now + duration - 0.25);
+
+            crackleSource.connect(crackleFilter);
+            crackleFilter.connect(crackleGain);
+            crackleGain.connect(ctx.destination);
+
+            crackleSource.start(now + 0.15);
+            crackleSource.stop(now + duration);
+
+            // 4. Twin Heavy Iron Blast Doors Slam (at 1.9s)
+            const slamTime = now + 1.9;
+            const slamSubOsc = ctx.createOscillator();
+            const slamSubGain = ctx.createGain();
+            slamSubOsc.type = 'triangle';
+            slamSubOsc.frequency.setValueAtTime(105, slamTime);
+            slamSubOsc.frequency.exponentialRampToValueAtTime(20, slamTime + 0.22);
+
+            slamSubGain.gain.setValueAtTime(0.5, slamTime);
+            slamSubGain.gain.exponentialRampToValueAtTime(0.001, slamTime + 0.25);
+
+            slamSubOsc.connect(slamSubGain);
+            slamSubGain.connect(ctx.destination);
+            slamSubOsc.start(slamTime);
+            slamSubOsc.stop(slamTime + 0.28);
+
+            // Metallic ring on door strike
+            const ringOsc = ctx.createOscillator();
+            const ringGain = ctx.createGain();
+            const ringFilter = ctx.createBiquadFilter();
+            ringFilter.type = 'bandpass';
+            ringFilter.frequency.setValueAtTime(1600, slamTime);
+            ringFilter.Q.setValueAtTime(6.0, slamTime);
+
+            ringOsc.type = 'sawtooth';
+            ringOsc.frequency.setValueAtTime(280, slamTime);
+
+            ringGain.gain.setValueAtTime(0.25, slamTime);
+            ringGain.gain.exponentialRampToValueAtTime(0.001, slamTime + 0.18);
+
+            ringOsc.connect(ringFilter);
+            ringFilter.connect(ringGain);
+            ringGain.connect(ctx.destination);
+            ringOsc.start(slamTime);
+            ringOsc.stop(slamTime + 0.2);
         } catch (e) {}
     };
 

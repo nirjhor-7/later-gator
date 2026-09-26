@@ -1942,9 +1942,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const disposalTaskText = document.getElementById('disposal-task-text');
     const disposalTaskMeta = document.getElementById('disposal-task-meta');
     const shredderStripsContainer = document.getElementById('shredder-strips-container');
-    const furnaceViewport = document.getElementById('furnace-viewport');
-    const furnaceDoor = document.getElementById('furnace-door');
     const shredderMouth = document.getElementById('shredder-mouth');
+    const furnaceStage = document.getElementById('furnace-stage');
+    const furnaceDoorLeft = document.getElementById('furnace-door-left');
+    const furnaceDoorRight = document.getElementById('furnace-door-right');
+    const furnaceFireBack = document.getElementById('furnace-fire-back');
+    const furnaceFireMid = document.getElementById('furnace-fire-mid');
+    const furnaceFireFront = document.getElementById('furnace-fire-front');
+    const furnaceEmbers = document.getElementById('furnace-embers');
+    const furnaceHeatFlash = document.getElementById('furnace-heat-flash');
     const disposalAbsolutionCard = document.getElementById('disposal-absolution-card');
     const absolutionMsg = document.getElementById('absolution-msg');
     const absolutionHeadline = document.getElementById('absolution-headline');
@@ -1975,32 +1981,45 @@ document.addEventListener('DOMContentLoaded', () => {
         if (mode === 'shredder') {
             if (modeShredderBtn) modeShredderBtn.classList.add('active');
             if (modeFurnaceBtn) modeFurnaceBtn.classList.remove('active');
+            if (disposalChamber) disposalChamber.classList.remove('mode-furnace');
             if (shredderMouth) shredderMouth.style.display = 'flex';
-            if (furnaceViewport) furnaceViewport.style.display = 'none';
+            if (furnaceStage) furnaceStage.style.display = 'none';
             if (crankBtnIcon) crankBtnIcon.textContent = '⚙️';
             if (crankBtnText) crankBtnText.textContent = 'CRANK MECHANICAL SHREDDER';
         } else {
             if (modeFurnaceBtn) modeFurnaceBtn.classList.add('active');
             if (modeShredderBtn) modeShredderBtn.classList.remove('active');
+            if (disposalChamber) disposalChamber.classList.add('mode-furnace');
             if (shredderMouth) shredderMouth.style.display = 'none';
-            if (furnaceViewport) furnaceViewport.style.display = 'flex';
+            if (furnaceStage) furnaceStage.style.display = 'block';
             if (crankBtnIcon) crankBtnIcon.textContent = '🔥';
-            if (crankBtnText) crankBtnText.textContent = 'IGNITE BLAST FURNACE';
+            if (crankBtnText) crankBtnText.textContent = 'IGNITE BLAST FURNACE (1400°F)';
         }
     };
 
     const resetDisposalChamber = () => {
         if (disposalMemoSheet) {
-            disposalMemoSheet.classList.remove('feeding-down', 'burning-up');
+            disposalMemoSheet.classList.remove('feeding-down', 'incinerating');
             disposalMemoSheet.style.display = 'block';
+        }
+        if (disposalChamber) {
+            disposalChamber.classList.remove('rumbling', 'chattering');
+        }
+        if (shredderMouth) {
+            shredderMouth.classList.remove('spinning');
         }
         if (shredderStripsContainer) {
             shredderStripsContainer.innerHTML = '';
             shredderStripsContainer.style.display = 'none';
         }
-        if (furnaceDoor) {
-            furnaceDoor.classList.remove('door-open');
-        }
+        if (furnaceDoorLeft) furnaceDoorLeft.classList.remove('door-slam');
+        if (furnaceDoorRight) furnaceDoorRight.classList.remove('door-slam');
+        if (furnaceFireBack) furnaceFireBack.classList.remove('blazing');
+        if (furnaceFireMid) furnaceFireMid.classList.remove('blazing');
+        if (furnaceFireFront) furnaceFireFront.classList.remove('blazing');
+        if (furnaceEmbers) furnaceEmbers.innerHTML = '';
+        if (furnaceHeatFlash) furnaceHeatFlash.classList.remove('flash');
+
         if (disposalChamber) disposalChamber.style.display = 'flex';
         if (disposalControls) disposalControls.style.display = 'block';
         if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'none';
@@ -2055,14 +2074,80 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.GatorAudio && typeof window.GatorAudio.playFurnaceSound === 'function') {
                 window.GatorAudio.playFurnaceSound(2.6);
             }
-            if (furnaceDoor) furnaceDoor.classList.add('door-open');
+
+            // 1. Initial heat flash burst
+            if (furnaceHeatFlash) {
+                furnaceHeatFlash.classList.remove('flash');
+                void furnaceHeatFlash.offsetWidth;
+                furnaceHeatFlash.classList.add('flash');
+            }
+
+            // 2. Heavy industrial chamber vibration
+            if (disposalChamber) {
+                disposalChamber.classList.add('rumbling');
+            }
+
+            // 3. Ignite roaring fire flame layers
+            if (furnaceFireBack) furnaceFireBack.classList.add('blazing');
+            if (furnaceFireMid) furnaceFireMid.classList.add('blazing');
+            if (furnaceFireFront) furnaceFireFront.classList.add('blazing');
+
+            // 4. Hyper-realistic progressive paper incinerate
+            if (disposalMemoSheet) {
+                disposalMemoSheet.classList.add('incinerating');
+            }
+
+            // 5. Generate dynamic floating embers, sparks, and ash particles
+            if (furnaceEmbers) {
+                furnaceEmbers.innerHTML = '';
+                const particleCount = 38;
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('div');
+                    const rand = Math.random();
+                    const type = rand < 0.45 ? 'spark' : (rand < 0.8 ? 'ember' : 'ash');
+                    const size = type === 'spark' ? (2.5 + Math.random() * 3) : (type === 'ember' ? (4 + Math.random() * 4) : (5 + Math.random() * 5));
+                    const left = 8 + Math.random() * 84;
+                    const bottom = 12 + Math.random() * 45;
+                    const driftX = (Math.random() * 80 - 40).toFixed(0);
+                    const duration = (0.7 + Math.random() * 0.9).toFixed(2);
+                    const delay = (0.05 + Math.random() * 1.0).toFixed(2);
+
+                    particle.className = `furnace-ember ${type}`;
+                    particle.style.width = `${size.toFixed(1)}px`;
+                    particle.style.height = `${size.toFixed(1)}px`;
+                    particle.style.left = `${left.toFixed(1)}%`;
+                    particle.style.bottom = `${bottom.toFixed(1)}px`;
+                    particle.style.setProperty('--drift-x', `${driftX}px`);
+                    particle.style.animationDuration = `${duration}s`;
+                    particle.style.animationDelay = `${delay}s`;
+
+                    furnaceEmbers.appendChild(particle);
+                }
+            }
+
+            // 6. Heavy Iron blast doors slam shut at ~1.9s
             setTimeout(() => {
-                if (disposalMemoSheet) disposalMemoSheet.classList.add('burning-up');
-            }, 250);
+                if (furnaceDoorLeft) furnaceDoorLeft.classList.add('door-slam');
+                if (furnaceDoorRight) furnaceDoorRight.classList.add('door-slam');
+                if (furnaceHeatFlash) {
+                    furnaceHeatFlash.classList.remove('flash');
+                    void furnaceHeatFlash.offsetWidth;
+                    furnaceHeatFlash.classList.add('flash');
+                }
+            }, 1900);
+
         } else {
             if (window.GatorAudio && typeof window.GatorAudio.playShredderSound === 'function') {
                 window.GatorAudio.playShredderSound(2.4);
             }
+
+            if (disposalChamber) {
+                disposalChamber.classList.add('chattering');
+            }
+            if (shredderMouth) {
+                shredderMouth.classList.add('spinning');
+            }
+
             if (shredderStripsContainer) {
                 shredderStripsContainer.innerHTML = '';
                 shredderStripsContainer.style.display = 'block';
@@ -2072,6 +2157,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     strip.style.left = `${(i * 7)}%`;
                     strip.style.setProperty('--strip-rot', `${(Math.random() * 12 - 6).toFixed(1)}deg`);
                     strip.style.animationDelay = `${(0.12 + i * 0.04).toFixed(2)}s`;
+
+                    const lines = document.createElement('span');
+                    lines.className = 'strip-text-lines';
+                    strip.appendChild(lines);
+
                     shredderStripsContainer.appendChild(strip);
                 }
             }
@@ -2175,7 +2265,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (window.GatorAudio && typeof window.GatorAudio.playStampSlamSound === 'function') {
                 window.GatorAudio.playStampSlamSound();
             }
-        }, 2250);
+        }, 2550);
     };
 
     function handleFeedShredClick(feedShredBtn) {

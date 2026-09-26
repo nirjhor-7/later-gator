@@ -6392,9 +6392,9 @@ body.midnight-edition .telegraph-ack-btn:hover {
 
 .disposal-chamber {
     position: relative;
-    height: 240px;
-    background: rgba(0, 0, 0, 0.03);
-    border: 2px solid var(--ink);
+    height: 250px;
+    background: #FAF7F0;
+    border: 3px solid var(--ink);
     padding: 14px;
     box-sizing: border-box;
     display: flex;
@@ -6402,21 +6402,55 @@ body.midnight-edition .telegraph-ack-btn:hover {
     align-items: center;
     overflow: hidden;
     margin-bottom: 14px;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+.disposal-chamber.mode-furnace {
+    background: radial-gradient(ellipse at 50% 100%, #2f0901 0%, #150502 60%, #080201 100%) !important;
+    border-color: #6A1A05 !important;
+    box-shadow: inset 0 0 45px rgba(255, 60, 0, 0.4), 0 0 22px rgba(255, 60, 0, 0.25) !important;
+}
+
+.disposal-chamber.rumbling {
+    animation: furnace-rumble 0.06s infinite alternate;
+}
+
+@keyframes furnace-rumble {
+    0% { transform: translate(-1.5px, 1px) rotate(-0.25deg); }
+    50% { transform: translate(1.5px, -1.5px) rotate(0.25deg); }
+    100% { transform: translate(-1px, -1px) rotate(0deg); }
+}
+
+.disposal-chamber.chattering {
+    animation: shredder-chatter 0.06s infinite alternate;
+}
+
+@keyframes shredder-chatter {
+    0% { transform: translate(0, 0); }
+    50% { transform: translate(0.7px, -0.7px); }
+    100% { transform: translate(-0.7px, 0.7px); }
 }
 
 /* Memo Sheet Document */
 .disposal-memo-sheet {
     position: relative;
-    z-index: 5;
+    z-index: 6;
     width: 90%;
     background: #FFFEEA;
     border: 2px solid #2B261F;
-    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.12);
+    box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
     padding: 12px 14px;
     box-sizing: border-box;
     font-family: 'Space Mono', monospace;
     color: #1B1B1B;
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transform-origin: center center;
+}
+
+.disposal-chamber.mode-furnace .disposal-memo-sheet {
+    border-color: #4A3326;
+    box-shadow: 0 0 16px rgba(255, 100, 0, 0.35), 0 3px 8px rgba(0, 0, 0, 0.7);
 }
 
 .memo-sheet-stamp {
@@ -6462,15 +6496,25 @@ body.midnight-edition .telegraph-ack-btn:hover {
     background: repeating-linear-gradient(45deg, #1b1b1b, #1b1b1b 6px, #FFDD55 6px, #FFDD55 12px);
 }
 
+.memo-char-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 50% 50%, rgba(255, 90, 0, 0.85) 0%, rgba(45, 12, 4, 0.95) 45%, #050201 85%);
+    mix-blend-mode: multiply;
+}
+
 /* Slicing & Shredding Animation */
 .disposal-memo-sheet.feeding-down {
-    animation: memo-feed-slot 2.3s cubic-bezier(0.4, 0, 0.8, 1) forwards;
+    animation: memo-feed-slot 2.1s cubic-bezier(0.4, 0, 0.8, 1) forwards;
 }
 
 @keyframes memo-feed-slot {
     0% { transform: translateY(0); opacity: 1; }
-    80% { transform: translateY(160px); opacity: 0.8; }
-    100% { transform: translateY(220px); opacity: 0; }
+    75% { transform: translateY(165px) scale(0.98); opacity: 0.8; }
+    100% { transform: translateY(225px) scale(0.95); opacity: 0; }
 }
 
 .shredder-strips-container {
@@ -6478,8 +6522,8 @@ body.midnight-edition .telegraph-ack-btn:hover {
     bottom: 46px;
     left: 8%;
     width: 84%;
-    height: 170px;
-    z-index: 6;
+    height: 175px;
+    z-index: 7;
     pointer-events: none;
     overflow: hidden;
 }
@@ -6489,10 +6533,32 @@ body.midnight-edition .telegraph-ack-btn:hover {
     top: 0;
     width: 7%;
     background: #FFFEEA;
-    border-left: 1px solid #D6D5BF;
-    border-right: 1px solid #D6D5BF;
+    border-left: 1px dashed rgba(43, 38, 31, 0.4);
+    border-right: 1px dashed rgba(43, 38, 31, 0.4);
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.15);
     box-sizing: border-box;
     opacity: 0;
+    overflow: hidden;
+}
+
+.shred-strip:nth-child(even) {
+    width: 7.4%;
+    background: #FDFCE0;
+}
+
+.strip-text-lines {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        180deg,
+        transparent 0px,
+        transparent 4px,
+        rgba(30, 30, 30, 0.28) 4px,
+        rgba(30, 30, 30, 0.28) 6px,
+        transparent 6px,
+        transparent 10px
+    );
 }
 
 .shred-strip.slicing {
@@ -6501,8 +6567,9 @@ body.midnight-edition .telegraph-ack-btn:hover {
 
 @keyframes strip-slice {
     0% { height: 0; transform: translateY(0) rotate(0deg); opacity: 1; }
-    60% { height: 110px; transform: translateY(45px) rotate(var(--strip-rot, 2deg)); opacity: 1; }
-    100% { height: 130px; transform: translateY(85px) rotate(var(--strip-rot, 4deg)); opacity: 0.85; }
+    50% { height: 115px; transform: translateY(50px) rotate(var(--strip-rot, 3deg)); opacity: 1; }
+    85% { height: 140px; transform: translateY(95px) rotate(calc(var(--strip-rot, 3deg) * 1.5)); opacity: 0.95; }
+    100% { height: 145px; transform: translateY(115px) rotate(calc(var(--strip-rot, 3deg) * 1.8)); opacity: 0.85; }
 }
 
 /* Shredder Mouth (Mechanical Bottom Bar) */
@@ -6511,7 +6578,7 @@ body.midnight-edition .telegraph-ack-btn:hover {
     bottom: 0;
     left: 0;
     right: 0;
-    height: 46px;
+    height: 48px;
     background: #1B1B1B;
     color: #FFFFFF;
     display: flex;
@@ -6521,14 +6588,26 @@ body.midnight-edition .telegraph-ack-btn:hover {
     z-index: 10;
     border-top: 3px solid #333333;
     box-sizing: border-box;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.4);
 }
 
 .shredder-teeth-track {
-    width: 88%;
-    height: 7px;
-    background: repeating-linear-gradient(90deg, #666 0px, #666 5px, #111 5px, #111 10px);
+    width: 90%;
+    height: 10px;
+    background: repeating-linear-gradient(90deg, #555 0px, #555 6px, #111 6px, #111 12px);
     border-radius: 2px;
     margin-bottom: 4px;
+    border: 1px solid #000;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.shredder-mouth.spinning .shredder-teeth-track {
+    animation: teeth-roll 0.08s linear infinite;
+}
+
+@keyframes teeth-roll {
+    0% { background-position: 0 0; }
+    100% { background-position: 12px 0; }
 }
 
 .shredder-slot-label {
@@ -6539,96 +6618,345 @@ body.midnight-edition .telegraph-ack-btn:hover {
     color: #CCCCCC;
 }
 
-/* Furnace Stage & Flames */
-.furnace-viewport {
+/* =========================================================
+   BLAST FURNACE ARCHITECTURE & INFERNO SYSTEM
+   ========================================================= */
+.furnace-stage {
     position: absolute;
     inset: 0;
-    background: radial-gradient(circle at center, #FF5500 0%, #3A0D00 65%, #150500 100%);
-    z-index: 4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    pointer-events: none;
     overflow: hidden;
+    z-index: 5;
+}
+
+/* Iron Grate Base */
+.furnace-grate {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 52px;
+    background: repeating-linear-gradient(
+        90deg,
+        #1C1715 0px,
+        #1C1715 12px,
+        transparent 12px,
+        transparent 24px
+    );
+    border-top: 4px solid #3A2E26;
+    z-index: 5;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.7);
+}
+
+.grate-embers-glow {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 38px;
+    background: radial-gradient(ellipse at bottom, #FFAA00 15%, #FF3300 55%, transparent 80%);
+    filter: blur(3px);
+    animation: hearth-breathe 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes hearth-breathe {
+    0% { opacity: 0.55; transform: scaleY(0.9); }
+    100% { opacity: 1; transform: scaleY(1.2); filter: blur(3px) brightness(1.3); }
+}
+
+/* Twin Heavy Blast Doors */
+.furnace-doors-container {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    z-index: 12;
+    perspective: 1000px;
+    pointer-events: none;
 }
 
 .furnace-door {
-    width: 78%;
-    height: 190px;
-    background: #252322;
-    border: 4px solid #141211;
-    box-shadow: inset 0 0 18px rgba(0, 0, 0, 0.95);
+    width: 50%;
+    height: 100%;
+    background: #1C1917;
+    border: 3px solid #0E0B09;
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.95);
+    box-sizing: border-box;
+    transition: transform 0.32s cubic-bezier(0.12, 0.85, 0.25, 1.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.furnace-door.door-left {
+    transform: translateX(-86%);
+    border-right: 3px solid #4A3B31;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.85), inset 0 0 25px rgba(0, 0, 0, 0.95);
+}
+
+.furnace-door.door-right {
+    transform: translateX(86%);
+    border-left: 3px solid #4A3B31;
+    box-shadow: -4px 0 16px rgba(0, 0, 0, 0.85), inset 0 0 25px rgba(0, 0, 0, 0.95);
+}
+
+.furnace-door.door-slam {
+    transform: translateX(0%) !important;
+    box-shadow: inset 0 0 35px rgba(0, 0, 0, 0.98), 0 0 25px rgba(0, 0, 0, 0.9) !important;
+}
+
+.door-inner {
+    padding: 16px 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    z-index: 8;
-    transform-origin: left center;
-    transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+    justify-content: space-between;
+    height: 100%;
+    box-sizing: border-box;
 }
 
-.furnace-door.door-open {
-    transform: perspective(600px) rotateY(-85deg);
+.door-hazard-stripe {
+    width: 85%;
+    height: 6px;
+    background: repeating-linear-gradient(45deg, #FF9900 0, #FF9900 6px, #111 6px, #111 12px);
+    border: 1px solid #000;
+}
+
+.door-rivets {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    color: #4A423B;
+    letter-spacing: 6px;
 }
 
 .door-grille {
     display: flex;
     gap: 8px;
-    padding: 6px 14px;
-    background: #11100F;
-    border: 2px solid #3A3532;
+    padding: 6px 12px;
+    background: #0B0807;
+    border: 2px solid #3A322C;
+    box-shadow: inset 0 0 6px rgba(0,0,0,0.8);
 }
 
 .fire-glow-pip {
-    width: 10px;
-    height: 10px;
+    width: 9px;
+    height: 9px;
     border-radius: 50%;
     background: #FF5500;
     box-shadow: 0 0 8px #FF8800;
-    animation: pip-pulse 0.8s infinite alternate;
+    animation: pip-pulse 0.7s infinite alternate;
 }
 
 .fire-glow-pip:nth-child(2) { animation-delay: 0.25s; }
-.fire-glow-pip:nth-child(3) { animation-delay: 0.5s; }
 
 @keyframes pip-pulse {
-    0% { background: #FF3300; box-shadow: 0 0 4px #FF3300; }
+    0% { background: #FF2200; box-shadow: 0 0 4px #FF2200; }
     100% { background: #FFAA00; box-shadow: 0 0 12px #FFAA00; }
 }
 
-.door-handle {
-    width: 24px;
-    height: 8px;
-    background: #4A4440;
-    border: 1px solid #111;
-    margin-top: 14px;
+.door-stencil {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.54rem;
+    font-weight: 700;
+    color: #8C7B6F;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
-.furnace-fire {
+.door-handle {
+    width: 22px;
+    height: 7px;
+    background: #443B33;
+    border: 1px solid #111;
+}
+
+/* Roaring Inferno Fire Layers */
+.furnace-fire-layer {
     position: absolute;
     bottom: 0;
+    left: 0;
     width: 100%;
-    height: 150px;
-    background: radial-gradient(ellipse at bottom, #FFEE44 15%, #FF5500 55%, transparent 80%);
-    animation: flame-pulse 0.2s infinite alternate;
+    opacity: 0;
     pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.furnace-fire-layer.blazing {
+    opacity: 1;
+}
+
+.furnace-fire-layer.fire-back {
+    height: 230px;
+    background: radial-gradient(ellipse at 50% 100%, #FFAA00 15%, #FF4400 48%, #880000 78%, transparent 95%);
     z-index: 5;
+    animation: flame-roar-back 0.16s infinite alternate ease-in-out;
 }
 
-@keyframes flame-pulse {
-    0% { filter: brightness(1) drop-shadow(0 0 12px #FF5500); transform: scaleY(1); }
-    100% { filter: brightness(1.3) drop-shadow(0 0 28px #FF8800); transform: scaleY(1.08); }
+.furnace-fire-layer.fire-mid {
+    height: 180px;
+    background: 
+        radial-gradient(ellipse at 30% 100%, #FFEE44 20%, #FF6600 55%, transparent 75%),
+        radial-gradient(ellipse at 70% 100%, #FFEE44 20%, #FF6600 55%, transparent 75%),
+        radial-gradient(ellipse at 50% 100%, #FFFFFF 10%, #FFAA00 45%, transparent 75%);
+    z-index: 8;
+    mix-blend-mode: screen;
+    animation: flame-roar-mid 0.13s infinite alternate ease-in-out;
 }
 
-.disposal-memo-sheet.burning-up {
-    animation: burn-to-ash 2.3s forwards;
+.furnace-fire-layer.fire-front {
+    height: 145px;
+    background: 
+        radial-gradient(ellipse at 25% 100%, #FFF 10%, #FFAA00 35%, transparent 65%),
+        radial-gradient(ellipse at 75% 100%, #FFF 10%, #FFAA00 35%, transparent 65%),
+        radial-gradient(ellipse at 50% 100%, #FFDD33 25%, #FF3300 65%, transparent 80%);
+    z-index: 10;
+    mix-blend-mode: screen;
+    animation: flame-roar-front 0.11s infinite alternate ease-in-out;
 }
 
-@keyframes burn-to-ash {
-    0% { transform: scale(1) translateY(0); filter: brightness(1); }
-    25% { transform: scale(0.95) translateY(18px) rotate(1deg); filter: contrast(1.5) sepia(1) hue-rotate(-20deg) brightness(0.9); }
-    60% { transform: scale(0.82) translateY(38px) rotate(3deg); filter: contrast(2) brightness(0.4) saturate(2); }
-    100% { transform: scale(0.4) translateY(65px) rotate(-6deg); opacity: 0; filter: contrast(3) brightness(0.05); }
+@keyframes flame-roar-back {
+    0% { transform: scaleY(0.92) scaleX(0.98); filter: brightness(1); }
+    100% { transform: scaleY(1.08) scaleX(1.02); filter: brightness(1.3) hue-rotate(5deg); }
+}
+
+@keyframes flame-roar-mid {
+    0% { transform: scaleY(0.93) scaleX(1.03) skewX(-2deg); }
+    100% { transform: scaleY(1.1) scaleX(0.97) skewX(2deg); filter: brightness(1.25); }
+}
+
+@keyframes flame-roar-front {
+    0% { transform: scaleY(0.9) skewX(3deg); }
+    100% { transform: scaleY(1.12) skewX(-3deg); filter: brightness(1.4); }
+}
+
+/* Hyper-Realistic Progressive Paper Incineration */
+.disposal-memo-sheet.incinerating {
+    animation: memo-incinerate 2.1s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards !important;
+    position: relative;
+    z-index: 7;
+}
+
+.disposal-memo-sheet.incinerating .memo-char-overlay {
+    animation: char-spread 1.9s forwards;
+}
+
+@keyframes char-spread {
+    0% { opacity: 0; }
+    20% { opacity: 0.25; }
+    50% { opacity: 0.75; }
+    80% { opacity: 0.95; }
+    100% { opacity: 1; }
+}
+
+@keyframes memo-incinerate {
+    0% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        filter: brightness(1) contrast(1);
+        box-shadow: 0 0 0 transparent;
+    }
+    18% {
+        /* Edges ignite: searing bright orange ember border */
+        transform: translateY(4px) scale(0.98) rotate(1deg);
+        filter: contrast(1.3) sepia(0.4) brightness(1.1);
+        box-shadow: inset 0 0 22px #FF5500, 0 0 28px #FF8800;
+        border-color: #FF5500;
+    }
+    42% {
+        /* Fire consumes paper: curling, 3D warp, scorching embers */
+        transform: translateY(14px) scale(0.93) rotate(-2deg) perspective(600px) rotateX(16deg);
+        filter: contrast(1.8) sepia(0.8) hue-rotate(-25deg) brightness(0.9);
+        box-shadow: inset 0 0 38px #FF3300, 0 0 35px #FFAA00;
+        border-color: #FF3300;
+        color: #FFAA55;
+    }
+    70% {
+        /* Carbon ash stage: text glows like dying embers then black carbon */
+        transform: translateY(32px) scale(0.8) rotate(3deg) perspective(600px) rotateX(25deg);
+        filter: contrast(2.5) brightness(0.45) saturate(2);
+        box-shadow: inset 0 0 50px #FF1100, 0 0 25px #FF5500;
+        opacity: 0.88;
+        color: #FF8833;
+    }
+    90% {
+        /* Vaporizing into glowing ash flakes */
+        transform: translateY(55px) scale(0.48) rotate(-5deg);
+        filter: contrast(3) brightness(0.2);
+        box-shadow: 0 0 18px #FF2200;
+        opacity: 0.4;
+    }
+    100% {
+        transform: translateY(75px) scale(0.2) rotate(8deg);
+        opacity: 0;
+        filter: brightness(0);
+    }
+}
+
+/* Floating Embers, Sparks & Ash Particles */
+.furnace-embers {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 11;
+    overflow: hidden;
+}
+
+.furnace-ember {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: ember-rise linear forwards;
+}
+
+.furnace-ember.spark {
+    background: #FFFFFF;
+    box-shadow: 0 0 8px #FFAA00, 0 0 3px #FFFFFF;
+}
+
+.furnace-ember.ember {
+    background: #FF5500;
+    box-shadow: 0 0 6px #FF2200;
+}
+
+.furnace-ember.ash {
+    background: #1A0D08;
+    box-shadow: 0 0 3px #FF3300;
+    border-radius: 2px;
+}
+
+@keyframes ember-rise {
+    0% {
+        transform: translate(0, 0) scale(1) rotate(0deg);
+        opacity: 1;
+    }
+    45% {
+        transform: translate(var(--drift-x, 15px), -90px) scale(1.3) rotate(180deg);
+        opacity: 0.95;
+    }
+    85% {
+        transform: translate(calc(var(--drift-x, 15px) * 1.5), -180px) scale(0.8) rotate(360deg);
+        opacity: 0.6;
+    }
+    100% {
+        transform: translate(calc(var(--drift-x, 15px) * 1.8), -240px) scale(0.2) rotate(540deg);
+        opacity: 0;
+    }
+}
+
+/* Heat Flash Burst */
+.furnace-heat-flash {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.92) 0%, rgba(255, 120, 0, 0.65) 45%, transparent 85%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 15;
+}
+
+.furnace-heat-flash.flash {
+    animation: heat-burst 0.35s ease-out forwards;
+}
+
+@keyframes heat-burst {
+    0% { opacity: 0.95; }
+    100% { opacity: 0; }
 }
 
 /* Absolution Certificate Card */
