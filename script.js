@@ -1941,8 +1941,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const disposalMemoSheet = document.getElementById('disposal-memo-sheet');
     const disposalTaskText = document.getElementById('disposal-task-text');
     const disposalTaskMeta = document.getElementById('disposal-task-meta');
+    const shredderSlicesContainer = document.getElementById('shredder-slices-container');
+    const shredderConfettiContainer = document.getElementById('shredder-confetti-container');
     const shredderStripsContainer = document.getElementById('shredder-strips-container');
     const shredderMouth = document.getElementById('shredder-mouth');
+    const shredderPilotLamp = document.getElementById('shredder-pilot-lamp');
     const furnaceStage = document.getElementById('furnace-stage');
     const furnaceDoorLeft = document.getElementById('furnace-door-left');
     const furnaceDoorRight = document.getElementById('furnace-door-right');
@@ -2001,6 +2004,18 @@ document.addEventListener('DOMContentLoaded', () => {
         if (disposalMemoSheet) {
             disposalMemoSheet.classList.remove('feeding-down', 'incinerating');
             disposalMemoSheet.style.display = 'block';
+            disposalMemoSheet.style.opacity = '1';
+        }
+        if (shredderSlicesContainer) {
+            shredderSlicesContainer.innerHTML = '';
+            shredderSlicesContainer.style.display = 'none';
+        }
+        if (shredderConfettiContainer) {
+            shredderConfettiContainer.innerHTML = '';
+        }
+        if (shredderPilotLamp) {
+            const lampLabel = shredderPilotLamp.querySelector('.lamp-label');
+            if (lampLabel) lampLabel.textContent = 'CUTTER STANDBY';
         }
         if (disposalChamber) {
             disposalChamber.classList.remove('rumbling', 'chattering');
@@ -2058,6 +2073,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         disposalModal.style.display = 'flex';
     };
+
+    window.openDisposalUnit = openDisposalUnit;
+    window.updateDisposalMode = updateDisposalMode;
 
     const closeDisposalUnit = () => {
         if (disposalModal) disposalModal.style.display = 'none';
@@ -2147,7 +2165,108 @@ document.addEventListener('DOMContentLoaded', () => {
             if (shredderMouth) {
                 shredderMouth.classList.add('spinning');
             }
+            if (shredderPilotLamp) {
+                const lampLabel = shredderPilotLamp.querySelector('.lamp-label');
+                if (lampLabel) lampLabel.textContent = 'SHREDDING ACTIVE';
+            }
 
+            // 1. Physical Document Slicing into 18 Vertical Ribbons
+            if (shredderSlicesContainer && disposalMemoSheet) {
+                shredderSlicesContainer.innerHTML = '';
+                const sheetW = disposalMemoSheet.offsetWidth;
+                const sheetH = disposalMemoSheet.offsetHeight;
+                const sheetTop = disposalMemoSheet.offsetTop;
+                const sheetLeft = disposalMemoSheet.offsetLeft;
+
+                shredderSlicesContainer.style.top = `${sheetTop}px`;
+                shredderSlicesContainer.style.left = `${sheetLeft}px`;
+                shredderSlicesContainer.style.width = `${sheetW}px`;
+                shredderSlicesContainer.style.height = `${sheetH}px`;
+                shredderSlicesContainer.style.display = 'block';
+
+                const numSlices = 18;
+                const sliceW = sheetW / numSlices;
+
+                for (let i = 0; i < numSlices; i++) {
+                    const slice = document.createElement('div');
+                    slice.className = 'shred-slice';
+                    slice.style.left = `${(i * sliceW)}px`;
+                    slice.style.width = `${sliceW}px`;
+                    slice.style.height = `${sheetH}px`;
+
+                    // Organic shredding physics: tilt, lateral peel, and staggered pull
+                    const rot = (Math.random() * 8 - 4).toFixed(1);
+                    const shiftX = (Math.random() * 12 - 6).toFixed(1);
+                    const centerDist = Math.abs(i - (numSlices / 2));
+                    const delay = (0.04 + centerDist * 0.035 + (Math.random() * 0.08)).toFixed(3);
+                    const dur = (1.65 + (Math.random() * 0.35)).toFixed(2);
+
+                    slice.style.setProperty('--slice-rot', `${rot}deg`);
+                    slice.style.setProperty('--slice-shift-x', `${shiftX}px`);
+                    slice.style.setProperty('--slice-dur', `${dur}s`);
+                    slice.style.animationDelay = `${delay}s`;
+
+                    // Exact clone of the memo sheet positioned to reveal only this vertical strip
+                    const clone = disposalMemoSheet.cloneNode(true);
+                    clone.id = '';
+                    clone.className = 'disposal-memo-sheet shred-clone-inner';
+                    clone.style.width = `${sheetW}px`;
+                    clone.style.height = `${sheetH}px`;
+                    clone.style.left = `-${i * sliceW}px`;
+                    clone.style.top = '0px';
+
+                    slice.appendChild(clone);
+                    shredderSlicesContainer.appendChild(slice);
+                }
+
+                // Hide original solid sheet so only the 18 active tearing slices are seen
+                disposalMemoSheet.style.opacity = '0';
+
+                // Trigger shredding animation
+                requestAnimationFrame(() => {
+                    const allSlices = shredderSlicesContainer.querySelectorAll('.shred-slice');
+                    allSlices.forEach(s => s.classList.add('is-shredding'));
+                });
+            }
+
+            // 2. Cross-cut Paper Confetti Burst from the Blade Mouth
+            if (shredderConfettiContainer) {
+                shredderConfettiContainer.innerHTML = '';
+                const confettiCount = 30;
+                const colors = ['#FFFEEA', '#FAF5D8', '#F5EFBE', '#FFFFFF', '#ECE4BC'];
+
+                for (let c = 0; c < confettiCount; c++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'shred-confetti-particle';
+                    const startX = 12 + Math.random() * 76;
+                    particle.style.left = `${startX}%`;
+                    particle.style.bottom = `${52 + Math.random() * 14}px`;
+
+                    const burstX = (Math.random() * 90 - 45).toFixed(1);
+                    const burstY = (-35 - Math.random() * 65).toFixed(1);
+                    const rotZ = (Math.random() * 720 - 360).toFixed(0);
+                    const rotY = (Math.random() * 720 - 360).toFixed(0);
+                    const dur = (0.85 + Math.random() * 0.55).toFixed(2);
+                    const del = (0.18 + Math.random() * 1.15).toFixed(2);
+
+                    particle.style.setProperty('--burst-x', `${burstX}px`);
+                    particle.style.setProperty('--burst-y', `${burstY}px`);
+                    particle.style.setProperty('--confetti-rot', `${rotZ}deg`);
+                    particle.style.setProperty('--confetti-rot-y', `${rotY}deg`);
+                    particle.style.setProperty('--confetti-dur', `${dur}s`);
+                    particle.style.animationDelay = `${del}s`;
+                    particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+                    if (Math.random() > 0.5) {
+                        particle.style.width = '7px';
+                        particle.style.height = '5px';
+                    }
+
+                    shredderConfettiContainer.appendChild(particle);
+                }
+            }
+
+            // 3. Falling Shred Strips (Output below cutting mouth)
             if (shredderStripsContainer) {
                 shredderStripsContainer.innerHTML = '';
                 shredderStripsContainer.style.display = 'block';
@@ -2156,7 +2275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     strip.className = 'shred-strip slicing';
                     strip.style.left = `${(i * 7)}%`;
                     strip.style.setProperty('--strip-rot', `${(Math.random() * 12 - 6).toFixed(1)}deg`);
-                    strip.style.animationDelay = `${(0.12 + i * 0.04).toFixed(2)}s`;
+                    strip.style.animationDelay = `${(0.18 + i * 0.04).toFixed(2)}s`;
 
                     const lines = document.createElement('span');
                     lines.className = 'strip-text-lines';
@@ -2165,7 +2284,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     shredderStripsContainer.appendChild(strip);
                 }
             }
-            if (disposalMemoSheet) disposalMemoSheet.classList.add('feeding-down');
         }
 
         setTimeout(async () => {
@@ -2251,7 +2369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (absolutionMsg) {
                 absolutionMsg.textContent = isFurnace
                     ? "Your avoided task was incinerated at 1,400°F and permanently expunged from the wire archives. No trace remains in the bureau."
-                    : "Your avoided task was sliced into 14 confetti strips and permanently expunged from the wire archives. No trace remains in the bureau.";
+                    : "Your avoided task was sliced into 18 ribbon strips & cross-cut confetti and permanently expunged from the wire archives. No trace remains in the bureau.";
             }
 
             if (absolutionHeadline) {

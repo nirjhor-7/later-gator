@@ -347,7 +347,7 @@
 
     /**
      * Mechanical Paper Shredder Sound Generator
-     * Dual-tone electric motor whine + rhythmic paper-chewing blade teeth modulation + fiber crunch.
+     * Gear-clutch bite clunk + dual-tone industrial electric motor whine + multi-band razor blade chewing + final paper-clear snap.
      */
     const playShredderSound = (duration = 2.4) => {
         try {
@@ -355,64 +355,120 @@
             if (!ctx) return;
             const now = ctx.currentTime;
 
-            // 1. Electric Motor Whine with load pitch deflection
+            // 0. Mechanical Gear Clutch Bite Clunk (t = 0)
+            const clunkOsc = ctx.createOscillator();
+            const clunkGain = ctx.createGain();
+            clunkOsc.type = 'triangle';
+            clunkOsc.frequency.setValueAtTime(140, now);
+            clunkOsc.frequency.exponentialRampToValueAtTime(35, now + 0.09);
+
+            clunkGain.gain.setValueAtTime(0.28, now);
+            clunkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+            clunkOsc.connect(clunkGain);
+            clunkGain.connect(ctx.destination);
+            clunkOsc.start(now);
+            clunkOsc.stop(now + 0.09);
+
+            // 1. Electric Motor Whine with dynamic torque load sag
             const motorOsc = ctx.createOscillator();
+            const motorSub = ctx.createOscillator();
             const motorGain = ctx.createGain();
+            const subGain = ctx.createGain();
+
             motorOsc.type = 'sawtooth';
-            motorOsc.frequency.setValueAtTime(80, now);
-            motorOsc.frequency.linearRampToValueAtTime(145, now + 0.25);
-            motorOsc.frequency.linearRampToValueAtTime(130, now + 0.6);
-            motorOsc.frequency.linearRampToValueAtTime(142, now + 1.2);
-            motorOsc.frequency.setValueAtTime(142, now + duration - 0.45);
-            motorOsc.frequency.exponentialRampToValueAtTime(30, now + duration);
+            motorOsc.frequency.setValueAtTime(85, now);
+            motorOsc.frequency.linearRampToValueAtTime(155, now + 0.22);
+            motorOsc.frequency.linearRampToValueAtTime(132, now + 0.55); // Paper hits blades - torque sag
+            motorOsc.frequency.linearRampToValueAtTime(148, now + 1.25);
+            motorOsc.frequency.setValueAtTime(148, now + duration - 0.42);
+            motorOsc.frequency.exponentialRampToValueAtTime(25, now + duration);
+
+            motorSub.type = 'sine';
+            motorSub.frequency.setValueAtTime(42.5, now);
+            motorSub.frequency.linearRampToValueAtTime(74, now + 0.22);
+            motorSub.frequency.setValueAtTime(74, now + duration - 0.42);
+            motorSub.frequency.exponentialRampToValueAtTime(15, now + duration);
 
             const motorFilter = ctx.createBiquadFilter();
             motorFilter.type = 'lowpass';
-            motorFilter.frequency.setValueAtTime(450, now);
+            motorFilter.frequency.setValueAtTime(480, now);
 
             motorGain.gain.setValueAtTime(0.01, now);
-            motorGain.gain.linearRampToValueAtTime(0.16, now + 0.2);
-            motorGain.gain.setValueAtTime(0.16, now + duration - 0.4);
+            motorGain.gain.linearRampToValueAtTime(0.18, now + 0.18);
+            motorGain.gain.setValueAtTime(0.18, now + duration - 0.38);
             motorGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            subGain.gain.setValueAtTime(0.08, now);
+            subGain.gain.setValueAtTime(0.08, now + duration - 0.38);
+            subGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
             motorOsc.connect(motorFilter);
             motorFilter.connect(motorGain);
             motorGain.connect(ctx.destination);
+
+            motorSub.connect(subGain);
+            subGain.connect(ctx.destination);
+
             motorOsc.start(now);
             motorOsc.stop(now + duration);
+            motorSub.start(now);
+            motorSub.stop(now + duration);
 
-            // 2. Paper Slicing / Serrated Blade Chewing & Fiber Crunch
+            // 2. Paper Slicing / High-Density Serrated Blade Chewing & Fiber Crunch
             const bufferSize = Math.floor(ctx.sampleRate * duration);
             const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
             const output = noiseBuffer.getChannelData(0);
             for (let i = 0; i < bufferSize; i++) {
                 const t = i / ctx.sampleRate;
-                const toothMod = (t * 26) % 1;
+                const toothMod = (t * 32) % 1;
                 const jitter = (Math.random() * 2 - 1);
-                const tearSpike = Math.random() < 0.04 ? (Math.random() * 1.5 - 0.75) : 0;
-                output[i] = (jitter * (0.35 + toothMod * 0.65)) + tearSpike;
+                const tearSpike = Math.random() < 0.06 ? (Math.random() * 1.8 - 0.9) : 0;
+                output[i] = (jitter * (0.3 + toothMod * 0.7)) + tearSpike;
             }
 
             const noiseSource = ctx.createBufferSource();
             noiseSource.buffer = noiseBuffer;
 
-            const bandpass = ctx.createBiquadFilter();
-            bandpass.type = 'bandpass';
-            bandpass.frequency.setValueAtTime(1900, now);
-            bandpass.Q.setValueAtTime(2.4, now);
+            // Dual bandpass: body crunch (1700Hz) & razor slice hiss (3600Hz)
+            const bandpass1 = ctx.createBiquadFilter();
+            bandpass1.type = 'bandpass';
+            bandpass1.frequency.setValueAtTime(1750, now);
+            bandpass1.Q.setValueAtTime(2.2, now);
+
+            const bandpass2 = ctx.createBiquadFilter();
+            bandpass2.type = 'bandpass';
+            bandpass2.frequency.setValueAtTime(3600, now);
+            bandpass2.Q.setValueAtTime(3.0, now);
 
             const noiseGain = ctx.createGain();
             noiseGain.gain.setValueAtTime(0.01, now);
-            noiseGain.gain.linearRampToValueAtTime(0.3, now + 0.25);
-            noiseGain.gain.setValueAtTime(0.3, now + duration - 0.5);
+            noiseGain.gain.linearRampToValueAtTime(0.34, now + 0.22);
+            noiseGain.gain.setValueAtTime(0.34, now + duration - 0.42);
             noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
 
-            noiseSource.connect(bandpass);
-            bandpass.connect(noiseGain);
+            noiseSource.connect(bandpass1);
+            noiseSource.connect(bandpass2);
+            bandpass1.connect(noiseGain);
+            bandpass2.connect(noiseGain);
             noiseGain.connect(ctx.destination);
 
             noiseSource.start(now);
             noiseSource.stop(now + duration);
+
+            // 3. Final Paper Clearing Snap (t = duration - 0.4s)
+            const snapTime = now + duration - 0.38;
+            const snapOsc = ctx.createOscillator();
+            const snapGain = ctx.createGain();
+            snapOsc.type = 'highpass';
+            snapOsc.frequency.setValueAtTime(2400, snapTime);
+            snapGain.gain.setValueAtTime(0.22, snapTime);
+            snapGain.gain.exponentialRampToValueAtTime(0.001, snapTime + 0.06);
+
+            snapOsc.connect(snapGain);
+            snapGain.connect(ctx.destination);
+            snapOsc.start(snapTime);
+            snapOsc.stop(snapTime + 0.06);
         } catch (e) {}
     };
 
