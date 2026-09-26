@@ -4538,20 +4538,45 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // ═══════════════════════════════════════════════════════════════════
-    // BUREAU OF IDLENESS — NEW OPERATIVE GREETINGS MEMO
+    // BUREAU OF IDLENESS — NEW OPERATIVE GREETINGS & CONFESSIONAL
     // ═══════════════════════════════════════════════════════════════════
     const initWelcomeMemo = () => {
         const memoEl = document.getElementById('welcome-memo');
         if (!memoEl) return;
 
-        // Populate the date field
-        const memoDateEl = document.getElementById('memo-date');
-        if (memoDateEl) {
-            const now = new Date();
-            memoDateEl.textContent = now.toLocaleDateString('en-US', {
-                weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-            }).toUpperCase();
-        }
+        const backdropEl = document.getElementById('welcome-backdrop');
+        const stage1 = document.getElementById('welcome-stage-1');
+        const stage2 = document.getElementById('welcome-stage-2');
+        const dispatchTextEl = document.getElementById('welcome-dispatch-text');
+        const caseNoEl = document.getElementById('welcome-case-no');
+        const stampInkEl = document.getElementById('welcome-stamp-ink');
+        const skipTo2Btn = document.getElementById('welcome-skip-to-2');
+        const taskInput = document.getElementById('welcome-task-input');
+        const charCountEl = document.getElementById('welcome-char-count');
+        const dispatchBtn = document.getElementById('welcome-dispatch-btn');
+        const lurkBtn = document.getElementById('welcome-lurk-btn');
+        const closeBtn = document.getElementById('memo-close-btn');
+        const pillsWrap = document.getElementById('welcome-pills');
+
+        // Curated roster of relatable, humorous delays for Step 1
+        const sampleDispatches = [
+            { text: '"I am currently deep-cleaning behind the refrigerator with a toothbrush to avoid filing my taxes."', case: '#LG-404', same: 42, valid: 89, rip: 14 },
+            { text: '"Staring blankly at terminal cursor while researching ergonomic mechanical keyboards I cannot afford."', case: '#LG-712', same: 67, valid: 112, rip: 8 },
+            { text: '"Organizing my desktop wallpaper into color-coded folders instead of preparing client presentation."', case: '#LG-883', same: 53, valid: 94, rip: 19 },
+            { text: '"Rereading the same 3-sentence email draft 14 times while eating dry cereal directly from the box."', case: '#LG-905', same: 78, valid: 124, rip: 25 },
+            { text: '"Watching a 45-minute YouTube documentary on medieval castle sieges to avoid folding the laundry mountain."', case: '#LG-319', same: 91, valid: 153, rip: 11 }
+        ];
+
+        // Pick a random sample dispatch
+        const chosen = sampleDispatches[Math.floor(Math.random() * sampleDispatches.length)];
+        if (dispatchTextEl) dispatchTextEl.textContent = chosen.text;
+        if (caseNoEl) caseNoEl.textContent = chosen.case;
+        const tallySame = document.getElementById('welcome-tally-same');
+        const tallyValid = document.getElementById('welcome-tally-valid');
+        const tallyRip = document.getElementById('welcome-tally-rip');
+        if (tallySame) tallySame.textContent = String(chosen.same);
+        if (tallyValid) tallyValid.textContent = String(chosen.valid);
+        if (tallyRip) tallyRip.textContent = String(chosen.rip);
 
         let memoDismissed = false;
 
@@ -4560,27 +4585,189 @@ document.addEventListener('DOMContentLoaded', () => {
             memoDismissed = true;
             try { localStorage.setItem('lg_welcomed', '1'); } catch (e) {}
             memoEl.classList.add('memo-hiding');
+            if (backdropEl) {
+                backdropEl.classList.remove('active');
+            }
             setTimeout(() => {
                 memoEl.style.display = 'none';
                 memoEl.classList.remove('memo-hiding');
+                if (backdropEl) backdropEl.style.display = 'none';
             }, 320);
         };
 
-        // Expose so reaction + submit handlers can call it
         window.__lgDismissMemo = dismissMemo;
 
+        const advanceToStep2 = () => {
+            if (!stage1 || !stage2) return;
+            stage1.classList.add('stage-fade-out');
+            setTimeout(() => {
+                stage1.style.display = 'none';
+                stage1.classList.remove('stage-fade-out');
+                stage2.style.display = 'block';
+                stage2.classList.add('stage-fade-in');
+                setTimeout(() => {
+                    stage2.classList.remove('stage-fade-in');
+                    if (taskInput) taskInput.focus();
+                }, 300);
+            }, 240);
+        };
+
+        // Handle Step 1 Stamp Clicks
+        const stampBtns = stage1 ? stage1.querySelectorAll('.welcome-stamp-btn') : [];
+        stampBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const stampType = btn.getAttribute('data-type');
+                // Play rubber stamp slam sound
+                if (window.GatorAudio && typeof window.GatorAudio.playStampSlamSound === 'function') {
+                    window.GatorAudio.playStampSlamSound();
+                } else if (typeof window.playStampSlamSound === 'function') {
+                    window.playStampSlamSound();
+                }
+
+                // Increment tally visually
+                const tallyEl = btn.querySelector('.stamp-tally');
+                if (tallyEl) {
+                    const current = parseInt(tallyEl.textContent, 10) || 0;
+                    tallyEl.textContent = String(current + 1);
+                }
+
+                // Ink stamp overlay
+                if (stampInkEl) {
+                    const stampLabels = {
+                        same: '★ SAME — FILED ★',
+                        valid: '★ VALIDATED ★',
+                        rip: '★ REST IN PEACE ★'
+                    };
+                    stampInkEl.textContent = stampLabels[stampType] || '★ SYMPATHY FILED ★';
+                    stampInkEl.classList.remove('stamped');
+                    void stampInkEl.offsetWidth; // trigger reflow
+                    stampInkEl.classList.add('stamped');
+                }
+
+                btn.style.transform = 'scale(0.95)';
+                setTimeout(() => { btn.style.transform = ''; }, 150);
+
+                // Advance to Step 2 after the stamp impact has been appreciated
+                setTimeout(advanceToStep2, 600);
+            });
+        });
+
+        if (skipTo2Btn) {
+            skipTo2Btn.addEventListener('click', advanceToStep2);
+        }
+
+        // Handle Step 2 Excuse Pills
+        if (pillsWrap) {
+            const pillBtns = pillsWrap.querySelectorAll('.welcome-pill-btn:not(.welcome-pill-random)');
+            pillBtns.forEach(p => {
+                p.addEventListener('click', () => {
+                    const text = p.getAttribute('data-text') || p.textContent.trim();
+                    if (taskInput) {
+                        taskInput.value = text;
+                        if (charCountEl) charCountEl.textContent = `${text.length} / 150`;
+                        taskInput.focus();
+                    }
+                    if (window.GatorAudio && typeof window.GatorAudio.playKeyClick === 'function') {
+                        window.GatorAudio.playKeyClick(false);
+                    }
+                });
+            });
+
+            const randomPill = document.getElementById('welcome-pill-random');
+            if (randomPill) {
+                const randomExcuses = [
+                    "Cleaning the kitchen baseboards to avoid my thesis",
+                    "Googling how to become a lighthouse keeper",
+                    "Down a Wikipedia rabbit hole about Bronze Age collapse",
+                    "Overthinking my entire 5-year career trajectory",
+                    "Refactoring code that already works perfectly",
+                    "Tidying up pencil drawer instead of writing essay",
+                    "Researching espresso machines for 3 consecutive hours",
+                    "Starting a new hobby to avoid finishing old projects"
+                ];
+                randomPill.addEventListener('click', () => {
+                    const rand = randomExcuses[Math.floor(Math.random() * randomExcuses.length)];
+                    if (taskInput) {
+                        taskInput.value = rand;
+                        if (charCountEl) charCountEl.textContent = `${rand.length} / 150`;
+                        taskInput.focus();
+                    }
+                    if (window.GatorAudio && typeof window.GatorAudio.playKeyClick === 'function') {
+                        window.GatorAudio.playKeyClick(false);
+                    }
+                });
+            }
+        }
+
+        // Character count live update
+        if (taskInput) {
+            taskInput.addEventListener('input', () => {
+                if (charCountEl) charCountEl.textContent = `${taskInput.value.length} / 150`;
+            });
+            taskInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (dispatchBtn) dispatchBtn.click();
+                }
+            });
+        }
+
+        // Handle Dispatch to Wire
+        if (dispatchBtn) {
+            dispatchBtn.addEventListener('click', () => {
+                let conf = (taskInput ? taskInput.value : '').trim();
+                if (!conf) {
+                    conf = "Overthinking what to write on Later Gators";
+                }
+
+                // 1. Play pneumatic whoosh sound!
+                if (window.GatorAudio && typeof window.GatorAudio.playPneumaticWhooshSound === 'function') {
+                    window.GatorAudio.playPneumaticWhooshSound();
+                }
+
+                // 2. Set into main #task-input and trigger submitTask
+                const mainInput = document.getElementById('task-input');
+                if (mainInput) {
+                    mainInput.value = conf;
+                    mainInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+
+                // Dismiss modal
+                dismissMemo();
+
+                // Trigger main submission
+                if (typeof submitTask === 'function') {
+                    submitTask(false);
+                } else {
+                    const laterBtn = document.getElementById('later-btn');
+                    if (laterBtn) laterBtn.click();
+                }
+
+                // On mobile, switch to WIRE tab so the user sees their post immediately
+                if (window.innerWidth <= 768 && typeof window.setMobileTab === 'function') {
+                    setTimeout(() => {
+                        window.setMobileTab('wire', true);
+                    }, 400);
+                }
+            });
+        }
+
+        if (lurkBtn) {
+            lurkBtn.addEventListener('click', dismissMemo);
+        }
+
+        if (closeBtn) {
+            closeBtn.addEventListener('click', dismissMemo);
+        }
+
         const shouldShowMemo = () => {
-            // URL param to bypass memo for inspection/testing
             try {
                 if (new URLSearchParams(window.location.search).get('nomemo') === '1') return false;
             } catch (e) {}
-            // Already acknowledged on this device
             try {
                 if (localStorage.getItem('lg_welcomed')) return false;
             } catch (e) {}
-            // Logged-in operatives are not newcomers
             if (currentGator && gatorToken) return false;
-            // Already has local stamps from prior activity (same device)
             if (Object.keys(userStamps).length > 0) return false;
             return true;
         };
@@ -4589,34 +4776,29 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Show after a short delay so page content loads first
         setTimeout(() => {
-            // Re-check: after 800ms, if server sync has already populated stamps,
-            // they are a returning operative — don't show
             if (Object.keys(userStamps).length > 0) return;
             if (currentGator && gatorToken) return;
             try { if (localStorage.getItem('lg_welcomed')) return; } catch (e) {}
 
+            if (backdropEl) {
+                backdropEl.style.display = 'block';
+                requestAnimationFrame(() => {
+                    backdropEl.classList.add('active');
+                });
+                backdropEl.addEventListener('click', dismissMemo);
+            }
             memoEl.style.display = 'block';
-        }, 800);
+            if (window.GatorAudio && typeof window.GatorAudio.playPaperShuffle === 'function') {
+                window.GatorAudio.playPaperShuffle();
+            }
+        }, 700);
 
-        // The server sync fires at 1500ms — if it reveals prior reactions,
-        // quietly dismiss the memo even if it's already showing
+        // Server sync dismissal safeguard for returning operatives
         setTimeout(() => {
             if (Object.keys(userStamps).length > 0) {
                 dismissMemo();
             }
-        }, 2000);
-
-        // Acknowledge button
-        const ackBtn = document.getElementById('memo-ack-btn');
-        if (ackBtn) {
-            ackBtn.addEventListener('click', dismissMemo);
-        }
-
-        // Close button (X)
-        const closeBtn = document.getElementById('memo-close-btn');
-        if (closeBtn) {
-            closeBtn.addEventListener('click', dismissMemo);
-        }
+        }, 2200);
     };
 
     initWelcomeMemo();

@@ -545,6 +545,63 @@
         } catch (e) {}
     };
 
+    /**
+     * Vintage Pneumatic Dispatch Tube Sound
+     * High-pressure air release + resonant vacuum canister whoosh + tube arrival clink.
+     */
+    const playPneumaticWhooshSound = () => {
+        try {
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+            const duration = 0.55;
+
+            // 1. Air release pressure hiss (White noise sweep)
+            const bufferSize = Math.floor(ctx.sampleRate * duration);
+            const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            const noiseSource = ctx.createBufferSource();
+            noiseSource.buffer = noiseBuffer;
+
+            const bandpass = ctx.createBiquadFilter();
+            bandpass.type = 'bandpass';
+            bandpass.frequency.setValueAtTime(1400, now);
+            bandpass.frequency.exponentialRampToValueAtTime(320, now + duration);
+            bandpass.Q.setValueAtTime(3.2, now);
+
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.01, now);
+            noiseGain.gain.linearRampToValueAtTime(0.35, now + 0.08);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            noiseSource.connect(bandpass);
+            bandpass.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+
+            noiseSource.start(now);
+            noiseSource.stop(now + duration);
+
+            // 2. Brass canister metallic glide / resonance
+            const glideOsc = ctx.createOscillator();
+            const glideGain = ctx.createGain();
+            glideOsc.type = 'sine';
+            glideOsc.frequency.setValueAtTime(260, now);
+            glideOsc.frequency.exponentialRampToValueAtTime(85, now + duration * 0.8);
+
+            glideGain.gain.setValueAtTime(0.2, now + 0.04);
+            glideGain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            glideOsc.connect(glideGain);
+            glideGain.connect(ctx.destination);
+            glideOsc.start(now + 0.04);
+            glideOsc.stop(now + duration);
+        } catch (e) {}
+    };
+
     // Public Interface
     const GatorAudio = {
         getCamoAudioContext,
@@ -556,7 +613,8 @@
         playExhaustedSigh,
         playPaperShuffle,
         playShredderSound,
-        playFurnaceSound
+        playFurnaceSound,
+        playPneumaticWhooshSound
     };
 
     window.GatorAudio = GatorAudio;
@@ -569,4 +627,5 @@
     window.playPaperShuffle = playPaperShuffle;
     window.playShredderSound = playShredderSound;
     window.playFurnaceSound = playFurnaceSound;
+    window.playPneumaticWhooshSound = playPneumaticWhooshSound;
 })();
