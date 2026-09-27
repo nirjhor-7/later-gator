@@ -658,6 +658,192 @@
         } catch (e) {}
     };
 
+    /**
+     * Triumphant Victory Fanfare (Task Conquered!)
+     * Vintage brass triad arpeggio + carriage bell chime + golden stamp impact.
+     */
+    const playVictoryFanfare = () => {
+        try {
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            // Notes: C4 (261.63), E4 (329.63), G4 (392.00), C5 (523.25)
+            const notes = [
+                { f: 261.63, t: 0.00, d: 0.14 },
+                { f: 329.63, t: 0.12, d: 0.14 },
+                { f: 392.00, t: 0.24, d: 0.16 },
+                { f: 523.25, t: 0.38, d: 0.65 }
+            ];
+
+            notes.forEach(note => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(note.f, now + note.t);
+
+                // Brass-like formant filter
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(note.f * 3.5, now + note.t);
+                filter.frequency.exponentialRampToValueAtTime(note.f * 1.5, now + note.t + note.d);
+
+                gain.gain.setValueAtTime(0.001, now + note.t);
+                gain.gain.linearRampToValueAtTime(0.18, now + note.t + 0.025);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + note.t + note.d);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(now + note.t);
+                osc.stop(now + note.t + note.d + 0.05);
+            });
+
+            // Harmonizing third on the final triumphant chord (E5)
+            const harmOsc = ctx.createOscillator();
+            const harmGain = ctx.createGain();
+            harmOsc.type = 'triangle';
+            harmOsc.frequency.setValueAtTime(659.25, now + 0.38);
+            harmGain.gain.setValueAtTime(0.001, now + 0.38);
+            harmGain.gain.linearRampToValueAtTime(0.12, now + 0.40);
+            harmGain.gain.exponentialRampToValueAtTime(0.001, now + 1.05);
+            harmOsc.connect(harmGain);
+            harmGain.connect(ctx.destination);
+            harmOsc.start(now + 0.38);
+            harmOsc.stop(now + 1.1);
+
+            // Resonant teletype celebration chime bell
+            const bell = ctx.createOscillator();
+            const bellGain = ctx.createGain();
+            bell.type = 'sine';
+            bell.frequency.setValueAtTime(1760, now + 0.42); // High A6 bell
+            bellGain.gain.setValueAtTime(0.001, now + 0.42);
+            bellGain.gain.linearRampToValueAtTime(0.22, now + 0.43);
+            bellGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.25);
+            bell.connect(bellGain);
+            bellGain.connect(ctx.destination);
+            bell.start(now + 0.42);
+            bell.stop(now + 1.3);
+
+            // Concluding rubber stamp slam impact at 0.5s
+            setTimeout(() => {
+                playStampSlamSound();
+            }, 480);
+        } catch (e) {}
+    };
+
+    /**
+     * Community Reaction: Praise (Clap + Typewriter Bell)
+     */
+    const playTriumphPraise = () => {
+        try {
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            // Crisp double typewriter bell
+            [0, 0.12].forEach((offset, idx) => {
+                const bell = ctx.createOscillator();
+                const gain = ctx.createGain();
+                bell.type = 'sine';
+                bell.frequency.setValueAtTime(idx === 0 ? 1320 : 1760, now + offset);
+                gain.gain.setValueAtTime(0.15, now + offset);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + offset + 0.28);
+                bell.connect(gain);
+                gain.connect(ctx.destination);
+                bell.start(now + offset);
+                bell.stop(now + offset + 0.3);
+            });
+
+            playRubberStampSound();
+        } catch (e) {}
+    };
+
+    /**
+     * Community Reaction: Cheers (Cork Pop + Fizz Sparkle)
+     */
+    const playTriumphCheers = () => {
+        try {
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            // 1. Resonant Champagne Cork Pop
+            const pop = ctx.createOscillator();
+            const popGain = ctx.createGain();
+            pop.type = 'sine';
+            pop.frequency.setValueAtTime(180, now);
+            pop.frequency.exponentialRampToValueAtTime(620, now + 0.035);
+            pop.frequency.exponentialRampToValueAtTime(120, now + 0.08);
+
+            popGain.gain.setValueAtTime(0.4, now);
+            popGain.gain.exponentialRampToValueAtTime(0.001, now + 0.09);
+
+            pop.connect(popGain);
+            popGain.connect(ctx.destination);
+            pop.start(now);
+            pop.stop(now + 0.1);
+
+            // 2. High fizzy effervescence
+            const bufLen = Math.floor(ctx.sampleRate * 0.25);
+            const noiseBuf = ctx.createBuffer(1, bufLen, ctx.sampleRate);
+            const data = noiseBuf.getChannelData(0);
+            for (let i = 0; i < bufLen; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufLen * 0.4));
+            }
+            const noise = ctx.createBufferSource();
+            noise.buffer = noiseBuf;
+            const hpFilter = ctx.createBiquadFilter();
+            hpFilter.type = 'highpass';
+            hpFilter.frequency.value = 3500;
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(0.12, now + 0.04);
+            noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+
+            noise.connect(hpFilter);
+            hpFilter.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+            noise.start(now + 0.04);
+            noise.stop(now + 0.28);
+        } catch (e) {}
+    };
+
+    /**
+     * Community Reaction: Respect (Bugle Brass Salute)
+     */
+    const playTriumphRespect = () => {
+        try {
+            const ctx = getSharedAudioContext();
+            if (!ctx) return;
+            const now = ctx.currentTime;
+
+            // Military bugle fanfare notes: G4 (392Hz) -> C5 (523.25Hz)
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(392.00, now);
+            osc.frequency.setValueAtTime(523.25, now + 0.14);
+
+            gain.gain.setValueAtTime(0.01, now);
+            gain.gain.linearRampToValueAtTime(0.2, now + 0.03);
+            gain.gain.setValueAtTime(0.2, now + 0.14);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.value = 1600;
+
+            osc.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now);
+            osc.stop(now + 0.6);
+        } catch (e) {}
+    };
+
     // Public Interface
     const GatorAudio = {
         getCamoAudioContext,
@@ -670,7 +856,11 @@
         playPaperShuffle,
         playShredderSound,
         playFurnaceSound,
-        playPneumaticWhooshSound
+        playPneumaticWhooshSound,
+        playVictoryFanfare,
+        playTriumphPraise,
+        playTriumphCheers,
+        playTriumphRespect
     };
 
     window.GatorAudio = GatorAudio;
@@ -684,4 +874,8 @@
     window.playShredderSound = playShredderSound;
     window.playFurnaceSound = playFurnaceSound;
     window.playPneumaticWhooshSound = playPneumaticWhooshSound;
+    window.playVictoryFanfare = playVictoryFanfare;
+    window.playTriumphPraise = playTriumphPraise;
+    window.playTriumphCheers = playTriumphCheers;
+    window.playTriumphRespect = playTriumphRespect;
 })();

@@ -37,6 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
     const optToRealIdMap = new Map();
 
+    const isMyTaskId = (id) => {
+        if (!id) return false;
+        if (typeof id === 'string' && id.startsWith('opt-')) return true;
+        const num = Number(id);
+        const str = String(id);
+        if (Array.isArray(myTaskIds) && (myTaskIds.includes(num) || myTaskIds.includes(str))) return true;
+        if (Array.isArray(window.myTaskIds) && (window.myTaskIds.includes(num) || window.myTaskIds.includes(str))) return true;
+        try {
+            const raw = localStorage.getItem('lg_my_task_ids');
+            if (raw) {
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr) && (arr.includes(num) || arr.includes(str))) return true;
+            }
+        } catch (e) {}
+        return false;
+    };
+    window.isMyTaskId = isMyTaskId;
+
     // Active time spent on site avoiding work (increments every 5s while tab is visible)
     setInterval(() => {
         if (document.visibilityState === 'visible') {
@@ -502,14 +520,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
                         ✂ CLIP
                     </button>
-                    ${((Array.isArray(myTaskIds) && (myTaskIds.includes(Number(task.id)) || myTaskIds.includes(String(task.id)))) || (typeof task.id === 'string' && task.id.startsWith('opt-'))) ? `
-                    <button type="button" class="feed-shred-btn" data-task-id="${task.id}" title="Expunge & Shred This Dispatch from the Wire" aria-label="Shred Dispatch">
-                        🗄️ SHRED
+                    ${isMyTaskId(task.id) ? `
+                    <button type="button" class="feed-resolve-btn feed-shred-btn" data-task-id="${task.id}" title="Bureau Resolution Protocol: Did you conquer it or surrender?" aria-label="Resolve Dispatch">
+                        [ ⚖️ RESOLVE ]
                     </button>` : ''}
                 </div>
             </div>
         </div>`;
     };
+    window.buildFeedItemHtml = buildFeedItemHtml;
 
     const prependFeedTask = (task) => {
         if (!feedContainer) return null;
@@ -966,7 +985,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const shredBtn = e.target.closest('.feed-shred-btn');
+            const shredBtn = e.target.closest('.feed-resolve-btn, .feed-shred-btn');
             if (shredBtn) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1930,17 +1949,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ──────────────────────────────────────────────────────────────────
-    // BUREAU CONFIDENTIAL GUILT DISPOSAL UNIT (SHREDDER & BLAST FURNACE)
+    // BUREAU RESOLUTION & REDEMPTION APPARATUS (VICTORY & SURRENDER)
     // ──────────────────────────────────────────────────────────────────
     const disposalModal = document.getElementById('disposal-modal');
     const disposalBackdrop = document.getElementById('disposal-backdrop');
     const disposalCloseBtn = document.getElementById('disposal-close-btn');
+    const resolutionProtocolBar = document.querySelector('.resolution-protocol-bar');
+    const protocolVictoryBtn = document.getElementById('protocol-victory-btn');
+    const protocolSurrenderBtn = document.getElementById('protocol-surrender-btn');
+    const disposalModeBar = document.getElementById('disposal-mode-bar');
     const modeShredderBtn = document.getElementById('mode-shredder-btn');
     const modeFurnaceBtn = document.getElementById('mode-furnace-btn');
     const disposalChamber = document.getElementById('disposal-chamber');
     const disposalMemoSheet = document.getElementById('disposal-memo-sheet');
     const disposalTaskText = document.getElementById('disposal-task-text');
     const disposalTaskMeta = document.getElementById('disposal-task-meta');
+    const memoSheetStamp = document.getElementById('memo-sheet-stamp');
+    const memoSheetTitle = document.getElementById('memo-sheet-title');
+    const victoryMemoStamp = document.getElementById('victory-memo-stamp');
+    const victoryConfettiContainer = document.getElementById('victory-confetti-container');
     const shredderSlicesContainer = document.getElementById('shredder-slices-container');
     const shredderConfettiContainer = document.getElementById('shredder-confetti-container');
     const shredderStripsContainer = document.getElementById('shredder-strips-container');
@@ -1954,6 +1981,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const furnaceFireFront = document.getElementById('furnace-fire-front');
     const furnaceEmbers = document.getElementById('furnace-embers');
     const furnaceHeatFlash = document.getElementById('furnace-heat-flash');
+    const victoryControls = document.getElementById('victory-controls');
+    const victoryRatifyBtn = document.getElementById('victory-ratify-btn');
+    const resolutionVictoryCard = document.getElementById('resolution-victory-card');
+    const victoryCardAuthor = document.getElementById('victory-card-author');
+    const victoryCardCountry = document.getElementById('victory-card-country');
+    const victoryCardTask = document.getElementById('victory-card-task');
+    const victoryCardAvoided = document.getElementById('victory-card-avoided');
+    const victoryCardTimeTaken = document.getElementById('victory-card-timetaken');
+    const victoryCardLore = document.getElementById('victory-card-lore');
+    const victoryCardTitle = document.getElementById('victory-card-title');
+    const victoryViewFeedBtn = document.getElementById('victory-view-feed-btn');
+    const victoryCopyBtn = document.getElementById('victory-copy-btn');
+    const victoryDismissBtn = document.getElementById('victory-dismiss-btn');
     const disposalAbsolutionCard = document.getElementById('disposal-absolution-card');
     const absolutionMsg = document.getElementById('absolution-msg');
     const absolutionHeadline = document.getElementById('absolution-headline');
@@ -1965,7 +2005,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const crankBtnIcon = document.getElementById('crank-btn-icon');
     const crankBtnText = document.getElementById('crank-btn-text');
 
-    let currentDisposalItem = { text: '', taskId: null, source: 'wire' };
+    // Wire Tabs & Triumphs Section Elements
+    const tabWireAvoiding = document.getElementById('tab-wire-avoiding');
+    const tabWireAccomplished = document.getElementById('tab-wire-accomplished');
+    const triumphRibbon = document.getElementById('triumph-ribbon');
+    const triumphRibbonText = document.getElementById('triumph-ribbon-text');
+    const triumphRibbonViewBtn = document.getElementById('triumph-ribbon-view-btn');
+    const accomplishedFeedContainer = document.getElementById('accomplished-feed-container');
+    const triumphsCountBadge = document.getElementById('triumphs-count-badge');
+
+    let currentResolutionItem = { text: '', taskId: null, source: 'wire', task: null };
+    let currentProtocol = 'victory'; // 'victory' | 'surrender'
     let disposalMode = 'shredder';
     try {
         const savedMode = localStorage.getItem('lg_disposal_mode');
@@ -1976,6 +2026,90 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         shredTally = parseInt(localStorage.getItem('lg_guilt_shredded_count') || '0', 10);
     } catch (e) {}
+
+    let activeWireTab = 'avoiding'; // 'avoiding' | 'accomplished'
+    let allTriumphs = [];
+    let myTriumphReactions = new Set();
+    try {
+        const savedRx = localStorage.getItem('lg_triumph_reactions');
+        if (savedRx) myTriumphReactions = new Set(JSON.parse(savedRx));
+    } catch (e) {}
+
+    // Hilarious Lore of Execution Randomizer
+    const LORE_OF_EXECUTION = [
+        "Fuelled by 3 iced coffees, unadulterated panic, and sheer adrenaline.",
+        "Completed at 3:17 AM in a manic trance after watching 4 irrelevant YouTube video essays.",
+        "Accomplished strictly out of spite after a calendar notification made a smug pinging noise.",
+        "Finished with 1% battery remaining while walking aggressively to find a charger.",
+        "Executed in a 7-minute blur while waiting for the microwave noodles to heat.",
+        "Resolved 3 minutes before the scheduled meeting, pretending it was completed last Thursday.",
+        "Tackled after spending 2 hours alphabetizing desktop folders and cleaning the keyboard.",
+        "Conquered under the acute existential dread of tomorrow's to-do list.",
+        "Done in a breathless burst of sudden, completely unexpected adult competence.",
+        "Achieved because avoiding an even worse task made this one seem remarkably manageable.",
+        "Power-walked through completion while listening to synthwave on 1.5x speed.",
+        "Drafted 14 revisions mentally over 3 weeks, then finished it in 180 sweaty seconds.",
+        "Resolved after staring at the wall in silent contemplation for 45 minutes.",
+        "Fuelled by 90s Eurodance and the acute threat of visitors arriving in 20 minutes.",
+        "Accomplished solely so the internal guilt demon would stop whispering during dinner.",
+        "Conquered after realizing that not doing it was taking 10× more energy than doing it.",
+        "Finished while aggressively pacing around the room with intense hand gestures.",
+        "Executed during a sudden, unexplainable 15-minute window of peak executive function.",
+        "Completed at the exact moment of giving up on hope, yielding an accidental breakthrough.",
+        "Done right after declaring 'I will start at 4:00' and looking at the clock at 4:01.",
+        "Accomplished while pretending to be on an important phone call.",
+        "Finished solely so I could brag about it on this exact website."
+    ];
+
+    // Bureau Commendation Titles
+    const COMMENDATION_TITLES = [
+        "★ GRAND MARSHAL OF THE 11TH-HOUR MIRACLE ★",
+        "★ CERTIFIED REFORMED SLOTH (FIRST CLASS) ★",
+        "★ HERO OF SUDDEN PANIC-INDUCED COMPETENCE ★",
+        "★ KNIGHT COMMANDER OF THE LAST POSSIBLE SECOND ★",
+        "★ SUPREME VICTOR OVER EXECUTIVE DYSFUNCTION ★",
+        "★ DOCTOR OF SPITE-DRIVEN EFFICIENCY ★",
+        "★ MASTER OF THE 3:00 AM MANIC BREAKTHROUGH ★",
+        "★ HIGH OVERLORD OF SUDDEN UNEXPECTED FOCUS ★",
+        "★ ORDER OF THE PROCRASTINATOR'S REDEMPTION ★",
+        "★ ARCHDUKE OF EMERGENCY PRODUCTIVITY ★",
+        "★ CITIZEN-HERO OF THE NICK OF TIME ★",
+        "★ SUPREME VANQUISHER OF THE GUILT PILE ★"
+    ];
+
+    const QUICK_TIMES = ["3 minutes", "4 minutes", "6 minutes", "7 minutes", "8 minutes", "9 minutes", "11 minutes", "14 minutes"];
+
+    // Update between Victory (Redemption) and Surrender (Destruction)
+    const updateResolutionProtocol = (protocol) => {
+        currentProtocol = protocol;
+
+        if (protocol === 'victory') {
+            if (protocolVictoryBtn) protocolVictoryBtn.classList.add('active');
+            if (protocolSurrenderBtn) protocolSurrenderBtn.classList.remove('active');
+            if (disposalModeBar) disposalModeBar.style.display = 'none';
+            if (shredderMouth) shredderMouth.style.display = 'none';
+            if (furnaceStage) furnaceStage.style.display = 'none';
+            if (victoryControls) victoryControls.style.display = 'block';
+            if (disposalControls) disposalControls.style.display = 'none';
+            if (disposalChamber) disposalChamber.classList.remove('mode-furnace');
+            if (disposalMemoSheet) {
+                disposalMemoSheet.style.display = 'block';
+                disposalMemoSheet.style.opacity = '1';
+                disposalMemoSheet.classList.remove('feeding-down', 'incinerating');
+            }
+            if (memoSheetStamp) memoSheetStamp.textContent = 'DOSSIER OF AVOIDED LABOR';
+            if (memoSheetTitle) memoSheetTitle.textContent = 'STATEMENT OF CHRONIC PROCRASTINATION:';
+        } else {
+            if (protocolSurrenderBtn) protocolSurrenderBtn.classList.add('active');
+            if (protocolVictoryBtn) protocolVictoryBtn.classList.remove('active');
+            if (disposalModeBar) disposalModeBar.style.display = 'flex';
+            if (victoryControls) victoryControls.style.display = 'none';
+            if (disposalControls) disposalControls.style.display = 'block';
+            if (memoSheetStamp) memoSheetStamp.textContent = 'TOP SECRET // GUILT DOSSIER';
+            if (memoSheetTitle) memoSheetTitle.textContent = 'STATEMENT OF AVOIDED LABOR:';
+            updateDisposalMode(disposalMode);
+        }
+    };
 
     const updateDisposalMode = (mode) => {
         disposalMode = mode;
@@ -2006,6 +2140,13 @@ document.addEventListener('DOMContentLoaded', () => {
             disposalMemoSheet.style.display = 'block';
             disposalMemoSheet.style.opacity = '1';
         }
+        if (victoryMemoStamp) {
+            victoryMemoStamp.style.display = 'none';
+            victoryMemoStamp.classList.remove('slam-stamp');
+        }
+        if (victoryConfettiContainer) {
+            victoryConfettiContainer.innerHTML = '';
+        }
         if (shredderSlicesContainer) {
             shredderSlicesContainer.innerHTML = '';
             shredderSlicesContainer.style.display = 'none';
@@ -2018,7 +2159,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lampLabel) lampLabel.textContent = 'CUTTER STANDBY';
         }
         if (disposalChamber) {
-            disposalChamber.classList.remove('rumbling', 'chattering');
+            disposalChamber.classList.remove('rumbling', 'chattering', 'rumbling-victory');
         }
         if (shredderMouth) {
             shredderMouth.classList.remove('spinning');
@@ -2035,16 +2176,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (furnaceEmbers) furnaceEmbers.innerHTML = '';
         if (furnaceHeatFlash) furnaceHeatFlash.classList.remove('flash');
 
+        if (resolutionProtocolBar) resolutionProtocolBar.style.display = 'flex';
         if (disposalChamber) disposalChamber.style.display = 'flex';
-        if (disposalControls) disposalControls.style.display = 'block';
+        if (resolutionVictoryCard) resolutionVictoryCard.style.display = 'none';
         if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'none';
-        if (disposalCrankBtn) {
-            disposalCrankBtn.disabled = false;
-        }
+        if (victoryRatifyBtn) victoryRatifyBtn.disabled = false;
+        if (disposalCrankBtn) disposalCrankBtn.disabled = false;
     };
 
-    const openDisposalUnit = ({ text, taskId = null, source = 'wire' }) => {
+    const calculateAvoidedDuration = (task) => {
+        if (task && task.created_at) {
+            const diff = Date.now() - new Date(task.created_at).getTime();
+            if (diff > 86400000) {
+                const days = Math.floor(diff / 86400000);
+                const hours = Math.floor((diff % 86400000) / 3600000);
+                return `${days} day${days > 1 ? 's' : ''}, ${hours} hr${hours > 1 ? 's' : ''}`;
+            } else if (diff > 3600000) {
+                const hours = Math.floor(diff / 3600000);
+                const mins = Math.floor((diff % 3600000) / 60000);
+                return `${hours} hour${hours > 1 ? 's' : ''}, ${mins} min${mins > 1 ? 's' : ''}`;
+            } else if (diff > 60000) {
+                const mins = Math.floor(diff / 60000);
+                return `${mins} minutes of dread`;
+            }
+        }
+        const fakeDays = Math.floor(6 + Math.random() * 20);
+        const fakeHours = Math.floor(2 + Math.random() * 21);
+        return `${fakeDays} days, ${fakeHours} hours`;
+    };
+
+    const openResolutionUnit = ({ text, taskId = null, source = 'wire' }) => {
         if (!disposalModal || !taskId) return;
+
+        // Strict authorization check: Only allow user's own tasks
+        const isMine = isMyTaskId(taskId);
+        if (!isMine) {
+            console.warn('Resolution Kiosk: Attempted to resolve dispatch not owned by current operative.');
+            return;
+        }
 
         let cleanText = (text || '').trim();
         if (!cleanText) {
@@ -2053,35 +2222,224 @@ document.addEventListener('DOMContentLoaded', () => {
                 "REPLYING TO THAT 3-WEEK-OLD EMAIL",
                 "DOING TAXES & PAPERWORK",
                 "DECIDING WHAT TO DO WITH MY LIFE",
-                "ORGANIZING THE DESK INSTEAD OF WORKING",
-                "CHECKING SOCIAL MEDIA FOR THE 40TH TIME TODAY"
+                "ORGANIZING THE DESK INSTEAD OF WORKING"
             ];
             cleanText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
         }
 
-        currentDisposalItem = { text: cleanText, taskId, source: 'wire' };
+        const taskObj = allKnownTasks.get(Number(taskId)) || allKnownTasks.get(String(taskId)) || null;
+        currentResolutionItem = { text: cleanText, taskId, source: 'wire', task: taskObj };
 
         if (disposalTaskText) disposalTaskText.textContent = `"${cleanText.toUpperCase()}"`;
         if (disposalTaskMeta) {
-            disposalTaskMeta.textContent = `Live Wire Dispatch (ID #${taskId}) • Action: Obliterate & Expunge • Archive: Struck`;
+            const author = (taskObj && (taskObj.city || taskObj.name)) || 'Citizen';
+            const country = (taskObj && taskObj.country) || 'Parts Unknown';
+            const avoided = calculateAvoidedDuration(taskObj);
+            disposalTaskMeta.textContent = `Operative: ${author} (${country}) • Time in Purgatory: ${avoided} • Case #${taskId}`;
         }
 
         if (shredTallyNumber) shredTallyNumber.textContent = String(shredTally);
 
         resetDisposalChamber();
-        updateDisposalMode(disposalMode);
+        updateResolutionProtocol('victory'); // Victory is the default, primary path!
 
         disposalModal.style.display = 'flex';
     };
 
+    const openDisposalUnit = openResolutionUnit; // Full backward compatibility
+    window.openResolutionUnit = openResolutionUnit;
     window.openDisposalUnit = openDisposalUnit;
     window.updateDisposalMode = updateDisposalMode;
+    window.updateResolutionProtocol = updateResolutionProtocol;
 
     const closeDisposalUnit = () => {
         if (disposalModal) disposalModal.style.display = 'none';
         resetDisposalChamber();
     };
 
+    // ──────────────────────────────────────────────────────────────────
+    // TRIUMPH EXECUTION: "I CONQUERED IT!" (REDEMPTION PROTOCOL)
+    // ──────────────────────────────────────────────────────────────────
+    const executeTriumph = async () => {
+        if (!victoryRatifyBtn || victoryRatifyBtn.disabled) return;
+        victoryRatifyBtn.disabled = true;
+
+        const item = currentResolutionItem;
+        const taskObj = item.task;
+        const author = (taskObj && (taskObj.city || taskObj.name)) || (currentGatorTag ? `@${currentGatorTag}` : 'Anonymous');
+        const country = (taskObj && taskObj.country) || 'Parts Unknown';
+        const avoided = calculateAvoidedDuration(taskObj);
+        const timeTaken = QUICK_TIMES[Math.floor(Math.random() * QUICK_TIMES.length)];
+        const lore = LORE_OF_EXECUTION[Math.floor(Math.random() * LORE_OF_EXECUTION.length)];
+        const title = COMMENDATION_TITLES[Math.floor(Math.random() * COMMENDATION_TITLES.length)];
+
+        // 1. Play Triumphant Fanfare audio
+        if (window.GatorAudio && typeof window.GatorAudio.playVictoryFanfare === 'function') {
+            window.GatorAudio.playVictoryFanfare();
+        }
+
+        // 2. Slanted Golden Triumph Stamp slams down
+        if (victoryMemoStamp) {
+            victoryMemoStamp.style.display = 'block';
+            void victoryMemoStamp.offsetWidth;
+            victoryMemoStamp.classList.add('slam-stamp');
+        }
+
+        // 3. Chamber rumbling vibration
+        if (disposalChamber) {
+            disposalChamber.classList.remove('rumbling-victory');
+            void disposalChamber.offsetWidth;
+            disposalChamber.classList.add('rumbling-victory');
+        }
+
+        // 4. Golden victory stars & confetti explosion
+        if (victoryConfettiContainer) {
+            victoryConfettiContainer.innerHTML = '';
+            const goldColors = ['#FFDF79', '#FFD700', '#E5A93C', '#FFF8DC', '#FFA500', '#FFFFFF'];
+            for (let i = 0; i < 32; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'victory-confetti-particle';
+                const startX = 15 + Math.random() * 70;
+                particle.style.left = `${startX}%`;
+                particle.style.bottom = `${40 + Math.random() * 40}%`;
+
+                const burstX = (Math.random() * 160 - 80).toFixed(0);
+                const burstY = (-70 - Math.random() * 110).toFixed(0);
+                const rot = (Math.random() * 720 - 360).toFixed(0);
+                const dur = (0.9 + Math.random() * 0.7).toFixed(2);
+                const size = (6 + Math.random() * 6).toFixed(0);
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.setProperty('--burst-x', `${burstX}px`);
+                particle.style.setProperty('--burst-y', `${burstY}px`);
+                particle.style.setProperty('--v-rot', `${rot}deg`);
+                particle.style.setProperty('--v-dur', `${dur}s`);
+                particle.style.backgroundColor = goldColors[Math.floor(Math.random() * goldColors.length)];
+
+                if (Math.random() > 0.5) particle.style.borderRadius = '50%';
+                victoryConfettiContainer.appendChild(particle);
+            }
+        }
+
+        // 5. Reveal Accomplishment Certificate & Graduate Task
+        setTimeout(async () => {
+            let targetId = item.taskId;
+            if (targetId && String(targetId).startsWith('opt-') && optToRealIdMap.has(String(targetId))) {
+                targetId = optToRealIdMap.get(String(targetId));
+            }
+
+            // Remove task from Public Wire in DOM
+            if (targetId && feedContainer) {
+                const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${item.taskId}"]`);
+                feedItems.forEach(feedEl => {
+                    feedEl.classList.add('shredding-out');
+                    setTimeout(() => { if (feedEl.parentNode) feedEl.remove(); }, 600);
+                });
+            }
+
+            // Remove from memory & local storage
+            if (targetId) {
+                allKnownTasks.delete(Number(targetId));
+                allKnownTasks.delete(String(targetId));
+            }
+            if (item.taskId) {
+                allKnownTasks.delete(Number(item.taskId));
+                allKnownTasks.delete(String(item.taskId));
+            }
+
+            myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(item.taskId));
+            window.myTaskIds = myTaskIds;
+            try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+
+            try {
+                const rawCache = localStorage.getItem('lg_cached_tasks');
+                if (rawCache) {
+                    const cached = JSON.parse(rawCache);
+                    if (Array.isArray(cached)) {
+                        const updated = cached.filter(t => String(t.id) !== String(targetId) && String(t.id) !== String(item.taskId));
+                        localStorage.setItem('lg_cached_tasks', JSON.stringify(updated));
+                    }
+                }
+            } catch (e) {}
+
+            // Populate the Official Certificate
+            if (victoryCardAuthor) victoryCardAuthor.textContent = author;
+            if (victoryCardCountry) victoryCardCountry.textContent = country;
+            if (victoryCardTask) victoryCardTask.textContent = `"${item.text}"`;
+            if (victoryCardAvoided) victoryCardAvoided.textContent = avoided;
+            if (victoryCardTimeTaken) victoryCardTimeTaken.textContent = timeTaken;
+            if (victoryCardLore) victoryCardLore.textContent = `"${lore}"`;
+            if (victoryCardTitle) victoryCardTitle.textContent = title;
+
+            // Hide chamber, protocol selector, and controls, display the glorious victory certificate
+            if (resolutionProtocolBar) resolutionProtocolBar.style.display = 'none';
+            if (disposalChamber) disposalChamber.style.display = 'none';
+            if (victoryControls) victoryControls.style.display = 'none';
+            if (resolutionVictoryCard) resolutionVictoryCard.style.display = 'block';
+
+            // Construct new triumph object
+            const newTriumph = {
+                id: Date.now(),
+                task_id: targetId ? String(targetId) : null,
+                text: item.text,
+                author_name: author,
+                country: country,
+                avoided_duration: avoided,
+                time_taken: timeTaken,
+                lore: lore,
+                commendation_title: title,
+                praise_count: 1,
+                cheers_count: 1,
+                respect_count: 1,
+                created_at: new Date().toISOString()
+            };
+
+            // Save triumph locally & prepend to accomplished feed
+            addTriumphToFeed(newTriumph, true);
+
+            // Update breaking ribbon ticker
+            updateTriumphRibbon(newTriumph);
+
+            // Send triumph to backend API & await
+            try {
+                const res = await fetch('/api/triumphs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Gator-Token': 'chomp-chomp'
+                    },
+                    body: JSON.stringify({
+                        taskId: targetId,
+                        text: item.text,
+                        name: author,
+                        country: country,
+                        avoidedDuration: avoided,
+                        timeTaken: timeTaken,
+                        lore: lore,
+                        commendationTitle: title,
+                        gatorId: currentGatorId || null
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.triumph) {
+                        newTriumph.id = data.triumph.id;
+                    }
+                }
+            } catch (apiErr) {
+                console.warn('Network error saving triumph to server:', apiErr);
+            }
+
+            fetchStats();
+            if (typeof window.fetchDossier === 'function') window.fetchDossier();
+            fetchTasks(true);
+        }, 1500);
+    };
+
+    // ──────────────────────────────────────────────────────────────────
+    // SURRENDER EXECUTION: CRANK SHREDDER OR IGNITE BLAST FURNACE
+    // ──────────────────────────────────────────────────────────────────
     const executeDestruction = () => {
         if (!disposalCrankBtn || disposalCrankBtn.disabled) return;
         disposalCrankBtn.disabled = true;
@@ -2093,29 +2451,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.GatorAudio.playFurnaceSound(2.6);
             }
 
-            // 1. Initial heat flash burst
             if (furnaceHeatFlash) {
                 furnaceHeatFlash.classList.remove('flash');
                 void furnaceHeatFlash.offsetWidth;
                 furnaceHeatFlash.classList.add('flash');
             }
 
-            // 2. Heavy industrial chamber vibration
             if (disposalChamber) {
                 disposalChamber.classList.add('rumbling');
             }
 
-            // 3. Ignite roaring fire flame layers
             if (furnaceFireBack) furnaceFireBack.classList.add('blazing');
             if (furnaceFireMid) furnaceFireMid.classList.add('blazing');
             if (furnaceFireFront) furnaceFireFront.classList.add('blazing');
 
-            // 4. Hyper-realistic progressive paper incinerate
             if (disposalMemoSheet) {
                 disposalMemoSheet.classList.add('incinerating');
             }
 
-            // 5. Generate dynamic floating embers, sparks, and ash particles
             if (furnaceEmbers) {
                 furnaceEmbers.innerHTML = '';
                 const particleCount = 38;
@@ -2143,7 +2496,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // 6. Heavy Iron blast doors slam shut at ~1.9s
             setTimeout(() => {
                 if (furnaceDoorLeft) furnaceDoorLeft.classList.add('door-slam');
                 if (furnaceDoorRight) furnaceDoorRight.classList.add('door-slam');
@@ -2170,7 +2522,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (lampLabel) lampLabel.textContent = 'SHREDDING ACTIVE';
             }
 
-            // 1. Physical Document Slicing into 18 Vertical Ribbons
             if (shredderSlicesContainer && disposalMemoSheet) {
                 shredderSlicesContainer.innerHTML = '';
                 const sheetW = disposalMemoSheet.offsetWidth;
@@ -2194,7 +2545,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     slice.style.width = `${sliceW}px`;
                     slice.style.height = `${sheetH}px`;
 
-                    // Organic shredding physics: tilt, lateral peel, and staggered pull
                     const rot = (Math.random() * 8 - 4).toFixed(1);
                     const shiftX = (Math.random() * 12 - 6).toFixed(1);
                     const centerDist = Math.abs(i - (numSlices / 2));
@@ -2206,7 +2556,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     slice.style.setProperty('--slice-dur', `${dur}s`);
                     slice.style.animationDelay = `${delay}s`;
 
-                    // Exact clone of the memo sheet positioned to reveal only this vertical strip
                     const clone = disposalMemoSheet.cloneNode(true);
                     clone.id = '';
                     clone.className = 'disposal-memo-sheet shred-clone-inner';
@@ -2219,17 +2568,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     shredderSlicesContainer.appendChild(slice);
                 }
 
-                // Hide original solid sheet so only the 18 active tearing slices are seen
                 disposalMemoSheet.style.opacity = '0';
 
-                // Trigger shredding animation
                 requestAnimationFrame(() => {
                     const allSlices = shredderSlicesContainer.querySelectorAll('.shred-slice');
                     allSlices.forEach(s => s.classList.add('is-shredding'));
                 });
             }
 
-            // 2. Cross-cut Paper Confetti Burst from the Blade Mouth
             if (shredderConfettiContainer) {
                 shredderConfettiContainer.innerHTML = '';
                 const confettiCount = 30;
@@ -2266,7 +2612,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // 3. Falling Shred Strips (Output below cutting mouth)
             if (shredderStripsContainer) {
                 shredderStripsContainer.innerHTML = '';
                 shredderStripsContainer.style.display = 'block';
@@ -2287,54 +2632,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         setTimeout(async () => {
-            let targetId = currentDisposalItem.taskId;
+            let targetId = currentResolutionItem.taskId;
             if (targetId && String(targetId).startsWith('opt-') && optToRealIdMap.has(String(targetId))) {
                 targetId = optToRealIdMap.get(String(targetId));
             }
 
             if (targetId) {
-                // 1. Instantly animate and remove from wire feed in DOM
                 if (feedContainer) {
-                    const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${currentDisposalItem.taskId}"]`);
+                    const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${currentResolutionItem.taskId}"]`);
                     feedItems.forEach(item => {
                         item.classList.add('shredding-out');
                         setTimeout(() => { if (item.parentNode) item.remove(); }, 620);
                     });
                 }
 
-                // 2. Clear from in-memory records and local storage tracking
                 allKnownTasks.delete(Number(targetId));
                 allKnownTasks.delete(String(targetId));
-                if (currentDisposalItem.taskId) {
-                    allKnownTasks.delete(Number(currentDisposalItem.taskId));
-                    allKnownTasks.delete(String(currentDisposalItem.taskId));
+                if (currentResolutionItem.taskId) {
+                    allKnownTasks.delete(Number(currentResolutionItem.taskId));
+                    allKnownTasks.delete(String(currentResolutionItem.taskId));
                 }
 
-                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentDisposalItem.taskId));
+                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentResolutionItem.taskId));
                 window.myTaskIds = myTaskIds;
                 try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
 
-                // Purge from cached tasks in localStorage
                 try {
                     const rawCache = localStorage.getItem('lg_cached_tasks');
                     if (rawCache) {
                         const cached = JSON.parse(rawCache);
                         if (Array.isArray(cached)) {
-                            const updated = cached.filter(t => 
-                                String(t.id) !== String(targetId) && String(t.id) !== String(currentDisposalItem.taskId)
-                            );
+                            const updated = cached.filter(t => String(t.id) !== String(targetId) && String(t.id) !== String(currentResolutionItem.taskId));
                             localStorage.setItem('lg_cached_tasks', JSON.stringify(updated));
                         }
                     }
                 } catch (e) {}
 
-                // 3. Remove from dossier if operative dossier open
                 if (dossierListEl) {
-                    const dossierItems = dossierListEl.querySelectorAll(`.dossier-item[data-task-id="${targetId}"], .dossier-item[data-task-id="${currentDisposalItem.taskId}"]`);
+                    const dossierItems = dossierListEl.querySelectorAll(`.dossier-item[data-task-id="${targetId}"], .dossier-item[data-task-id="${currentResolutionItem.taskId}"]`);
                     dossierItems.forEach(d => d.remove());
                 }
 
-                // 4. Send DELETE to backend database and AWAIT
                 try {
                     const delRes = await fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
                         method: 'DELETE',
@@ -2347,8 +2685,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!delRes.ok) {
                         const err = await delRes.text().catch(() => '');
                         console.error('Failed to expunge task on server:', delRes.status, err);
-                    } else {
-                        console.log('Task successfully shredded from database archives:', targetId);
                     }
                 } catch (netErr) {
                     console.error('Network error during task shredding:', netErr);
@@ -2372,12 +2708,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     : "Your avoided task was sliced into 18 ribbon strips & cross-cut confetti and permanently expunged from the wire archives. No trace remains in the bureau.";
             }
 
-            if (absolutionHeadline) {
-                absolutionHeadline.textContent = "EXPUNGED FROM THE WIRE";
-            }
-            if (absolutionCode) {
-                absolutionCode.textContent = `PERMIT #${Math.floor(1000 + Math.random() * 9000)}-ABSOLVED`;
-            }
+            if (absolutionHeadline) absolutionHeadline.textContent = "EXPUNGED FROM THE WIRE";
+            if (absolutionCode) absolutionCode.textContent = `PERMIT #${Math.floor(1000 + Math.random() * 9000)}-ABSOLVED`;
 
             if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'block';
             if (window.GatorAudio && typeof window.GatorAudio.playStampSlamSound === 'function') {
@@ -2386,13 +2718,230 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2550);
     };
 
-    function handleFeedShredClick(feedShredBtn) {
-        let taskId = feedShredBtn.getAttribute('data-task-id');
+    // ──────────────────────────────────────────────────────────────────
+    // "FINALLY DID IT!" ACCOMPLISHED FEED & COMMUNITY SECTION
+    // ──────────────────────────────────────────────────────────────────
+    const switchWireTab = (tab) => {
+        activeWireTab = tab;
+        if (tab === 'avoiding') {
+            if (tabWireAvoiding) {
+                tabWireAvoiding.classList.add('active');
+                tabWireAvoiding.setAttribute('aria-selected', 'true');
+            }
+            if (tabWireAccomplished) {
+                tabWireAccomplished.classList.remove('active');
+                tabWireAccomplished.setAttribute('aria-selected', 'false');
+            }
+            if (feedContainer) feedContainer.style.display = 'block';
+            if (accomplishedFeedContainer) accomplishedFeedContainer.style.display = 'none';
+        } else {
+            if (tabWireAccomplished) {
+                tabWireAccomplished.classList.add('active');
+                tabWireAccomplished.setAttribute('aria-selected', 'true');
+            }
+            if (tabWireAvoiding) {
+                tabWireAvoiding.classList.remove('active');
+                tabWireAvoiding.setAttribute('aria-selected', 'false');
+            }
+            if (feedContainer) feedContainer.style.display = 'none';
+            if (accomplishedFeedContainer) accomplishedFeedContainer.style.display = 'flex';
+        }
+    };
+
+    const updateTriumphRibbon = (triumph) => {
+        if (!triumphRibbon || !triumphRibbonText || !triumph) return;
+        const author = escapeHtml(triumph.author_name || 'Anonymous');
+        const country = escapeHtml(triumph.country || 'Unknown');
+        const text = escapeHtml(triumph.text || '');
+        const avoided = escapeHtml(triumph.avoided_duration || '');
+        const timeTaken = escapeHtml(triumph.time_taken || '');
+        triumphRibbonText.textContent = `${author} in ${country} FINALLY DID "${text}" (Avoided: ${avoided} • Took: ${timeTaken})!`;
+        triumphRibbon.style.display = 'flex';
+    };
+
+    const buildAccomplishedItemHtml = (triumph, isNew = false) => {
+        const id = triumph.id;
+        const author = escapeHtml(triumph.author_name || 'Anonymous');
+        const country = escapeHtml(triumph.country || 'Parts Unknown');
+        const taskText = escapeHtml(triumph.text || '');
+        const avoided = escapeHtml(triumph.avoided_duration || 'Several days');
+        const timeTaken = escapeHtml(triumph.time_taken || '10 mins');
+        const lore = escapeHtml(triumph.lore || 'Fuelled by sheer panic.');
+        const merit = escapeHtml(triumph.commendation_title || 'Order of the 11th-Hour Miracle');
+
+        const praiseCount = triumph.praise_count || 1;
+        const cheersCount = triumph.cheers_count || 1;
+        const respectCount = triumph.respect_count || 1;
+
+        const hasPraise = myTriumphReactions.has(`${id}-praise`);
+        const hasCheers = myTriumphReactions.has(`${id}-cheers`);
+        const hasRespect = myTriumphReactions.has(`${id}-respect`);
+
+        return `
+        <article class="accomplished-item ${isNew ? 'is-new-triumph' : ''}" data-triumph-id="${id}">
+            <div class="accomplished-header">
+                <span class="accomplished-tag">★ FINALLY CONQUERED ★</span>
+                <span class="accomplished-time">${triumph.created_at ? timeAgo(triumph.created_at) : 'Just now'}</span>
+            </div>
+            <div class="accomplished-operative-line">
+                Operative: <strong>${author}</strong> in <strong>${country}</strong>
+            </div>
+            <h3 class="accomplished-task-headline">"${taskText}"</h3>
+            <div class="accomplished-calculus-pill">
+                <span>Avoided for: <span class="calc-highlight">${avoided}</span></span>
+                <span>•</span>
+                <span>Time required: <span class="calc-highlight">${timeTaken}</span></span>
+            </div>
+            <div class="accomplished-lore">
+                "${lore}"
+            </div>
+            <div class="accomplished-merit">
+                ${merit}
+            </div>
+            <div class="accomplished-reactions" data-triumph-id="${id}">
+                <button type="button" class="triumph-react-btn ${hasPraise ? 'reacted' : ''}" data-type="praise" title="Applaud this miraculous victory">
+                    👏 PRAISE <span class="rx-count">${praiseCount}</span>
+                </button>
+                <button type="button" class="triumph-react-btn ${hasCheers ? 'reacted' : ''}" data-type="cheers" title="Pop the champagne!">
+                    🍾 CHEERS <span class="rx-count">${cheersCount}</span>
+                </button>
+                <button type="button" class="triumph-react-btn ${hasRespect ? 'reacted' : ''}" data-type="respect" title="Salute this heroic deed">
+                    🫡 RESPECT <span class="rx-count">${respectCount}</span>
+                </button>
+            </div>
+        </article>`;
+    };
+
+    const addTriumphToFeed = (triumph, isNew = false) => {
+        allTriumphs.unshift(triumph);
+        try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
+
+        if (triumphsCountBadge) {
+            triumphsCountBadge.textContent = String(allTriumphs.length);
+        }
+
+        if (accomplishedFeedContainer) {
+            const loadingEl = accomplishedFeedContainer.querySelector('.loading');
+            if (loadingEl) loadingEl.remove();
+
+            const temp = document.createElement('div');
+            temp.innerHTML = buildAccomplishedItemHtml(triumph, isNew);
+            const el = temp.firstElementChild;
+            if (el) {
+                accomplishedFeedContainer.prepend(el);
+            }
+        }
+    };
+
+    const renderAllTriumphs = () => {
+        if (!accomplishedFeedContainer) return;
+        if (!allTriumphs || allTriumphs.length === 0) {
+            accomplishedFeedContainer.innerHTML = '<div class="loading">No recorded triumphs yet. Conquer an avoided dispatch to claim your commendation!</div>';
+            return;
+        }
+
+        accomplishedFeedContainer.innerHTML = allTriumphs.map(t => buildAccomplishedItemHtml(t, false)).join('');
+        if (triumphsCountBadge) {
+            triumphsCountBadge.textContent = String(allTriumphs.length);
+        }
+        if (allTriumphs.length > 0) {
+            updateTriumphRibbon(allTriumphs[0]);
+        }
+    };
+
+    const fetchTriumphs = async () => {
+        // Try local storage cache first for instant render
+        try {
+            const rawCache = localStorage.getItem('lg_triumphs');
+            if (rawCache) {
+                const cached = JSON.parse(rawCache);
+                if (Array.isArray(cached) && cached.length > 0) {
+                    allTriumphs = cached;
+                    renderAllTriumphs();
+                }
+            }
+        } catch (e) {}
+
+        try {
+            const res = await fetch('/api/triumphs');
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    // Merge local-only triumphs that haven't synced yet
+                    const serverIds = new Set(data.map(d => String(d.id)));
+                    const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)));
+                    allTriumphs = [...localOnly, ...data];
+                    try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
+                    renderAllTriumphs();
+                }
+            }
+        } catch (err) {
+            console.warn('Could not fetch triumphs from server, using local fallback:', err);
+        }
+    };
+
+    // Handle community praise reactions on accomplished cards
+    const handleTriumphReaction = async (btn) => {
+        const type = btn.getAttribute('data-type');
+        const rxContainer = btn.closest('.accomplished-reactions');
+        if (!rxContainer || !type) return;
+
+        const triumphId = rxContainer.getAttribute('data-triumph-id');
+        if (!triumphId) return;
+
+        const reactionKey = `${triumphId}-${type}`;
+        if (myTriumphReactions.has(reactionKey)) {
+            // Already reacted
+            return;
+        }
+
+        myTriumphReactions.add(reactionKey);
+        try { localStorage.setItem('lg_triumph_reactions', JSON.stringify(Array.from(myTriumphReactions))); } catch (e) {}
+
+        // Audio feedback
+        if (type === 'praise' && window.GatorAudio && typeof window.GatorAudio.playTriumphPraise === 'function') {
+            window.GatorAudio.playTriumphPraise();
+        } else if (type === 'cheers' && window.GatorAudio && typeof window.GatorAudio.playTriumphCheers === 'function') {
+            window.GatorAudio.playTriumphCheers();
+        } else if (type === 'respect' && window.GatorAudio && typeof window.GatorAudio.playTriumphRespect === 'function') {
+            window.GatorAudio.playTriumphRespect();
+        }
+
+        // Tactile stamp visual feedback
+        btn.classList.add('reacted');
+        const rot = (Math.random() * 6 - 3).toFixed(1);
+        btn.style.setProperty('--stamp-rot', `${rot}deg`);
+
+        const countEl = btn.querySelector('.rx-count');
+        if (countEl) {
+            const current = parseInt(countEl.textContent || '0', 10);
+            countEl.textContent = String(current + 1);
+        }
+
+        // Send to backend
+        try {
+            await fetch('/api/triumphs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Gator-Token': 'chomp-chomp'
+                },
+                body: JSON.stringify({
+                    action: 'react',
+                    triumphId: triumphId,
+                    reactionType: type
+                })
+            });
+        } catch (e) {}
+    };
+
+    function handleFeedShredClick(feedBtn) {
+        let taskId = feedBtn.getAttribute('data-task-id');
         if (!taskId) return;
         if (taskId.startsWith('opt-') && optToRealIdMap.has(taskId)) {
             taskId = optToRealIdMap.get(taskId);
         }
-        const feedItem = feedShredBtn.closest('.feed-item');
+        const feedItem = feedBtn.closest('.feed-item');
         let taskText = '';
         if (feedItem) {
             const textEl = feedItem.querySelector('.feed-item-text');
@@ -2402,19 +2951,79 @@ document.addEventListener('DOMContentLoaded', () => {
             const known = allKnownTasks.get(Number(taskId));
             taskText = (known.text || '').replace('[PANIC] ', '').trim();
         }
-        openDisposalUnit({
+        openResolutionUnit({
             text: taskText || 'AVOIDED DISPATCH',
             taskId: taskId,
             source: 'wire'
         });
     }
 
+    // Modal protocol & mode listeners
+    if (protocolVictoryBtn) protocolVictoryBtn.addEventListener('click', () => updateResolutionProtocol('victory'));
+    if (protocolSurrenderBtn) protocolSurrenderBtn.addEventListener('click', () => updateResolutionProtocol('surrender'));
     if (modeShredderBtn) modeShredderBtn.addEventListener('click', () => updateDisposalMode('shredder'));
     if (modeFurnaceBtn) modeFurnaceBtn.addEventListener('click', () => updateDisposalMode('furnace'));
+    if (victoryRatifyBtn) victoryRatifyBtn.addEventListener('click', executeTriumph);
     if (disposalCrankBtn) disposalCrankBtn.addEventListener('click', executeDestruction);
     if (disposalCloseBtn) disposalCloseBtn.addEventListener('click', closeDisposalUnit);
     if (disposalBackdrop) disposalBackdrop.addEventListener('click', closeDisposalUnit);
     if (absolutionDismissBtn) absolutionDismissBtn.addEventListener('click', closeDisposalUnit);
+
+    // Victory card actions
+    if (victoryViewFeedBtn) {
+        victoryViewFeedBtn.addEventListener('click', () => {
+            closeDisposalUnit();
+            switchWireTab('accomplished');
+            const targetEl = accomplishedFeedContainer ? accomplishedFeedContainer.firstElementChild : null;
+            if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }
+    if (victoryDismissBtn) {
+        victoryDismissBtn.addEventListener('click', closeDisposalUnit);
+    }
+    if (victoryCopyBtn) {
+        victoryCopyBtn.addEventListener('click', async () => {
+            const item = currentResolutionItem;
+            const taskObj = item.task;
+            const author = (taskObj && (taskObj.city || taskObj.name)) || 'Citizen';
+            const country = (taskObj && taskObj.country) || 'Parts Unknown';
+            const text = item.text || 'Task';
+            const shareMsg = `🏆 PROOF OF REDEMPTION: ${author} in ${country} FINALLY CONQUERED "${text}"! Ratified by the Bureau of Accomplished Affairs // latergators.live`;
+            try {
+                await navigator.clipboard.writeText(shareMsg);
+                const prev = victoryCopyBtn.textContent;
+                victoryCopyBtn.textContent = '✓ COMMUNIQUÉ COPIED!';
+                setTimeout(() => { victoryCopyBtn.textContent = prev; }, 2200);
+            } catch (err) {
+                prompt('Copy your victory dispatch:', shareMsg);
+            }
+        });
+    }
+
+    // Wire tabs listeners
+    if (tabWireAvoiding) tabWireAvoiding.addEventListener('click', () => switchWireTab('avoiding'));
+    if (tabWireAccomplished) tabWireAccomplished.addEventListener('click', () => switchWireTab('accomplished'));
+    if (triumphRibbonViewBtn) {
+        triumphRibbonViewBtn.addEventListener('click', () => {
+            switchWireTab('accomplished');
+            if (accomplishedFeedContainer) accomplishedFeedContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // Delegation for triumph reactions
+    if (accomplishedFeedContainer) {
+        accomplishedFeedContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.triumph-react-btn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleTriumphReaction(btn);
+            }
+        });
+    }
+
+    // Fetch triumphs on load
+    fetchTriumphs();
 
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));
@@ -4230,16 +4839,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (feedContainer) {
                         myTaskIds.forEach(id => {
                             const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
-                            if (item && !item.querySelector('.feed-shred-btn')) {
+                            if (item && !item.querySelector('.feed-resolve-btn, .feed-shred-btn')) {
                                 const rx = item.querySelector('.feed-reactions');
                                 if (rx) {
                                     const btn = document.createElement('button');
                                     btn.type = 'button';
-                                    btn.className = 'feed-shred-btn';
+                                    btn.className = 'feed-resolve-btn feed-shred-btn';
                                     btn.setAttribute('data-task-id', String(id));
-                                    btn.title = 'Expunge & Shred This Dispatch from the Wire';
-                                    btn.setAttribute('aria-label', 'Shred Dispatch');
-                                    btn.innerHTML = '🗄️ SHRED';
+                                    btn.title = 'Bureau Resolution Protocol: Did you conquer it or surrender?';
+                                    btn.setAttribute('aria-label', 'Resolve Dispatch');
+                                    btn.innerHTML = '[ ⚖️ RESOLVE ]';
                                     rx.appendChild(btn);
                                 }
                             }

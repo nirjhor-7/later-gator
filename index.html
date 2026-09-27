@@ -389,9 +389,31 @@
 
                 <div class="article-box wire-box" id="box-wire">
 
-                    <h2 class="section-title">THE PUBLIC WIRE</h2>
-                    <div class="feed-container" id="feed-container">
+                    <!-- Dual Tab Navigation: Active Wire vs Finally Did It! -->
+                    <div class="wire-tab-bar" role="tablist" aria-label="Wire Sections">
+                        <button type="button" class="wire-nav-tab active" id="tab-wire-avoiding" role="tab" aria-selected="true" aria-controls="feed-container" data-wire-tab="avoiding">
+                            <span class="tab-icon">⏳</span> THE PUBLIC WIRE <span class="tab-sub">(AVOIDING)</span>
+                        </button>
+                        <button type="button" class="wire-nav-tab" id="tab-wire-accomplished" role="tab" aria-selected="false" aria-controls="accomplished-feed-container" data-wire-tab="accomplished">
+                            <span class="tab-icon">🏆</span> FINALLY DID IT! <span class="tab-badge" id="triumphs-count-badge">4</span>
+                        </button>
+                    </div>
+
+                    <!-- Breaking Accomplishment Ticker / Ribbon -->
+                    <div class="triumph-ribbon" id="triumph-ribbon" role="region" aria-label="Latest Accomplishment">
+                        <span class="triumph-ribbon-badge">★ BREAKING TRIUMPH ★</span>
+                        <span class="triumph-ribbon-text" id="triumph-ribbon-text">Alex in Tokyo FINALLY DID "Cleaned the moldy coffee mugs" (Avoided: 18 days • Took: 4 mins)!</span>
+                        <button type="button" class="triumph-ribbon-view-btn" id="triumph-ribbon-view-btn">VIEW »</button>
+                    </div>
+
+                    <!-- Active Avoiding Wire Feed -->
+                    <div class="feed-container" id="feed-container" role="tabpanel" aria-labelledby="tab-wire-avoiding">
                         <div class="loading">Awaiting transmissions...</div>
+                    </div>
+
+                    <!-- Accomplished Affairs Feed (Finally Did It!) -->
+                    <div class="feed-container accomplished-feed-container" id="accomplished-feed-container" role="tabpanel" aria-labelledby="tab-wire-accomplished" style="display: none;">
+                        <div class="loading">Consulting the Bureau of Accomplished Affairs...</div>
                     </div>
                 </div>
 
@@ -580,22 +602,35 @@
         </div>
     </div>
 
-    <!-- Bureau of Procrastination: Confidential Guilt Disposal Unit (Shredder / Furnace) -->
-    <div id="disposal-modal" class="disposal-modal" style="display: none;" role="dialog" aria-modal="true" aria-label="Bureau Confidential Disposal Unit">
+    <!-- Bureau of Procrastination: Confidential Resolution & Redemption Apparatus -->
+    <div id="disposal-modal" class="disposal-modal" style="display: none;" role="dialog" aria-modal="true" aria-label="Bureau Confidential Resolution Unit">
         <div class="disposal-backdrop" id="disposal-backdrop"></div>
         <div class="disposal-dialog">
             <!-- Machine Top Bar / Nameplate -->
             <div class="disposal-nameplate">
                 <div class="nameplate-header">
-                    <span class="nameplate-seal">⚙️ BUREAU OF PROCRASTINATION</span>
-                    <span class="nameplate-model">MODEL D-9400 // DISPOSAL APPARATUS</span>
+                    <span class="nameplate-seal">⚖️ BUREAU OF RESOLUTION & REDEMPTION</span>
+                    <span class="nameplate-model">MODEL R-9500 // FINAL DISPOSITION PROTOCOL</span>
                 </div>
-                <button type="button" class="disposal-close-btn" id="disposal-close-btn" aria-label="Close disposal unit">✕</button>
+                <button type="button" class="disposal-close-btn" id="disposal-close-btn" aria-label="Close resolution unit">✕</button>
             </div>
 
-            <!-- Mode Selector Switch -->
-            <div class="disposal-mode-bar">
-                <span class="mode-label">SELECT DESTRUCTION PROTOCOL:</span>
+            <!-- Primary Protocol Selector: Victory vs Surrender -->
+            <div class="resolution-protocol-bar">
+                <span class="protocol-bar-label">SELECT FINAL DISPOSITION PROTOCOL:</span>
+                <div class="protocol-toggles">
+                    <button type="button" class="resolution-protocol-btn active" id="protocol-victory-btn" data-protocol="victory">
+                        <span class="protocol-icon">🏆</span> I CONQUERED IT! (REDEMPTION)
+                    </button>
+                    <button type="button" class="resolution-protocol-btn" id="protocol-surrender-btn" data-protocol="surrender">
+                        <span class="protocol-icon">🗄️</span> I SURRENDER (DESTROY RECORD)
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sub-Mode Selector for Surrender: Shredder vs Furnace (Hidden when in Victory mode) -->
+            <div class="disposal-mode-bar" id="disposal-mode-bar" style="display: none;">
+                <span class="mode-label">SELECT DESTRUCTION MACHINE:</span>
                 <div class="mode-toggles">
                     <button type="button" class="disposal-mode-btn active" id="mode-shredder-btn" data-mode="shredder">
                         <span class="mode-icon">🗄️</span> MECHANICAL SHREDDER
@@ -606,17 +641,27 @@
                 </div>
             </div>
 
-            <!-- Disposal Apparatus Chamber -->
+            <!-- Resolution Apparatus Chamber -->
             <div class="disposal-chamber" id="disposal-chamber">
                 
-                <!-- The Paper Document / Memo being destroyed -->
+                <!-- The Paper Document / Memo being processed -->
                 <div class="disposal-memo-sheet" id="disposal-memo-sheet">
-                    <div class="memo-sheet-stamp" id="memo-sheet-stamp">TOP SECRET // GUILT DOSSIER</div>
-                    <div class="memo-sheet-title">STATEMENT OF AVOIDED LABOR:</div>
+                    <div class="memo-sheet-stamp" id="memo-sheet-stamp">DOSSIER OF AVOIDED LABOR</div>
+                    <div class="memo-sheet-title" id="memo-sheet-title">STATEMENT OF CHRONIC PROCRASTINATION:</div>
                     <div class="memo-sheet-task" id="disposal-task-text">"FOLDING THE LAUNDRY"</div>
                     <div class="memo-sheet-meta" id="disposal-task-meta">Dispatched: Today • Classification: Avoidable • Guilt: Dire</div>
                     <div class="memo-sheet-hazard-stripe"></div>
                     <div class="memo-char-overlay" id="memo-char-overlay"></div>
+
+                    <!-- Slanted Golden Triumph Stamp (Appears on I Conquered It!) -->
+                    <div class="victory-memo-stamp" id="victory-memo-stamp" style="display: none;">
+                        <div class="victory-stamp-inner">
+                            <span class="victory-stamp-stars">★ ★ ★ ★ ★</span>
+                            <span class="victory-stamp-main">TASK CONQUERED</span>
+                            <span class="victory-stamp-sub">PROOF OF MIRACULOUS RESOLUTION</span>
+                            <span class="victory-stamp-stars">★ ★ ★ ★ ★</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- True Document Slices Container (Cloned ribbon strips that physically tear and devour) -->
@@ -628,8 +673,11 @@
                 <!-- Shredder Sliced Strips Container (Falling paper ribbons) -->
                 <div class="shredder-strips-container" id="shredder-strips-container" style="display: none;"></div>
 
+                <!-- Victory Confetti & Sparkles Container -->
+                <div class="victory-confetti-container" id="victory-confetti-container"></div>
+
                 <!-- Heavy Industrial Shredder Mouth (Dual Roller Cutting Unit) -->
-                <div class="shredder-mouth" id="shredder-mouth">
+                <div class="shredder-mouth" id="shredder-mouth" style="display: none;">
                     <div class="shredder-mouth-topbar">
                         <div class="shredder-pilot-lamp" id="shredder-pilot-lamp">
                             <span class="lamp-bulb"></span>
@@ -647,7 +695,7 @@
                     <div class="shredder-slot-label">▼ 18-BLADE ROTARY CUTTING HEAD • CROSS-CUT CARNAGE ▼</div>
                 </div>
 
-                <!-- Furnace Stage Elements (Active in furnace mode) -->
+                <!-- Furnace Stage Elements (Active in furnace surrender mode) -->
                 <div class="furnace-stage" id="furnace-stage" style="display: none;">
                     <!-- Iron Grate at the base -->
                     <div class="furnace-grate" id="furnace-grate">
@@ -697,6 +745,60 @@
 
             </div>
 
+            <!-- VICTORY CERTIFICATE: Official Bureau Accomplishment Commendation (Reveals after "I Conquered It!") -->
+            <div class="resolution-victory-card" id="resolution-victory-card" style="display: none;">
+                <div class="victory-card-border">
+                    <div class="victory-card-header">
+                        <span class="victory-seal">★ THE BUREAU OF ACCOMPLISHED AFFAIRS ★</span>
+                        <div class="victory-proclamation">OFFICIAL CITATION OF REDEMPTION & MIRACULOUS VICTORY</div>
+                    </div>
+
+                    <div class="victory-card-body">
+                        <div class="victory-operative-line">
+                            OPERATIVE: <strong id="victory-card-author">Anonymous</strong> • TERRITORY: <span id="victory-card-country">Parts Unknown</span>
+                        </div>
+                        <div class="victory-task-statement">
+                            FINALLY CONQUERED: <strong id="victory-card-task">"TASK"</strong>
+                        </div>
+
+                        <!-- Procrastination Calculus Box -->
+                        <div class="victory-calculus-grid">
+                            <div class="calc-col">
+                                <span class="calc-label">CHRONIC TIME AVOIDED:</span>
+                                <span class="calc-val" id="victory-card-avoided">18 days, 4 hours</span>
+                            </div>
+                            <div class="calc-col">
+                                <span class="calc-label">TIME REQUIRED ONCE STARTED:</span>
+                                <span class="calc-val gold" id="victory-card-timetaken">7 minutes</span>
+                            </div>
+                        </div>
+
+                        <!-- Lore / Randomizer Box -->
+                        <div class="victory-lore-box">
+                            <span class="lore-label">RECORD OF EXECUTION:</span>
+                            <p class="lore-text" id="victory-card-lore">"Fuelled by 3 iced coffees, unadulterated panic, and sheer adrenaline."</p>
+                        </div>
+
+                        <!-- Merit Badge -->
+                        <div class="victory-merit-badge" id="victory-card-title">
+                            ★ CERTIFIED REFORMED SLOTH (FIRST CLASS) ★
+                        </div>
+                    </div>
+
+                    <div class="victory-card-footer">
+                        <button type="button" class="btn-heavy victory-feed-btn" id="victory-view-feed-btn">
+                            [ 🏆 VIEW IN FINALLY DID IT! ➔ ]
+                        </button>
+                        <button type="button" class="btn-subtle victory-copy-btn" id="victory-copy-btn">
+                            📋 COPY PROOF OF VICTORY
+                        </button>
+                        <button type="button" class="btn-subtle victory-close-btn" id="victory-dismiss-btn">
+                            ✕ DISMISS
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <!-- Absolution Certificate / Destruction Report (Reveals after destruction) -->
             <div class="disposal-absolution-card" id="disposal-absolution-card" style="display: none;">
                 <div class="absolution-stamp" id="absolution-stamp">
@@ -720,8 +822,18 @@
                 </div>
             </div>
 
-            <!-- Action Trigger Button -->
-            <div class="disposal-controls" id="disposal-controls">
+            <!-- Victory Action Trigger Controls -->
+            <div class="victory-controls" id="victory-controls">
+                <p class="victory-pledge-prompt">
+                    Swear upon this broadsheet that you have conquered this labor. Your triumph will be immortalized in the Bureau of Accomplished Affairs.
+                </p>
+                <button type="button" class="btn-heavy victory-ratify-btn" id="victory-ratify-btn">
+                    <span class="victory-btn-icon">🏆</span> <span class="victory-btn-text">I DID IT! RATIFY MIRACLE</span>
+                </button>
+            </div>
+
+            <!-- Surrender Action Trigger Button -->
+            <div class="disposal-controls" id="disposal-controls" style="display: none;">
                 <button type="button" class="btn-heavy disposal-crank-btn" id="disposal-crank-btn">
                     <span id="crank-btn-icon">⚡</span> <span id="crank-btn-text">CRANK MECHANICAL SHREDDER</span>
                 </button>
