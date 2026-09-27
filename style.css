@@ -6579,6 +6579,7 @@ body.midnight-edition .welcome-lurk-btn {
     flex-direction: column;
     max-height: 90vh;
     overflow-y: auto;
+    overflow-x: hidden;
     animation: modal-pop 0.18s cubic-bezier(0.18, 0.89, 0.32, 1.28);
 }
 
@@ -7727,72 +7728,95 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 /* ──────────────────────────────────────────────────────────────────
-   BUREAU RESOLUTION & REDEMPTION APPARATUS (VICTORY & SURRENDER)
+   THE REDEMPTION WIRE & DISPATCH CHAMBER (REDEMPTION & SURRENDER)
    ────────────────────────────────────────────────────────────────── */
 
-/* Wire Feed Tab Bar */
-.wire-tab-bar {
+/* Wire Box Header & Broadsheet Tab Switcher */
+.wire-box-header {
     display: flex;
-    align-items: stretch;
-    border-bottom: 2px solid var(--ink, #111);
-    background: var(--bg-card, #FFFDF8);
+    flex-direction: column;
+    width: 100%;
     margin-bottom: 12px;
-    gap: 4px;
+}
+
+.wire-section-title {
+    margin: 0 0 10px 0;
+}
+
+.wire-tab-bar {
+    display: flex !important;
+    flex-direction: row !important; /* STRICTLY HORIZONTAL on ALL screen sizes */
+    align-items: stretch;
+    border: 2px solid var(--ink, #111);
+    background: var(--bg-alt, #F4EEDF);
+    margin: 0 0 12px 0;
+    padding: 0;
+    gap: 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .wire-nav-tab {
-    flex: 1;
-    display: flex;
+    flex: 1 1 50%;
+    min-width: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 10px 14px;
-    background: var(--bg-alt, #F4EEDF);
+    padding: 9px 8px;
+    background: transparent;
     color: var(--ink-light, #555);
-    border: 2px solid var(--ink, #111);
-    border-bottom: none;
+    border: none;
+    border-right: 2px solid var(--ink, #111);
     font-family: 'Space Mono', monospace;
-    font-size: 0.82rem;
+    font-size: clamp(0.68rem, 2.4vw, 0.78rem);
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
-    position: relative;
-    top: 2px;
+    transition: background 0.15s ease, color 0.15s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.wire-nav-tab:last-child {
+    border-right: none;
+}
+
+.wire-nav-tab .tab-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.wire-nav-tab .tab-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wire-nav-tab .tab-badge {
+    background: #E5A93C;
+    color: #111;
+    font-size: 0.62rem;
+    font-weight: 900;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid #111;
+    margin-left: 2px;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .wire-nav-tab:hover {
-    background: var(--bg-hover, #ECE4D0);
+    background: rgba(0, 0, 0, 0.04);
     color: var(--ink, #111);
 }
 
 .wire-nav-tab.active {
     background: var(--ink, #111);
     color: var(--paper, #FAF6EE);
-    border-color: var(--ink, #111);
-    box-shadow: none;
-    z-index: 2;
-}
-
-.wire-nav-tab .tab-icon {
-    font-size: 1rem;
-}
-
-.wire-nav-tab .tab-sub {
-    font-size: 0.68rem;
-    opacity: 0.8;
-}
-
-.wire-nav-tab .tab-badge {
-    background: #E5A93C;
-    color: #111;
-    font-size: 0.65rem;
-    font-weight: 900;
-    padding: 1px 6px;
-    border-radius: 999px;
-    border: 1px solid #111;
-    margin-left: 4px;
+    font-weight: 800;
 }
 
 .wire-nav-tab.active .tab-badge {
@@ -7800,26 +7824,30 @@ body.sepia-edition .btn-shred-guilt:hover {
     color: #111;
 }
 
-/* Breaking Accomplishment Ticker Ribbon */
+/* Breaking Redemption Ticker Ribbon */
 .triumph-ribbon {
     display: flex;
+    flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
-    padding: 8px 12px;
-    margin-bottom: 14px;
-    background: linear-gradient(90deg, #FFF9E6 0%, #FFF3CC 100%);
+    gap: 8px;
+    padding: 6px 10px;
+    margin-bottom: 12px;
+    background: #FFF9E6;
     border: 2px solid #E5A93C;
-    border-left: 6px solid #D48806;
+    border-left: 5px solid #D48806;
     box-shadow: 2px 2px 0 rgba(229, 169, 60, 0.35);
     font-family: 'Space Mono', monospace;
-    font-size: 0.76rem;
+    font-size: 0.72rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
     animation: ribbon-glow 3s ease-in-out infinite alternate;
 }
 
 @keyframes ribbon-glow {
     0% { border-color: #E5A93C; }
-    100% { border-color: #FFC043; box-shadow: 3px 3px 0 rgba(229, 169, 60, 0.55); }
+    100% { border-color: #FFC043; box-shadow: 2.5px 2.5px 0 rgba(229, 169, 60, 0.5); }
 }
 
 .triumph-ribbon-badge {
@@ -7827,20 +7855,43 @@ body.sepia-edition .btn-shred-guilt:hover {
     color: #FFDF79;
     font-size: 0.62rem;
     font-weight: 900;
-    letter-spacing: 0.08em;
-    padding: 3px 6px;
+    letter-spacing: 0.06em;
+    padding: 2px 6px;
     border-radius: 2px;
     white-space: nowrap;
+    flex-shrink: 0;
     text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+}
+
+.triumph-ribbon-badge-desktop {
+    display: inline;
+}
+
+.triumph-ribbon-badge-mobile {
+    display: none;
+}
+
+@media (max-width: 640px) {
+    .triumph-ribbon-badge-desktop {
+        display: none;
+    }
+    .triumph-ribbon-badge-mobile {
+        display: inline;
+    }
 }
 
 .triumph-ribbon-text {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
     color: #111;
     font-weight: 700;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 0.72rem;
+    line-height: 1.25;
 }
 
 .triumph-ribbon-view-btn {
@@ -7848,11 +7899,13 @@ body.sepia-edition .btn-shred-guilt:hover {
     color: #FFF;
     border: 1px solid #111;
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: 0.65rem;
     font-weight: 800;
     padding: 3px 8px;
     cursor: pointer;
     text-transform: uppercase;
+    flex-shrink: 0;
+    white-space: nowrap;
     transition: background 0.15s ease, transform 0.1s ease;
 }
 
@@ -7862,48 +7915,66 @@ body.sepia-edition .btn-shred-guilt:hover {
     transform: translateY(-1px);
 }
 
-/* Feed Resolve Button on user's own wire posts */
-.feed-resolve-btn, .feed-shred-btn {
-    border: 1.5px solid var(--ink, #111);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    font-weight: 700;
-    background: #FFF8E1;
-    color: #6B4E00;
-    padding: 3px 8px;
-    cursor: pointer;
-    box-shadow: 1.5px 1.5px 0 var(--ink, #111);
-    transition: all 0.15s cubic-bezier(0.2, 0, 0, 1);
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    border-radius: 2px;
+/* User's Own Wire Post: Dedicated Redemption Action Bar */
+.feed-own-action-bar {
+    width: 100%;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
 }
 
-.feed-resolve-btn:hover, .feed-shred-btn:hover {
-    background: #E5A93C;
+.feed-ididit-btn, .feed-resolve-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #FFE899 0%, #F5B84A 100%);
     color: #111;
+    border: 2px solid var(--ink, #111);
+    box-shadow: 2px 2px 0 var(--ink, #111);
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(0.68rem, 2.4vw, 0.78rem);
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    cursor: pointer;
+    white-space: nowrap;
+    box-sizing: border-box;
+    transition: all 0.15s ease;
+}
+
+.feed-ididit-btn:hover, .feed-resolve-btn:hover {
+    background: linear-gradient(135deg, #FFF0B3 0%, #FFC759 100%);
     transform: translateY(-1px);
-    box-shadow: 2.5px 2.5px 0 var(--ink, #111);
+    box-shadow: 3px 3px 0 var(--ink, #111);
 }
 
-.feed-resolve-btn:active, .feed-shred-btn:active {
+.feed-ididit-btn:active, .feed-resolve-btn:active {
     transform: translate(1px, 1px);
-    box-shadow: 0 0 0 var(--ink, #111);
+    box-shadow: 1px 1px 0 var(--ink, #111);
 }
 
-/* Accomplished Feed Container & Cards */
+/* Redemption Feed Container & Cards */
 .accomplished-feed-container {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
+    padding-bottom: 80px; /* Clearance for mobile bottom FAB */
+    box-sizing: border-box;
 }
 
 .accomplished-item {
     background: #FFFDF8;
     border: 2px solid var(--ink, #111);
     box-shadow: 3px 3px 0 var(--ink, #111);
-    padding: 14px 16px;
+    padding: 12px 14px;
     position: relative;
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow: hidden;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -7914,107 +7985,137 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .accomplished-item.is-new-triumph {
     border-color: #D48806;
-    background: #FFFFF2;
+    background: #FFFFF4;
     animation: new-triumph-pulse 2s ease-in-out infinite alternate;
-}
-
-@keyframes new-triumph-pulse {
-    0% { box-shadow: 3px 3px 0 #D48806; }
-    100% { box-shadow: 5px 5px 0 #E5A93C; }
 }
 
 .accomplished-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 8px;
     margin-bottom: 6px;
     border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
-    padding-bottom: 5px;
+    padding-bottom: 4px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .accomplished-tag {
     font-family: 'Space Mono', monospace;
-    font-size: 0.64rem;
+    font-size: clamp(0.58rem, 2vw, 0.65rem);
     font-weight: 800;
     color: #8C5800;
     background: #FFF2CC;
     border: 1px solid #E5A93C;
     padding: 2px 6px;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
 .accomplished-time {
     font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
+    font-size: clamp(0.6rem, 2vw, 0.66rem);
     color: #777;
+    white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.accomplished-operative-line {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    color: #333;
-    margin-bottom: 4px;
-}
-
-.accomplished-operative-line strong {
-    color: #111;
-}
-
-.accomplished-task-headline {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.18rem;
+.accomplished-headline {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(0.98rem, 3.2vw, 1.20rem);
     font-weight: 900;
     color: #111;
     line-height: 1.25;
-    margin: 6px 0 8px 0;
+    margin: 4px 0 6px 0;
+    word-break: break-word;
 }
 
-.accomplished-calculus-pill {
-    display: inline-flex;
+.accomplished-task-quote {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: clamp(0.88rem, 2.6vw, 1.02rem);
+    font-style: italic;
+    color: #333;
+    line-height: 1.3;
+    margin-bottom: 8px;
+    border-left: 2.5px solid var(--ink, #111);
+    padding-left: 8px;
+    word-break: break-word;
+}
+
+.accomplished-calculus-bar {
+    display: flex;
     align-items: center;
     gap: 8px;
     background: #F4EEDF;
     border: 1px solid #D5C9B3;
     padding: 4px 8px;
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: clamp(0.62rem, 2vw, 0.70rem);
     color: #222;
     margin-bottom: 8px;
     flex-wrap: wrap;
+    box-sizing: border-box;
 }
 
-.accomplished-calculus-pill .calc-highlight {
-    font-weight: 800;
+.accomplished-calculus-bar .calc-metric {
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.accomplished-calculus-bar .calc-lbl {
+    color: #666;
+    font-weight: 700;
+}
+
+.accomplished-calculus-bar .calc-val {
     color: #B35900;
+    font-weight: 800;
+}
+
+.accomplished-calculus-bar .calc-sep {
+    color: #999;
+    flex-shrink: 0;
 }
 
 .accomplished-lore {
     font-style: italic;
-    font-size: 0.82rem;
+    font-size: clamp(0.72rem, 2.2vw, 0.82rem);
     color: #4A423B;
     line-height: 1.35;
     border-left: 3px solid #E5A93C;
     padding-left: 8px;
-    margin: 6px 0 10px 0;
-    background: rgba(229, 169, 60, 0.04);
+    margin: 4px 0 8px 0;
+    background: rgba(229, 169, 60, 0.05);
+    word-break: break-word;
+}
+
+.accomplished-merit-row {
+    margin-bottom: 8px;
 }
 
 .accomplished-merit {
     display: inline-block;
     font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 800;
+    font-size: clamp(0.58rem, 2vw, 0.65rem);
+    font-weight: 900;
     color: #111;
     background: #FFDF79;
     border: 1.5px solid #111;
-    padding: 2px 7px;
+    padding: 2px 6px;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 10px;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
 }
 
-/* Triumphant Community Reactions */
 .accomplished-reactions {
     display: flex;
     align-items: center;
@@ -8022,34 +8123,41 @@ body.sepia-edition .btn-shred-guilt:hover {
     flex-wrap: wrap;
     border-top: 1px dashed rgba(0, 0, 0, 0.15);
     padding-top: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .triumph-react-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
     background: #FFF;
     border: 1.5px solid var(--ink, #111);
     font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
+    font-size: clamp(0.64rem, 2.1vw, 0.72rem);
     font-weight: 700;
-    padding: 4px 9px;
+    padding: 4px 8px;
+    min-height: 28px;
     color: #111;
     cursor: pointer;
-    box-shadow: 2px 2px 0 var(--ink, #111);
+    box-shadow: 1.5px 1.5px 0 var(--ink, #111);
     transition: all 0.12s ease;
     border-radius: 2px;
+    white-space: nowrap;
+    box-sizing: border-box;
+    flex: 1 1 auto;
 }
 
 .triumph-react-btn:hover {
     background: #FFF9E6;
     transform: translateY(-1px);
-    box-shadow: 3px 3px 0 var(--ink, #111);
+    box-shadow: 2.5px 2.5px 0 var(--ink, #111);
 }
 
 .triumph-react-btn:active {
     transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 var(--ink, #111);
+    box-shadow: 0.5px 0.5px 0 var(--ink, #111);
 }
 
 .triumph-react-btn.reacted {
@@ -8067,35 +8175,42 @@ body.sepia-edition .btn-shred-guilt:hover {
 .resolution-protocol-bar {
     display: flex;
     flex-direction: column;
-    padding: 10px 18px 8px 18px;
+    padding: 10px 16px 8px 16px;
     background: #F2EDE2;
     border-bottom: 2px solid var(--ink, #111);
     gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .protocol-bar-label {
     font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.08em;
     color: #666;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .protocol-toggles {
     display: flex;
+    flex-direction: row;
     gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .resolution-protocol-btn {
-    flex: 1;
-    display: flex;
+    flex: 1 1 50%;
+    min-width: 0;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 7px;
-    padding: 10px 12px;
+    gap: 6px;
+    padding: 8px 6px;
     font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
+    font-size: clamp(0.64rem, 2.4vw, 0.78rem);
     font-weight: 800;
     text-transform: uppercase;
     border: 2px solid var(--ink, #111);
@@ -8104,6 +8219,14 @@ body.sepia-edition .btn-shred-guilt:hover {
     cursor: pointer;
     box-shadow: 2px 2px 0 var(--ink, #111);
     transition: all 0.15s ease;
+    white-space: nowrap;
+    box-sizing: border-box;
+}
+
+.resolution-protocol-btn .protocol-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .resolution-protocol-btn:hover {
@@ -8220,57 +8343,63 @@ body.sepia-edition .btn-shred-guilt:hover {
     }
 }
 
-/* Victory Controls Bar */
+/* Ratify Controls Bar */
 .victory-controls {
-    padding: 16px 20px;
+    padding: 12px 16px;
     background: #FFFDF8;
     border-top: 2px solid var(--ink, #111);
     text-align: center;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .victory-pledge-prompt {
     font-family: 'Space Mono', monospace;
-    font-size: 0.74rem;
+    font-size: clamp(0.66rem, 2vw, 0.72rem);
     color: #555;
-    margin: 0 0 12px 0;
+    margin: 0 0 10px 0;
     line-height: 1.35;
 }
 
 .victory-ratify-btn {
     width: 100%;
-    padding: 14px 20px;
+    padding: 12px 14px;
     font-family: 'Space Mono', monospace;
-    font-size: 0.95rem;
+    font-size: clamp(0.78rem, 2.8vw, 0.92rem);
     font-weight: 900;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     background: linear-gradient(135deg, #FFDF79 0%, #E5A93C 100%);
     color: #111;
-    border: 2.5px solid #111;
-    box-shadow: 4px 4px 0 #111;
+    border: 2px solid #111;
+    box-shadow: 3px 3px 0 #111;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
+    white-space: nowrap;
+    box-sizing: border-box;
     transition: all 0.15s ease;
 }
 
 .victory-ratify-btn:hover {
     background: linear-gradient(135deg, #FFE899 0%, #F5B84A 100%);
     transform: translate(-1px, -1px);
-    box-shadow: 5px 5px 0 #111;
+    box-shadow: 4px 4px 0 #111;
 }
 
 .victory-ratify-btn:active {
     transform: translate(2px, 2px);
-    box-shadow: 2px 2px 0 #111;
+    box-shadow: 1px 1px 0 #111;
 }
 
 /* Victory Certificate Card */
 .resolution-victory-card {
-    padding: 10px 14px;
+    padding: 8px 12px;
     background: #FFFDF8;
+    box-sizing: border-box;
+    width: 100%;
     animation: victory-card-reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
@@ -8282,49 +8411,56 @@ body.sepia-edition .btn-shred-guilt:hover {
 .victory-card-border {
     border: 3px double #C48208;
     background: #FFFFF7;
-    padding: 14px 16px;
-    box-shadow: 0 0 20px rgba(229, 169, 60, 0.2);
+    padding: 12px 14px;
+    box-shadow: 0 0 16px rgba(229, 169, 60, 0.2);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .victory-card-header {
     text-align: center;
     border-bottom: 2px solid #C48208;
-    padding-bottom: 8px;
+    padding-bottom: 6px;
 }
 
 .victory-seal {
     display: block;
     font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
+    font-size: clamp(0.62rem, 2vw, 0.70rem);
     font-weight: 800;
     color: #8C5800;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.10em;
     text-transform: uppercase;
+    white-space: nowrap;
     margin-bottom: 2px;
 }
 
 .victory-proclamation {
     font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
+    font-size: clamp(0.95rem, 3.2vw, 1.15rem);
     font-weight: 900;
     color: #111;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    white-space: nowrap;
 }
 
 .victory-card-body {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 6px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .victory-operative-line {
     font-family: 'Space Mono', monospace;
-    font-size: 0.76rem;
+    font-size: clamp(0.68rem, 2.2vw, 0.76rem);
     color: #444;
+    word-break: break-word;
 }
 
 .victory-operative-line strong {
@@ -8333,41 +8469,46 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .victory-task-statement {
     font-family: 'Playfair Display', serif;
-    font-size: 1.14rem;
+    font-size: clamp(0.95rem, 3vw, 1.12rem);
     font-weight: 900;
     color: #111;
     line-height: 1.25;
+    word-break: break-word;
 }
 
 .victory-calculus-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 6px;
     background: #F9F5EC;
     border: 1.5px solid #D5C9B3;
-    padding: 8px 10px;
+    padding: 6px 8px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .calc-col {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
 }
 
 .calc-label {
     font-family: 'Space Mono', monospace;
-    font-size: 0.62rem;
+    font-size: clamp(0.55rem, 1.8vw, 0.60rem);
     font-weight: 800;
     color: #777;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .calc-val {
     font-family: 'Space Mono', monospace;
-    font-size: 0.88rem;
+    font-size: clamp(0.76rem, 2.4vw, 0.86rem);
     font-weight: 800;
     color: #222;
+    white-space: nowrap;
 }
 
 .calc-val.gold {
@@ -8377,62 +8518,75 @@ body.sepia-edition .btn-shred-guilt:hover {
 .victory-lore-box {
     border-left: 3px solid #E5A93C;
     background: rgba(229, 169, 60, 0.06);
-    padding: 8px 12px;
+    padding: 6px 10px;
+    box-sizing: border-box;
 }
 
 .lore-label {
     display: block;
     font-family: 'Space Mono', monospace;
-    font-size: 0.62rem;
+    font-size: clamp(0.56rem, 1.8vw, 0.60rem);
     font-weight: 800;
     color: #8C5800;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
+    white-space: nowrap;
     margin-bottom: 2px;
 }
 
 .lore-text {
     font-style: italic;
-    font-size: 0.88rem;
+    font-size: clamp(0.76rem, 2.4vw, 0.84rem);
     color: #333;
-    line-height: 1.35;
+    line-height: 1.3;
     margin: 0;
+    word-break: break-word;
 }
 
 .victory-merit-badge {
     text-align: center;
     font-family: 'Space Mono', monospace;
-    font-size: 0.74rem;
+    font-size: clamp(0.58rem, 2vw, 0.68rem);
     font-weight: 900;
     color: #111;
     background: #FFDF79;
-    border: 2px solid #111;
-    padding: 5px 10px;
-    box-shadow: 2px 2px 0 #111;
-    letter-spacing: 0.08em;
+    border: 1.5px solid #111;
+    padding: 5px 8px;
+    box-shadow: 1.5px 1.5px 0 #111;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    line-height: 1.3;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
 }
 
 .victory-card-footer {
     display: flex;
+    flex-direction: column;
     gap: 8px;
     border-top: 1px dashed rgba(0, 0, 0, 0.2);
     padding-top: 10px;
-    flex-wrap: wrap;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .victory-feed-btn {
-    flex: 2;
-    padding: 10px 14px;
+    width: 100%;
+    padding: 10px 12px;
     background: #111;
     color: #FFDF79;
     border: 2px solid #111;
     font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
+    font-size: clamp(0.70rem, 2.2vw, 0.78rem);
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 3px 3px 0 rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
     transition: all 0.15s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
 }
 
 .victory-feed-btn:hover {
@@ -8441,19 +8595,30 @@ body.sepia-edition .btn-shred-guilt:hover {
     transform: translateY(-1px);
 }
 
+.victory-footer-secondary-row {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
 .victory-copy-btn, .victory-close-btn {
-    flex: 1;
-    padding: 10px 12px;
+    flex: 1 1 50%;
+    min-width: 0;
+    padding: 8px 8px;
     background: #FFFDF8;
     color: #111;
     border: 1.5px solid var(--ink, #111);
     font-family: 'Space Mono', monospace;
-    font-size: 0.74rem;
+    font-size: clamp(0.66rem, 2vw, 0.72rem);
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 2px 2px 0 var(--ink, #111);
+    box-shadow: 1.5px 1.5px 0 var(--ink, #111);
     transition: all 0.15s ease;
     white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
 }
 
 .victory-copy-btn:hover, .victory-close-btn:hover {
@@ -8474,48 +8639,56 @@ body.sepia-edition .btn-shred-guilt:hover {
     75% { transform: translate(-1px, 1px) rotate(0deg); }
 }
 
-@media (max-width: 640px) {
-    .wire-tab-bar {
-        flex-direction: column;
-        gap: 2px;
+@media (max-width: 480px) {
+    .disposal-modal {
+        padding: 10px;
     }
-    .wire-nav-tab {
-        top: 0;
-        border-bottom: 2px solid var(--ink, #111);
+    .disposal-dialog {
+        padding: 14px 12px 16px;
+        box-shadow: 5px 5px 0 var(--ink);
     }
-    .victory-calculus-grid {
-        grid-template-columns: 1fr;
+    body.midnight-edition .disposal-dialog {
+        box-shadow: 5px 5px 0 #060504;
     }
-    .victory-card-footer {
-        flex-direction: column;
+    body.sepia-edition .disposal-dialog {
+        box-shadow: 5px 5px 0 #21150A;
     }
-    .victory-feed-btn, .victory-copy-btn, .victory-close-btn {
-        width: 100%;
-        flex: none;
+    .victory-feed-btn {
+        padding: 8px 10px;
+        font-size: 0.70rem;
+    }
+    .victory-copy-btn, .victory-close-btn {
+        padding: 7px 6px;
+        font-size: 0.64rem;
     }
 }
 
-/* Theme Overrides for Resolution & Accomplished Affairs: Midnight Edition */
+/* Feed clearance on mobile wire view so floating button never covers bottom dispatches */
+body.mobile-view-wire .feed-container,
+body.mobile-view-wire .accomplished-feed-container,
+body.mobile-view-wire #box-dispatch {
+    padding-bottom: 95px !important;
+}
+
+/* Theme Overrides for Redemption & Accomplished Affairs: Midnight Edition */
 body.midnight-edition .wire-tab-bar {
-    background: #141210;
-    border-bottom-color: #EFE3D3;
-}
-
-body.midnight-edition .wire-nav-tab {
-    background: #231F1B;
-    color: #A39686;
+    background: #1C1917;
     border-color: #EFE3D3;
 }
 
+body.midnight-edition .wire-nav-tab {
+    border-right-color: #EFE3D3;
+    color: #A39686;
+}
+
 body.midnight-edition .wire-nav-tab:hover {
-    background: #332D28;
+    background: #2E2822;
     color: #EFE3D3;
 }
 
 body.midnight-edition .wire-nav-tab.active {
     background: #EFE3D3;
     color: #141210;
-    border-color: #EFE3D3;
 }
 
 body.midnight-edition .triumph-ribbon {
@@ -8534,6 +8707,15 @@ body.midnight-edition .triumph-ribbon-badge {
     color: #141210;
 }
 
+body.midnight-edition .feed-own-action-bar {
+    border-top-color: rgba(239, 227, 211, 0.2);
+}
+
+body.midnight-edition .feed-ididit-btn {
+    border-color: #EFE3D3;
+    box-shadow: 2px 2px 0 #EFE3D3;
+}
+
 body.midnight-edition .accomplished-item {
     background: #1C1916;
     border-color: #EFE3D3;
@@ -8541,26 +8723,31 @@ body.midnight-edition .accomplished-item {
     color: #EFE3D3;
 }
 
-body.midnight-edition .accomplished-task-headline {
+body.midnight-edition .accomplished-headline {
     color: #FFF;
 }
 
-body.midnight-edition .accomplished-operative-line {
-    color: #C2B6A6;
+body.midnight-edition .accomplished-task-quote {
+    color: #EFE3D3;
+    border-left-color: #FFDF79;
 }
 
-body.midnight-edition .accomplished-operative-line strong {
+body.midnight-edition .accomplished-calculus-bar {
+    background: #26211C;
+    border-color: #4A4035;
     color: #EFE3D3;
 }
 
-body.midnight-edition .accomplished-calculus-pill {
-    background: #2B2520;
-    border-color: #4A4038;
-    color: #DDD;
+body.midnight-edition .accomplished-calculus-bar .calc-lbl {
+    color: #A39686;
+}
+
+body.midnight-edition .accomplished-calculus-bar .calc-val {
+    color: #FFC043;
 }
 
 body.midnight-edition .accomplished-lore {
-    color: #C2B6A6;
+    color: #D6CBC0;
     background: rgba(229, 169, 60, 0.08);
 }
 

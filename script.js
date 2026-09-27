@@ -520,12 +520,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
                         ✂ CLIP
                     </button>
-                    ${isMyTaskId(task.id) ? `
-                    <button type="button" class="feed-resolve-btn feed-shred-btn" data-task-id="${task.id}" title="Bureau Resolution Protocol: Did you conquer it or surrender?" aria-label="Resolve Dispatch">
-                        [ ⚖️ RESOLVE ]
-                    </button>` : ''}
                 </div>
             </div>
+            ${isMyTaskId(task.id) ? `
+            <div class="feed-own-action-bar">
+                <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${task.id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
+                    <span class="btn-trophy">🏆</span> <span class="btn-text">I DID IT! — CLAIM REDEMPTION</span>
+                </button>
+            </div>` : ''}
         </div>`;
     };
     window.buildFeedItemHtml = buildFeedItemHtml;
@@ -2348,7 +2350,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 allKnownTasks.delete(String(item.taskId));
             }
 
-            myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(item.taskId));
+            const currentIds = (Array.isArray(window.myTaskIds) && window.myTaskIds.length > 0) ? window.myTaskIds : myTaskIds;
+            myTaskIds = currentIds.filter(id => String(id) !== String(targetId) && String(id) !== String(item.taskId));
             window.myTaskIds = myTaskIds;
             try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
 
@@ -2653,7 +2656,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     allKnownTasks.delete(String(currentResolutionItem.taskId));
                 }
 
-                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentResolutionItem.taskId));
+                const currentIds = (Array.isArray(window.myTaskIds) && window.myTaskIds.length > 0) ? window.myTaskIds : myTaskIds;
+                myTaskIds = currentIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentResolutionItem.taskId));
                 window.myTaskIds = myTaskIds;
                 try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
 
@@ -2754,8 +2758,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const country = escapeHtml(triumph.country || 'Unknown');
         const text = escapeHtml(triumph.text || '');
         const avoided = escapeHtml(triumph.avoided_duration || '');
-        const timeTaken = escapeHtml(triumph.time_taken || '');
-        triumphRibbonText.textContent = `${author} in ${country} FINALLY DID "${text}" (Avoided: ${avoided} • Took: ${timeTaken})!`;
+        const ribbonBadge = document.getElementById('triumph-ribbon-badge');
+        if (ribbonBadge && !ribbonBadge.querySelector('.triumph-ribbon-badge-desktop')) {
+            ribbonBadge.textContent = window.innerWidth <= 640 ? '★ REDEEMED ★' : '★ REDEMPTION WIRE ★';
+        }
+        triumphRibbonText.textContent = `${author} in ${country} FINALLY DID IT: "${text}" (Avoided: ${avoided})`;
         triumphRibbon.style.display = 'flex';
     };
 
@@ -2780,23 +2787,25 @@ document.addEventListener('DOMContentLoaded', () => {
         return `
         <article class="accomplished-item ${isNew ? 'is-new-triumph' : ''}" data-triumph-id="${id}">
             <div class="accomplished-header">
-                <span class="accomplished-tag">★ FINALLY CONQUERED ★</span>
+                <span class="accomplished-tag">★ REDEMPTION DISPATCH ★</span>
                 <span class="accomplished-time">${triumph.created_at ? timeAgo(triumph.created_at) : 'Just now'}</span>
             </div>
-            <div class="accomplished-operative-line">
-                Operative: <strong>${author}</strong> in <strong>${country}</strong>
+            <h3 class="accomplished-headline">
+                <strong class="author-name">${author}</strong> IN <strong class="author-country">${country}</strong> FINALLY DID IT!
+            </h3>
+            <div class="accomplished-task-quote">
+                "${taskText}"
             </div>
-            <h3 class="accomplished-task-headline">"${taskText}"</h3>
-            <div class="accomplished-calculus-pill">
-                <span>Avoided for: <span class="calc-highlight">${avoided}</span></span>
-                <span>•</span>
-                <span>Time required: <span class="calc-highlight">${timeTaken}</span></span>
+            <div class="accomplished-calculus-bar">
+                <span class="calc-metric"><span class="calc-lbl">AVOIDED:</span> <strong class="calc-val">${avoided}</strong></span>
+                <span class="calc-sep">•</span>
+                <span class="calc-metric"><span class="calc-lbl">TOOK:</span> <strong class="calc-val">${timeTaken}</strong></span>
             </div>
             <div class="accomplished-lore">
                 "${lore}"
             </div>
-            <div class="accomplished-merit">
-                ${merit}
+            <div class="accomplished-merit-row">
+                <span class="accomplished-merit">★ ${merit} ★</span>
             </div>
             <div class="accomplished-reactions" data-triumph-id="${id}">
                 <button type="button" class="triumph-react-btn ${hasPraise ? 'reacted' : ''}" data-type="praise" title="Applaud this miraculous victory">
@@ -4839,18 +4848,18 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (feedContainer) {
                         myTaskIds.forEach(id => {
                             const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
-                            if (item && !item.querySelector('.feed-resolve-btn, .feed-shred-btn')) {
-                                const rx = item.querySelector('.feed-reactions');
-                                if (rx) {
-                                    const btn = document.createElement('button');
-                                    btn.type = 'button';
-                                    btn.className = 'feed-resolve-btn feed-shred-btn';
-                                    btn.setAttribute('data-task-id', String(id));
-                                    btn.title = 'Bureau Resolution Protocol: Did you conquer it or surrender?';
-                                    btn.setAttribute('aria-label', 'Resolve Dispatch');
-                                    btn.innerHTML = '[ ⚖️ RESOLVE ]';
-                                    rx.appendChild(btn);
+                            if (item && !item.querySelector('.feed-resolve-btn, .feed-ididit-btn')) {
+                                let actionBar = item.querySelector('.feed-own-action-bar');
+                                if (!actionBar) {
+                                    actionBar = document.createElement('div');
+                                    actionBar.className = 'feed-own-action-bar';
+                                    item.appendChild(actionBar);
                                 }
+                                actionBar.innerHTML = `
+                                    <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
+                                        <span class="btn-trophy">🏆</span> <span class="btn-text">I DID IT! — CLAIM REDEMPTION</span>
+                                    </button>
+                                `;
                             }
                         });
                     }

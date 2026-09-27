@@ -389,20 +389,26 @@
 
                 <div class="article-box wire-box" id="box-wire">
 
-                    <!-- Dual Tab Navigation: Active Wire vs Finally Did It! -->
-                    <div class="wire-tab-bar" role="tablist" aria-label="Wire Sections">
-                        <button type="button" class="wire-nav-tab active" id="tab-wire-avoiding" role="tab" aria-selected="true" aria-controls="feed-container" data-wire-tab="avoiding">
-                            <span class="tab-icon">⏳</span> THE PUBLIC WIRE <span class="tab-sub">(AVOIDING)</span>
-                        </button>
-                        <button type="button" class="wire-nav-tab" id="tab-wire-accomplished" role="tab" aria-selected="false" aria-controls="accomplished-feed-container" data-wire-tab="accomplished">
-                            <span class="tab-icon">🏆</span> FINALLY DID IT! <span class="tab-badge" id="triumphs-count-badge">4</span>
-                        </button>
+                    <!-- Section Masthead with Section Title & Dual Feed Switcher -->
+                    <div class="wire-box-header">
+                        <h2 class="section-title wire-section-title">THE PUBLIC WIRE</h2>
+                        <div class="wire-tab-bar" role="tablist" aria-label="Wire Feeds">
+                            <button type="button" class="wire-nav-tab active" id="tab-wire-avoiding" role="tab" aria-selected="true" aria-controls="feed-container" data-wire-tab="avoiding">
+                                <span class="tab-icon">⏳</span><span class="tab-label">AVOIDING</span>
+                            </button>
+                            <button type="button" class="wire-nav-tab" id="tab-wire-accomplished" role="tab" aria-selected="false" aria-controls="accomplished-feed-container" data-wire-tab="accomplished">
+                                <span class="tab-icon">🏆</span><span class="tab-label">REDEEMED</span><span class="tab-badge" id="triumphs-count-badge">0</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <!-- Breaking Accomplishment Ticker / Ribbon -->
-                    <div class="triumph-ribbon" id="triumph-ribbon" role="region" aria-label="Latest Accomplishment">
-                        <span class="triumph-ribbon-badge">★ BREAKING TRIUMPH ★</span>
-                        <span class="triumph-ribbon-text" id="triumph-ribbon-text">Alex in Tokyo FINALLY DID "Cleaned the moldy coffee mugs" (Avoided: 18 days • Took: 4 mins)!</span>
+                    <!-- Breaking Redemption Ribbon -->
+                    <div class="triumph-ribbon" id="triumph-ribbon" role="region" aria-label="Latest Redemption">
+                        <span class="triumph-ribbon-badge" id="triumph-ribbon-badge">
+                            <span class="triumph-ribbon-badge-desktop">★ REDEMPTION WIRE ★</span>
+                            <span class="triumph-ribbon-badge-mobile">★ REDEEMED ★</span>
+                        </span>
+                        <span class="triumph-ribbon-text" id="triumph-ribbon-text">Alex in Tokyo FINALLY DID IT: "Cleaned the moldy coffee mugs" (Avoided: 18 days)</span>
                         <button type="button" class="triumph-ribbon-view-btn" id="triumph-ribbon-view-btn">VIEW »</button>
                     </div>
 
@@ -411,9 +417,9 @@
                         <div class="loading">Awaiting transmissions...</div>
                     </div>
 
-                    <!-- Accomplished Affairs Feed (Finally Did It!) -->
+                    <!-- Redemption Wire Feed (Tasks Conquered At Last) -->
                     <div class="feed-container accomplished-feed-container" id="accomplished-feed-container" role="tabpanel" aria-labelledby="tab-wire-accomplished" style="display: none;">
-                        <div class="loading">Consulting the Bureau of Accomplished Affairs...</div>
+                        <div class="loading">Consulting the Redemption Wire archives...</div>
                     </div>
                 </div>
 
@@ -609,21 +615,21 @@
             <!-- Machine Top Bar / Nameplate -->
             <div class="disposal-nameplate">
                 <div class="nameplate-header">
-                    <span class="nameplate-seal">⚖️ BUREAU OF RESOLUTION & REDEMPTION</span>
-                    <span class="nameplate-model">MODEL R-9500 // FINAL DISPOSITION PROTOCOL</span>
+                    <span class="nameplate-seal">⚖️ THE REDEMPTION DESK</span>
+                    <span class="nameplate-model">OFFICIAL RECORD DISPOSITION PROTOCOL</span>
                 </div>
                 <button type="button" class="disposal-close-btn" id="disposal-close-btn" aria-label="Close resolution unit">✕</button>
             </div>
 
             <!-- Primary Protocol Selector: Victory vs Surrender -->
             <div class="resolution-protocol-bar">
-                <span class="protocol-bar-label">SELECT FINAL DISPOSITION PROTOCOL:</span>
+                <span class="protocol-bar-label">SELECT RECORD PROTOCOL:</span>
                 <div class="protocol-toggles">
                     <button type="button" class="resolution-protocol-btn active" id="protocol-victory-btn" data-protocol="victory">
-                        <span class="protocol-icon">🏆</span> I CONQUERED IT! (REDEMPTION)
+                        <span class="protocol-icon">🏆</span> <span class="protocol-name">I CONQUERED IT</span>
                     </button>
                     <button type="button" class="resolution-protocol-btn" id="protocol-surrender-btn" data-protocol="surrender">
-                        <span class="protocol-icon">🗄️</span> I SURRENDER (DESTROY RECORD)
+                        <span class="protocol-icon">🗄️</span> <span class="protocol-name">I SURRENDER</span>
                     </button>
                 </div>
             </div>
@@ -745,35 +751,35 @@
 
             </div>
 
-            <!-- VICTORY CERTIFICATE: Official Bureau Accomplishment Commendation (Reveals after "I Conquered It!") -->
+            <!-- VICTORY CERTIFICATE: Official Redemption Citation (Reveals after "I Conquered It!") -->
             <div class="resolution-victory-card" id="resolution-victory-card" style="display: none;">
                 <div class="victory-card-border">
                     <div class="victory-card-header">
-                        <span class="victory-seal">★ THE BUREAU OF ACCOMPLISHED AFFAIRS ★</span>
-                        <div class="victory-proclamation">OFFICIAL CITATION OF REDEMPTION & MIRACULOUS VICTORY</div>
+                        <span class="victory-seal">★ THE REDEMPTION WIRE ★</span>
+                        <div class="victory-proclamation">CITATION OF CONQUEST</div>
                     </div>
 
                     <div class="victory-card-body">
                         <div class="victory-operative-line">
-                            OPERATIVE: <strong id="victory-card-author">Anonymous</strong> • TERRITORY: <span id="victory-card-country">Parts Unknown</span>
+                            <strong id="victory-card-author">Anonymous</strong> IN <strong id="victory-card-country">Parts Unknown</strong> FINALLY DID IT!
                         </div>
                         <div class="victory-task-statement">
-                            FINALLY CONQUERED: <strong id="victory-card-task">"TASK"</strong>
+                            <strong id="victory-card-task">"TASK"</strong>
                         </div>
 
                         <!-- Procrastination Calculus Box -->
                         <div class="victory-calculus-grid">
                             <div class="calc-col">
-                                <span class="calc-label">CHRONIC TIME AVOIDED:</span>
+                                <span class="calc-label">CHRONIC DELAY:</span>
                                 <span class="calc-val" id="victory-card-avoided">18 days, 4 hours</span>
                             </div>
                             <div class="calc-col">
-                                <span class="calc-label">TIME REQUIRED ONCE STARTED:</span>
+                                <span class="calc-label">TIME TO CONQUER:</span>
                                 <span class="calc-val gold" id="victory-card-timetaken">7 minutes</span>
                             </div>
                         </div>
 
-                        <!-- Lore / Randomizer Box -->
+                        <!-- Lore / Execution Notes Box -->
                         <div class="victory-lore-box">
                             <span class="lore-label">RECORD OF EXECUTION:</span>
                             <p class="lore-text" id="victory-card-lore">"Fuelled by 3 iced coffees, unadulterated panic, and sheer adrenaline."</p>
@@ -787,14 +793,16 @@
 
                     <div class="victory-card-footer">
                         <button type="button" class="btn-heavy victory-feed-btn" id="victory-view-feed-btn">
-                            [ 🏆 VIEW IN FINALLY DID IT! ➔ ]
+                            [ 🏆 VIEW DISPATCH ON THE WIRE ➔ ]
                         </button>
-                        <button type="button" class="btn-subtle victory-copy-btn" id="victory-copy-btn">
-                            📋 COPY PROOF OF VICTORY
-                        </button>
-                        <button type="button" class="btn-subtle victory-close-btn" id="victory-dismiss-btn">
-                            ✕ DISMISS
-                        </button>
+                        <div class="victory-footer-secondary-row">
+                            <button type="button" class="btn-subtle victory-copy-btn" id="victory-copy-btn">
+                                📋 COPY CITATION
+                            </button>
+                            <button type="button" class="btn-subtle victory-close-btn" id="victory-dismiss-btn">
+                                ✕ CLOSE
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -825,10 +833,10 @@
             <!-- Victory Action Trigger Controls -->
             <div class="victory-controls" id="victory-controls">
                 <p class="victory-pledge-prompt">
-                    Swear upon this broadsheet that you have conquered this labor. Your triumph will be immortalized in the Bureau of Accomplished Affairs.
+                    Swear upon this broadsheet that you have conquered this labor. Your triumph will be immortalized on the Redemption Wire.
                 </p>
                 <button type="button" class="btn-heavy victory-ratify-btn" id="victory-ratify-btn">
-                    <span class="victory-btn-icon">🏆</span> <span class="victory-btn-text">I DID IT! RATIFY MIRACLE</span>
+                    <span class="victory-btn-icon">🏆</span> <span class="victory-btn-text">RATIFY REDEMPTION</span>
                 </button>
             </div>
 
