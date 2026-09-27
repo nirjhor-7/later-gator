@@ -56,7 +56,7 @@
         <!-- STEP 1: The Micro-Trial (Judge a delay to learn the wire) -->
         <div class="welcome-stage welcome-stage-1" id="welcome-stage-1">
             <div class="telegraph-header">
-                <div class="telegraph-brand">⚡ TELEGRAPH WIRE SERVICE ⚡</div>
+                <div class="telegraph-brand">★ TELEGRAPH WIRE SERVICE ★</div>
                 <div class="telegraph-sub">BUREAU OF IDLENESS • CASE #001-OP</div>
             </div>
 
@@ -82,13 +82,13 @@
 
             <div class="welcome-stamp-actions">
                 <button type="button" class="welcome-stamp-btn btn-same" id="welcome-stamp-same" data-type="same">
-                    <span class="stamp-icon">🤝</span> SAME <span class="stamp-tally" id="welcome-tally-same">42</span>
+                    [ SAME ] <span class="stamp-tally" id="welcome-tally-same">42</span>
                 </button>
                 <button type="button" class="welcome-stamp-btn btn-valid" id="welcome-stamp-valid" data-type="valid">
-                    <span class="stamp-icon">⚖️</span> VALID <span class="stamp-tally" id="welcome-tally-valid">89</span>
+                    [ VALID ] <span class="stamp-tally" id="welcome-tally-valid">89</span>
                 </button>
                 <button type="button" class="welcome-stamp-btn btn-rip" id="welcome-stamp-rip" data-type="rip">
-                    <span class="stamp-icon">🪦</span> RIP <span class="stamp-tally" id="welcome-tally-rip">14</span>
+                    [ RIP ] <span class="stamp-tally" id="welcome-tally-rip">14</span>
                 </button>
             </div>
             
@@ -100,7 +100,7 @@
         <!-- STEP 2: The Confessional ("So what are you avoiding, wanderer?") -->
         <div class="welcome-stage welcome-stage-2" id="welcome-stage-2" style="display: none;">
             <div class="telegraph-header">
-                <div class="telegraph-brand">🏛️ BUREAU OF POSTPONED AFFAIRS 🏛️</div>
+                <div class="telegraph-brand">★ BUREAU OF POSTPONED AFFAIRS ★</div>
                 <div class="telegraph-sub">CONFESSIONAL BOOTH • FIRST DISPATCH</div>
             </div>
 
@@ -115,12 +115,12 @@
             <div class="welcome-pills-row">
                 <span class="welcome-pills-label">TAP TO CONFESS QUICKLY:</span>
                 <div class="welcome-pills" id="welcome-pills">
-                    <button type="button" class="welcome-pill-btn" data-text="That mountain of unfolded laundry">🧺 LAUNDRY</button>
-                    <button type="button" class="welcome-pill-btn" data-text="Replying to that 3-week-old email">✉️ EMAILS</button>
-                    <button type="button" class="welcome-pill-btn" data-text="Studying for upcoming exams">📚 STUDYING</button>
-                    <button type="button" class="welcome-pill-btn" data-text="The client project deadline today">💻 WORK</button>
-                    <button type="button" class="welcome-pill-btn" data-text="Calling the dentist for an appointment">🪥 DENTIST</button>
-                    <button type="button" class="welcome-pill-btn welcome-pill-random" id="welcome-pill-random">🎲 [?] ROLL</button>
+                    <button type="button" class="welcome-pill-btn" data-text="That mountain of unfolded laundry">[ LAUNDRY ]</button>
+                    <button type="button" class="welcome-pill-btn" data-text="Replying to that 3-week-old email">[ EMAILS ]</button>
+                    <button type="button" class="welcome-pill-btn" data-text="Studying for upcoming exams">[ STUDYING ]</button>
+                    <button type="button" class="welcome-pill-btn" data-text="The client project deadline today">[ WORK ]</button>
+                    <button type="button" class="welcome-pill-btn" data-text="Calling the dentist for an appointment">[ DENTIST ]</button>
+                    <button type="button" class="welcome-pill-btn welcome-pill-random" id="welcome-pill-random">[ ROLL ]</button>
                 </div>
             </div>
 
@@ -135,10 +135,10 @@
 
             <div class="welcome-actions">
                 <button type="button" id="welcome-dispatch-btn" class="welcome-dispatch-btn">
-                    <span class="btn-flash-icon">⚡</span> DISPATCH TO THE WIRE ➔
+                    [ DISPATCH TO THE WIRE ➔ ]
                 </button>
                 <button type="button" id="welcome-lurk-btn" class="welcome-lurk-btn">
-                    [ 🗞️ JUST LURK TODAY ]
+                    [ JUST LURK TODAY ]
                 </button>
             </div>
         </div>
@@ -167,11 +167,11 @@
                 </div>
                 <div class="meta-col-right meta-row-right">
                     <button type="button" id="header-pass-btn" class="header-pass-btn" title="View Official Sloth Credential & Press Pass" aria-label="Official Press Pass">
-                        <span class="btn-text-full">🪪 PRESS PASS</span>
-                        <span class="btn-text-short">🪪 PASS</span>
+                        <span class="btn-text-full">[ PRESS PASS ]</span>
+                        <span class="btn-text-short">[ PASS ]</span>
                     </button>
                     <button type="button" id="midnight-toggle-btn" class="midnight-toggle-btn" title="Toggle Midnight Broadsheet Edition" aria-label="Toggle Midnight Edition">
-                        <span class="candle-icon">🕯️</span> <span id="midnight-btn-text">MIDNIGHT: OFF</span>
+                        <span id="midnight-btn-text">[ MIDNIGHT: OFF ]</span>
                     </button>
                     <button type="button" id="header-auth-btn" class="header-auth-btn" title="Bureau Dossier & Gator Tag">[ LOGIN ]</button>
                 </div>
@@ -183,8 +183,8 @@
         <!-- Breaking News Telegraph Wire Ticker -->
         <div class="telegraph-ticker" id="telegraph-ticker" aria-label="Telegraph Wire Service">
             <div class="ticker-badge">
-                <span class="ticker-badge-full">⚡ TELEGRAPH WIRE</span>
-                <span class="ticker-badge-short">⚡ WIRE</span>
+                <span class="ticker-badge-full">[ TELEGRAPH WIRE ]</span>
+                <span class="ticker-badge-short">[ WIRE ]</span>
             </div>
             <div class="ticker-window">
                 <div class="ticker-track" id="ticker-track"></div>
@@ -194,13 +194,13 @@
         <!-- Mobile Segmented View Switcher (Hidden on Desktop) -->
         <nav class="mobile-segmented-bar" id="mobile-segmented-bar" aria-label="Mobile View Switcher">
             <button type="button" class="mobile-tab-btn active" id="tab-dispatch-btn" data-tab="dispatch">
-                <span class="tab-label">DISPATCH</span>
+                <span class="tab-label">[ DISPATCH ]</span>
             </button>
             <button type="button" class="mobile-tab-btn" id="tab-wire-btn" data-tab="wire">
-                <span class="tab-icon">⚡</span> <span class="tab-label">WIRE</span> <span class="wire-live-badge">LIVE</span>
+                <span class="tab-label">[ WIRE ]</span> <span class="wire-live-badge">LIVE</span>
             </button>
             <button type="button" class="mobile-tab-btn" id="tab-stats-btn" data-tab="stats">
-                <span class="tab-icon tab-icon-stats">✦</span> <span class="tab-label">STATS</span>
+                <span class="tab-label">[ STATS ]</span>
             </button>
         </nav>
 
@@ -219,7 +219,7 @@
                 <div class="lead-story-meta">
                     <span class="lead-story-byline" id="lead-story-byline">DISPATCHED BY: ANONYMOUS IN PARTS UNKNOWN</span>
                     <span class="lead-story-dot">•</span>
-                    <span class="lead-story-badge" id="lead-story-badge">🏆 #1 MOST SYMPATHIZED DISPATCH</span>
+                    <span class="lead-story-badge" id="lead-story-badge">★ #1 MOST SYMPATHIZED DISPATCH ★</span>
                 </div>
                 <div class="lead-story-actions">
                     <span class="lead-stamp-prompt">CAST EDITORIAL SYMPATHY:</span>
@@ -234,7 +234,7 @@
                             [ RIP <span class="reaction-count">0</span> ]
                         </button>
                         <button type="button" class="feed-clip-btn lead-clip-btn" id="lead-clip-btn" title="Print & Clip Newspaper Snippet" aria-label="Clip Today's Chief Transgression">
-                            ✂ CLIP
+                            [ CLIP ]
                         </button>
                     </div>
                 </div>
@@ -288,10 +288,10 @@
 
                         <div class="action-buttons">
                             <button id="later-btn" class="btn-heavy btn-post-wire">
-                                <span id="later-btn-text">POST TO THE WIRE ➔</span>
+                                <span id="later-btn-text">[ POST TO THE WIRE ➔ ]</span>
                             </button>
                             <button id="panic-btn" class="btn-outline btn-panic-clean">
-                                <span id="panic-btn-text">⚡ DO IT NOW (PANIC MODE)</span>
+                                <span id="panic-btn-text">[ DO IT NOW (PANIC MODE) ]</span>
                             </button>
                         </div>
                         <div id="status-message" class="status-msg"></div>
@@ -323,11 +323,11 @@
                                 [ DOWNLOAD OFFICIAL CERTIFICATE (.PNG) ]
                             </button>
                             <button type="button" id="share-view-wire-btn" class="share-btn-wire">
-                                [ ⚡ VIEW ON THE LIVE WIRE ➔ ]
+                                [ VIEW ON THE LIVE WIRE ➔ ]
                             </button>
 
                             <div class="share-card-actions">
-                                <button type="button" id="share-native-btn" class="share-btn" style="display: none;">📲 SHARE</button>
+                                <button type="button" id="share-native-btn" class="share-btn" style="display: none;">[ SHARE ]</button>
                                 <button type="button" id="share-x-btn" class="share-btn">POST ON X</button>
                                 <button type="button" id="share-fb-btn" class="share-btn">FACEBOOK</button>
                                 <button type="button" id="share-wa-btn" class="share-btn">WHATSAPP</button>
@@ -394,22 +394,12 @@
                         <h2 class="section-title wire-section-title">THE PUBLIC WIRE</h2>
                         <div class="wire-tab-bar" role="tablist" aria-label="Wire Feeds">
                             <button type="button" class="wire-nav-tab active" id="tab-wire-avoiding" role="tab" aria-selected="true" aria-controls="feed-container" data-wire-tab="avoiding">
-                                <span class="tab-icon">⏳</span><span class="tab-label">AVOIDING</span>
+                                [ AVOIDING ]
                             </button>
                             <button type="button" class="wire-nav-tab" id="tab-wire-accomplished" role="tab" aria-selected="false" aria-controls="accomplished-feed-container" data-wire-tab="accomplished">
-                                <span class="tab-icon">🏆</span><span class="tab-label">REDEEMED</span><span class="tab-badge" id="triumphs-count-badge">0</span>
+                                [ REDEEMED (<span class="tab-badge" id="triumphs-count-badge">0</span>) ]
                             </button>
                         </div>
-                    </div>
-
-                    <!-- Breaking Redemption Ribbon -->
-                    <div class="triumph-ribbon" id="triumph-ribbon" role="region" aria-label="Latest Redemption">
-                        <span class="triumph-ribbon-badge" id="triumph-ribbon-badge">
-                            <span class="triumph-ribbon-badge-desktop">★ REDEMPTION WIRE ★</span>
-                            <span class="triumph-ribbon-badge-mobile">★ REDEEMED ★</span>
-                        </span>
-                        <span class="triumph-ribbon-text" id="triumph-ribbon-text">Alex in Tokyo FINALLY DID IT: "Cleaned the moldy coffee mugs" (Avoided: 18 days)</span>
-                        <button type="button" class="triumph-ribbon-view-btn" id="triumph-ribbon-view-btn">VIEW »</button>
                     </div>
 
                     <!-- Active Avoiding Wire Feed -->
@@ -492,7 +482,7 @@
                     [ DOWNLOAD OFFICIAL PRESS PASS (.PNG) ]
                 </button>
                 <div class="credential-sub-actions">
-                    <button type="button" id="credential-share-btn" class="share-btn" style="display: none;">📲 SHARE</button>
+                    <button type="button" id="credential-share-btn" class="share-btn" style="display: none;">[ SHARE ]</button>
                     <button type="button" id="credential-x-btn" class="share-btn">POST ON X</button>
                     <button type="button" id="credential-copy-btn" class="share-btn">COPY SUMMARY</button>
                 </div>
@@ -516,8 +506,8 @@
                     [ DOWNLOAD OFFICIAL CLIPPING (.PNG) ]
                 </button>
                 <div class="credential-sub-actions">
-                    <button type="button" id="clipping-share-btn" class="share-btn" style="display: none;">📲 SHARE</button>
-                    <button type="button" id="clipping-copy-btn" class="share-btn">📋 COPY IMAGE</button>
+                    <button type="button" id="clipping-share-btn" class="share-btn" style="display: none;">[ SHARE ]</button>
+                    <button type="button" id="clipping-copy-btn" class="share-btn">[ COPY IMAGE ]</button>
                     <button type="button" id="clipping-x-btn" class="share-btn">POST ON X</button>
                 </div>
 
@@ -582,7 +572,7 @@
 
                 <div class="bureau-guest-pass-row">
                     <button type="button" id="bureau-guest-pass-btn" class="bureau-pass-btn">
-                        🪪 <span class="pass-btn-full">VIEW / CLAIM SLOTH PRESS PASS</span><span class="pass-btn-short">VIEW SLOTH PRESS PASS</span>
+                        <span class="pass-btn-full">[ VIEW / CLAIM SLOTH PRESS PASS ]</span><span class="pass-btn-short">[ VIEW SLOTH PRESS PASS ]</span>
                     </button>
                 </div>
             </div>
@@ -595,7 +585,7 @@
                 </div>
                 <div class="bureau-actions-row">
                     <button type="button" id="bureau-pass-btn" class="bureau-pass-btn">
-                        🪪 <span class="pass-btn-full">VIEW OFFICIAL ACCREDITED PRESS PASS</span><span class="pass-btn-short">VIEW OFFICIAL PRESS PASS</span>
+                        <span class="pass-btn-full">[ VIEW OFFICIAL ACCREDITED PRESS PASS ]</span><span class="pass-btn-short">[ VIEW OFFICIAL PRESS PASS ]</span>
                     </button>
                 </div>
                 <div class="dossier-section">
@@ -615,7 +605,7 @@
             <!-- Machine Top Bar / Nameplate -->
             <div class="disposal-nameplate">
                 <div class="nameplate-header">
-                    <span class="nameplate-seal">⚖️ THE REDEMPTION DESK</span>
+                    <span class="nameplate-seal">★ THE REDEMPTION DESK ★</span>
                     <span class="nameplate-model">OFFICIAL RECORD DISPOSITION PROTOCOL</span>
                 </div>
                 <button type="button" class="disposal-close-btn" id="disposal-close-btn" aria-label="Close resolution unit">✕</button>
@@ -626,10 +616,10 @@
                 <span class="protocol-bar-label">SELECT RECORD PROTOCOL:</span>
                 <div class="protocol-toggles">
                     <button type="button" class="resolution-protocol-btn active" id="protocol-victory-btn" data-protocol="victory">
-                        <span class="protocol-icon">🏆</span> <span class="protocol-name">I CONQUERED IT</span>
+                        <span class="protocol-name">[ I CONQUERED IT ]</span>
                     </button>
                     <button type="button" class="resolution-protocol-btn" id="protocol-surrender-btn" data-protocol="surrender">
-                        <span class="protocol-icon">🗄️</span> <span class="protocol-name">I SURRENDER</span>
+                        <span class="protocol-name">[ I SURRENDER ]</span>
                     </button>
                 </div>
             </div>
@@ -639,10 +629,10 @@
                 <span class="mode-label">SELECT DESTRUCTION MACHINE:</span>
                 <div class="mode-toggles">
                     <button type="button" class="disposal-mode-btn active" id="mode-shredder-btn" data-mode="shredder">
-                        <span class="mode-icon">🗄️</span> MECHANICAL SHREDDER
+                        [ MECHANICAL SHREDDER ]
                     </button>
                     <button type="button" class="disposal-mode-btn" id="mode-furnace-btn" data-mode="furnace">
-                        <span class="mode-icon">🔥</span> BLAST FURNACE
+                        [ BLAST FURNACE ]
                     </button>
                 </div>
             </div>
@@ -793,14 +783,14 @@
 
                     <div class="victory-card-footer">
                         <button type="button" class="btn-heavy victory-feed-btn" id="victory-view-feed-btn">
-                            [ 🏆 VIEW DISPATCH ON THE WIRE ➔ ]
+                            [ VIEW DISPATCH ON THE WIRE ➔ ]
                         </button>
                         <div class="victory-footer-secondary-row">
                             <button type="button" class="btn-subtle victory-copy-btn" id="victory-copy-btn">
-                                📋 COPY CITATION
+                                [ COPY CITATION ]
                             </button>
                             <button type="button" class="btn-subtle victory-close-btn" id="victory-dismiss-btn">
-                                ✕ CLOSE
+                                [ CLOSE ✕ ]
                             </button>
                         </div>
                     </div>
@@ -836,14 +826,14 @@
                     Swear upon this broadsheet that you have conquered this labor. Your triumph will be immortalized on the Redemption Wire.
                 </p>
                 <button type="button" class="btn-heavy victory-ratify-btn" id="victory-ratify-btn">
-                    <span class="victory-btn-icon">🏆</span> <span class="victory-btn-text">RATIFY REDEMPTION</span>
+                    <span class="victory-btn-text">RATIFY REDEMPTION ➔</span>
                 </button>
             </div>
 
             <!-- Surrender Action Trigger Button -->
             <div class="disposal-controls" id="disposal-controls" style="display: none;">
                 <button type="button" class="btn-heavy disposal-crank-btn" id="disposal-crank-btn">
-                    <span id="crank-btn-icon">⚡</span> <span id="crank-btn-text">CRANK MECHANICAL SHREDDER</span>
+                    <span id="crank-btn-text">[ CRANK MECHANICAL SHREDDER ➔ ]</span>
                 </button>
             </div>
         </div>
@@ -851,7 +841,7 @@
 
     <!-- Floating Action Button for Mobile: Quick Return to Dispatch -->
     <button type="button" id="mobile-fab-post" class="mobile-fab-post" aria-label="Post a dispatch">
-        <span class="fab-icon">✍️</span> <span class="fab-label">POST DISPATCH</span>
+        <span class="fab-label">[ + POST DISPATCH ]</span>
     </button>
 
     <!-- Floating Jump to Latest Dispatch Button -->

@@ -148,17 +148,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return pool;
     };
 
-    const setButtonLabels = (laterText = "POST TO THE WIRE ➔", panicText = "⚡ DO IT NOW (PANIC MODE)") => {
+    const setButtonLabels = (laterText = "[ POST TO THE WIRE ➔ ]", panicText = "[ DO IT NOW (PANIC MODE) ]") => {
         if (laterBtnText) {
-            laterBtnText.textContent = "POST TO THE WIRE ➔";
+            laterBtnText.textContent = "[ POST TO THE WIRE ➔ ]";
         } else if (laterBtn) {
-            laterBtn.textContent = "POST TO THE WIRE ➔";
+            laterBtn.textContent = "[ POST TO THE WIRE ➔ ]";
         }
 
         if (panicBtnText) {
-            panicBtnText.textContent = panicText || "⚡ DO IT NOW (PANIC MODE)";
+            panicBtnText.textContent = panicText || "[ DO IT NOW (PANIC MODE) ]";
         } else if (panicBtn) {
-            panicBtn.textContent = panicText || "⚡ DO IT NOW (PANIC MODE)";
+            panicBtn.textContent = panicText || "[ DO IT NOW (PANIC MODE) ]";
         }
     };
 
@@ -171,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveEvasionPhrase = selected;
         isTaskReactiveActive = false;
-        setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
+        setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
 
         if (isUserInitiated && shufflePhraseBtn) {
             shufflePhraseBtn.classList.remove('spinning');
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTaskReactiveButtons = (rawText) => {
         if (!rawText || rawText.trim().length === 0) {
             if (isTaskReactiveActive) {
-                setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
+                setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
                 isTaskReactiveActive = false;
             }
             return;
@@ -207,9 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matched) {
             isTaskReactiveActive = true;
-            setButtonLabels("POST TO THE WIRE ➔", matched.panic || "⚡ DO IT NOW (PANIC MODE)");
+            setButtonLabels("[ POST TO THE WIRE ➔ ]", matched.panic || "[ DO IT NOW (PANIC MODE) ]");
         } else if (isTaskReactiveActive) {
-            setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
+            setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
             isTaskReactiveActive = false;
         }
     };
@@ -518,14 +518,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         [ RIP <span class="reaction-count">${ripCount}</span> ]
                     </button>
                     <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
-                        ✂ CLIP
+                        [ CLIP ]
                     </button>
                 </div>
             </div>
             ${isMyTaskId(task.id) ? `
-            <div class="feed-own-action-bar">
+            <div class="feed-owner-bar">
+                <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
                 <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${task.id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
-                    <span class="btn-trophy">🏆</span> <span class="btn-text">I DID IT! — CLAIM REDEMPTION</span>
+                    [ I DID IT! ➔ ]
                 </button>
             </div>` : ''}
         </div>`;
@@ -1197,9 +1198,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate badge
         if (highestScore > 0) {
-            leadBadge.textContent = `🏆 ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED`;
+            leadBadge.textContent = `★ ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED ★`;
         } else {
-            leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION`;
+            leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION ★`;
         }
 
         // Populate reaction buttons
@@ -1512,7 +1513,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const permitNum = Math.floor(1000 + Math.random() * 9000);
         if (isPanicMode) {
-            if (stampHeader) stampHeader.textContent = "⚠ EMERGENCY DIRECTIVE ⚠";
+            if (stampHeader) stampHeader.textContent = "★ EMERGENCY DIRECTIVE ★";
             if (stampTitle) stampTitle.textContent = "PANIC MANDATE";
             if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
             if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
@@ -1694,12 +1695,12 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerRubberStamp(isPanic);
 
         if (isPanic) {
-            if (panicBtnText) panicBtnText.textContent = "FINE. DOING IT.";
-            else panicBtn.textContent = "FINE. DOING IT.";
+            if (panicBtnText) panicBtnText.textContent = "[ DOING IT NOW ]";
+            else panicBtn.textContent = "[ DOING IT NOW ]";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            if (laterBtnText) laterBtnText.textContent = "POSTED TO THE WIRE ✓";
-            else laterBtn.textContent = "POSTED TO THE WIRE ✓";
+            if (laterBtnText) laterBtnText.textContent = "[ POSTED TO THE WIRE ✓ ]";
+            else laterBtn.textContent = "[ POSTED TO THE WIRE ✓ ]";
             statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
         }
 
@@ -1729,8 +1730,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.textContent = "";
 
                 // Reset button text
-                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
-                if (panicBtnText) panicBtnText.textContent = "⚡ DO IT NOW (PANIC MODE)";
+                if (laterBtnText) laterBtnText.textContent = "[ POST TO THE WIRE ➔ ]";
+                if (panicBtnText) panicBtnText.textContent = "[ DO IT NOW (PANIC MODE) ]";
                 rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate
@@ -1820,7 +1821,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (shareStampBadge) {
             if (isPanicMode) {
-                shareStampBadge.textContent = "⚠ PANIC MANDATE ISSUED";
+                shareStampBadge.textContent = "★ PANIC MANDATE ISSUED ★";
                 shareStampBadge.style.color = "#b43403";
                 shareStampBadge.style.borderColor = "#b43403";
                 shareStampBadge.style.outlineColor = "#b43403";
@@ -2123,16 +2124,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (disposalChamber) disposalChamber.classList.remove('mode-furnace');
             if (shredderMouth) shredderMouth.style.display = 'flex';
             if (furnaceStage) furnaceStage.style.display = 'none';
-            if (crankBtnIcon) crankBtnIcon.textContent = '⚙️';
-            if (crankBtnText) crankBtnText.textContent = 'CRANK MECHANICAL SHREDDER';
+            if (crankBtnIcon) crankBtnIcon.textContent = '';
+            if (crankBtnText) crankBtnText.textContent = '[ CRANK MECHANICAL SHREDDER ➔ ]';
         } else {
             if (modeFurnaceBtn) modeFurnaceBtn.classList.add('active');
             if (modeShredderBtn) modeShredderBtn.classList.remove('active');
             if (disposalChamber) disposalChamber.classList.add('mode-furnace');
             if (shredderMouth) shredderMouth.style.display = 'none';
             if (furnaceStage) furnaceStage.style.display = 'block';
-            if (crankBtnIcon) crankBtnIcon.textContent = '🔥';
-            if (crankBtnText) crankBtnText.textContent = 'IGNITE BLAST FURNACE (1400°F)';
+            if (crankBtnIcon) crankBtnIcon.textContent = '';
+            if (crankBtnText) crankBtnText.textContent = '[ IGNITE BLAST FURNACE (1400°F) ➔ ]';
         }
     };
 
@@ -2808,14 +2809,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="accomplished-merit">★ ${merit} ★</span>
             </div>
             <div class="accomplished-reactions" data-triumph-id="${id}">
-                <button type="button" class="triumph-react-btn ${hasPraise ? 'reacted' : ''}" data-type="praise" title="Applaud this miraculous victory">
-                    👏 PRAISE <span class="rx-count">${praiseCount}</span>
+                <button type="button" class="triumph-react-btn ${hasPraise ? 'reacted' : ''}" data-type="praise" title="Praise this triumph">
+                    [ PRAISE <span class="rx-count">${praiseCount}</span> ]
                 </button>
-                <button type="button" class="triumph-react-btn ${hasCheers ? 'reacted' : ''}" data-type="cheers" title="Pop the champagne!">
-                    🍾 CHEERS <span class="rx-count">${cheersCount}</span>
+                <button type="button" class="triumph-react-btn ${hasCheers ? 'reacted' : ''}" data-type="cheers" title="Cheers to this triumph">
+                    [ CHEERS <span class="rx-count">${cheersCount}</span> ]
                 </button>
-                <button type="button" class="triumph-react-btn ${hasRespect ? 'reacted' : ''}" data-type="respect" title="Salute this heroic deed">
-                    🫡 RESPECT <span class="rx-count">${respectCount}</span>
+                <button type="button" class="triumph-react-btn ${hasRespect ? 'reacted' : ''}" data-type="respect" title="Salute this accomplishment">
+                    [ SALUTE <span class="rx-count">${respectCount}</span> ]
                 </button>
             </div>
         </article>`;
@@ -2997,7 +2998,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const author = (taskObj && (taskObj.city || taskObj.name)) || 'Citizen';
             const country = (taskObj && taskObj.country) || 'Parts Unknown';
             const text = item.text || 'Task';
-            const shareMsg = `🏆 PROOF OF REDEMPTION: ${author} in ${country} FINALLY CONQUERED "${text}"! Ratified by the Bureau of Accomplished Affairs // latergators.live`;
+            const shareMsg = `★ PROOF OF REDEMPTION: ${author} in ${country} FINALLY CONQUERED "${text}"! Ratified by The Redemption Wire // latergators.live`;
             try {
                 await navigator.clipboard.writeText(shareMsg);
                 const prev = victoryCopyBtn.textContent;
@@ -3657,7 +3658,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('sepia-edition', enable);
         document.documentElement.classList.toggle('sepia-edition', enable);
         if (sepiaToggleBtn) {
-            sepiaToggleBtn.textContent = enable ? '[ 📜 1890s PRINT: ON ]' : '[ 📜 1890s PRINT: OFF ]';
+            sepiaToggleBtn.textContent = enable ? '[ 1890s PRINT: ON ]' : '[ 1890s PRINT: OFF ]';
         }
         if (enable) {
             if (document.body.classList.contains('midnight-edition')) {
@@ -3692,9 +3693,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.body.classList.contains('sepia-edition')) {
                 document.body.classList.remove('sepia-edition');
                 document.documentElement.classList.remove('sepia-edition');
-                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: OFF ]';
+                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 1890s PRINT: OFF ]';
             }
-            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
+            if (midnightBtnText) midnightBtnText.textContent = '[ MIDNIGHT: ON ]';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
             if (mastheadSub) mastheadSub.textContent = 'PRINTED UNDER GASLIGHT FOR THE PROFOUNDLY AWAKE';
             if (taskInput) {
@@ -3703,7 +3704,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             document.body.classList.remove('midnight-edition');
             document.documentElement.classList.remove('midnight-edition');
-            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: OFF';
+            if (midnightBtnText) midnightBtnText.textContent = '[ MIDNIGHT: OFF ]';
             const savedSepia = localStorage.getItem('lg_sepia_mode') === 'true';
             if (savedSepia) {
                 applySepiaMode(true);
@@ -3854,7 +3855,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (GatorAudio.playPaperShuffle) GatorAudio.playPaperShuffle();
         if (camoPaperBtn) {
             const orig = camoPaperBtn.textContent;
-            camoPaperBtn.textContent = '📁 *SHUFFLE*';
+            camoPaperBtn.textContent = '[ SHUFFLING... ]';
             camoPaperBtn.classList.add('playing');
             setTimeout(() => {
                 camoPaperBtn.textContent = orig;
@@ -4291,11 +4292,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const catList = ALIBI_DATABASE[currentAlibiCat] || ALIBI_DATABASE.work;
             const item = catList[currentAlibiIdx % catList.length];
             if (!item) return;
-            const slackText = `> 🚨 *OFFICIAL ALIBI DISPATCH*:\n> "${item.text}"\n> — _${item.ref} via LaterGator.live_`;
+            const slackText = `> ★ *OFFICIAL ALIBI DISPATCH*:\n> "${item.text}"\n> — _${item.ref} via LaterGator.live_`;
             try {
                 await navigator.clipboard.writeText(slackText);
                 alibiCopyBtn.textContent = "[ COPIED TO SLACK! ✓ ]";
-                setTimeout(() => { alibiCopyBtn.textContent = "[ 📋 COPY FOR SLACK ]"; }, 2000);
+                setTimeout(() => { alibiCopyBtn.textContent = "[ COPY FOR SLACK ]"; }, 2000);
             } catch (e) {
                 alibiCopyBtn.textContent = "[ COPIED! ]";
             }
@@ -4309,51 +4310,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const ORACLE_HOROSCOPES = {
         aries: {
-            title: "♈ ARIES • THE IMPULSIVE REST",
+            title: "★ ARIES • THE IMPULSIVE REST",
             text: "Mars demands bold aggression, but your bed demands horizontal solidarity. Choose peace over emails. Any task attempted today will backfire into a 3-hour nap."
         },
         taurus: {
-            title: "♉ TAURUS • THE STUBBORN COCOON",
+            title: "★ TAURUS • THE STUBBORN COCOON",
             text: "Venus aligns with your comfort zone. Today is not the day to conquer mountains; it is the day to conquer snacks. If someone asks for a status update, chew louder."
         },
         gemini: {
-            title: "♊ GEMINI • THE DUAL INACTION",
+            title: "★ GEMINI • THE DUAL INACTION",
             text: "Both of your personalities have unanimously agreed: absolutely not. You will open 47 browser tabs with good intentions and read none of them. A flawless victory."
         },
         cancer: {
-            title: "♋ CANCER • THE EMOTIONAL FORTRESS",
+            title: "★ CANCER • THE EMOTIONAL FORTRESS",
             text: "The Moon urges you to retreat into your shell. Seal the perimeters. The spreadsheet is toxic and lacks emotional maturity. Ignore it until next fiscal quarter."
         },
         leo: {
-            title: "♌ LEO • THE REGAL SLACKER",
+            title: "★ LEO • THE REGAL SLACKER",
             text: "You are royalty, and royalty does not fill out Jira tickets. Bask in the spotlight of unearned confidence. Let the commoners deal with the deliverables."
         },
         virgo: {
-            title: "♍ VIRGO • THE PERFECTIONIST'S PARALYSIS",
+            title: "★ VIRGO • THE PERFECTIONIST'S PARALYSIS",
             text: "You cannot start until the desk is clean, the inbox is zeroed, and the lighting is cinematic. Since this will take until 2028, you are free to do nothing today."
         },
         libra: {
-            title: "♎ LIBRA • THE DELICATE IMBALANCE",
+            title: "★ LIBRA • THE DELICATE IMBALANCE",
             text: "Weighing the pros and cons of doing work has revealed that not doing work has zero calorie expenditure. The scales have spoken. Remain motionless."
         },
         scorpio: {
-            title: "♏ SCORPIO • THE SHADOW RETREAT",
+            title: "★ SCORPIO • THE SHADOW RETREAT",
             text: "Plot in silence. If they can't see you, they can't assign you tasks. Set your Slack status to a cryptic moon emoji and vanish into the ether."
         },
         sagittarius: {
-            title: "♐ SAGITTARIUS • THE RUNAWAY ARROW",
+            title: "★ SAGITTARIUS • THE RUNAWAY ARROW",
             text: "Your spirit yearns for wild horizons, or at least a 2-hour lunch break in the park. Run free. The project manager's ping cannot cross state lines."
         },
         capricorn: {
-            title: "♑ CAPRICORN • THE STRATEGIC STRIKE",
+            title: "★ CAPRICORN • THE STRATEGIC STRIKE",
             text: "Even workaholics need a strike day. Frame your complete inactivity as an 'executive resilience audit'. They will respect your visionary leadership."
         },
         aquarius: {
-            title: "♒ AQUARIUS • THE REVOLUTIONARY IDLE",
+            title: "★ AQUARIUS • THE REVOLUTIONARY IDLE",
             text: "By refusing to work today, you are subverting the capitalist industrial complex. Your nap is not laziness; it is high-concept political performance art."
         },
         pisces: {
-            title: "♓ PISCES • THE DREAMLAND VOYAGE",
+            title: "★ PISCES • THE DREAMLAND VOYAGE",
             text: "Neptune floods your consciousness with whimsical daydreams. You are technically at your desk, but your soul is swimming with neon dolphins in the year 3000."
         }
     };
@@ -4400,11 +4401,11 @@ document.addEventListener('DOMContentLoaded', () => {
         oracleCopyBtn.addEventListener('click', async () => {
             const signKey = oracleSelect ? oracleSelect.value : 'aries';
             const item = ORACLE_HOROSCOPES[signKey] || ORACLE_HOROSCOPES.aries;
-            const copyMsg = `🔮 *CELESTIAL SLACKER ORACLE*:\n"${item.title}"\n${item.text}\n— via LaterGator.live`;
+            const copyMsg = `★ *CELESTIAL SLACKER ORACLE*:\n"${item.title}"\n${item.text}\n— via LaterGator.live`;
             try {
                 await navigator.clipboard.writeText(copyMsg);
                 oracleCopyBtn.textContent = "[ COPIED DESTINY! ✓ ]";
-                setTimeout(() => { oracleCopyBtn.textContent = "[ 📋 COPY DESTINY ]"; }, 2000);
+                setTimeout(() => { oracleCopyBtn.textContent = "[ COPY DESTINY ]"; }, 2000);
             } catch (e) {
                 oracleCopyBtn.textContent = "[ COPIED! ]";
             }
@@ -4434,8 +4435,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 "tag2": "PANEL 2 • PURE BLISS",
                 "speech2": "\"The crisis isn't real!\"",
                 "caption": "\"Unopened emails exist in a superposition of both urgent and non-existent.\"",
-                "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Laptop screen with 99+ emails -->\n            <rect x=\"18\" y=\"24\" width=\"38\" height=\"26\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M12 50 L62 50 L56 56 L18 56 Z\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <!-- Red notification badge 99+ -->\n            <rect x=\"22\" y=\"28\" width=\"22\" height=\"12\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"33\" y=\"37\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"white\">✉ 99+</text>\n            <!-- Gator shielding eyes -->\n            <path d=\"M82 62 L82 34 Q90 26 104 26 Q116 26 122 34 L122 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Gator Snout -->\n            <path d=\"M96 36 Q118 36 126 40 C128 43 124 46 114 46 L96 46 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Hands covering eyes -->\n            <ellipse cx=\"94\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <ellipse cx=\"106\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M84 48 Q90 32 94 32 M114 48 Q110 32 106 32\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.2\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk with closed laptop -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <rect x=\"18\" y=\"52\" width=\"34\" height=\"10\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Coffee mug on closed laptop -->\n            <rect x=\"28\" y=\"42\" width=\"10\" height=\"10\" rx=\"1\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <path d=\"M38 44 C41 44 41 48 38 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Gator lounging back with sunglasses -->\n            <!-- Chair back -->\n            <line x1=\"68\" y1=\"20\" x2=\"82\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"4\"/>\n            <!-- Slumped Gator -->\n            <path d=\"M78 40 Q94 28 112 34 C120 37 124 45 116 52 Q96 58 84 56 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Cool Sunglasses -->\n            <rect x=\"98\" y=\"32\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <rect x=\"108\" y=\"34\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <line x1=\"106\" y1=\"35\" x2=\"108\" y2=\"35\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Content Smirk -->\n            <path d=\"M106 44 Q116 46 122 42\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Relaxed arms behind head -->\n            <path d=\"M86 38 Q94 24 102 26\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <text x=\"124\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"10\" font-weight=\"700\" fill=\"#40916c\">✨</text>\n        </svg>"
+                "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Laptop screen with 99+ emails -->\n            <rect x=\"18\" y=\"24\" width=\"38\" height=\"26\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M12 50 L62 50 L56 56 L18 56 Z\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <!-- Red notification badge 99+ -->\n            <rect x=\"22\" y=\"28\" width=\"22\" height=\"12\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"33\" y=\"37\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"white\">99+ MSG</text>\n            <!-- Gator shielding eyes -->\n            <path d=\"M82 62 L82 34 Q90 26 104 26 Q116 26 122 34 L122 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Gator Snout -->\n            <path d=\"M96 36 Q118 36 126 40 C128 43 124 46 114 46 L96 46 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Hands covering eyes -->\n            <ellipse cx=\"94\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <ellipse cx=\"106\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M84 48 Q90 32 94 32 M114 48 Q110 32 106 32\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.2\"/>\n        </svg>",
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk with closed laptop -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <rect x=\"18\" y=\"52\" width=\"34\" height=\"10\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Coffee mug on closed laptop -->\n            <rect x=\"28\" y=\"42\" width=\"10\" height=\"10\" rx=\"1\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <path d=\"M38 44 C41 44 41 48 38 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Gator lounging back with sunglasses -->\n            <!-- Chair back -->\n            <line x1=\"68\" y1=\"20\" x2=\"82\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"4\"/>\n            <!-- Slumped Gator -->\n            <path d=\"M78 40 Q94 28 112 34 C120 37 124 45 116 52 Q96 58 84 56 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Cool Sunglasses -->\n            <rect x=\"98\" y=\"32\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <rect x=\"108\" y=\"34\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <line x1=\"106\" y1=\"35\" x2=\"108\" y2=\"35\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Content Smirk -->\n            <path d=\"M106 44 Q116 46 122 42\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Relaxed arms behind head -->\n            <path d=\"M86 38 Q94 24 102 26\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <text x=\"124\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"10\" font-weight=\"700\" fill=\"#40916c\">★</text>\n        </svg>"
         },
         {
                 "title": "EP. 3: THE 2:01 TRAGEDY",
@@ -4445,7 +4446,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "speech2": "\"Missed it. Next: 3:00.\"",
                 "caption": "\"Work can only legally begin on timestamps ending in 0 or 5.\"",
                 "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Wall clock showing 2:00 -->\n            <circle cx=\"28\" cy=\"28\" r=\"16\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"28\" y2=\"16\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"38\" y2=\"28\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <circle cx=\"28\" cy=\"28\" r=\"2\" fill=\"var(--ink)\"/>\n            <text x=\"28\" y=\"52\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"var(--ink)\">02:00 PM</text>\n            <!-- Desk -->\n            <line x1=\"56\" y1=\"62\" x2=\"144\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator sitting alert and ready -->\n            <path d=\"M84 62 L84 34 Q92 24 108 24 Q118 24 124 34 L124 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"98\" cy=\"28\" r=\"4.5\" fill=\"white\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <circle cx=\"99\" cy=\"28\" r=\"1.8\" fill=\"var(--ink)\"/>\n            <!-- Determined smile -->\n            <path d=\"M104 38 Q118 38 126 34\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Notebook and pencil ready -->\n            <rect x=\"64\" y=\"52\" width=\"20\" height=\"10\" rx=\"1\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <line x1=\"88\" y1=\"46\" x2=\"78\" y2=\"54\" stroke=\"#b91c1c\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Wall clock showing 2:01 -->\n            <circle cx=\"28\" cy=\"28\" r=\"16\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"29\" y2=\"16\" stroke=\"#b91c1c\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"38\" y2=\"28\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <circle cx=\"28\" cy=\"28\" r=\"2\" fill=\"var(--ink)\"/>\n            <text x=\"28\" y=\"52\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"#b91c1c\">02:01 PM!</text>\n            <!-- Desk -->\n            <line x1=\"56\" y1=\"62\" x2=\"144\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator completely melted flat onto desk -->\n            <path d=\"M72 62 Q78 50 102 50 Q130 50 136 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Flat eyes closed in defeat -->\n            <line x1=\"90\" y1=\"55\" x2=\"98\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"106\" y1=\"55\" x2=\"114\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Dropped pencil on floor -->\n            <line x1=\"60\" y1=\"68\" x2=\"72\" y2=\"70\" stroke=\"#b91c1c\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n            <text x=\"122\" y=\"44\" font-family=\"'Space Mono', monospace\" font-size=\"8\" fill=\"#b91c1c\">💤</text>\n        </svg>"
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Wall clock showing 2:01 -->\n            <circle cx=\"28\" cy=\"28\" r=\"16\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"29\" y2=\"16\" stroke=\"#b91c1c\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"38\" y2=\"28\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <circle cx=\"28\" cy=\"28\" r=\"2\" fill=\"var(--ink)\"/>\n            <text x=\"28\" y=\"52\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"#b91c1c\">02:01 PM!</text>\n            <!-- Desk -->\n            <line x1=\"56\" y1=\"62\" x2=\"144\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator completely melted flat onto desk -->\n            <path d=\"M72 62 Q78 50 102 50 Q130 50 136 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Flat eyes closed in defeat -->\n            <line x1=\"90\" y1=\"55\" x2=\"98\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"106\" y1=\"55\" x2=\"114\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Dropped pencil on floor -->\n            <line x1=\"60\" y1=\"68\" x2=\"72\" y2=\"70\" stroke=\"#b91c1c\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n            <text x=\"122\" y=\"44\" font-family=\"'Space Mono', monospace\" font-size=\"8\" fill=\"#b91c1c\">Zzz</text>\n        </svg>"
         },
         {
                 "title": "EP. 4: STRATEGIC HOUSEKEEPING",
@@ -4455,7 +4456,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "speech2": "\"Baseboards need buffing!\"",
                 "caption": "\"Never does a home shine brighter than on the eve of a major deadline.\"",
                 "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Giant ominous calendar marked DEADLINE -->\n            <rect x=\"18\" y=\"16\" width=\"34\" height=\"42\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <rect x=\"18\" y=\"16\" width=\"34\" height=\"10\" fill=\"#b91c1c\"/>\n            <text x=\"35\" y=\"23\" font-family=\"'Space Mono', monospace\" font-size=\"5\" font-weight=\"700\" text-anchor=\"middle\" fill=\"white\">TODAY</text>\n            <text x=\"35\" y=\"42\" font-family=\"'Space Mono', monospace\" font-size=\"12\" font-weight=\"900\" text-anchor=\"middle\" fill=\"#b91c1c\">DUE</text>\n            <!-- Gator frozen in terror staring at blank page -->\n            <path d=\"M78 64 L78 36 Q86 26 102 26 Q114 26 120 36 L120 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"94\" cy=\"30\" r=\"5\" fill=\"white\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <circle cx=\"95\" cy=\"30\" r=\"2\" fill=\"var(--ink)\"/>\n            <circle cx=\"106\" cy=\"30\" r=\"5\" fill=\"white\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <circle cx=\"107\" cy=\"30\" r=\"2\" fill=\"var(--ink)\"/>\n            <!-- Sweat -->\n            <path d=\"M84 20 C82 18 82 14 84 12 C86 14 86 18 84 20 Z\" fill=\"#38bdf8\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <line x1=\"60\" y1=\"64\" x2=\"72\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"3\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator vigorously mopping floor with big joyful smile -->\n            <path d=\"M68 64 Q80 44 98 44 Q116 44 122 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Joyful squinting eyes -->\n            <path d=\"M86 48 Q90 44 94 48 M102 48 Q106 44 110 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Big happy grin -->\n            <path d=\"M88 54 Q100 60 114 54\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Broom/Mop -->\n            <line x1=\"42\" y1=\"20\" x2=\"68\" y2=\"64\" stroke=\"#854d0e\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <path d=\"M38 18 L46 22 L42 26 L34 22 Z\" fill=\"#ca8a04\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Suds & Sparkles everywhere -->\n            <circle cx=\"34\" cy=\"60\" r=\"4\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <circle cx=\"26\" cy=\"62\" r=\"3\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <text x=\"54\" y=\"32\" font-family=\"'Space Mono', monospace\" font-size=\"11\" fill=\"#eab308\">✨</text>\n            <text x=\"124\" y=\"36\" font-family=\"'Space Mono', monospace\" font-size=\"13\" fill=\"#eab308\">✨</text>\n        </svg>"
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator vigorously mopping floor with big joyful smile -->\n            <path d=\"M68 64 Q80 44 98 44 Q116 44 122 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Joyful squinting eyes -->\n            <path d=\"M86 48 Q90 44 94 48 M102 48 Q106 44 110 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Big happy grin -->\n            <path d=\"M88 54 Q100 60 114 54\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Broom/Mop -->\n            <line x1=\"42\" y1=\"20\" x2=\"68\" y2=\"64\" stroke=\"#854d0e\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <path d=\"M38 18 L46 22 L42 26 L34 22 Z\" fill=\"#ca8a04\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Suds & Sparkles everywhere -->\n            <circle cx=\"34\" cy=\"60\" r=\"4\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <circle cx=\"26\" cy=\"62\" r=\"3\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <text x=\"54\" y=\"32\" font-family=\"'Space Mono', monospace\" font-size=\"11\" fill=\"#eab308\">★</text>\n            <text x=\"124\" y=\"36\" font-family=\"'Space Mono', monospace\" font-size=\"13\" fill=\"#eab308\">★</text>\n        </svg>"
         },
         {
                 "title": "EP. 5: TO-DO LIST ZEN",
@@ -4495,7 +4496,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "speech2": "\"10,000 WPM UNLEASHED!\"",
                 "caption": "\"Panic is nature's ultimate performance-enhancing drug.\"",
                 "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Clock 11:58 -->\n            <rect x=\"18\" y=\"24\" width=\"34\" height=\"18\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <text x=\"35\" y=\"36\" font-family=\"'Space Mono', monospace\" font-size=\"7\" font-weight=\"900\" text-anchor=\"middle\" fill=\"#b91c1c\">11:58</text>\n            <!-- Gator weeping in despair -->\n            <path d=\"M78 64 Q84 48 106 48 Q128 48 132 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Tears streaming -->\n            <path d=\"M96 52 C94 56 94 62 96 64 M108 52 C110 56 110 62 108 64\" stroke=\"#38bdf8\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- 11:59 Clock -->\n            <rect x=\"8\" y=\"16\" width=\"32\" height=\"16\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"24\" y=\"27\" font-family=\"'Space Mono', monospace\" font-size=\"6.5\" font-weight=\"900\" text-anchor=\"middle\" fill=\"white\">11:59</text>\n            <!-- Flames around keyboard -->\n            <path d=\"M26 62 Q28 50 32 54 Q36 44 40 56 Q44 48 48 62 Z\" fill=\"#f97316\"/>\n            <!-- Keyboard with smoke -->\n            <rect x=\"24\" y=\"58\" width=\"28\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <!-- Multitasking God Mode Gator with 6 arms typing at lightspeed -->\n            <path d=\"M82 64 L82 32 Q92 20 108 20 Q122 20 126 32 L126 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Intense glowing eyes -->\n            <circle cx=\"98\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"98\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <!-- Multi-arm blur lines -->\n            <path d=\"M82 36 L48 52 M82 42 L52 56 M82 48 L46 60 M124 36 L144 48 M124 42 L142 54 M124 48 L140 60\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <text x=\"64\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">⚡</text>\n            <text x=\"126\" y=\"20\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">⚡</text>\n        </svg>"
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- 11:59 Clock -->\n            <rect x=\"8\" y=\"16\" width=\"32\" height=\"16\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"24\" y=\"27\" font-family=\"'Space Mono', monospace\" font-size=\"6.5\" font-weight=\"900\" text-anchor=\"middle\" fill=\"white\">11:59</text>\n            <!-- Flames around keyboard -->\n            <path d=\"M26 62 Q28 50 32 54 Q36 44 40 56 Q44 48 48 62 Z\" fill=\"#f97316\"/>\n            <!-- Keyboard with smoke -->\n            <rect x=\"24\" y=\"58\" width=\"28\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <!-- Multitasking God Mode Gator with 6 arms typing at lightspeed -->\n            <path d=\"M82 64 L82 32 Q92 20 108 20 Q122 20 126 32 L126 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Intense glowing eyes -->\n            <circle cx=\"98\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"98\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <!-- Multi-arm blur lines -->\n            <path d=\"M82 36 L48 52 M82 42 L52 56 M82 48 L46 60 M124 36 L144 48 M124 42 L142 54 M124 48 L140 60\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <text x=\"64\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">★</text>\n            <text x=\"126\" y=\"20\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">★</text>\n        </svg>"
         }
 ];
 
@@ -4571,18 +4572,18 @@ document.addEventListener('DOMContentLoaded', () => {
         comicCopyBtn.addEventListener('click', async () => {
             const item = COMIC_STRIPS[comicIdx];
             if (!item) return;
-            const copyMsg = `📰 *THE CHRONICLES OF LATER GATOR* — ${item.title}\n` +
+            const copyMsg = `★ *THE CHRONICLES OF LATER GATOR* — ${item.title}\n` +
                 `[${item.tag1}]: ${item.speech1}\n` +
                 `[${item.tag2}]: ${item.speech2}\n` +
                 `> "${item.caption.replace(/^"|"$/g, '')}"\n` +
                 `— via LaterGator.live`;
             try {
                 await navigator.clipboard.writeText(copyMsg);
-                comicCopyBtn.textContent = "COPIED! ✓";
-                setTimeout(() => { comicCopyBtn.textContent = "📋 COPY"; }, 2000);
+                comicCopyBtn.textContent = "[ COPIED! ✓ ]";
+                setTimeout(() => { comicCopyBtn.textContent = "[ COPY ]"; }, 2000);
             } catch (e) {
-                comicCopyBtn.textContent = "COPIED!";
-                setTimeout(() => { comicCopyBtn.textContent = "📋 COPY"; }, 2000);
+                comicCopyBtn.textContent = "[ COPIED! ]";
+                setTimeout(() => { comicCopyBtn.textContent = "[ COPY ]"; }, 2000);
             }
         });
     }
@@ -4717,7 +4718,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Telegraph Network Resilience (Offline / Online Status)
     window.addEventListener('offline', () => {
         if (statusMessage) {
-            statusMessage.textContent = "⚡ TELEGRAPH CABLE DISRUPTED // OPERATING OFFLINE";
+            statusMessage.textContent = "★ TELEGRAPH CABLE DISRUPTED // OPERATING OFFLINE ★";
             setTimeout(() => {
                 if (statusMessage.textContent.includes("TELEGRAPH")) statusMessage.textContent = "";
             }, 6000);
@@ -4726,7 +4727,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('online', () => {
         if (statusMessage) {
-            statusMessage.textContent = "⚡ TELEGRAPH CONNECTION RESTORED";
+            statusMessage.textContent = "★ TELEGRAPH CONNECTION RESTORED ★";
             setTimeout(() => {
                 if (statusMessage.textContent.includes("RESTORED")) statusMessage.textContent = "";
             }, 3000);
@@ -4848,18 +4849,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (feedContainer) {
                         myTaskIds.forEach(id => {
                             const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
-                            if (item && !item.querySelector('.feed-resolve-btn, .feed-ididit-btn')) {
-                                let actionBar = item.querySelector('.feed-own-action-bar');
-                                if (!actionBar) {
-                                    actionBar = document.createElement('div');
-                                    actionBar.className = 'feed-own-action-bar';
-                                    item.appendChild(actionBar);
-                                }
-                                actionBar.innerHTML = `
+                            if (item && !item.querySelector('.feed-owner-bar')) {
+                                const bar = document.createElement('div');
+                                bar.className = 'feed-owner-bar';
+                                bar.innerHTML = `
+                                    <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
                                     <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
-                                        <span class="btn-trophy">🏆</span> <span class="btn-text">I DID IT! — CLAIM REDEMPTION</span>
+                                        [ I DID IT! ➔ ]
                                     </button>
                                 `;
+                                item.appendChild(bar);
                             }
                         });
                     }
@@ -5020,13 +5019,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!/^[a-zA-Z0-9_]+$/.test(raw)) {
                 isTagValid = false;
-                if (bureauTagStatus) bureauTagStatus.textContent = '❌';
+                if (bureauTagStatus) bureauTagStatus.textContent = '[✕]';
                 if (bureauClaimError) bureauClaimError.textContent = 'Only letters, numbers, and underscores.';
                 if (bureauClaimBtn) bureauClaimBtn.disabled = true;
                 return;
             }
 
-            if (bureauTagStatus) bureauTagStatus.textContent = '⏳';
+            if (bureauTagStatus) bureauTagStatus.textContent = '[...]';
             if (bureauClaimError) bureauClaimError.textContent = '';
 
             fetch(`/api/gator?action=check&tag=${encodeURIComponent(raw)}`)
@@ -5034,12 +5033,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.available) {
                         isTagValid = true;
-                        if (bureauTagStatus) bureauTagStatus.textContent = '✅';
+                        if (bureauTagStatus) bureauTagStatus.textContent = '[✓]';
                         if (bureauClaimError) bureauClaimError.textContent = '';
                         validateClaimForm();
                     } else {
                         isTagValid = false;
-                        if (bureauTagStatus) bureauTagStatus.textContent = '❌';
+                        if (bureauTagStatus) bureauTagStatus.textContent = '[✕]';
                         if (bureauClaimError) bureauClaimError.textContent = data.reason || 'Occupied. Someone claimed that tag first.';
                         if (bureauClaimBtn) bureauClaimBtn.disabled = true;
                     }

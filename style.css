@@ -3856,12 +3856,14 @@ body.sepia-edition .footer-credit {
         background: var(--ink);
         color: var(--paper);
         font-family: 'Space Mono', monospace;
-        font-size: 0.82rem;
-        font-weight: bold;
-        padding: 11px 18px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        padding: 9px 14px;
         border: 2px solid var(--paper);
-        border-radius: 30px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35), 2px 2px 0 var(--ink);
+        border-radius: 0;
+        box-shadow: 3px 3px 0 var(--ink), 0 4px 12px rgba(0, 0, 0, 0.25);
         z-index: 990;
         display: none;
         align-items: center;
@@ -4249,6 +4251,64 @@ body.sepia-edition .footer-credit {
         padding: 6px 6px;
     }
 
+    .feed-owner-bar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-top: 8px;
+        padding-top: 6px;
+        border-top: 1px dotted var(--ink-light, #777);
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .feed-owner-badge {
+        font-size: 0.60rem;
+    }
+
+    .feed-ididit-btn {
+        font-size: 0.65rem;
+        padding: 4px 8px;
+    }
+
+    .wire-box-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding-bottom: 6px;
+        margin-bottom: 12px;
+    }
+
+    .wire-tab-bar {
+        display: flex;
+        width: 100%;
+        gap: 6px;
+    }
+
+    .wire-nav-tab {
+        flex: 1 1 0;
+        text-align: center;
+        padding: 5px 4px;
+        font-size: clamp(0.64rem, 2.8vw, 0.72rem);
+    }
+
+    .accomplished-reactions {
+        display: flex;
+        gap: 4px;
+        width: 100%;
+    }
+
+    .accomplished-reactions .triumph-react-btn {
+        flex: 1 1 0;
+        min-width: 0;
+        text-align: center;
+        justify-content: center;
+        padding: 4px 2px;
+        font-size: clamp(0.58rem, 2.2vw, 0.66rem);
+    }
+
     @keyframes fresh-wire-flash {
         0% { background-color: var(--highlight, #ffe58f); }
         100% { background-color: transparent; }
@@ -4521,6 +4581,21 @@ body.sepia-edition .footer-credit {
         padding: 4px 2px;
         letter-spacing: -0.2px;
         min-height: 36px;
+    }
+
+    .feed-owner-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+    }
+
+    .feed-owner-badge {
+        text-align: center;
+    }
+
+    .feed-ididit-btn {
+        text-align: center;
+        width: 100%;
     }
 
     .comic-panel-art {
@@ -7734,227 +7809,118 @@ body.sepia-edition .btn-shred-guilt:hover {
 /* Wire Box Header & Broadsheet Tab Switcher */
 .wire-box-header {
     display: flex;
-    flex-direction: column;
-    width: 100%;
-    margin-bottom: 12px;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink, #111);
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
-.wire-section-title {
-    margin: 0 0 10px 0;
+.wire-box-header .section-title {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin: 0;
+    font-size: 1.5rem;
+    white-space: nowrap;
 }
 
 .wire-tab-bar {
-    display: flex !important;
-    flex-direction: row !important; /* STRICTLY HORIZONTAL on ALL screen sizes */
-    align-items: stretch;
-    border: 2px solid var(--ink, #111);
-    background: var(--bg-alt, #F4EEDF);
-    margin: 0 0 12px 0;
+    display: inline-flex;
+    flex-direction: row;
+    gap: 8px;
+    align-items: center;
+    background: transparent;
+    border: none;
+    margin: 0;
     padding: 0;
-    gap: 0;
-    width: 100%;
-    box-sizing: border-box;
 }
 
 .wire-nav-tab {
-    flex: 1 1 50%;
-    min-width: 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 9px 8px;
-    background: transparent;
-    color: var(--ink-light, #555);
-    border: none;
-    border-right: 2px solid var(--ink, #111);
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.68rem, 2.4vw, 0.78rem);
+    font-size: clamp(0.70rem, 2vw, 0.78rem);
     font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-light, #555);
+    background: transparent;
+    border: 1px solid transparent;
+    padding: 2px 6px;
     cursor: pointer;
-    transition: background 0.15s ease, color 0.15s ease;
     white-space: nowrap;
-    overflow: hidden;
-    box-sizing: border-box;
-}
-
-.wire-nav-tab:last-child {
-    border-right: none;
-}
-
-.wire-nav-tab .tab-icon {
-    font-size: 0.95rem;
-    flex-shrink: 0;
-}
-
-.wire-nav-tab .tab-label {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.wire-nav-tab .tab-badge {
-    background: #E5A93C;
-    color: #111;
-    font-size: 0.62rem;
-    font-weight: 900;
-    padding: 1px 6px;
-    border-radius: 999px;
-    border: 1px solid #111;
-    margin-left: 2px;
-    flex-shrink: 0;
-    white-space: nowrap;
+    transition: all 0.12s ease;
+    border-radius: 0;
 }
 
 .wire-nav-tab:hover {
-    background: rgba(0, 0, 0, 0.04);
     color: var(--ink, #111);
+    border-color: var(--ink, #111);
 }
 
 .wire-nav-tab.active {
     background: var(--ink, #111);
     color: var(--paper, #FAF6EE);
+    border-color: var(--ink, #111);
     font-weight: 800;
 }
 
-.wire-nav-tab.active .tab-badge {
-    background: #FFDF79;
-    color: #111;
+.wire-nav-tab .tab-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.70rem;
+    font-weight: 800;
 }
 
-/* Breaking Redemption Ticker Ribbon */
-.triumph-ribbon {
+/* User's Own Wire Post: Dedicated Broadsheet Action Bar & [ I DID IT! ] button */
+.feed-owner-bar {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    padding: 6px 10px;
-    margin-bottom: 12px;
-    background: #FFF9E6;
-    border: 2px solid #E5A93C;
-    border-left: 5px solid #D48806;
-    box-shadow: 2px 2px 0 rgba(229, 169, 60, 0.35);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.72rem;
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-    animation: ribbon-glow 3s ease-in-out infinite alternate;
-}
-
-@keyframes ribbon-glow {
-    0% { border-color: #E5A93C; }
-    100% { border-color: #FFC043; box-shadow: 2.5px 2.5px 0 rgba(229, 169, 60, 0.5); }
-}
-
-.triumph-ribbon-badge {
-    background: #111;
-    color: #FFDF79;
-    font-size: 0.62rem;
-    font-weight: 900;
-    letter-spacing: 0.06em;
-    padding: 2px 6px;
-    border-radius: 2px;
-    white-space: nowrap;
-    flex-shrink: 0;
-    text-transform: uppercase;
-    display: inline-flex;
-    align-items: center;
-}
-
-.triumph-ribbon-badge-desktop {
-    display: inline;
-}
-
-.triumph-ribbon-badge-mobile {
-    display: none;
-}
-
-@media (max-width: 640px) {
-    .triumph-ribbon-badge-desktop {
-        display: none;
-    }
-    .triumph-ribbon-badge-mobile {
-        display: inline;
-    }
-}
-
-.triumph-ribbon-text {
-    flex: 1 1 auto;
-    min-width: 0;
-    color: #111;
-    font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.72rem;
-    line-height: 1.25;
-}
-
-.triumph-ribbon-view-btn {
-    background: #111;
-    color: #FFF;
-    border: 1px solid #111;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 800;
-    padding: 3px 8px;
-    cursor: pointer;
-    text-transform: uppercase;
-    flex-shrink: 0;
-    white-space: nowrap;
-    transition: background 0.15s ease, transform 0.1s ease;
-}
-
-.triumph-ribbon-view-btn:hover {
-    background: #D48806;
-    color: #111;
-    transform: translateY(-1px);
-}
-
-/* User's Own Wire Post: Dedicated Redemption Action Bar */
-.feed-own-action-bar {
-    width: 100%;
     margin-top: 8px;
     padding-top: 6px;
-    border-top: 1px dashed rgba(0, 0, 0, 0.15);
+    border-top: 1px dotted var(--ink-light, #777);
     box-sizing: border-box;
+    width: 100%;
+}
+
+.feed-owner-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--ink-light, #555);
+    white-space: nowrap;
 }
 
 .feed-ididit-btn, .feed-resolve-btn {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 8px 12px;
-    background: linear-gradient(135deg, #FFE899 0%, #F5B84A 100%);
-    color: #111;
-    border: 2px solid var(--ink, #111);
-    box-shadow: 2px 2px 0 var(--ink, #111);
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.68rem, 2.4vw, 0.78rem);
-    font-weight: 900;
+    font-size: 0.68rem;
+    font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
+    background: var(--ink, #111);
+    color: var(--paper, #FAF6EE);
+    border: 1px solid var(--ink, #111);
+    padding: 3px 8px;
     cursor: pointer;
     white-space: nowrap;
-    box-sizing: border-box;
-    transition: all 0.15s ease;
+    border-radius: 0;
+    transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease;
 }
 
 .feed-ididit-btn:hover, .feed-resolve-btn:hover {
-    background: linear-gradient(135deg, #FFF0B3 0%, #FFC759 100%);
+    background: transparent;
+    border-color: var(--ink, #111);
+    color: var(--ink, #111);
     transform: translateY(-1px);
-    box-shadow: 3px 3px 0 var(--ink, #111);
 }
 
 .feed-ididit-btn:active, .feed-resolve-btn:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0 var(--ink, #111);
+    transform: scale(0.96);
 }
 
 /* Redemption Feed Container & Cards */
@@ -8109,10 +8075,9 @@ body.sepia-edition .btn-shred-guilt:hover {
     padding: 2px 6px;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
     max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
     box-sizing: border-box;
 }
 
@@ -8128,43 +8093,37 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 .triumph-react-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    background: #FFF;
-    border: 1.5px solid var(--ink, #111);
+    appearance: none;
+    -webkit-appearance: none;
+    background: transparent;
+    border: 1px solid var(--ink, #111);
+    color: var(--ink, #111);
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.64rem, 2.1vw, 0.72rem);
+    font-size: 0.68rem;
     font-weight: 700;
-    padding: 4px 8px;
-    min-height: 28px;
-    color: #111;
+    letter-spacing: 0.5px;
+    padding: 3px 8px;
     cursor: pointer;
-    box-shadow: 1.5px 1.5px 0 var(--ink, #111);
-    transition: all 0.12s ease;
-    border-radius: 2px;
+    text-transform: uppercase;
+    border-radius: 0;
+    transition: transform 0.1s ease, background 0.15s ease;
     white-space: nowrap;
     box-sizing: border-box;
-    flex: 1 1 auto;
 }
 
 .triumph-react-btn:hover {
-    background: #FFF9E6;
+    background: rgba(17, 17, 17, 0.08);
     transform: translateY(-1px);
-    box-shadow: 2.5px 2.5px 0 var(--ink, #111);
 }
 
 .triumph-react-btn:active {
-    transform: translate(1px, 1px);
-    box-shadow: 0.5px 0.5px 0 var(--ink, #111);
+    transform: scale(0.95);
 }
 
 .triumph-react-btn.reacted {
-    background: #111;
-    color: #FFDF79;
-    border-color: #111;
-    transform: rotate(var(--stamp-rot, -2deg));
+    background: var(--ink, #111);
+    color: var(--paper, #FAF6EE);
+    font-weight: 800;
 }
 
 .triumph-react-btn .rx-count {
@@ -8671,49 +8630,44 @@ body.mobile-view-wire #box-dispatch {
 }
 
 /* Theme Overrides for Redemption & Accomplished Affairs: Midnight Edition */
-body.midnight-edition .wire-tab-bar {
-    background: #1C1917;
-    border-color: #EFE3D3;
+body.midnight-edition .wire-box-header {
+    border-bottom-color: #EFE3D3;
 }
 
 body.midnight-edition .wire-nav-tab {
-    border-right-color: #EFE3D3;
     color: #A39686;
+    border-color: transparent;
 }
 
 body.midnight-edition .wire-nav-tab:hover {
-    background: #2E2822;
     color: #EFE3D3;
+    border-color: #EFE3D3;
 }
 
 body.midnight-edition .wire-nav-tab.active {
     background: #EFE3D3;
     color: #141210;
+    border-color: #EFE3D3;
 }
 
-body.midnight-edition .triumph-ribbon {
-    background: #231C12;
-    border-color: #E5A93C;
-    border-left-color: #FFC043;
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+body.midnight-edition .feed-owner-bar {
+    border-top-color: rgba(239, 227, 211, 0.25);
 }
 
-body.midnight-edition .triumph-ribbon-text {
-    color: #EFE3D3;
-}
-
-body.midnight-edition .triumph-ribbon-badge {
-    background: #E5A93C;
-    color: #141210;
-}
-
-body.midnight-edition .feed-own-action-bar {
-    border-top-color: rgba(239, 227, 211, 0.2);
+body.midnight-edition .feed-owner-badge {
+    color: #A39686;
 }
 
 body.midnight-edition .feed-ididit-btn {
+    background: #EFE3D3;
+    color: #141210;
     border-color: #EFE3D3;
-    box-shadow: 2px 2px 0 #EFE3D3;
+}
+
+body.midnight-edition .feed-ididit-btn:hover {
+    background: transparent;
+    color: #EFE3D3;
+    border-color: #EFE3D3;
 }
 
 body.midnight-edition .accomplished-item {
@@ -8752,20 +8706,19 @@ body.midnight-edition .accomplished-lore {
 }
 
 body.midnight-edition .triumph-react-btn {
-    background: #25201B;
+    background: #25201A;
+    border-color: #6E5C49;
     color: #EFE3D3;
-    border-color: #EFE3D3;
-    box-shadow: 2px 2px 0 #060504;
 }
 
 body.midnight-edition .triumph-react-btn:hover {
-    background: #362E27;
+    background: rgba(239, 227, 211, 0.08);
 }
 
 body.midnight-edition .triumph-react-btn.reacted {
-    background: #E5A93C;
+    background: #EFE3D3;
     color: #141210;
-    border-color: #E5A93C;
+    border-color: #EFE3D3;
 }
 
 body.midnight-edition .resolution-protocol-bar {
