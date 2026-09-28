@@ -2407,11 +2407,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // 4. Send DELETE to backend database and AWAIT
                 try {
+                    const token = localStorage.getItem('lg_gator_token') || localStorage.getItem('lg_session_id') || '';
                     const delRes = await fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-Gator-Token': 'chomp-chomp'
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({ id: targetId })
                     });
