@@ -1580,6 +1580,7 @@ button {
     color: var(--ink-light);
     letter-spacing: 1.2px;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
 .feed-end-ornament {
@@ -1587,57 +1588,22 @@ button {
     font-size: 0.8rem;
 }
 
-.feed-back-to-top-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px 22px;
-    background: var(--paper);
-    color: var(--ink);
-    border: 2px solid var(--ink);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
-    transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease, box-shadow 0.08s ease;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    box-sizing: border-box;
-    width: 100%;
-    max-width: 320px;
-}
-
-.feed-back-to-top-btn:hover {
-    background: var(--ink);
-    color: var(--paper);
-    box-shadow: 1px 1px 0 rgba(0, 0, 0, 0.85);
-    transform: translate(1px, 1px);
-}
-
-.feed-back-to-top-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: none;
-}
-
+.feed-back-to-top-btn,
 .feed-load-older-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    padding: 10px 22px;
+    padding: 10px 18px;
     background: var(--paper);
     color: var(--ink);
     border: 2px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
+    font-size: clamp(0.68rem, 2.2vw, 0.76rem);
     font-weight: 700;
-    letter-spacing: 1px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
+    white-space: nowrap !important;
     cursor: pointer;
     box-shadow: 2px 2px 0 rgba(0, 0, 0, 0.35);
     transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease, box-shadow 0.08s ease;
@@ -1645,10 +1611,12 @@ button {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     box-sizing: border-box;
-    width: 100%;
-    max-width: 320px;
+    width: auto;
+    min-width: 250px;
+    max-width: min(380px, calc(100% - 20px));
 }
 
+.feed-back-to-top-btn:hover,
 .feed-load-older-btn:hover {
     background: var(--ink);
     color: var(--paper);
@@ -1656,6 +1624,7 @@ button {
     transform: translate(1px, 1px);
 }
 
+.feed-back-to-top-btn:active,
 .feed-load-older-btn:active {
     transform: translate(2px, 2px);
     box-shadow: none;
