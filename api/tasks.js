@@ -185,44 +185,27 @@ module.exports = async function handler(req, res) {
             if (req.query._t) {
                 res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
             } else {
-                res.setHeader('Cache-Control', 'public, s-maxage=2, stale-while-revalidate=10');
+                res.setHeader('Cache-Control', 'public, s-maxage=5, stale-while-revalidate=25');
             }
-            let queryLimit = 3000;
+            let queryLimit = 150;
             if (req.query.limit) {
                 if (req.query.limit === 'all') {
-                    queryLimit = 10000;
+                    queryLimit = 1000;
                 } else {
                     const parsed = parseInt(req.query.limit, 10);
                     if (!isNaN(parsed) && parsed > 0) {
-                        queryLimit = Math.min(parsed, 10000);
+                        queryLimit = Math.min(parsed, 1000);
                     }
                 }
             }
 
             let { data: tasks, error } = await supabase
                 .from('tasks')
-                .select('*')
+                .select('id, text, city, country, same_count, valid_count, rip_count, created_at, ip_address')
                 .order('created_at', { ascending: false })
-                .limit(Math.min(queryLimit, 1000));
+                .limit(queryLimit);
                 
             if (error) throw error;
-
-            // If queryLimit > 1000 and we hit PostgREST's 1000-row batch limit, fetch older batches
-            if (tasks && tasks.length === 1000 && queryLimit > 1000) {
-                let offset = 1000;
-                while (offset < queryLimit) {
-                    const end = Math.min(offset + 999, queryLimit - 1);
-                    const { data: moreTasks, error: moreErr } = await supabase
-                        .from('tasks')
-                        .select('*')
-                        .order('created_at', { ascending: false })
-                        .range(offset, end);
-                    if (moreErr || !moreTasks || moreTasks.length === 0) break;
-                    tasks = tasks.concat(moreTasks);
-                    if (moreTasks.length < 1000) break;
-                    offset += moreTasks.length;
-                }
-            }
 
             // Instantly purge any banned IP tasks, inappropriate language, or gibberish from the public feed
             const badTaskIds = [];
@@ -242,7 +225,10 @@ module.exports = async function handler(req, res) {
                 supabase.from('tasks').delete().in('id', badTaskIds).then(() => {}).catch(() => {});
             }
 
-            return res.status(200).json(cleanTasks);
+            // Strip ip_address from public feed response to reduce payload and protect client privacy
+            const publicTasks = cleanTasks.map(({ ip_address, ...rest }) => rest);
+
+            return res.status(200).json(publicTasks);
         } catch (err) {
             return res.status(500).json({ error: err.message });
         }
