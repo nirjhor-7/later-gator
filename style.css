@@ -427,8 +427,13 @@ body.sepia-edition .midnight-toggle-btn:hover {
 /* Grid Layout */
 .newspaper-grid {
     display: grid;
-    grid-template-columns: 1.2fr 2fr;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 2fr);
     gap: 30px;
+}
+
+.left-col,
+.right-col {
+    min-width: 0;
 }
 
 .right-col {
@@ -4312,24 +4317,33 @@ body.sepia-edition .footer-credit {
     }
 
     .wire-box-header {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-        padding-bottom: 6px;
-        margin-bottom: 12px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        padding-bottom: 4px;
+        margin-bottom: 10px;
+        border-bottom: 2px solid var(--ink);
+    }
+
+    .wire-box-header .section-title {
+        font-size: 1.35rem;
+        line-height: 1;
+        margin: 0;
     }
 
     .wire-tab-bar {
-        display: flex;
-        width: 100%;
-        gap: 6px;
+        display: inline-flex;
+        width: auto;
+        gap: 4px;
+        flex-shrink: 0;
     }
 
     .wire-nav-tab {
-        flex: 1 1 0;
-        text-align: center;
-        padding: 5px 4px;
-        font-size: clamp(0.64rem, 2.8vw, 0.72rem);
+        flex: 0 0 auto;
+        padding: 2px 5px;
+        font-size: 0.60rem;
     }
 
     .accomplished-reactions {
@@ -7795,9 +7809,9 @@ body.midnight-edition .disposal-absolution-card {
 }
 
 body.midnight-edition .absolution-stamp {
-    border-color: #E5A93C;
-    color: #E5A93C;
-    background: rgba(229, 169, 60, 0.05);
+    border-color: #EFE3D3;
+    color: #EFE3D3;
+    background: rgba(239, 227, 211, 0.05);
 }
 
 body.midnight-edition .btn-shred-guilt {
@@ -7851,66 +7865,130 @@ body.sepia-edition .btn-shred-guilt:hover {
 .wire-box-header {
     display: flex;
     flex-direction: row;
-    align-items: baseline;
+    align-items: center;
     justify-content: space-between;
-    border-bottom: 2px solid var(--ink, #111);
+    border-bottom: 2px solid var(--ink);
     padding-bottom: 5px;
     margin-bottom: 15px;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 8px;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .wire-box-header .section-title {
     border-bottom: none;
     padding-bottom: 0;
     margin: 0;
-    font-size: 1.5rem;
+    font-size: 1.6rem;
+    line-height: 1;
+    letter-spacing: 0.5px;
     white-space: nowrap;
 }
 
 .wire-tab-bar {
     display: inline-flex;
     flex-direction: row;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
     background: transparent;
     border: none;
     margin: 0;
     padding: 0;
+    flex-shrink: 0;
 }
 
 .wire-nav-tab {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.70rem, 2vw, 0.78rem);
+    font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--ink-light, #555);
+    color: var(--ink);
     background: transparent;
-    border: 1px solid transparent;
-    padding: 2px 6px;
+    border: 1.5px solid var(--ink);
+    padding: 2px 7px;
     cursor: pointer;
     white-space: nowrap;
-    transition: all 0.12s ease;
     border-radius: 0;
+    line-height: 1.2;
+    opacity: 0.55;
+    box-shadow: none;
+    transition: opacity 0.12s ease, background-color 0.12s ease, color 0.12s ease;
 }
 
 .wire-nav-tab:hover {
-    color: var(--ink, #111);
-    border-color: var(--ink, #111);
+    opacity: 1;
 }
 
 .wire-nav-tab.active {
-    background: var(--ink, #111);
-    color: var(--paper, #FAF6EE);
-    border-color: var(--ink, #111);
+    background: var(--ink);
+    color: var(--paper);
+    opacity: 1;
     font-weight: 800;
 }
 
-.wire-nav-tab .tab-badge {
+.wire-nav-tab .tab-badge,
+.wire-nav-tab .tab-badge-short {
     font-family: 'Space Mono', monospace;
-    font-size: 0.70rem;
+    font-size: inherit;
     font-weight: 800;
+}
+
+/* Responsive Wire Header: Full vs Short Labels */
+.wire-title-full {
+    display: inline;
+}
+
+.wire-title-short {
+    display: none;
+}
+
+.tab-label-full {
+    display: inline;
+}
+
+.tab-label-short {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .wire-box-header {
+        padding-bottom: 4px;
+        margin-bottom: 10px;
+        gap: 6px;
+    }
+    .wire-box-header .section-title {
+        font-size: 1.25rem !important;
+    }
+    .wire-title-full {
+        display: none !important;
+    }
+    .wire-title-short {
+        display: inline !important;
+    }
+    .tab-label-full {
+        display: none !important;
+    }
+    .tab-label-short {
+        display: inline !important;
+    }
+    .wire-tab-bar {
+        gap: 4px;
+    }
+    .wire-nav-tab {
+        padding: 2px 5px !important;
+        font-size: 0.60rem !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .wire-box-header .section-title {
+        font-size: 1.10rem !important;
+    }
+    .wire-nav-tab {
+        padding: 2px 4px !important;
+        font-size: 0.58rem !important;
+    }
 }
 
 /* User's Own Wire Post: Dedicated Broadsheet Action Bar & [ I DID IT! ] button */
@@ -7964,36 +8042,41 @@ body.sepia-edition .btn-shred-guilt:hover {
     transform: scale(0.96);
 }
 
-/* Redemption Feed Container & Cards */
+/* Redemption Feed Container & Broadhseet Dispatches */
 .accomplished-feed-container {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    padding-bottom: 80px; /* Clearance for mobile bottom FAB */
+    gap: 0;
+    padding-bottom: 40px;
     box-sizing: border-box;
+    width: 100%;
 }
 
 .accomplished-item {
-    background: #FFFDF8;
-    border: 2px solid var(--ink, #111);
-    box-shadow: 3px 3px 0 var(--ink, #111);
-    padding: 12px 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--ink);
+    padding: 16px 0 18px 0;
+    margin-bottom: 4px;
+    box-shadow: none;
     position: relative;
     box-sizing: border-box;
+    width: 100%;
     max-width: 100%;
     overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    transition: background-color 0.15s ease;
 }
 
 .accomplished-item:hover {
-    transform: translateY(-1px);
-    box-shadow: 4px 4px 0 var(--ink, #111);
+    transform: none;
+    box-shadow: none;
+    background: rgba(0, 0, 0, 0.02);
 }
 
 .accomplished-item.is-new-triumph {
-    border-color: #D48806;
-    background: #FFFFF4;
-    animation: new-triumph-pulse 2s ease-in-out infinite alternate;
+    border-color: var(--ink);
+    background: rgba(0, 0, 0, 0.03);
+    animation: none;
 }
 
 .accomplished-header {
@@ -8001,68 +8084,80 @@ body.sepia-edition .btn-shred-guilt:hover {
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    margin-bottom: 6px;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.2);
-    padding-bottom: 4px;
+    margin-bottom: 8px;
+    border-bottom: none;
+    padding-bottom: 0;
     width: 100%;
     box-sizing: border-box;
 }
 
 .accomplished-tag {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.58rem, 2vw, 0.65rem);
-    font-weight: 800;
-    color: #8C5800;
-    background: #FFF2CC;
-    border: 1px solid #E5A93C;
+    font-size: 0.60rem;
+    font-weight: 700;
+    color: var(--paper);
+    background: var(--ink);
+    border: 1px solid var(--ink);
     padding: 2px 6px;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
     flex-shrink: 0;
+    line-height: 1.2;
 }
 
 .accomplished-time {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.6rem, 2vw, 0.66rem);
-    color: #777;
+    font-size: 0.70rem;
+    color: var(--ink-light);
     white-space: nowrap;
     flex-shrink: 0;
 }
 
 .accomplished-headline {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(0.98rem, 3.2vw, 1.20rem);
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 1.35rem;
     font-weight: 900;
-    color: #111;
-    line-height: 1.25;
+    color: var(--ink);
+    line-height: 1.15;
     margin: 4px 0 6px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     word-break: break-word;
 }
 
+.accomplished-headline strong {
+    font-weight: 900;
+    color: var(--ink);
+}
+
 .accomplished-task-quote {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: clamp(0.88rem, 2.6vw, 1.02rem);
-    font-style: italic;
-    color: #333;
-    line-height: 1.3;
-    margin-bottom: 8px;
-    border-left: 2.5px solid var(--ink, #111);
-    padding-left: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    margin: 6px 0 10px 0;
+    border-left: 2.5px solid var(--ink);
+    padding-left: 10px;
     word-break: break-word;
+    text-transform: uppercase;
 }
 
 .accomplished-calculus-bar {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background: #F4EEDF;
-    border: 1px solid #D5C9B3;
-    padding: 4px 8px;
+    gap: 10px;
+    background: transparent;
+    border-top: 1px dotted var(--ink);
+    border-bottom: 1px dotted var(--ink);
+    border-left: none;
+    border-right: none;
+    padding: 6px 0;
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.62rem, 2vw, 0.70rem);
-    color: #222;
-    margin-bottom: 8px;
+    font-size: 0.72rem;
+    color: var(--ink);
+    margin: 8px 0;
     flex-wrap: wrap;
     box-sizing: border-box;
 }
@@ -8071,51 +8166,56 @@ body.sepia-edition .btn-shred-guilt:hover {
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 5px;
 }
 
 .accomplished-calculus-bar .calc-lbl {
-    color: #666;
+    color: var(--ink-light);
     font-weight: 700;
+    text-transform: uppercase;
 }
 
 .accomplished-calculus-bar .calc-val {
-    color: #B35900;
+    color: var(--ink);
     font-weight: 800;
+    text-transform: uppercase;
 }
 
 .accomplished-calculus-bar .calc-sep {
-    color: #999;
+    color: var(--ink-light);
+    opacity: 0.5;
     flex-shrink: 0;
 }
 
 .accomplished-lore {
+    font-family: 'Space Mono', monospace;
     font-style: italic;
-    font-size: clamp(0.72rem, 2.2vw, 0.82rem);
-    color: #4A423B;
-    line-height: 1.35;
-    border-left: 3px solid #E5A93C;
-    padding-left: 8px;
-    margin: 4px 0 8px 0;
-    background: rgba(229, 169, 60, 0.05);
+    font-size: 0.78rem;
+    color: var(--ink);
+    opacity: 0.85;
+    line-height: 1.4;
+    border-left: none;
+    padding-left: 0;
+    margin: 6px 0 10px 0;
+    background: transparent;
     word-break: break-word;
 }
 
 .accomplished-merit-row {
-    margin-bottom: 8px;
+    margin: 8px 0 10px 0;
 }
 
 .accomplished-merit {
     display: inline-block;
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.58rem, 2vw, 0.65rem);
-    font-weight: 900;
-    color: #111;
-    background: #FFDF79;
-    border: 1.5px solid #111;
-    padding: 2px 6px;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--ink);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1px solid var(--ink);
+    padding: 2px 7px;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     white-space: normal;
     word-break: break-word;
     max-width: 100%;
@@ -8127,8 +8227,8 @@ body.sepia-edition .btn-shred-guilt:hover {
     align-items: center;
     gap: 6px;
     flex-wrap: wrap;
-    border-top: 1px dashed rgba(0, 0, 0, 0.15);
-    padding-top: 8px;
+    border-top: none;
+    padding-top: 4px;
     width: 100%;
     box-sizing: border-box;
 }
@@ -8137,8 +8237,8 @@ body.sepia-edition .btn-shred-guilt:hover {
     appearance: none;
     -webkit-appearance: none;
     background: transparent;
-    border: 1px solid var(--ink, #111);
-    color: var(--ink, #111);
+    border: 1px solid var(--ink);
+    color: var(--ink);
     font-family: 'Space Mono', monospace;
     font-size: 0.68rem;
     font-weight: 700;
@@ -8147,14 +8247,14 @@ body.sepia-edition .btn-shred-guilt:hover {
     cursor: pointer;
     text-transform: uppercase;
     border-radius: 0;
-    transition: transform 0.1s ease, background 0.15s ease;
+    transition: background-color 0.12s ease, color 0.12s ease;
     white-space: nowrap;
     box-sizing: border-box;
 }
 
 .triumph-react-btn:hover {
-    background: rgba(17, 17, 17, 0.08);
-    transform: translateY(-1px);
+    background: var(--ink);
+    color: var(--paper);
 }
 
 .triumph-react-btn:active {
@@ -8162,8 +8262,8 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 .triumph-react-btn.reacted {
-    background: var(--ink, #111);
-    color: var(--paper, #FAF6EE);
+    background: var(--ink);
+    color: var(--paper);
     font-weight: 800;
 }
 
@@ -8230,22 +8330,17 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 .resolution-protocol-btn:hover {
-    background: #FFF9E6;
-    transform: translateY(-1px);
-    box-shadow: 3px 3px 0 var(--ink, #111);
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--ink);
 }
 
-.resolution-protocol-btn.active {
-    background: #111;
-    color: #FFDF79;
-    box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5);
-    border-color: #111;
-}
-
+.resolution-protocol-btn.active,
 .resolution-protocol-btn[data-protocol="victory"].active {
-    background: linear-gradient(135deg, #1C1917 0%, #2A241F 100%);
-    color: #FFDF79;
-    border-color: #E5A93C;
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+    box-shadow: none;
 }
 
 /* Slanted Golden Victory Memo Stamp */
@@ -8327,7 +8422,7 @@ body.sepia-edition .btn-shred-guilt:hover {
     position: absolute;
     width: 8px;
     height: 8px;
-    background: #FFDF79;
+    background: var(--ink);
     border-radius: 1px;
     animation: victory-confetti-burst var(--v-dur, 1.2s) cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
 }
@@ -8346,8 +8441,8 @@ body.sepia-edition .btn-shred-guilt:hover {
 /* Ratify Controls Bar */
 .victory-controls {
     padding: 12px 16px;
-    background: #FFFDF8;
-    border-top: 2px solid var(--ink, #111);
+    background: var(--paper);
+    border-top: 2px solid var(--ink);
     text-align: center;
     width: 100%;
     box-sizing: border-box;
@@ -8356,7 +8451,7 @@ body.sepia-edition .btn-shred-guilt:hover {
 .victory-pledge-prompt {
     font-family: 'Space Mono', monospace;
     font-size: clamp(0.66rem, 2vw, 0.72rem);
-    color: #555;
+    color: var(--ink-light);
     margin: 0 0 10px 0;
     line-height: 1.35;
 }
@@ -8369,10 +8464,10 @@ body.sepia-edition .btn-shred-guilt:hover {
     font-weight: 900;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    background: linear-gradient(135deg, #FFDF79 0%, #E5A93C 100%);
-    color: #111;
-    border: 2px solid #111;
-    box-shadow: 3px 3px 0 #111;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: 3px 3px 0 var(--ink);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -8380,18 +8475,19 @@ body.sepia-edition .btn-shred-guilt:hover {
     gap: 8px;
     white-space: nowrap;
     box-sizing: border-box;
-    transition: all 0.15s ease;
+    transition: all 0.12s ease;
 }
 
 .victory-ratify-btn:hover {
-    background: linear-gradient(135deg, #FFE899 0%, #F5B84A 100%);
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 #111;
+    background: var(--paper);
+    color: var(--ink);
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--ink);
 }
 
 .victory-ratify-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 #111;
+    transform: translate(3px, 3px);
+    box-shadow: 0 0 0 var(--ink);
 }
 
 /* Victory Certificate Card */
@@ -8409,10 +8505,10 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 .victory-card-border {
-    border: 3px double #C48208;
-    background: #FFFFF7;
-    padding: 12px 14px;
-    box-shadow: 0 0 16px rgba(229, 169, 60, 0.2);
+    border: 3px double var(--ink);
+    background: var(--paper);
+    padding: 14px 16px;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -8422,30 +8518,32 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .victory-card-header {
     text-align: center;
-    border-bottom: 2px solid #C48208;
-    padding-bottom: 6px;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
 }
 
 .victory-seal {
     display: block;
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.62rem, 2vw, 0.70rem);
-    font-weight: 800;
-    color: #8C5800;
+    font-size: 0.62rem;
+    font-weight: 700;
+    color: var(--ink);
     letter-spacing: 0.10em;
     text-transform: uppercase;
     white-space: nowrap;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .victory-proclamation {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(0.95rem, 3.2vw, 1.15rem);
+    font-family: 'Big Shoulders Display', sans-serif;
+    font-size: 1.5rem;
     font-weight: 900;
-    color: #111;
+    color: var(--ink);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.5px;
     white-space: nowrap;
+    line-height: 1;
 }
 
 .victory-card-body {
@@ -8458,21 +8556,26 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .victory-operative-line {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.68rem, 2.2vw, 0.76rem);
-    color: #444;
+    font-size: 0.72rem;
+    color: var(--ink-light);
     word-break: break-word;
+    text-transform: uppercase;
 }
 
 .victory-operative-line strong {
-    color: #111;
+    color: var(--ink);
 }
 
 .victory-task-statement {
-    font-family: 'Playfair Display', serif;
-    font-size: clamp(0.95rem, 3vw, 1.12rem);
-    font-weight: 900;
-    color: #111;
-    line-height: 1.25;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.35;
+    border-left: 3px solid var(--ink);
+    padding-left: 10px;
+    margin: 6px 0 10px 0;
+    text-transform: uppercase;
     word-break: break-word;
 }
 
@@ -8480,8 +8583,8 @@ body.sepia-edition .btn-shred-guilt:hover {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 6px;
-    background: #F9F5EC;
-    border: 1.5px solid #D5C9B3;
+    background: transparent;
+    border: 1px dotted var(--ink);
     padding: 6px 8px;
     box-sizing: border-box;
     width: 100%;
@@ -8495,9 +8598,9 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .calc-label {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.55rem, 1.8vw, 0.60rem);
-    font-weight: 800;
-    color: #777;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--ink-light);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     white-space: nowrap;
@@ -8505,19 +8608,20 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .calc-val {
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.76rem, 2.4vw, 0.86rem);
+    font-size: 0.80rem;
     font-weight: 800;
-    color: #222;
+    color: var(--ink);
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
 .calc-val.gold {
-    color: #995200;
+    color: var(--ink);
 }
 
 .victory-lore-box {
-    border-left: 3px solid #E5A93C;
-    background: rgba(229, 169, 60, 0.06);
+    border-left: 2px solid var(--ink);
+    background: rgba(0, 0, 0, 0.03);
     padding: 6px 10px;
     box-sizing: border-box;
 }
@@ -8525,9 +8629,9 @@ body.sepia-edition .btn-shred-guilt:hover {
 .lore-label {
     display: block;
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.56rem, 1.8vw, 0.60rem);
-    font-weight: 800;
-    color: #8C5800;
+    font-size: 0.58rem;
+    font-weight: 700;
+    color: var(--ink-light);
     letter-spacing: 0.05em;
     text-transform: uppercase;
     white-space: nowrap;
@@ -8535,10 +8639,11 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 .lore-text {
+    font-family: 'Space Mono', monospace;
     font-style: italic;
-    font-size: clamp(0.76rem, 2.4vw, 0.84rem);
-    color: #333;
-    line-height: 1.3;
+    font-size: 0.78rem;
+    color: var(--ink);
+    line-height: 1.35;
     margin: 0;
     word-break: break-word;
 }
@@ -8546,14 +8651,13 @@ body.sepia-edition .btn-shred-guilt:hover {
 .victory-merit-badge {
     text-align: center;
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.58rem, 2vw, 0.68rem);
-    font-weight: 900;
-    color: #111;
-    background: #FFDF79;
-    border: 1.5px solid #111;
+    font-size: 0.64rem;
+    font-weight: 800;
+    color: var(--ink);
+    background: rgba(0, 0, 0, 0.04);
+    border: 1.5px solid var(--ink);
     padding: 5px 8px;
-    box-shadow: 1.5px 1.5px 0 #111;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
     line-height: 1.3;
     overflow-wrap: break-word;
@@ -8564,7 +8668,7 @@ body.sepia-edition .btn-shred-guilt:hover {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    border-top: 1px dashed rgba(0, 0, 0, 0.2);
+    border-top: 1px dotted var(--ink);
     padding-top: 10px;
     width: 100%;
     box-sizing: border-box;
@@ -8572,16 +8676,16 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .victory-feed-btn {
     width: 100%;
-    padding: 10px 12px;
-    background: #111;
-    color: #FFDF79;
-    border: 2px solid #111;
+    padding: 8px 12px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 2px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.70rem, 2.2vw, 0.78rem);
+    font-size: 0.74rem;
     font-weight: 800;
     cursor: pointer;
-    box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-    transition: all 0.15s ease;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: all 0.12s ease;
     white-space: nowrap;
     display: flex;
     align-items: center;
@@ -8590,9 +8694,10 @@ body.sepia-edition .btn-shred-guilt:hover {
 }
 
 .victory-feed-btn:hover {
-    background: #D48806;
-    color: #111;
-    transform: translateY(-1px);
+    background: transparent;
+    color: var(--ink);
+    box-shadow: none;
+    transform: translate(1px, 1px);
 }
 
 .victory-footer-secondary-row {
@@ -8606,24 +8711,24 @@ body.sepia-edition .btn-shred-guilt:hover {
 .victory-copy-btn, .victory-close-btn {
     flex: 1 1 50%;
     min-width: 0;
-    padding: 8px 8px;
-    background: #FFFDF8;
-    color: #111;
-    border: 1.5px solid var(--ink, #111);
+    padding: 6px 8px;
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
     font-family: 'Space Mono', monospace;
-    font-size: clamp(0.66rem, 2vw, 0.72rem);
+    font-size: 0.68rem;
     font-weight: 700;
     cursor: pointer;
-    box-shadow: 1.5px 1.5px 0 var(--ink, #111);
-    transition: all 0.15s ease;
+    box-shadow: none;
+    transition: all 0.12s ease;
     white-space: nowrap;
     text-align: center;
     box-sizing: border-box;
 }
 
 .victory-copy-btn:hover, .victory-close-btn:hover {
-    background: #F4EEDF;
-    transform: translateY(-1px);
+    background: var(--ink);
+    color: var(--paper);
 }
 
 .disposal-chamber.rumbling-victory {
@@ -8712,24 +8817,34 @@ body.midnight-edition .feed-ididit-btn:hover {
 }
 
 body.midnight-edition .accomplished-item {
-    background: #1C1916;
-    border-color: #EFE3D3;
-    box-shadow: 3px 3px 0 #060504;
+    background: transparent;
+    border-bottom-color: #EFE3D3;
+    box-shadow: none;
     color: #EFE3D3;
 }
 
+body.midnight-edition .accomplished-tag {
+    background: #EFE3D3;
+    color: #141210;
+    border-color: #EFE3D3;
+}
+
 body.midnight-edition .accomplished-headline {
+    color: #EFE3D3;
+}
+
+body.midnight-edition .accomplished-headline strong {
     color: #FFF;
 }
 
 body.midnight-edition .accomplished-task-quote {
     color: #EFE3D3;
-    border-left-color: #FFDF79;
+    border-left-color: #EFE3D3;
 }
 
 body.midnight-edition .accomplished-calculus-bar {
-    background: #26211C;
-    border-color: #4A4035;
+    background: transparent;
+    border-color: rgba(239, 227, 211, 0.4);
     color: #EFE3D3;
 }
 
@@ -8738,22 +8853,29 @@ body.midnight-edition .accomplished-calculus-bar .calc-lbl {
 }
 
 body.midnight-edition .accomplished-calculus-bar .calc-val {
-    color: #FFC043;
+    color: #EFE3D3;
 }
 
 body.midnight-edition .accomplished-lore {
-    color: #D6CBC0;
-    background: rgba(229, 169, 60, 0.08);
+    color: #C2B6A6;
+    background: transparent;
+}
+
+body.midnight-edition .accomplished-merit {
+    background: rgba(239, 227, 211, 0.08);
+    border-color: #EFE3D3;
+    color: #EFE3D3;
 }
 
 body.midnight-edition .triumph-react-btn {
-    background: #25201A;
-    border-color: #6E5C49;
+    background: transparent;
+    border-color: #EFE3D3;
     color: #EFE3D3;
 }
 
 body.midnight-edition .triumph-react-btn:hover {
-    background: rgba(239, 227, 211, 0.08);
+    background: #EFE3D3;
+    color: #141210;
 }
 
 body.midnight-edition .triumph-react-btn.reacted {
@@ -8791,8 +8913,12 @@ body.midnight-edition .resolution-victory-card {
 
 body.midnight-edition .victory-card-border {
     background: #211C18;
-    border-color: #E5A93C;
-    box-shadow: 0 0 25px rgba(229, 169, 60, 0.25);
+    border-color: #EFE3D3;
+    box-shadow: none;
+}
+
+body.midnight-edition .victory-seal {
+    color: #EFE3D3;
 }
 
 body.midnight-edition .victory-proclamation {
@@ -8800,12 +8926,13 @@ body.midnight-edition .victory-proclamation {
 }
 
 body.midnight-edition .victory-task-statement {
-    color: #FFDF79;
+    color: #EFE3D3;
+    border-left-color: #EFE3D3;
 }
 
 body.midnight-edition .victory-calculus-grid {
-    background: #2A241F;
-    border-color: #4A4037;
+    background: transparent;
+    border-color: rgba(239, 227, 211, 0.4);
 }
 
 body.midnight-edition .calc-val {
@@ -8813,15 +8940,22 @@ body.midnight-edition .calc-val {
 }
 
 body.midnight-edition .calc-val.gold {
-    color: #FFD166;
+    color: #EFE3D3;
 }
 
 body.midnight-edition .victory-lore-box {
-    background: rgba(229, 169, 60, 0.1);
+    background: rgba(239, 227, 211, 0.05);
+    border-left-color: #EFE3D3;
 }
 
 body.midnight-edition .lore-text {
     color: #E0D4C5;
+}
+
+body.midnight-edition .victory-merit-badge {
+    background: #EFE3D3;
+    color: #141210;
+    border-color: #EFE3D3;
 }
 
 body.midnight-edition .victory-controls {
@@ -8833,12 +8967,97 @@ body.midnight-edition .victory-pledge-prompt {
     color: #C2B6A6;
 }
 
-body.midnight-edition .victory-copy-btn,
-body.midnight-edition .victory-close-btn {
-    background: #25201B;
-    color: #EFE3D3;
+body.midnight-edition .victory-feed-btn {
+    background: #EFE3D3;
+    color: #141210;
     border-color: #EFE3D3;
     box-shadow: 2px 2px 0 #060504;
+}
+
+body.midnight-edition .victory-feed-btn:hover {
+    background: transparent;
+    color: #EFE3D3;
+}
+
+body.midnight-edition .victory-copy-btn,
+body.midnight-edition .victory-close-btn {
+    background: transparent;
+    color: #EFE3D3;
+    border-color: #EFE3D3;
+    box-shadow: none;
+}
+
+body.midnight-edition .victory-copy-btn:hover,
+body.midnight-edition .victory-close-btn:hover {
+    background: #EFE3D3;
+    color: #141210;
+}
+
+/* Sepia Edition Overrides for Redemption */
+body.sepia-edition .wire-box-header {
+    border-bottom-color: #21150A;
+}
+
+body.sepia-edition .wire-nav-tab {
+    color: #21150A;
+    border-color: #21150A;
+}
+
+body.sepia-edition .wire-nav-tab.active {
+    background: #21150A;
+    color: #F6EED9;
+}
+
+body.sepia-edition .accomplished-item {
+    border-bottom-color: #21150A;
+}
+
+body.sepia-edition .accomplished-tag {
+    background: #21150A;
+    color: #F6EED9;
+    border-color: #21150A;
+}
+
+body.sepia-edition .accomplished-headline {
+    color: #21150A;
+}
+
+body.sepia-edition .accomplished-task-quote {
+    color: #21150A;
+    border-left-color: #21150A;
+}
+
+body.sepia-edition .accomplished-calculus-bar {
+    border-color: #21150A;
+    color: #21150A;
+}
+
+body.sepia-edition .accomplished-merit {
+    border-color: #21150A;
+    color: #21150A;
+    background: rgba(33, 21, 10, 0.05);
+}
+
+body.sepia-edition .triumph-react-btn {
+    border-color: #21150A;
+    color: #21150A;
+}
+
+body.sepia-edition .triumph-react-btn.reacted,
+body.sepia-edition .triumph-react-btn:hover {
+    background: #21150A;
+    color: #F6EED9;
+}
+
+body.sepia-edition .victory-card-border {
+    border-color: #21150A;
+    background: #F6EED9;
+}
+
+body.sepia-edition .victory-feed-btn {
+    background: #21150A;
+    color: #F6EED9;
+    border-color: #21150A;
 }
 
 body.midnight-edition .victory-copy-btn:hover,

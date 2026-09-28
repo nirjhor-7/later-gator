@@ -2088,6 +2088,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const triumphRibbonViewBtn = document.getElementById('triumph-ribbon-view-btn');
     const accomplishedFeedContainer = document.getElementById('accomplished-feed-container');
     const triumphsCountBadge = document.getElementById('triumphs-count-badge');
+    const updateTriumphsBadges = () => {
+        const count = String(allTriumphs.length);
+        if (triumphsCountBadge) triumphsCountBadge.textContent = count;
+        const mobileBadge = document.getElementById('triumphs-count-badge-short');
+        if (mobileBadge) mobileBadge.textContent = count;
+    };
 
     let currentResolutionItem = { text: '', taskId: null, source: 'wire', task: null };
     let currentProtocol = 'victory'; // 'victory' | 'surrender'
@@ -2341,7 +2347,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const item = currentResolutionItem;
         const taskObj = item.task;
-        const author = (taskObj && (taskObj.city || taskObj.name)) || (currentGatorTag ? `@${currentGatorTag}` : 'Anonymous');
+        let currentAlias = '';
+        try {
+            const u = JSON.parse(localStorage.getItem('lg_gator_user') || 'null');
+            if (u && (u.gator_tag || u.name)) currentAlias = u.gator_tag ? `@${u.gator_tag}` : u.name;
+            if (!currentAlias) currentAlias = localStorage.getItem('lg_user_name') || '';
+        } catch (e) {}
+        const author = (taskObj && (taskObj.city || taskObj.name)) || currentAlias || 'Anonymous';
         const country = (taskObj && taskObj.country) || 'Parts Unknown';
         const avoided = calculateAvoidedDuration(taskObj);
         const timeTaken = QUICK_TIMES[Math.floor(Math.random() * QUICK_TIMES.length)];
@@ -2370,7 +2382,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 4. Golden victory stars & confetti explosion
         if (victoryConfettiContainer) {
             victoryConfettiContainer.innerHTML = '';
-            const goldColors = ['#FFDF79', '#FFD700', '#E5A93C', '#FFF8DC', '#FFA500', '#FFFFFF'];
+            const broadsheetColors = ['#111111', '#FAF6EE', '#888888', '#EFE3D3', '#444444', '#FFFFFF'];
             for (let i = 0; i < 32; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'victory-confetti-particle';
@@ -2390,7 +2402,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 particle.style.setProperty('--burst-y', `${burstY}px`);
                 particle.style.setProperty('--v-rot', `${rot}deg`);
                 particle.style.setProperty('--v-dur', `${dur}s`);
-                particle.style.backgroundColor = goldColors[Math.floor(Math.random() * goldColors.length)];
+                particle.style.backgroundColor = broadsheetColors[Math.floor(Math.random() * broadsheetColors.length)];
 
                 if (Math.random() > 0.5) particle.style.borderRadius = '50%';
                 victoryConfettiContainer.appendChild(particle);
@@ -2494,7 +2506,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         timeTaken: timeTaken,
                         lore: lore,
                         commendationTitle: title,
-                        gatorId: currentGatorId || null
+                        gatorId: (currentGator && currentGator.gatorId) || null
                     })
                 });
                 if (res.ok) {
@@ -2898,9 +2910,7 @@ document.addEventListener('DOMContentLoaded', () => {
         allTriumphs.unshift(triumph);
         try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
 
-        if (triumphsCountBadge) {
-            triumphsCountBadge.textContent = String(allTriumphs.length);
-        }
+        updateTriumphsBadges();
 
         if (accomplishedFeedContainer) {
             const loadingEl = accomplishedFeedContainer.querySelector('.loading');
@@ -2923,9 +2933,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         accomplishedFeedContainer.innerHTML = allTriumphs.map(t => buildAccomplishedItemHtml(t, false)).join('');
-        if (triumphsCountBadge) {
-            triumphsCountBadge.textContent = String(allTriumphs.length);
-        }
+        updateTriumphsBadges();
         if (allTriumphs.length > 0) {
             updateTriumphRibbon(allTriumphs[0]);
         }
