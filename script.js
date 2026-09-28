@@ -559,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="feed-end-banner" id="feed-end-banner">
                     <button type="button" class="feed-load-older-btn" id="feed-load-older-btn" title="Unroll older historical transmissions" aria-label="Load older dispatches">
-                        [ + UNROLL OLDER WIRE ARCHIVES ➔ ]
+                        [ + UNROLL OLDER ARCHIVES ➔ ]
                     </button>
                     <div class="feed-end-divider" style="margin-top: 10px;">
                         <span class="feed-end-ornament">✦</span>
