@@ -91,6 +91,7 @@ async function verifySession(supabase, token) {
 // Rate limit stores
 const checkRateMap = new Map();
 const loginRateMap = new Map();
+const tagCheckCache = new Map();
 
 // ── Action Handlers ──────────────────────────────────────────
 
@@ -109,14 +110,28 @@ async function handleCheck(req, res, supabase) {
     const validationError = validateTag(tag);
     if (validationError) return res.status(200).json({ available: false, reason: validationError });
 
+    // Check in-memory cache (30s TTL)
+    const cached = tagCheckCache.get(tag);
+    if (cached && now - cached.ts < 30000) {
+        res.setHeader('Cache-Control', 'public, max-age=10, stale-while-revalidate=30');
+        return res.status(200).json({ available: cached.available });
+    }
+
     const { data } = await supabase
         .from('gator_tags')
         .select('tag')
         .eq('tag', tag)
         .maybeSingle();
 
-    res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).json({ available: !data });
+    const isAvailable = !data;
+    tagCheckCache.set(tag, { available: isAvailable, ts: now });
+    if (tagCheckCache.size > 300) {
+        const oldestKey = tagCheckCache.keys().next().value;
+        tagCheckCache.delete(oldestKey);
+    }
+
+    res.setHeader('Cache-Control', 'public, max-age=10, stale-while-revalidate=30');
+    return res.status(200).json({ available: isAvailable });
 }
 
 async function handleClaim(req, res, supabase) {
@@ -164,6 +179,7 @@ async function handleClaim(req, res, supabase) {
     }
 
     const gatorId = newGator.gator_id;
+    tagCheckCache.set(tag, { available: false, ts: Date.now() });
 
     // Create session
     await supabase.from('gator_sessions').insert({ token, gator_id: gatorId, tag });
@@ -244,19 +260,47 @@ async function handleMe(req, res, supabase) {
     const session = await verifySession(supabase, token);
     if (!session) return res.status(200).json({ ok: false });
 
-    const { data: operative } = await supabase
-        .from('gator_tags')
-        .select('display_tag, notify_email')
-        .eq('gator_id', session.gatorId)
-        .maybeSingle();
+    const includeDossier = req.query.include_dossier === '1' || req.query.dossier === '1';
 
-    return res.status(200).json({
+    const queries = [
+        supabase
+            .from('gator_tags')
+            .select('display_tag, notify_email')
+            .eq('gator_id', session.gatorId)
+            .maybeSingle()
+    ];
+
+    if (includeDossier) {
+        queries.push(
+            supabase
+                .from('tasks')
+                .select('id, text, city, same_count, valid_count, rip_count, created_at')
+                .eq('author_gator_id', session.gatorId)
+                .order('created_at', { ascending: false })
+                .limit(50)
+        );
+    }
+
+    const [operativeRes, tasksRes] = await Promise.all(queries);
+    const operative = operativeRes?.data;
+    const tasks = tasksRes?.data || [];
+    const totalSympathy = tasks.reduce((sum, t) =>
+        sum + (t.same_count || 0) + (t.valid_count || 0) + (t.rip_count || 0), 0);
+
+    const payload = {
         ok: true,
         gatorId: session.gatorId,
         tag: session.tag,
         displayTag: operative?.display_tag || session.tag,
         notifyEmail: !!(operative?.notify_email),
-    });
+    };
+
+    if (includeDossier) {
+        payload.dispatches = tasks;
+        payload.totalSympathy = totalSympathy;
+    }
+
+    return res.status(200).json(payload);
 }
 
 async function handleLogout(req, res, supabase) {

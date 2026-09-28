@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </button>
                     ${((Array.isArray(myTaskIds) && (myTaskIds.includes(Number(task.id)) || myTaskIds.includes(String(task.id)))) || (typeof task.id === 'string' && task.id.startsWith('opt-'))) ? `
                     <button type="button" class="feed-shred-btn" data-task-id="${task.id}" title="Expunge & Shred This Dispatch from the Wire" aria-label="Shred Dispatch">
-                        🗄️ SHRED
+                        [ SHRED ]
                     </button>` : ''}
                 </div>
             </div>
@@ -551,18 +551,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const buildFeedEndBannerHtml = () => `
-        <div class="feed-end-banner">
-            <div class="feed-end-divider">
-                <span class="feed-end-ornament">✦</span>
-                <span class="feed-end-text">END OF WIRE ARCHIVES • DISPATCH NO. 1</span>
-                <span class="feed-end-ornament">✦</span>
+    let hasLoadedAllArchives = false;
+    let isLoadingOlderArchives = false;
+
+    const buildFeedEndBannerHtml = (canLoadOlder = false) => {
+        if (canLoadOlder && !hasLoadedAllArchives) {
+            return `
+                <div class="feed-end-banner" id="feed-end-banner">
+                    <button type="button" class="feed-load-older-btn" id="feed-load-older-btn" title="Unroll older historical transmissions" aria-label="Load older dispatches">
+                        [ + UNROLL OLDER WIRE ARCHIVES ➔ ]
+                    </button>
+                    <div class="feed-end-divider" style="margin-top: 10px;">
+                        <span class="feed-end-ornament">✦</span>
+                        <span class="feed-end-text">WIRE ARCHIVES BROWSER</span>
+                        <span class="feed-end-ornament">✦</span>
+                    </div>
+                    <button type="button" class="feed-back-to-top-btn" id="feed-back-to-top-btn" title="Jump to the latest incoming dispatch" aria-label="Return to latest dispatch">
+                        ▲ RETURN TO LATEST DISPATCH
+                    </button>
+                </div>
+            `;
+        }
+        return `
+            <div class="feed-end-banner" id="feed-end-banner">
+                <div class="feed-end-divider">
+                    <span class="feed-end-ornament">✦</span>
+                    <span class="feed-end-text">END OF WIRE ARCHIVES • DISPATCH NO. 1</span>
+                    <span class="feed-end-ornament">✦</span>
+                </div>
+                <button type="button" class="feed-back-to-top-btn" id="feed-back-to-top-btn" title="Jump to the latest incoming dispatch" aria-label="Return to latest dispatch">
+                    ▲ RETURN TO LATEST DISPATCH
+                </button>
             </div>
-            <button type="button" class="feed-back-to-top-btn" id="feed-back-to-top-btn" title="Jump to the latest incoming dispatch" aria-label="Return to latest dispatch">
-                ▲ RETURN TO LATEST DISPATCH
-            </button>
-        </div>
-    `;
+        `;
+    };
+
+    const loadOlderArchives = async () => {
+        if (isLoadingOlderArchives || hasLoadedAllArchives) return;
+        const loadBtn = document.getElementById('feed-load-older-btn');
+        if (loadBtn) {
+            loadBtn.disabled = true;
+            loadBtn.textContent = '[ RETRIEVING ARCHIVES... ]';
+        }
+        isLoadingOlderArchives = true;
+        try {
+            const res = await fetch('/api/tasks?limit=all');
+            if (res.ok) {
+                const allTasks = await res.json();
+                hasLoadedAllArchives = true;
+                renderFeed(allTasks);
+            }
+        } catch (e) {
+            if (loadBtn) {
+                loadBtn.disabled = false;
+                loadBtn.textContent = '[ RETRY ARCHIVES ➔ ]';
+            }
+        } finally {
+            isLoadingOlderArchives = false;
+        }
+    };
 
     const renderFeed = (tasks) => {
         if (!tasks || tasks.length === 0) {
@@ -599,7 +646,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const prevScrollTop = feedContainer.scrollTop;
             const isScrolled = prevScrollTop > 20;
 
-            const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + buildFeedEndBannerHtml();
+            const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + buildFeedEndBannerHtml(tasks.length >= 150);
             feedContainer.innerHTML = feedHtml;
 
             if (isScrolled) {
@@ -650,7 +697,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prevScrollTop = feedContainer.scrollTop;
                 const isScrolled = prevScrollTop > 20;
 
-                const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + buildFeedEndBannerHtml();
+                const feedHtml = tasks.map(t => buildFeedItemHtml(t, false)).join('') + buildFeedEndBannerHtml(tasks.length >= 150);
                 feedContainer.innerHTML = feedHtml;
 
                 if (isScrolled) {
@@ -660,27 +707,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderedTopId = tasks[0].id;
                 renderedCount = tasks.length;
                 lastTopTaskId = tasks[0].id;
+                return;
             }
         }
 
-        // 3. In-place refresh of reaction counts for all rendered tasks
-        tasks.forEach(task => {
-            const reactionsEl = feedContainer.querySelector(`.feed-reactions[data-task-id="${task.id}"]`);
-            if (reactionsEl) {
-                const lastStampedAt = recentLocalStamps.get(Number(task.id)) || 0;
-                if (Date.now() - lastStampedAt < 5000) {
-                    // Skip in-place count overwrite for recently stamped task to allow server write propagation (FIX 6)
-                    return;
-                }
-                const myStamp = userStamps[task.id] || userStamps[String(task.id)] || userStamps[Number(task.id)] || null;
-                const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
-                const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
-                const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
+        // 3. Fast in-place refresh of reaction counts for rendered tasks (single DOM pass with Map)
+        const taskMap = new Map();
+        tasks.forEach(t => { if (t && t.id) taskMap.set(String(t.id), t); });
 
-                if (sameEl) sameEl.textContent = Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0);
-                if (validEl) validEl.textContent = Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0);
-                if (ripEl) ripEl.textContent = Math.max(task.rip_count != null ? task.rip_count : 0, myStamp === 'rip' ? 1 : 0);
-            }
+        const rxContainers = feedContainer.querySelectorAll('.feed-reactions[data-task-id]');
+        rxContainers.forEach(reactionsEl => {
+            const taskId = reactionsEl.getAttribute('data-task-id');
+            const task = taskMap.get(taskId);
+            if (!task) return;
+
+            const lastStampedAt = recentLocalStamps.get(Number(taskId)) || 0;
+            if (Date.now() - lastStampedAt < 5000) return;
+
+            const myStamp = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
+            const sameEl = reactionsEl.querySelector('[data-type="same"] .reaction-count');
+            const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
+            const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
+
+            if (sameEl) sameEl.textContent = Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0);
+            if (validEl) validEl.textContent = Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0);
+            if (ripEl) ripEl.textContent = Math.max(task.rip_count != null ? task.rip_count : 0, myStamp === 'rip' ? 1 : 0);
         });
     };
 
@@ -955,6 +1006,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();
                 e.stopPropagation();
                 scrollToLatestDispatch();
+                return;
+            }
+
+            const loadOlderBtn = e.target.closest('#feed-load-older-btn, .feed-load-older-btn');
+            if (loadOlderBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                loadOlderArchives();
                 return;
             }
 
@@ -1252,7 +1311,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const fetchTasks = async (forceFresh = false) => {
         try {
-            const url = `/api/tasks?limit=all&_t=${Date.now()}`;
+            const limitParam = hasLoadedAllArchives ? 'all' : '150';
+            const url = forceFresh 
+                ? `/api/tasks?limit=${limitParam}&_t=${Date.now()}` 
+                : `/api/tasks?limit=${limitParam}`;
             const response = await fetch(url);
             if (response.ok) {
                 const tasks = await response.json();
@@ -1262,7 +1324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateUserSympathyFromFeed(tasks);
                 if (Array.isArray(tasks) && tasks.length > 0) {
                     try {
-                        localStorage.setItem('lg_cached_tasks', JSON.stringify(tasks.slice(0, 500)));
+                        localStorage.setItem('lg_cached_tasks', JSON.stringify(tasks.slice(0, 150)));
                     } catch (e) {}
                 }
             }
@@ -1466,11 +1528,20 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const fetchAll = () => {
-        sendHeartbeat();
+        // Critical Tier 1: Primary Wire dispatches and live presence stats
         fetchTasks();
         fetchStats();
-        fetchWeeklyStats();
-        fetchCountries();
+
+        // Tier 2: Secondary widgets (staggered to give priority to live wire)
+        setTimeout(() => {
+            fetchWeeklyStats();
+            fetchCountries();
+        }, 350);
+
+        // Tier 3: Heartbeat presence tracking (deferred after primary interactions)
+        setTimeout(() => {
+            sendHeartbeat();
+        }, 1500);
     };
 
     const FUNNY_CENSOR_MESSAGES = GatorEvasion.FUNNY_CENSOR_MESSAGES || [];
@@ -4183,6 +4254,81 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     window.closeBureauModal = closeBureauModal;
 
+    const renderDossier = (data) => {
+        if (!data || !data.dispatches) return;
+
+        const count = data.dispatches.length;
+        const total = data.totalSympathy || 0;
+        postponementsCount = Math.max(postponementsCount, count);
+        clickerCount = postponementsCount;
+        totalSympathyCount = Math.max(totalSympathyCount, total);
+        window.postponementsCount = postponementsCount;
+        window.totalSympathyCount = totalSympathyCount;
+        try {
+            localStorage.setItem('lg_postponements_count', postponementsCount.toString());
+            localStorage.setItem('lg_total_sympathy', totalSympathyCount.toString());
+        } catch (e) {}
+
+        const operativeRank = getSlackerRank(postponementsCount, totalSympathyCount, timeStolenSeconds).replace('RANK: ', '');
+        if (dossierSummaryEl) {
+            dossierSummaryEl.textContent = `${count} ${count === 1 ? 'DISPATCH' : 'DISPATCHES'} • ${total} SYMPATHY • ${operativeRank}`;
+        }
+
+        if (count === 0) {
+            if (dossierEmptyEl) dossierEmptyEl.style.display = 'block';
+            dossierListEl.innerHTML = '';
+        } else {
+            let idsUpdated = false;
+            data.dispatches.forEach(d => {
+                const nid = Number(d.id);
+                if (!isNaN(nid) && !myTaskIds.includes(nid)) {
+                    myTaskIds.push(nid);
+                    idsUpdated = true;
+                }
+            });
+            if (idsUpdated) {
+                window.myTaskIds = myTaskIds;
+                try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+                if (feedContainer) {
+                    myTaskIds.forEach(id => {
+                        const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
+                        if (item && !item.querySelector('.feed-shred-btn')) {
+                            const rx = item.querySelector('.feed-reactions');
+                            if (rx) {
+                                const btn = document.createElement('button');
+                                btn.type = 'button';
+                                btn.className = 'feed-shred-btn';
+                                btn.setAttribute('data-task-id', String(id));
+                                btn.title = 'Expunge & Shred This Dispatch from the Wire';
+                                btn.setAttribute('aria-label', 'Shred Dispatch');
+                                btn.innerHTML = '[ SHRED ]';
+                                rx.appendChild(btn);
+                            }
+                        }
+                    });
+                }
+            }
+            if (dossierEmptyEl) dossierEmptyEl.style.display = 'none';
+            dossierListEl.innerHTML = data.dispatches.map(t => {
+                const taskText = escapeHtml(t.task || t.text || '');
+                const same = t.same_count || 0;
+                const valid = t.valid_count || 0;
+                const rip = t.rip_count || 0;
+                return `
+                    <div class="dossier-item" data-task-id="${t.id}">
+                        <div class="dossier-item-task">"${taskText}"</div>
+                        <div class="dossier-item-counts">
+                            <span>[ SAME: ${same} ]</span>
+                            <span>[ VALID: ${valid} ]</span>
+                            <span>[ RIP: ${rip} ]</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+    };
+    window.renderDossier = renderDossier;
+
     window.fetchDossier = async () => {
         if (!gatorToken || !dossierListEl) return;
         try {
@@ -4194,76 +4340,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) return;
             const data = await res.json();
             if (!data || !data.dispatches) return;
-
-            const count = data.dispatches.length;
-            const total = data.totalSympathy || 0;
-            postponementsCount = Math.max(postponementsCount, count);
-            clickerCount = postponementsCount;
-            totalSympathyCount = Math.max(totalSympathyCount, total);
-            window.postponementsCount = postponementsCount;
-            window.totalSympathyCount = totalSympathyCount;
             try {
-                localStorage.setItem('lg_postponements_count', postponementsCount.toString());
-                localStorage.setItem('lg_total_sympathy', totalSympathyCount.toString());
+                localStorage.setItem('lg_cached_dossier', JSON.stringify(data));
             } catch (e) {}
-
-            const operativeRank = getSlackerRank(postponementsCount, totalSympathyCount, timeStolenSeconds).replace('RANK: ', '');
-            if (dossierSummaryEl) {
-                dossierSummaryEl.textContent = `${count} ${count === 1 ? 'DISPATCH' : 'DISPATCHES'} • ${total} SYMPATHY • ${operativeRank}`;
-            }
-
-            if (count === 0) {
-                if (dossierEmptyEl) dossierEmptyEl.style.display = 'block';
-                dossierListEl.innerHTML = '';
-            } else {
-                let idsUpdated = false;
-                data.dispatches.forEach(d => {
-                    const nid = Number(d.id);
-                    if (!isNaN(nid) && !myTaskIds.includes(nid)) {
-                        myTaskIds.push(nid);
-                        idsUpdated = true;
-                    }
-                });
-                if (idsUpdated) {
-                    window.myTaskIds = myTaskIds;
-                    try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
-                    if (feedContainer) {
-                        myTaskIds.forEach(id => {
-                            const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
-                            if (item && !item.querySelector('.feed-shred-btn')) {
-                                const rx = item.querySelector('.feed-reactions');
-                                if (rx) {
-                                    const btn = document.createElement('button');
-                                    btn.type = 'button';
-                                    btn.className = 'feed-shred-btn';
-                                    btn.setAttribute('data-task-id', String(id));
-                                    btn.title = 'Expunge & Shred This Dispatch from the Wire';
-                                    btn.setAttribute('aria-label', 'Shred Dispatch');
-                                    btn.innerHTML = '🗄️ SHRED';
-                                    rx.appendChild(btn);
-                                }
-                            }
-                        });
-                    }
-                }
-                if (dossierEmptyEl) dossierEmptyEl.style.display = 'none';
-                dossierListEl.innerHTML = data.dispatches.map(t => {
-                    const taskText = escapeHtml(t.task || t.text || '');
-                    const same = t.same_count || 0;
-                    const valid = t.valid_count || 0;
-                    const rip = t.rip_count || 0;
-                    return `
-                        <div class="dossier-item" data-task-id="${t.id}">
-                            <div class="dossier-item-task">"${taskText}"</div>
-                            <div class="dossier-item-counts">
-                                <span>[ SAME: ${same} ]</span>
-                                <span>[ VALID: ${valid} ]</span>
-                                <span>[ RIP: ${rip} ]</span>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-            }
+            renderDossier(data);
         } catch (e) {}
     };
 
@@ -4301,7 +4381,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (userNameInput && !userNameInput.value.trim()) {
                 userNameInput.value = `@${currentGator.displayTag || currentGator.tag}`;
             }
-            window.fetchDossier();
+            // Populate modal with cached dossier immediately without network overhead
+            try {
+                const cached = localStorage.getItem('lg_cached_dossier');
+                if (cached) renderDossier(JSON.parse(cached));
+            } catch (e) {}
         } else {
             if (bureauGuestEl) bureauGuestEl.style.display = 'block';
             if (bureauOperativeEl) bureauOperativeEl.style.display = 'none';
@@ -4318,6 +4402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         localStorage.removeItem('lg_gator_token');
         localStorage.removeItem('lg_gator_user');
+        localStorage.removeItem('lg_cached_dossier');
         gatorToken = null;
         currentGator = null;
         window.currentGator = null;
@@ -4346,9 +4431,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // 1. Check existing session
+        // 1. Instant optimistic paint from cached credentials (0ms)
+        updateBureauUI();
+
+        // 2. Single-trip background session & dossier revalidation
         if (gatorToken) {
-            fetch(`/api/gator?action=me&token=${encodeURIComponent(gatorToken)}`)
+            fetch(`/api/gator?action=me&include_dossier=1&token=${encodeURIComponent(gatorToken)}`)
                 .then(r => r.json())
                 .then(data => {
                     if (data && data.ok) {
@@ -4361,14 +4449,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         localStorage.setItem('lg_gator_user', JSON.stringify(currentGator));
                         window.currentGator = currentGator;
                         updateBureauUI();
+                        if (data.dispatches) {
+                            const dossierData = {
+                                ok: true,
+                                gatorId: data.gatorId,
+                                tag: data.tag,
+                                dispatches: data.dispatches,
+                                totalSympathy: data.totalSympathy || 0
+                            };
+                            try { localStorage.setItem('lg_cached_dossier', JSON.stringify(dossierData)); } catch (e) {}
+                            renderDossier(dossierData);
+                        }
                         syncSessionReactionsFromServer();
                     } else {
                         logoutGator(false);
                     }
                 })
                 .catch(() => updateBureauUI());
-        } else {
-            updateBureauUI();
         }
 
         // 2. Tab switching inside modal

@@ -37,6 +37,7 @@ DO $$
 BEGIN
     IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'tasks') THEN
         ALTER TABLE tasks ADD COLUMN IF NOT EXISTS author_gator_id UUID REFERENCES gator_tags(gator_id);
+        CREATE INDEX IF NOT EXISTS idx_tasks_author_gator_id ON tasks(author_gator_id);
     END IF;
 END $$;
 
