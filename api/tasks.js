@@ -180,12 +180,18 @@ module.exports = async function handler(req, res) {
         return res.status(500).json({ error: "Supabase Env Vars missing in Vercel" });
     }
 
+    // Handle HEAD probes gracefully
+    if (req.method === 'HEAD') {
+        res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+        return res.status(200).end();
+    }
+
     if (req.method === 'GET') {
         try {
             if (req.query._t) {
                 res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
             } else {
-                res.setHeader('Cache-Control', 'public, s-maxage=5, stale-while-revalidate=25');
+                res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
             }
             let queryLimit = 150;
             if (req.query.limit) {
