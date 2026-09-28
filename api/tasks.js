@@ -165,7 +165,70 @@ if (process.env.SUPABASE_URL && supabaseKey) {
     supabase = createClient(process.env.SUPABASE_URL, supabaseKey);
 }
 
-module.exports = async function handler(req, res) {
+async function verifySession(supabaseClient, token) {
+    if (!token || !supabaseClient) return null;
+    try {
+        const { data, error } = await supabaseClient
+            .from('gator_sessions')
+            .select('gator_id, tag, expires_at')
+            .eq('token', token)
+            .single();
+        if (error || !data) return null;
+        if (new Date(data.expires_at) < new Date()) return null;
+        return { gatorId: data.gator_id, tag: data.tag };
+    } catch {
+        return null;
+    }
+}
+
+async function verifyDeleteAuthorization(supabaseClient, taskId, authHeader) {
+    if (!supabaseClient) {
+        return { authorized: false, error: "Database unavailable.", status: 500 };
+    }
+    if (!authHeader) {
+        return { authorized: false, error: "Missing authorization token.", status: 401 };
+    }
+
+    const token = typeof authHeader === 'string'
+        ? authHeader.replace(/^Bearer\s+/i, '').trim()
+        : null;
+
+    if (!token) {
+        return { authorized: false, error: "Invalid authorization token.", status: 401 };
+    }
+
+    const session = await verifySession(supabaseClient, token);
+    if (!session || !session.gatorId) {
+        return { authorized: false, error: "Unauthorized: Invalid or expired session.", status: 401 };
+    }
+
+    if (!taskId) {
+        return { authorized: false, error: "Missing dispatch ID.", status: 400 };
+    }
+
+    const parsedId = typeof taskId === 'number' ? taskId : parseInt(taskId, 10);
+    if (isNaN(parsedId)) {
+        return { authorized: false, error: "Invalid dispatch ID.", status: 400 };
+    }
+
+    const { data: task, error } = await supabaseClient
+        .from('tasks')
+        .select('id, author_gator_id')
+        .eq('id', parsedId)
+        .maybeSingle();
+
+    if (error || !task) {
+        return { authorized: false, error: "Dispatch not found.", status: 404 };
+    }
+
+    if (!task.author_gator_id || task.author_gator_id !== session.gatorId) {
+        return { authorized: false, error: "Forbidden: You do not own this dispatch.", status: 403 };
+    }
+
+    return { authorized: true, session, task };
+}
+
+async function handler(req, res) {
     // Add CORS headers
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -442,11 +505,7 @@ module.exports = async function handler(req, res) {
 
     if (req.method === 'DELETE') {
         try {
-            const token = req.headers['x-gator-token'] || req.headers['X-Gator-Token'];
-            if (token !== 'chomp-chomp') {
-                return res.status(403).json({ error: "No gators allowed." });
-            }
-
+            // Extract task ID from query, body, or URL
             let rawTaskId = null;
             if (req.query && req.query.id) {
                 rawTaskId = req.query.id;
@@ -466,6 +525,26 @@ module.exports = async function handler(req, res) {
             const taskId = parseInt(rawTaskId, 10);
             if (isNaN(taskId)) {
                 return res.status(400).json({ error: "Invalid dispatch ID." });
+            }
+
+            // Extract auth token from Authorization header or ?token query param
+            let authHeader = req.headers['authorization']
+                || req.headers['Authorization']
+                || req.query?.token
+                || req.body?.token
+                || null;
+
+            if (!authHeader && req.url && req.url.includes('?')) {
+                try {
+                    const parsedUrl = new URL(req.url, 'http://localhost');
+                    authHeader = parsedUrl.searchParams.get('token');
+                } catch (e) {}
+            }
+
+            // Verify ownership: session must be valid and must own the task
+            const authResult = await verifyDeleteAuthorization(supabase, taskId, authHeader);
+            if (!authResult.authorized) {
+                return res.status(authResult.status || 403).json({ error: authResult.error });
             }
 
             // 1. Delete dependent notifications and reactions first to prevent foreign key errors
@@ -502,3 +581,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(405).json({ error: 'Method not allowed' });
 }
+
+handler.verifySession = verifySession;
+handler.verifyDeleteAuthorization = verifyDeleteAuthorization;
+
+module.exports = handler;
