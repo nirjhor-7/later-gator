@@ -109,3 +109,27 @@ BEGIN
         CREATE POLICY "Allow API all on tasks" ON tasks FOR ALL USING (true) WITH CHECK (true);
     END IF;
 END $$;
+
+-- ============================================================
+-- 7. BUREAU OF ACCOMPLISHED AFFAIRS (TRIUMPHS)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS triumphs (
+    id                  BIGSERIAL PRIMARY KEY,
+    task_id             TEXT,
+    text                TEXT NOT NULL,
+    author_name         TEXT DEFAULT 'Anonymous',
+    country             TEXT DEFAULT 'Parts Unknown',
+    avoided_duration    TEXT,
+    time_taken          TEXT,
+    lore                TEXT,
+    commendation_title  TEXT,
+    praise_count        INT DEFAULT 0,
+    cheers_count        INT DEFAULT 0,
+    respect_count       INT DEFAULT 0,
+    created_at          TIMESTAMPTZ DEFAULT NOW()
+);
+
+ALTER TABLE triumphs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Allow API all on triumphs" ON triumphs;
+CREATE POLICY "Allow API all on triumphs" ON triumphs FOR ALL USING (true) WITH CHECK (true);
+

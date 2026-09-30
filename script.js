@@ -37,6 +37,24 @@ document.addEventListener('DOMContentLoaded', () => {
     })();
     const optToRealIdMap = new Map();
 
+    const isMyTaskId = (id) => {
+        if (!id) return false;
+        if (typeof id === 'string' && id.startsWith('opt-')) return true;
+        const num = Number(id);
+        const str = String(id);
+        if (Array.isArray(myTaskIds) && (myTaskIds.includes(num) || myTaskIds.includes(str))) return true;
+        if (Array.isArray(window.myTaskIds) && (window.myTaskIds.includes(num) || window.myTaskIds.includes(str))) return true;
+        try {
+            const raw = localStorage.getItem('lg_my_task_ids');
+            if (raw) {
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr) && (arr.includes(num) || arr.includes(str))) return true;
+            }
+        } catch (e) {}
+        return false;
+    };
+    window.isMyTaskId = isMyTaskId;
+
     // Active time spent on site avoiding work (increments every 5s while tab is visible)
     setInterval(() => {
         if (document.visibilityState === 'visible') {
@@ -130,17 +148,17 @@ document.addEventListener('DOMContentLoaded', () => {
         return pool;
     };
 
-    const setButtonLabels = (laterText = "POST TO THE WIRE ➔", panicText = "⚡ DO IT NOW (PANIC MODE)") => {
+    const setButtonLabels = (laterText = "[ POST TO THE WIRE ➔ ]", panicText = "[ DO IT NOW (PANIC MODE) ]") => {
         if (laterBtnText) {
-            laterBtnText.textContent = "POST TO THE WIRE ➔";
+            laterBtnText.textContent = "[ POST TO THE WIRE ➔ ]";
         } else if (laterBtn) {
-            laterBtn.textContent = "POST TO THE WIRE ➔";
+            laterBtn.textContent = "[ POST TO THE WIRE ➔ ]";
         }
 
         if (panicBtnText) {
-            panicBtnText.textContent = panicText || "⚡ DO IT NOW (PANIC MODE)";
+            panicBtnText.textContent = panicText || "[ DO IT NOW (PANIC MODE) ]";
         } else if (panicBtn) {
-            panicBtn.textContent = panicText || "⚡ DO IT NOW (PANIC MODE)";
+            panicBtn.textContent = panicText || "[ DO IT NOW (PANIC MODE) ]";
         }
     };
 
@@ -153,7 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveEvasionPhrase = selected;
         isTaskReactiveActive = false;
-        setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
+        setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
 
         if (isUserInitiated && shufflePhraseBtn) {
             shufflePhraseBtn.classList.remove('spinning');
@@ -168,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTaskReactiveButtons = (rawText) => {
         if (!rawText || rawText.trim().length === 0) {
             if (isTaskReactiveActive) {
-                setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
+                setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
                 isTaskReactiveActive = false;
             }
             return;
@@ -189,9 +207,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matched) {
             isTaskReactiveActive = true;
-            setButtonLabels("POST TO THE WIRE ➔", matched.panic || "⚡ DO IT NOW (PANIC MODE)");
+            setButtonLabels("[ POST TO THE WIRE ➔ ]", matched.panic || "[ DO IT NOW (PANIC MODE) ]");
         } else if (isTaskReactiveActive) {
-            setButtonLabels("POST TO THE WIRE ➔", "⚡ DO IT NOW (PANIC MODE)");
+            setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
             isTaskReactiveActive = false;
         }
     };
@@ -500,16 +518,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         [ RIP <span class="reaction-count">${ripCount}</span> ]
                     </button>
                     <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
-                        ✂ CLIP
+                        [ CLIP ]
                     </button>
-                    ${((Array.isArray(myTaskIds) && (myTaskIds.includes(Number(task.id)) || myTaskIds.includes(String(task.id)))) || (typeof task.id === 'string' && task.id.startsWith('opt-'))) ? `
-                    <button type="button" class="feed-shred-btn" data-task-id="${task.id}" title="Expunge & Shred This Dispatch from the Wire" aria-label="Shred Dispatch">
-                        [ SHRED ]
-                    </button>` : ''}
                 </div>
             </div>
+            ${isMyTaskId(task.id) ? `
+            <div class="feed-owner-bar">
+                <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
+                <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${task.id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
+                    [ I DID IT! ➔ ]
+                </button>
+            </div>` : ''}
         </div>`;
     };
+    window.buildFeedItemHtml = buildFeedItemHtml;
 
     const prependFeedTask = (task) => {
         if (!feedContainer) return null;
@@ -1025,7 +1047,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const shredBtn = e.target.closest('.feed-shred-btn');
+            const shredBtn = e.target.closest('.feed-resolve-btn, .feed-shred-btn');
             if (shredBtn) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -1235,9 +1257,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Populate badge
         if (highestScore > 0) {
-            leadBadge.textContent = `🏆 ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED`;
+            leadBadge.textContent = `★ ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED ★`;
         } else {
-            leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION`;
+            leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION ★`;
         }
 
         // Populate reaction buttons
@@ -1532,8 +1554,9 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchTasks();
         fetchStats();
 
-        // Tier 2: Secondary widgets (staggered to give priority to live wire)
+        // Tier 2: Accomplished feed & secondary widgets (staggered to give priority to live wire)
         setTimeout(() => {
+            fetchTriumphs();
             fetchWeeklyStats();
             fetchCountries();
         }, 350);
@@ -1562,7 +1585,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const permitNum = Math.floor(1000 + Math.random() * 9000);
         if (isPanicMode) {
-            if (stampHeader) stampHeader.textContent = "⚠ EMERGENCY DIRECTIVE ⚠";
+            if (stampHeader) stampHeader.textContent = "★ EMERGENCY DIRECTIVE ★";
             if (stampTitle) stampTitle.textContent = "PANIC MANDATE";
             if (stampSub) stampSub.textContent = "ACTION COMMENCING IMMEDIATELY";
             if (stampMeta) stampMeta.textContent = `CRISIS DIRECTIVE #${permitNum} • GODSPEED`;
@@ -1744,12 +1767,12 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerRubberStamp(isPanic);
 
         if (isPanic) {
-            if (panicBtnText) panicBtnText.textContent = "FINE. DOING IT.";
-            else panicBtn.textContent = "FINE. DOING IT.";
+            if (panicBtnText) panicBtnText.textContent = "[ DOING IT NOW ]";
+            else panicBtn.textContent = "[ DOING IT NOW ]";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            if (laterBtnText) laterBtnText.textContent = "POSTED TO THE WIRE ✓";
-            else laterBtn.textContent = "POSTED TO THE WIRE ✓";
+            if (laterBtnText) laterBtnText.textContent = "[ POSTED TO THE WIRE ✓ ]";
+            else laterBtn.textContent = "[ POSTED TO THE WIRE ✓ ]";
             statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
         }
 
@@ -1779,8 +1802,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.textContent = "";
 
                 // Reset button text
-                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
-                if (panicBtnText) panicBtnText.textContent = "⚡ DO IT NOW (PANIC MODE)";
+                if (laterBtnText) laterBtnText.textContent = "[ POST TO THE WIRE ➔ ]";
+                if (panicBtnText) panicBtnText.textContent = "[ DO IT NOW (PANIC MODE) ]";
                 rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate
@@ -1799,6 +1822,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             myTaskIds.push(numId);
                             window.myTaskIds = myTaskIds;
                             try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+                        }
+                        if (newTask.delete_token) {
+                            try {
+                                const rawTokens = localStorage.getItem('lg_task_delete_tokens');
+                                const deleteTokens = rawTokens ? JSON.parse(rawTokens) : {};
+                                deleteTokens[String(newTask.id)] = newTask.delete_token;
+                                localStorage.setItem('lg_task_delete_tokens', JSON.stringify(deleteTokens));
+                            } catch (e) {}
                         }
                         if (optEl && optEl.parentNode) {
                             optEl.setAttribute('data-task-id', newTask.id);
@@ -1870,7 +1901,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (shareStampBadge) {
             if (isPanicMode) {
-                shareStampBadge.textContent = "⚠ PANIC MANDATE ISSUED";
+                shareStampBadge.textContent = "★ PANIC MANDATE ISSUED ★";
                 shareStampBadge.style.color = "#b43403";
                 shareStampBadge.style.borderColor = "#b43403";
                 shareStampBadge.style.outlineColor = "#b43403";
@@ -2001,17 +2032,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ──────────────────────────────────────────────────────────────────
-    // BUREAU CONFIDENTIAL GUILT DISPOSAL UNIT (SHREDDER & BLAST FURNACE)
+    // BUREAU RESOLUTION & REDEMPTION APPARATUS (VICTORY & SURRENDER)
     // ──────────────────────────────────────────────────────────────────
     const disposalModal = document.getElementById('disposal-modal');
     const disposalBackdrop = document.getElementById('disposal-backdrop');
     const disposalCloseBtn = document.getElementById('disposal-close-btn');
+    const resolutionProtocolBar = document.querySelector('.resolution-protocol-bar');
+    const protocolVictoryBtn = document.getElementById('protocol-victory-btn');
+    const protocolSurrenderBtn = document.getElementById('protocol-surrender-btn');
+    const disposalModeBar = document.getElementById('disposal-mode-bar');
     const modeShredderBtn = document.getElementById('mode-shredder-btn');
     const modeFurnaceBtn = document.getElementById('mode-furnace-btn');
     const disposalChamber = document.getElementById('disposal-chamber');
     const disposalMemoSheet = document.getElementById('disposal-memo-sheet');
     const disposalTaskText = document.getElementById('disposal-task-text');
     const disposalTaskMeta = document.getElementById('disposal-task-meta');
+    const memoSheetStamp = document.getElementById('memo-sheet-stamp');
+    const memoSheetTitle = document.getElementById('memo-sheet-title');
+    const victoryMemoStamp = document.getElementById('victory-memo-stamp');
+    const victoryConfettiContainer = document.getElementById('victory-confetti-container');
     const shredderSlicesContainer = document.getElementById('shredder-slices-container');
     const shredderConfettiContainer = document.getElementById('shredder-confetti-container');
     const shredderStripsContainer = document.getElementById('shredder-strips-container');
@@ -2025,6 +2064,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const furnaceFireFront = document.getElementById('furnace-fire-front');
     const furnaceEmbers = document.getElementById('furnace-embers');
     const furnaceHeatFlash = document.getElementById('furnace-heat-flash');
+    const victoryControls = document.getElementById('victory-controls');
+    const victoryRatifyBtn = document.getElementById('victory-ratify-btn');
+    const resolutionVictoryCard = document.getElementById('resolution-victory-card');
+    const victoryCardAuthor = document.getElementById('victory-card-author');
+    const victoryCardCountry = document.getElementById('victory-card-country');
+    const victoryCardTask = document.getElementById('victory-card-task');
+    const victoryCardAvoided = document.getElementById('victory-card-avoided');
+    const victoryCardTimeTaken = document.getElementById('victory-card-timetaken');
+    const victoryCardLore = document.getElementById('victory-card-lore');
+    const victoryCardTitle = document.getElementById('victory-card-title');
+    const victoryViewFeedBtn = document.getElementById('victory-view-feed-btn');
+    const victoryCopyBtn = document.getElementById('victory-copy-btn');
+    const victoryDismissBtn = document.getElementById('victory-dismiss-btn');
     const disposalAbsolutionCard = document.getElementById('disposal-absolution-card');
     const absolutionMsg = document.getElementById('absolution-msg');
     const absolutionHeadline = document.getElementById('absolution-headline');
@@ -2036,7 +2088,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const crankBtnIcon = document.getElementById('crank-btn-icon');
     const crankBtnText = document.getElementById('crank-btn-text');
 
-    let currentDisposalItem = { text: '', taskId: null, source: 'wire' };
+    // Wire Tabs & Triumphs Section Elements
+    const tabWireAvoiding = document.getElementById('tab-wire-avoiding');
+    const tabWireAccomplished = document.getElementById('tab-wire-accomplished');
+    const triumphRibbon = document.getElementById('triumph-ribbon');
+    const triumphRibbonText = document.getElementById('triumph-ribbon-text');
+    const triumphRibbonViewBtn = document.getElementById('triumph-ribbon-view-btn');
+    const accomplishedFeedContainer = document.getElementById('accomplished-feed-container');
+    const triumphsCountBadge = document.getElementById('triumphs-count-badge');
+    const updateTriumphsBadges = () => {
+        const count = String(allTriumphs.length);
+        if (triumphsCountBadge) triumphsCountBadge.textContent = count;
+        const mobileBadge = document.getElementById('triumphs-count-badge-short');
+        if (mobileBadge) mobileBadge.textContent = count;
+    };
+
+    let currentResolutionItem = { text: '', taskId: null, source: 'wire', task: null };
+    let currentProtocol = 'victory'; // 'victory' | 'surrender'
     let disposalMode = 'shredder';
     try {
         const savedMode = localStorage.getItem('lg_disposal_mode');
@@ -2048,6 +2116,90 @@ document.addEventListener('DOMContentLoaded', () => {
         shredTally = parseInt(localStorage.getItem('lg_guilt_shredded_count') || '0', 10);
     } catch (e) {}
 
+    let activeWireTab = 'avoiding'; // 'avoiding' | 'accomplished'
+    let allTriumphs = [];
+    let myTriumphReactions = new Set();
+    try {
+        const savedRx = localStorage.getItem('lg_triumph_reactions');
+        if (savedRx) myTriumphReactions = new Set(JSON.parse(savedRx));
+    } catch (e) {}
+
+    // Hilarious Lore of Execution Randomizer
+    const LORE_OF_EXECUTION = [
+        "Fuelled by 3 iced coffees, unadulterated panic, and sheer adrenaline.",
+        "Completed at 3:17 AM in a manic trance after watching 4 irrelevant YouTube video essays.",
+        "Accomplished strictly out of spite after a calendar notification made a smug pinging noise.",
+        "Finished with 1% battery remaining while walking aggressively to find a charger.",
+        "Executed in a 7-minute blur while waiting for the microwave noodles to heat.",
+        "Resolved 3 minutes before the scheduled meeting, pretending it was completed last Thursday.",
+        "Tackled after spending 2 hours alphabetizing desktop folders and cleaning the keyboard.",
+        "Conquered under the acute existential dread of tomorrow's to-do list.",
+        "Done in a breathless burst of sudden, completely unexpected adult competence.",
+        "Achieved because avoiding an even worse task made this one seem remarkably manageable.",
+        "Power-walked through completion while listening to synthwave on 1.5x speed.",
+        "Drafted 14 revisions mentally over 3 weeks, then finished it in 180 sweaty seconds.",
+        "Resolved after staring at the wall in silent contemplation for 45 minutes.",
+        "Fuelled by 90s Eurodance and the acute threat of visitors arriving in 20 minutes.",
+        "Accomplished solely so the internal guilt demon would stop whispering during dinner.",
+        "Conquered after realizing that not doing it was taking 10× more energy than doing it.",
+        "Finished while aggressively pacing around the room with intense hand gestures.",
+        "Executed during a sudden, unexplainable 15-minute window of peak executive function.",
+        "Completed at the exact moment of giving up on hope, yielding an accidental breakthrough.",
+        "Done right after declaring 'I will start at 4:00' and looking at the clock at 4:01.",
+        "Accomplished while pretending to be on an important phone call.",
+        "Finished solely so I could brag about it on this exact website."
+    ];
+
+    // Bureau Commendation Titles
+    const COMMENDATION_TITLES = [
+        "★ GRAND MARSHAL OF THE 11TH-HOUR MIRACLE ★",
+        "★ CERTIFIED REFORMED SLOTH (FIRST CLASS) ★",
+        "★ HERO OF SUDDEN PANIC-INDUCED COMPETENCE ★",
+        "★ KNIGHT COMMANDER OF THE LAST POSSIBLE SECOND ★",
+        "★ SUPREME VICTOR OVER EXECUTIVE DYSFUNCTION ★",
+        "★ DOCTOR OF SPITE-DRIVEN EFFICIENCY ★",
+        "★ MASTER OF THE 3:00 AM MANIC BREAKTHROUGH ★",
+        "★ HIGH OVERLORD OF SUDDEN UNEXPECTED FOCUS ★",
+        "★ ORDER OF THE PROCRASTINATOR'S REDEMPTION ★",
+        "★ ARCHDUKE OF EMERGENCY PRODUCTIVITY ★",
+        "★ CITIZEN-HERO OF THE NICK OF TIME ★",
+        "★ SUPREME VANQUISHER OF THE GUILT PILE ★"
+    ];
+
+    const QUICK_TIMES = ["3 minutes", "4 minutes", "6 minutes", "7 minutes", "8 minutes", "9 minutes", "11 minutes", "14 minutes"];
+
+    // Update between Victory (Redemption) and Surrender (Destruction)
+    const updateResolutionProtocol = (protocol) => {
+        currentProtocol = protocol;
+
+        if (protocol === 'victory') {
+            if (protocolVictoryBtn) protocolVictoryBtn.classList.add('active');
+            if (protocolSurrenderBtn) protocolSurrenderBtn.classList.remove('active');
+            if (disposalModeBar) disposalModeBar.style.display = 'none';
+            if (shredderMouth) shredderMouth.style.display = 'none';
+            if (furnaceStage) furnaceStage.style.display = 'none';
+            if (victoryControls) victoryControls.style.display = 'block';
+            if (disposalControls) disposalControls.style.display = 'none';
+            if (disposalChamber) disposalChamber.classList.remove('mode-furnace');
+            if (disposalMemoSheet) {
+                disposalMemoSheet.style.display = 'block';
+                disposalMemoSheet.style.opacity = '1';
+                disposalMemoSheet.classList.remove('feeding-down', 'incinerating');
+            }
+            if (memoSheetStamp) memoSheetStamp.textContent = 'DOSSIER OF AVOIDED LABOR';
+            if (memoSheetTitle) memoSheetTitle.textContent = 'STATEMENT OF CHRONIC PROCRASTINATION:';
+        } else {
+            if (protocolSurrenderBtn) protocolSurrenderBtn.classList.add('active');
+            if (protocolVictoryBtn) protocolVictoryBtn.classList.remove('active');
+            if (disposalModeBar) disposalModeBar.style.display = 'flex';
+            if (victoryControls) victoryControls.style.display = 'none';
+            if (disposalControls) disposalControls.style.display = 'block';
+            if (memoSheetStamp) memoSheetStamp.textContent = 'TOP SECRET // GUILT DOSSIER';
+            if (memoSheetTitle) memoSheetTitle.textContent = 'STATEMENT OF AVOIDED LABOR:';
+            updateDisposalMode(disposalMode);
+        }
+    };
+
     const updateDisposalMode = (mode) => {
         disposalMode = mode;
         try { localStorage.setItem('lg_disposal_mode', mode); } catch (e) {}
@@ -2058,16 +2210,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (disposalChamber) disposalChamber.classList.remove('mode-furnace');
             if (shredderMouth) shredderMouth.style.display = 'flex';
             if (furnaceStage) furnaceStage.style.display = 'none';
-            if (crankBtnIcon) crankBtnIcon.textContent = '⚙️';
-            if (crankBtnText) crankBtnText.textContent = 'CRANK MECHANICAL SHREDDER';
+            if (crankBtnIcon) crankBtnIcon.textContent = '';
+            if (crankBtnText) crankBtnText.textContent = '[ CRANK MECHANICAL SHREDDER ➔ ]';
         } else {
             if (modeFurnaceBtn) modeFurnaceBtn.classList.add('active');
             if (modeShredderBtn) modeShredderBtn.classList.remove('active');
             if (disposalChamber) disposalChamber.classList.add('mode-furnace');
             if (shredderMouth) shredderMouth.style.display = 'none';
             if (furnaceStage) furnaceStage.style.display = 'block';
-            if (crankBtnIcon) crankBtnIcon.textContent = '🔥';
-            if (crankBtnText) crankBtnText.textContent = 'IGNITE BLAST FURNACE (1400°F)';
+            if (crankBtnIcon) crankBtnIcon.textContent = '';
+            if (crankBtnText) crankBtnText.textContent = '[ IGNITE BLAST FURNACE (1400°F) ➔ ]';
         }
     };
 
@@ -2076,6 +2228,13 @@ document.addEventListener('DOMContentLoaded', () => {
             disposalMemoSheet.classList.remove('feeding-down', 'incinerating');
             disposalMemoSheet.style.display = 'block';
             disposalMemoSheet.style.opacity = '1';
+        }
+        if (victoryMemoStamp) {
+            victoryMemoStamp.style.display = 'none';
+            victoryMemoStamp.classList.remove('slam-stamp');
+        }
+        if (victoryConfettiContainer) {
+            victoryConfettiContainer.innerHTML = '';
         }
         if (shredderSlicesContainer) {
             shredderSlicesContainer.innerHTML = '';
@@ -2089,7 +2248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (lampLabel) lampLabel.textContent = 'CUTTER STANDBY';
         }
         if (disposalChamber) {
-            disposalChamber.classList.remove('rumbling', 'chattering');
+            disposalChamber.classList.remove('rumbling', 'chattering', 'rumbling-victory');
         }
         if (shredderMouth) {
             shredderMouth.classList.remove('spinning');
@@ -2106,16 +2265,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (furnaceEmbers) furnaceEmbers.innerHTML = '';
         if (furnaceHeatFlash) furnaceHeatFlash.classList.remove('flash');
 
+        if (resolutionProtocolBar) resolutionProtocolBar.style.display = 'flex';
         if (disposalChamber) disposalChamber.style.display = 'flex';
-        if (disposalControls) disposalControls.style.display = 'block';
+        if (resolutionVictoryCard) resolutionVictoryCard.style.display = 'none';
         if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'none';
-        if (disposalCrankBtn) {
-            disposalCrankBtn.disabled = false;
-        }
+        if (victoryRatifyBtn) victoryRatifyBtn.disabled = false;
+        if (disposalCrankBtn) disposalCrankBtn.disabled = false;
     };
 
-    const openDisposalUnit = ({ text, taskId = null, source = 'wire' }) => {
+    const calculateAvoidedDuration = (task) => {
+        if (task && task.created_at) {
+            const diff = Date.now() - new Date(task.created_at).getTime();
+            if (diff > 86400000) {
+                const days = Math.floor(diff / 86400000);
+                const hours = Math.floor((diff % 86400000) / 3600000);
+                return `${days} day${days > 1 ? 's' : ''}, ${hours} hr${hours > 1 ? 's' : ''}`;
+            } else if (diff > 3600000) {
+                const hours = Math.floor(diff / 3600000);
+                const mins = Math.floor((diff % 3600000) / 60000);
+                return `${hours} hour${hours > 1 ? 's' : ''}, ${mins} min${mins > 1 ? 's' : ''}`;
+            } else if (diff > 60000) {
+                const mins = Math.floor(diff / 60000);
+                return `${mins} minutes of dread`;
+            }
+        }
+        const fakeDays = Math.floor(6 + Math.random() * 20);
+        const fakeHours = Math.floor(2 + Math.random() * 21);
+        return `${fakeDays} days, ${fakeHours} hours`;
+    };
+
+    const openResolutionUnit = ({ text, taskId = null, source = 'wire' }) => {
         if (!disposalModal || !taskId) return;
+
+        // Strict authorization check: Only allow user's own tasks
+        const isMine = isMyTaskId(taskId);
+        if (!isMine) {
+            console.warn('Resolution Kiosk: Attempted to resolve dispatch not owned by current operative.');
+            return;
+        }
 
         let cleanText = (text || '').trim();
         if (!cleanText) {
@@ -2124,35 +2311,231 @@ document.addEventListener('DOMContentLoaded', () => {
                 "REPLYING TO THAT 3-WEEK-OLD EMAIL",
                 "DOING TAXES & PAPERWORK",
                 "DECIDING WHAT TO DO WITH MY LIFE",
-                "ORGANIZING THE DESK INSTEAD OF WORKING",
-                "CHECKING SOCIAL MEDIA FOR THE 40TH TIME TODAY"
+                "ORGANIZING THE DESK INSTEAD OF WORKING"
             ];
             cleanText = fallbacks[Math.floor(Math.random() * fallbacks.length)];
         }
 
-        currentDisposalItem = { text: cleanText, taskId, source: 'wire' };
+        const taskObj = allKnownTasks.get(Number(taskId)) || allKnownTasks.get(String(taskId)) || null;
+        currentResolutionItem = { text: cleanText, taskId, source: 'wire', task: taskObj };
 
         if (disposalTaskText) disposalTaskText.textContent = `"${cleanText.toUpperCase()}"`;
         if (disposalTaskMeta) {
-            disposalTaskMeta.textContent = `Live Wire Dispatch (ID #${taskId}) • Action: Obliterate & Expunge • Archive: Struck`;
+            const author = (taskObj && (taskObj.city || taskObj.name)) || 'Citizen';
+            const country = (taskObj && taskObj.country) || 'Parts Unknown';
+            const avoided = calculateAvoidedDuration(taskObj);
+            disposalTaskMeta.textContent = `Operative: ${author} (${country}) • Time in Purgatory: ${avoided} • Case #${taskId}`;
         }
 
         if (shredTallyNumber) shredTallyNumber.textContent = String(shredTally);
 
         resetDisposalChamber();
-        updateDisposalMode(disposalMode);
+        updateResolutionProtocol('victory'); // Victory is the default, primary path!
 
         disposalModal.style.display = 'flex';
     };
 
+    const openDisposalUnit = openResolutionUnit; // Full backward compatibility
+    window.openResolutionUnit = openResolutionUnit;
     window.openDisposalUnit = openDisposalUnit;
     window.updateDisposalMode = updateDisposalMode;
+    window.updateResolutionProtocol = updateResolutionProtocol;
 
     const closeDisposalUnit = () => {
         if (disposalModal) disposalModal.style.display = 'none';
         resetDisposalChamber();
     };
 
+    // ──────────────────────────────────────────────────────────────────
+    // TRIUMPH EXECUTION: "I CONQUERED IT!" (REDEMPTION PROTOCOL)
+    // ──────────────────────────────────────────────────────────────────
+    const executeTriumph = async () => {
+        if (!victoryRatifyBtn || victoryRatifyBtn.disabled) return;
+        victoryRatifyBtn.disabled = true;
+
+        const item = currentResolutionItem;
+        const taskObj = item.task;
+        let currentAlias = '';
+        try {
+            const u = JSON.parse(localStorage.getItem('lg_gator_user') || 'null');
+            if (u && (u.gator_tag || u.name)) currentAlias = u.gator_tag ? `@${u.gator_tag}` : u.name;
+            if (!currentAlias) currentAlias = localStorage.getItem('lg_user_name') || '';
+        } catch (e) {}
+        const author = (taskObj && (taskObj.city || taskObj.name)) || currentAlias || 'Anonymous';
+        const country = (taskObj && taskObj.country) || 'Parts Unknown';
+        const avoided = calculateAvoidedDuration(taskObj);
+        const timeTaken = QUICK_TIMES[Math.floor(Math.random() * QUICK_TIMES.length)];
+        const lore = LORE_OF_EXECUTION[Math.floor(Math.random() * LORE_OF_EXECUTION.length)];
+        const title = COMMENDATION_TITLES[Math.floor(Math.random() * COMMENDATION_TITLES.length)];
+
+        // 1. Play Triumphant Fanfare audio
+        if (window.GatorAudio && typeof window.GatorAudio.playVictoryFanfare === 'function') {
+            window.GatorAudio.playVictoryFanfare();
+        }
+
+        // 2. Slanted Golden Triumph Stamp slams down
+        if (victoryMemoStamp) {
+            victoryMemoStamp.style.display = 'block';
+            void victoryMemoStamp.offsetWidth;
+            victoryMemoStamp.classList.add('slam-stamp');
+        }
+
+        // 3. Chamber rumbling vibration
+        if (disposalChamber) {
+            disposalChamber.classList.remove('rumbling-victory');
+            void disposalChamber.offsetWidth;
+            disposalChamber.classList.add('rumbling-victory');
+        }
+
+        // 4. Golden victory stars & confetti explosion
+        if (victoryConfettiContainer) {
+            victoryConfettiContainer.innerHTML = '';
+            const broadsheetColors = ['#111111', '#FAF6EE', '#888888', '#EFE3D3', '#444444', '#FFFFFF'];
+            for (let i = 0; i < 32; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'victory-confetti-particle';
+                const startX = 15 + Math.random() * 70;
+                particle.style.left = `${startX}%`;
+                particle.style.bottom = `${40 + Math.random() * 40}%`;
+
+                const burstX = (Math.random() * 160 - 80).toFixed(0);
+                const burstY = (-70 - Math.random() * 110).toFixed(0);
+                const rot = (Math.random() * 720 - 360).toFixed(0);
+                const dur = (0.9 + Math.random() * 0.7).toFixed(2);
+                const size = (6 + Math.random() * 6).toFixed(0);
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.setProperty('--burst-x', `${burstX}px`);
+                particle.style.setProperty('--burst-y', `${burstY}px`);
+                particle.style.setProperty('--v-rot', `${rot}deg`);
+                particle.style.setProperty('--v-dur', `${dur}s`);
+                particle.style.backgroundColor = broadsheetColors[Math.floor(Math.random() * broadsheetColors.length)];
+
+                if (Math.random() > 0.5) particle.style.borderRadius = '50%';
+                victoryConfettiContainer.appendChild(particle);
+            }
+        }
+
+        // 5. Reveal Accomplishment Certificate & Graduate Task
+        setTimeout(async () => {
+            let targetId = item.taskId;
+            if (targetId && String(targetId).startsWith('opt-') && optToRealIdMap.has(String(targetId))) {
+                targetId = optToRealIdMap.get(String(targetId));
+            }
+
+            // Remove task from Public Wire in DOM
+            if (targetId && feedContainer) {
+                const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${item.taskId}"]`);
+                feedItems.forEach(feedEl => {
+                    feedEl.classList.add('shredding-out');
+                    setTimeout(() => { if (feedEl.parentNode) feedEl.remove(); }, 600);
+                });
+            }
+
+            // Remove from memory & local storage
+            if (targetId) {
+                allKnownTasks.delete(Number(targetId));
+                allKnownTasks.delete(String(targetId));
+            }
+            if (item.taskId) {
+                allKnownTasks.delete(Number(item.taskId));
+                allKnownTasks.delete(String(item.taskId));
+            }
+
+            const currentIds = (Array.isArray(window.myTaskIds) && window.myTaskIds.length > 0) ? window.myTaskIds : myTaskIds;
+            myTaskIds = currentIds.filter(id => String(id) !== String(targetId) && String(id) !== String(item.taskId));
+            window.myTaskIds = myTaskIds;
+            try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
+
+            try {
+                const rawCache = localStorage.getItem('lg_cached_tasks');
+                if (rawCache) {
+                    const cached = JSON.parse(rawCache);
+                    if (Array.isArray(cached)) {
+                        const updated = cached.filter(t => String(t.id) !== String(targetId) && String(t.id) !== String(item.taskId));
+                        localStorage.setItem('lg_cached_tasks', JSON.stringify(updated));
+                    }
+                }
+            } catch (e) {}
+
+            // Populate the Official Certificate
+            if (victoryCardAuthor) victoryCardAuthor.textContent = author;
+            if (victoryCardCountry) victoryCardCountry.textContent = country;
+            if (victoryCardTask) victoryCardTask.textContent = `"${item.text}"`;
+            if (victoryCardAvoided) victoryCardAvoided.textContent = avoided;
+            if (victoryCardTimeTaken) victoryCardTimeTaken.textContent = timeTaken;
+            if (victoryCardLore) victoryCardLore.textContent = `"${lore}"`;
+            if (victoryCardTitle) victoryCardTitle.textContent = title;
+
+            // Hide chamber, protocol selector, and controls, display the glorious victory certificate
+            if (resolutionProtocolBar) resolutionProtocolBar.style.display = 'none';
+            if (disposalChamber) disposalChamber.style.display = 'none';
+            if (victoryControls) victoryControls.style.display = 'none';
+            if (resolutionVictoryCard) resolutionVictoryCard.style.display = 'block';
+
+            // Construct new triumph object
+            const newTriumph = {
+                id: Date.now(),
+                task_id: targetId ? String(targetId) : null,
+                text: item.text,
+                author_name: author,
+                country: country,
+                avoided_duration: avoided,
+                time_taken: timeTaken,
+                lore: lore,
+                commendation_title: title,
+                praise_count: 1,
+                cheers_count: 1,
+                respect_count: 1,
+                created_at: new Date().toISOString()
+            };
+
+            // Save triumph locally & prepend to accomplished feed
+            addTriumphToFeed(newTriumph, true);
+
+            // Update breaking ribbon ticker
+            updateTriumphRibbon(newTriumph);
+
+            // Send triumph to backend API & await
+            try {
+                const res = await fetch('/api/triumphs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Gator-Token': 'chomp-chomp'
+                    },
+                    body: JSON.stringify({
+                        taskId: targetId,
+                        text: item.text,
+                        name: author,
+                        country: country,
+                        avoidedDuration: avoided,
+                        timeTaken: timeTaken,
+                        lore: lore,
+                        commendationTitle: title,
+                        gatorId: (currentGator && currentGator.gatorId) || null
+                    })
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.triumph) {
+                        newTriumph.id = data.triumph.id;
+                    }
+                }
+            } catch (apiErr) {
+                console.warn('Network error saving triumph to server:', apiErr);
+            }
+
+            fetchStats();
+            if (typeof window.fetchDossier === 'function') window.fetchDossier();
+            fetchTasks(true);
+        }, 1500);
+    };
+
+    // ──────────────────────────────────────────────────────────────────
+    // SURRENDER EXECUTION: CRANK SHREDDER OR IGNITE BLAST FURNACE
+    // ──────────────────────────────────────────────────────────────────
     const executeDestruction = () => {
         if (!disposalCrankBtn || disposalCrankBtn.disabled) return;
         disposalCrankBtn.disabled = true;
@@ -2164,29 +2547,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.GatorAudio.playFurnaceSound(2.6);
             }
 
-            // 1. Initial heat flash burst
             if (furnaceHeatFlash) {
                 furnaceHeatFlash.classList.remove('flash');
                 void furnaceHeatFlash.offsetWidth;
                 furnaceHeatFlash.classList.add('flash');
             }
 
-            // 2. Heavy industrial chamber vibration
             if (disposalChamber) {
                 disposalChamber.classList.add('rumbling');
             }
 
-            // 3. Ignite roaring fire flame layers
             if (furnaceFireBack) furnaceFireBack.classList.add('blazing');
             if (furnaceFireMid) furnaceFireMid.classList.add('blazing');
             if (furnaceFireFront) furnaceFireFront.classList.add('blazing');
 
-            // 4. Hyper-realistic progressive paper incinerate
             if (disposalMemoSheet) {
                 disposalMemoSheet.classList.add('incinerating');
             }
 
-            // 5. Generate dynamic floating embers, sparks, and ash particles
             if (furnaceEmbers) {
                 furnaceEmbers.innerHTML = '';
                 const particleCount = 38;
@@ -2214,7 +2592,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // 6. Heavy Iron blast doors slam shut at ~1.9s
             setTimeout(() => {
                 if (furnaceDoorLeft) furnaceDoorLeft.classList.add('door-slam');
                 if (furnaceDoorRight) furnaceDoorRight.classList.add('door-slam');
@@ -2241,7 +2618,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (lampLabel) lampLabel.textContent = 'SHREDDING ACTIVE';
             }
 
-            // 1. Physical Document Slicing into 18 Vertical Ribbons
             if (shredderSlicesContainer && disposalMemoSheet) {
                 shredderSlicesContainer.innerHTML = '';
                 const sheetW = disposalMemoSheet.offsetWidth;
@@ -2265,7 +2641,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     slice.style.width = `${sliceW}px`;
                     slice.style.height = `${sheetH}px`;
 
-                    // Organic shredding physics: tilt, lateral peel, and staggered pull
                     const rot = (Math.random() * 8 - 4).toFixed(1);
                     const shiftX = (Math.random() * 12 - 6).toFixed(1);
                     const centerDist = Math.abs(i - (numSlices / 2));
@@ -2277,7 +2652,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     slice.style.setProperty('--slice-dur', `${dur}s`);
                     slice.style.animationDelay = `${delay}s`;
 
-                    // Exact clone of the memo sheet positioned to reveal only this vertical strip
                     const clone = disposalMemoSheet.cloneNode(true);
                     clone.id = '';
                     clone.className = 'disposal-memo-sheet shred-clone-inner';
@@ -2290,17 +2664,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     shredderSlicesContainer.appendChild(slice);
                 }
 
-                // Hide original solid sheet so only the 18 active tearing slices are seen
                 disposalMemoSheet.style.opacity = '0';
 
-                // Trigger shredding animation
                 requestAnimationFrame(() => {
                     const allSlices = shredderSlicesContainer.querySelectorAll('.shred-slice');
                     allSlices.forEach(s => s.classList.add('is-shredding'));
                 });
             }
 
-            // 2. Cross-cut Paper Confetti Burst from the Blade Mouth
             if (shredderConfettiContainer) {
                 shredderConfettiContainer.innerHTML = '';
                 const confettiCount = 30;
@@ -2337,7 +2708,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // 3. Falling Shred Strips (Output below cutting mouth)
             if (shredderStripsContainer) {
                 shredderStripsContainer.innerHTML = '';
                 shredderStripsContainer.style.display = 'block';
@@ -2358,60 +2728,68 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         setTimeout(async () => {
-            let targetId = currentDisposalItem.taskId;
+            let targetId = currentResolutionItem.taskId;
             if (targetId && String(targetId).startsWith('opt-') && optToRealIdMap.has(String(targetId))) {
                 targetId = optToRealIdMap.get(String(targetId));
             }
 
             if (targetId) {
-                // 1. Instantly animate and remove from wire feed in DOM
                 if (feedContainer) {
-                    const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${currentDisposalItem.taskId}"]`);
+                    const feedItems = feedContainer.querySelectorAll(`.feed-item[data-task-id="${targetId}"], .feed-item[data-task-id="${currentResolutionItem.taskId}"]`);
                     feedItems.forEach(item => {
                         item.classList.add('shredding-out');
                         setTimeout(() => { if (item.parentNode) item.remove(); }, 620);
                     });
                 }
 
-                // 2. Clear from in-memory records and local storage tracking
                 allKnownTasks.delete(Number(targetId));
                 allKnownTasks.delete(String(targetId));
-                if (currentDisposalItem.taskId) {
-                    allKnownTasks.delete(Number(currentDisposalItem.taskId));
-                    allKnownTasks.delete(String(currentDisposalItem.taskId));
+                if (currentResolutionItem.taskId) {
+                    allKnownTasks.delete(Number(currentResolutionItem.taskId));
+                    allKnownTasks.delete(String(currentResolutionItem.taskId));
                 }
 
-                myTaskIds = myTaskIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentDisposalItem.taskId));
+                const currentIds = (Array.isArray(window.myTaskIds) && window.myTaskIds.length > 0) ? window.myTaskIds : myTaskIds;
+                myTaskIds = currentIds.filter(id => String(id) !== String(targetId) && String(id) !== String(currentResolutionItem.taskId));
                 window.myTaskIds = myTaskIds;
                 try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
 
-                // Purge from cached tasks in localStorage
                 try {
                     const rawCache = localStorage.getItem('lg_cached_tasks');
                     if (rawCache) {
                         const cached = JSON.parse(rawCache);
                         if (Array.isArray(cached)) {
-                            const updated = cached.filter(t => 
-                                String(t.id) !== String(targetId) && String(t.id) !== String(currentDisposalItem.taskId)
-                            );
+                            const updated = cached.filter(t => String(t.id) !== String(targetId) && String(t.id) !== String(currentResolutionItem.taskId));
                             localStorage.setItem('lg_cached_tasks', JSON.stringify(updated));
                         }
                     }
                 } catch (e) {}
 
-                // 3. Remove from dossier if operative dossier open
                 if (dossierListEl) {
-                    const dossierItems = dossierListEl.querySelectorAll(`.dossier-item[data-task-id="${targetId}"], .dossier-item[data-task-id="${currentDisposalItem.taskId}"]`);
+                    const dossierItems = dossierListEl.querySelectorAll(`.dossier-item[data-task-id="${targetId}"], .dossier-item[data-task-id="${currentResolutionItem.taskId}"]`);
                     dossierItems.forEach(d => d.remove());
                 }
 
-                // 4. Send DELETE to backend database and AWAIT
                 try {
+                    let token = localStorage.getItem('lg_gator_token') || '';
+                    if (!token) {
+                        try {
+                            const rawTokens = localStorage.getItem('lg_task_delete_tokens');
+                            if (rawTokens) {
+                                const deleteTokens = JSON.parse(rawTokens);
+                                token = deleteTokens[String(targetId)] || '';
+                            }
+                        } catch (e) {}
+                    }
+                    if (!token) {
+                        token = localStorage.getItem('lg_session_id') || '';
+                    }
+
                     const delRes = await fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-Gator-Token': 'chomp-chomp'
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({ id: targetId })
                     });
@@ -2420,6 +2798,14 @@ document.addEventListener('DOMContentLoaded', () => {
                         console.error('Failed to expunge task on server:', delRes.status, err);
                     } else {
                         console.log('Task successfully shredded from database archives:', targetId);
+                        try {
+                            const rawTokens = localStorage.getItem('lg_task_delete_tokens');
+                            if (rawTokens) {
+                                const deleteTokens = JSON.parse(rawTokens);
+                                delete deleteTokens[String(targetId)];
+                                localStorage.setItem('lg_task_delete_tokens', JSON.stringify(deleteTokens));
+                            }
+                        } catch (e) {}
                     }
                 } catch (netErr) {
                     console.error('Network error during task shredding:', netErr);
@@ -2443,12 +2829,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     : "Your avoided task was sliced into 18 ribbon strips & cross-cut confetti and permanently expunged from the wire archives. No trace remains in the bureau.";
             }
 
-            if (absolutionHeadline) {
-                absolutionHeadline.textContent = "EXPUNGED FROM THE WIRE";
-            }
-            if (absolutionCode) {
-                absolutionCode.textContent = `PERMIT #${Math.floor(1000 + Math.random() * 9000)}-ABSOLVED`;
-            }
+            if (absolutionHeadline) absolutionHeadline.textContent = "EXPUNGED FROM THE WIRE";
+            if (absolutionCode) absolutionCode.textContent = `PERMIT #${Math.floor(1000 + Math.random() * 9000)}-ABSOLVED`;
 
             if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'block';
             if (window.GatorAudio && typeof window.GatorAudio.playStampSlamSound === 'function') {
@@ -2457,13 +2839,231 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2550);
     };
 
-    function handleFeedShredClick(feedShredBtn) {
-        let taskId = feedShredBtn.getAttribute('data-task-id');
+    // ──────────────────────────────────────────────────────────────────
+    // "FINALLY DID IT!" ACCOMPLISHED FEED & COMMUNITY SECTION
+    // ──────────────────────────────────────────────────────────────────
+    const switchWireTab = (tab) => {
+        activeWireTab = tab;
+        if (tab === 'avoiding') {
+            if (tabWireAvoiding) {
+                tabWireAvoiding.classList.add('active');
+                tabWireAvoiding.setAttribute('aria-selected', 'true');
+            }
+            if (tabWireAccomplished) {
+                tabWireAccomplished.classList.remove('active');
+                tabWireAccomplished.setAttribute('aria-selected', 'false');
+            }
+            if (feedContainer) feedContainer.style.display = 'block';
+            if (accomplishedFeedContainer) accomplishedFeedContainer.style.display = 'none';
+        } else {
+            if (tabWireAccomplished) {
+                tabWireAccomplished.classList.add('active');
+                tabWireAccomplished.setAttribute('aria-selected', 'true');
+            }
+            if (tabWireAvoiding) {
+                tabWireAvoiding.classList.remove('active');
+                tabWireAvoiding.setAttribute('aria-selected', 'false');
+            }
+            if (feedContainer) feedContainer.style.display = 'none';
+            if (accomplishedFeedContainer) accomplishedFeedContainer.style.display = 'flex';
+        }
+    };
+
+    const updateTriumphRibbon = (triumph) => {
+        if (!triumphRibbon || !triumphRibbonText || !triumph) return;
+        const author = escapeHtml(triumph.author_name || 'Anonymous');
+        const country = escapeHtml(triumph.country || 'Unknown');
+        const text = escapeHtml(triumph.text || '');
+        const avoided = escapeHtml(triumph.avoided_duration || '');
+        const ribbonBadge = document.getElementById('triumph-ribbon-badge');
+        if (ribbonBadge && !ribbonBadge.querySelector('.triumph-ribbon-badge-desktop')) {
+            ribbonBadge.textContent = window.innerWidth <= 640 ? '★ REDEEMED ★' : '★ REDEMPTION WIRE ★';
+        }
+        triumphRibbonText.textContent = `${author} in ${country} FINALLY DID IT: "${text}" (Avoided: ${avoided})`;
+        triumphRibbon.style.display = 'flex';
+    };
+
+    const buildAccomplishedItemHtml = (triumph, isNew = false) => {
+        const id = triumph.id;
+        const author = escapeHtml(triumph.author_name || 'Anonymous');
+        const country = escapeHtml(triumph.country || 'Parts Unknown');
+        const taskText = escapeHtml(triumph.text || '');
+        const avoided = escapeHtml(triumph.avoided_duration || 'Several days');
+        const timeTaken = escapeHtml(triumph.time_taken || '10 mins');
+        const lore = escapeHtml(triumph.lore || 'Fuelled by sheer panic.');
+        const merit = escapeHtml(triumph.commendation_title || 'Order of the 11th-Hour Miracle');
+
+        const praiseCount = triumph.praise_count || 1;
+        const cheersCount = triumph.cheers_count || 1;
+        const respectCount = triumph.respect_count || 1;
+
+        const hasPraise = myTriumphReactions.has(`${id}-praise`);
+        const hasCheers = myTriumphReactions.has(`${id}-cheers`);
+        const hasRespect = myTriumphReactions.has(`${id}-respect`);
+
+        return `
+        <article class="accomplished-item ${isNew ? 'is-new-triumph' : ''}" data-triumph-id="${id}">
+            <div class="accomplished-header">
+                <span class="accomplished-tag">★ REDEMPTION DISPATCH ★</span>
+                <span class="accomplished-time">${triumph.created_at ? timeAgo(triumph.created_at) : 'Just now'}</span>
+            </div>
+            <h3 class="accomplished-headline">
+                <strong class="author-name">${author}</strong> IN <strong class="author-country">${country}</strong> FINALLY DID IT!
+            </h3>
+            <div class="accomplished-task-quote">
+                "${taskText}"
+            </div>
+            <div class="accomplished-calculus-bar">
+                <span class="calc-metric"><span class="calc-lbl">AVOIDED:</span> <strong class="calc-val">${avoided}</strong></span>
+                <span class="calc-sep">•</span>
+                <span class="calc-metric"><span class="calc-lbl">TOOK:</span> <strong class="calc-val">${timeTaken}</strong></span>
+            </div>
+            <div class="accomplished-lore">
+                "${lore}"
+            </div>
+            <div class="accomplished-merit-row">
+                <span class="accomplished-merit">★ ${merit} ★</span>
+            </div>
+            <div class="accomplished-reactions" data-triumph-id="${id}">
+                <button type="button" class="triumph-react-btn ${hasPraise ? 'reacted' : ''}" data-type="praise" title="Praise this triumph">
+                    [ PRAISE <span class="rx-count">${praiseCount}</span> ]
+                </button>
+                <button type="button" class="triumph-react-btn ${hasCheers ? 'reacted' : ''}" data-type="cheers" title="Cheers to this triumph">
+                    [ CHEERS <span class="rx-count">${cheersCount}</span> ]
+                </button>
+                <button type="button" class="triumph-react-btn ${hasRespect ? 'reacted' : ''}" data-type="respect" title="Salute this accomplishment">
+                    [ SALUTE <span class="rx-count">${respectCount}</span> ]
+                </button>
+            </div>
+        </article>`;
+    };
+
+    const addTriumphToFeed = (triumph, isNew = false) => {
+        allTriumphs.unshift(triumph);
+        try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
+
+        updateTriumphsBadges();
+
+        if (accomplishedFeedContainer) {
+            const loadingEl = accomplishedFeedContainer.querySelector('.loading');
+            if (loadingEl) loadingEl.remove();
+
+            const temp = document.createElement('div');
+            temp.innerHTML = buildAccomplishedItemHtml(triumph, isNew);
+            const el = temp.firstElementChild;
+            if (el) {
+                accomplishedFeedContainer.prepend(el);
+            }
+        }
+    };
+
+    const renderAllTriumphs = () => {
+        if (!accomplishedFeedContainer) return;
+        if (!allTriumphs || allTriumphs.length === 0) {
+            accomplishedFeedContainer.innerHTML = '<div class="loading">No recorded triumphs yet. Conquer an avoided dispatch to claim your commendation!</div>';
+            return;
+        }
+
+        accomplishedFeedContainer.innerHTML = allTriumphs.map(t => buildAccomplishedItemHtml(t, false)).join('');
+        updateTriumphsBadges();
+        if (allTriumphs.length > 0) {
+            updateTriumphRibbon(allTriumphs[0]);
+        }
+    };
+
+    const fetchTriumphs = async () => {
+        // Try local storage cache first for instant render
+        try {
+            const rawCache = localStorage.getItem('lg_triumphs');
+            if (rawCache) {
+                const cached = JSON.parse(rawCache);
+                if (Array.isArray(cached) && cached.length > 0) {
+                    allTriumphs = cached;
+                    renderAllTriumphs();
+                }
+            }
+        } catch (e) {}
+
+        try {
+            const res = await fetch('/api/triumphs');
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    // Merge local-only triumphs that haven't synced yet
+                    const serverIds = new Set(data.map(d => String(d.id)));
+                    const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)));
+                    allTriumphs = [...localOnly, ...data];
+                    try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
+                    renderAllTriumphs();
+                }
+            }
+        } catch (err) {
+            console.warn('Could not fetch triumphs from server, using local fallback:', err);
+        }
+    };
+
+    // Handle community praise reactions on accomplished cards
+    const handleTriumphReaction = async (btn) => {
+        const type = btn.getAttribute('data-type');
+        const rxContainer = btn.closest('.accomplished-reactions');
+        if (!rxContainer || !type) return;
+
+        const triumphId = rxContainer.getAttribute('data-triumph-id');
+        if (!triumphId) return;
+
+        const reactionKey = `${triumphId}-${type}`;
+        if (myTriumphReactions.has(reactionKey)) {
+            // Already reacted
+            return;
+        }
+
+        myTriumphReactions.add(reactionKey);
+        try { localStorage.setItem('lg_triumph_reactions', JSON.stringify(Array.from(myTriumphReactions))); } catch (e) {}
+
+        // Audio feedback
+        if (type === 'praise' && window.GatorAudio && typeof window.GatorAudio.playTriumphPraise === 'function') {
+            window.GatorAudio.playTriumphPraise();
+        } else if (type === 'cheers' && window.GatorAudio && typeof window.GatorAudio.playTriumphCheers === 'function') {
+            window.GatorAudio.playTriumphCheers();
+        } else if (type === 'respect' && window.GatorAudio && typeof window.GatorAudio.playTriumphRespect === 'function') {
+            window.GatorAudio.playTriumphRespect();
+        }
+
+        // Tactile stamp visual feedback
+        btn.classList.add('reacted');
+        const rot = (Math.random() * 6 - 3).toFixed(1);
+        btn.style.setProperty('--stamp-rot', `${rot}deg`);
+
+        const countEl = btn.querySelector('.rx-count');
+        if (countEl) {
+            const current = parseInt(countEl.textContent || '0', 10);
+            countEl.textContent = String(current + 1);
+        }
+
+        // Send to backend
+        try {
+            await fetch('/api/triumphs', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Gator-Token': 'chomp-chomp'
+                },
+                body: JSON.stringify({
+                    action: 'react',
+                    triumphId: triumphId,
+                    reactionType: type
+                })
+            });
+        } catch (e) {}
+    };
+
+    function handleFeedShredClick(feedBtn) {
+        let taskId = feedBtn.getAttribute('data-task-id');
         if (!taskId) return;
         if (taskId.startsWith('opt-') && optToRealIdMap.has(taskId)) {
             taskId = optToRealIdMap.get(taskId);
         }
-        const feedItem = feedShredBtn.closest('.feed-item');
+        const feedItem = feedBtn.closest('.feed-item');
         let taskText = '';
         if (feedItem) {
             const textEl = feedItem.querySelector('.feed-item-text');
@@ -2473,19 +3073,85 @@ document.addEventListener('DOMContentLoaded', () => {
             const known = allKnownTasks.get(Number(taskId));
             taskText = (known.text || '').replace('[PANIC] ', '').trim();
         }
-        openDisposalUnit({
+        openResolutionUnit({
             text: taskText || 'AVOIDED DISPATCH',
             taskId: taskId,
             source: 'wire'
         });
     }
 
+    // Modal protocol & mode listeners
+    if (protocolVictoryBtn) protocolVictoryBtn.addEventListener('click', () => updateResolutionProtocol('victory'));
+    if (protocolSurrenderBtn) protocolSurrenderBtn.addEventListener('click', () => updateResolutionProtocol('surrender'));
     if (modeShredderBtn) modeShredderBtn.addEventListener('click', () => updateDisposalMode('shredder'));
     if (modeFurnaceBtn) modeFurnaceBtn.addEventListener('click', () => updateDisposalMode('furnace'));
+    if (victoryRatifyBtn) victoryRatifyBtn.addEventListener('click', executeTriumph);
     if (disposalCrankBtn) disposalCrankBtn.addEventListener('click', executeDestruction);
     if (disposalCloseBtn) disposalCloseBtn.addEventListener('click', closeDisposalUnit);
     if (disposalBackdrop) disposalBackdrop.addEventListener('click', closeDisposalUnit);
     if (absolutionDismissBtn) absolutionDismissBtn.addEventListener('click', closeDisposalUnit);
+
+    // Victory card actions
+    if (victoryViewFeedBtn) {
+        victoryViewFeedBtn.addEventListener('click', () => {
+            closeDisposalUnit();
+            switchWireTab('accomplished');
+            const targetEl = accomplishedFeedContainer ? accomplishedFeedContainer.firstElementChild : null;
+            if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+    }
+    if (victoryDismissBtn) {
+        victoryDismissBtn.addEventListener('click', closeDisposalUnit);
+    }
+    if (victoryCopyBtn) {
+        victoryCopyBtn.addEventListener('click', async () => {
+            const item = currentResolutionItem;
+            const taskObj = item.task;
+            const author = (taskObj && (taskObj.city || taskObj.name)) || 'Citizen';
+            const country = (taskObj && taskObj.country) || 'Parts Unknown';
+            const text = item.text || 'Task';
+            const shareMsg = `★ PROOF OF REDEMPTION: ${author} in ${country} FINALLY CONQUERED "${text}"! Ratified by The Redemption Wire // latergators.live`;
+            try {
+                await navigator.clipboard.writeText(shareMsg);
+                const prev = victoryCopyBtn.textContent;
+                victoryCopyBtn.textContent = '✓ COMMUNIQUÉ COPIED!';
+                setTimeout(() => { victoryCopyBtn.textContent = prev; }, 2200);
+            } catch (err) {
+                prompt('Copy your victory dispatch:', shareMsg);
+            }
+        });
+    }
+
+    // Wire tabs listeners
+    if (tabWireAvoiding) tabWireAvoiding.addEventListener('click', () => switchWireTab('avoiding'));
+    if (tabWireAccomplished) tabWireAccomplished.addEventListener('click', () => switchWireTab('accomplished'));
+    if (triumphRibbonViewBtn) {
+        triumphRibbonViewBtn.addEventListener('click', () => {
+            switchWireTab('accomplished');
+            if (accomplishedFeedContainer) accomplishedFeedContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    // Delegation for triumph reactions
+    if (accomplishedFeedContainer) {
+        accomplishedFeedContainer.addEventListener('click', (e) => {
+            const btn = e.target.closest('.triumph-react-btn');
+            if (btn) {
+                e.preventDefault();
+                e.stopPropagation();
+                handleTriumphReaction(btn);
+            }
+        });
+    }
+
+    // Render cached triumphs immediately from local storage (0ms, network staged via fetchAll)
+    try {
+        const rawTriumphs = localStorage.getItem('lg_triumphs');
+        if (rawTriumphs) {
+            allTriumphs = JSON.parse(rawTriumphs);
+            renderAllTriumphs();
+        }
+    } catch (e) {}
 
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));
@@ -3110,7 +3776,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('sepia-edition', enable);
         document.documentElement.classList.toggle('sepia-edition', enable);
         if (sepiaToggleBtn) {
-            sepiaToggleBtn.textContent = enable ? '[ 📜 1890s PRINT: ON ]' : '[ 📜 1890s PRINT: OFF ]';
+            sepiaToggleBtn.textContent = enable ? '[ 1890s PRINT: ON ]' : '[ 1890s PRINT: OFF ]';
         }
         if (enable) {
             if (document.body.classList.contains('midnight-edition')) {
@@ -3145,9 +3811,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.body.classList.contains('sepia-edition')) {
                 document.body.classList.remove('sepia-edition');
                 document.documentElement.classList.remove('sepia-edition');
-                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 📜 1890s PRINT: OFF ]';
+                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 1890s PRINT: OFF ]';
             }
-            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
+            if (midnightBtnText) midnightBtnText.textContent = '[ MIDNIGHT: ON ]';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
             if (mastheadSub) mastheadSub.textContent = 'PRINTED UNDER GASLIGHT FOR THE PROFOUNDLY AWAKE';
             if (taskInput) {
@@ -3156,7 +3822,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             document.body.classList.remove('midnight-edition');
             document.documentElement.classList.remove('midnight-edition');
-            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: OFF';
+            if (midnightBtnText) midnightBtnText.textContent = '[ MIDNIGHT: OFF ]';
             const savedSepia = localStorage.getItem('lg_sepia_mode') === 'true';
             if (savedSepia) {
                 applySepiaMode(true);
@@ -3307,7 +3973,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (GatorAudio.playPaperShuffle) GatorAudio.playPaperShuffle();
         if (camoPaperBtn) {
             const orig = camoPaperBtn.textContent;
-            camoPaperBtn.textContent = '📁 *SHUFFLE*';
+            camoPaperBtn.textContent = '[ SHUFFLING... ]';
             camoPaperBtn.classList.add('playing');
             setTimeout(() => {
                 camoPaperBtn.textContent = orig;
@@ -3744,11 +4410,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const catList = ALIBI_DATABASE[currentAlibiCat] || ALIBI_DATABASE.work;
             const item = catList[currentAlibiIdx % catList.length];
             if (!item) return;
-            const slackText = `> 🚨 *OFFICIAL ALIBI DISPATCH*:\n> "${item.text}"\n> — _${item.ref} via LaterGator.live_`;
+            const slackText = `> ★ *OFFICIAL ALIBI DISPATCH*:\n> "${item.text}"\n> — _${item.ref} via LaterGator.live_`;
             try {
                 await navigator.clipboard.writeText(slackText);
                 alibiCopyBtn.textContent = "[ COPIED TO SLACK! ✓ ]";
-                setTimeout(() => { alibiCopyBtn.textContent = "[ 📋 COPY FOR SLACK ]"; }, 2000);
+                setTimeout(() => { alibiCopyBtn.textContent = "[ COPY FOR SLACK ]"; }, 2000);
             } catch (e) {
                 alibiCopyBtn.textContent = "[ COPIED! ]";
             }
@@ -3762,51 +4428,51 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     const ORACLE_HOROSCOPES = {
         aries: {
-            title: "♈ ARIES • THE IMPULSIVE REST",
+            title: "★ ARIES • THE IMPULSIVE REST",
             text: "Mars demands bold aggression, but your bed demands horizontal solidarity. Choose peace over emails. Any task attempted today will backfire into a 3-hour nap."
         },
         taurus: {
-            title: "♉ TAURUS • THE STUBBORN COCOON",
+            title: "★ TAURUS • THE STUBBORN COCOON",
             text: "Venus aligns with your comfort zone. Today is not the day to conquer mountains; it is the day to conquer snacks. If someone asks for a status update, chew louder."
         },
         gemini: {
-            title: "♊ GEMINI • THE DUAL INACTION",
+            title: "★ GEMINI • THE DUAL INACTION",
             text: "Both of your personalities have unanimously agreed: absolutely not. You will open 47 browser tabs with good intentions and read none of them. A flawless victory."
         },
         cancer: {
-            title: "♋ CANCER • THE EMOTIONAL FORTRESS",
+            title: "★ CANCER • THE EMOTIONAL FORTRESS",
             text: "The Moon urges you to retreat into your shell. Seal the perimeters. The spreadsheet is toxic and lacks emotional maturity. Ignore it until next fiscal quarter."
         },
         leo: {
-            title: "♌ LEO • THE REGAL SLACKER",
+            title: "★ LEO • THE REGAL SLACKER",
             text: "You are royalty, and royalty does not fill out Jira tickets. Bask in the spotlight of unearned confidence. Let the commoners deal with the deliverables."
         },
         virgo: {
-            title: "♍ VIRGO • THE PERFECTIONIST'S PARALYSIS",
+            title: "★ VIRGO • THE PERFECTIONIST'S PARALYSIS",
             text: "You cannot start until the desk is clean, the inbox is zeroed, and the lighting is cinematic. Since this will take until 2028, you are free to do nothing today."
         },
         libra: {
-            title: "♎ LIBRA • THE DELICATE IMBALANCE",
+            title: "★ LIBRA • THE DELICATE IMBALANCE",
             text: "Weighing the pros and cons of doing work has revealed that not doing work has zero calorie expenditure. The scales have spoken. Remain motionless."
         },
         scorpio: {
-            title: "♏ SCORPIO • THE SHADOW RETREAT",
+            title: "★ SCORPIO • THE SHADOW RETREAT",
             text: "Plot in silence. If they can't see you, they can't assign you tasks. Set your Slack status to a cryptic moon emoji and vanish into the ether."
         },
         sagittarius: {
-            title: "♐ SAGITTARIUS • THE RUNAWAY ARROW",
+            title: "★ SAGITTARIUS • THE RUNAWAY ARROW",
             text: "Your spirit yearns for wild horizons, or at least a 2-hour lunch break in the park. Run free. The project manager's ping cannot cross state lines."
         },
         capricorn: {
-            title: "♑ CAPRICORN • THE STRATEGIC STRIKE",
+            title: "★ CAPRICORN • THE STRATEGIC STRIKE",
             text: "Even workaholics need a strike day. Frame your complete inactivity as an 'executive resilience audit'. They will respect your visionary leadership."
         },
         aquarius: {
-            title: "♒ AQUARIUS • THE REVOLUTIONARY IDLE",
+            title: "★ AQUARIUS • THE REVOLUTIONARY IDLE",
             text: "By refusing to work today, you are subverting the capitalist industrial complex. Your nap is not laziness; it is high-concept political performance art."
         },
         pisces: {
-            title: "♓ PISCES • THE DREAMLAND VOYAGE",
+            title: "★ PISCES • THE DREAMLAND VOYAGE",
             text: "Neptune floods your consciousness with whimsical daydreams. You are technically at your desk, but your soul is swimming with neon dolphins in the year 3000."
         }
     };
@@ -3853,11 +4519,11 @@ document.addEventListener('DOMContentLoaded', () => {
         oracleCopyBtn.addEventListener('click', async () => {
             const signKey = oracleSelect ? oracleSelect.value : 'aries';
             const item = ORACLE_HOROSCOPES[signKey] || ORACLE_HOROSCOPES.aries;
-            const copyMsg = `🔮 *CELESTIAL SLACKER ORACLE*:\n"${item.title}"\n${item.text}\n— via LaterGator.live`;
+            const copyMsg = `★ *CELESTIAL SLACKER ORACLE*:\n"${item.title}"\n${item.text}\n— via LaterGator.live`;
             try {
                 await navigator.clipboard.writeText(copyMsg);
                 oracleCopyBtn.textContent = "[ COPIED DESTINY! ✓ ]";
-                setTimeout(() => { oracleCopyBtn.textContent = "[ 📋 COPY DESTINY ]"; }, 2000);
+                setTimeout(() => { oracleCopyBtn.textContent = "[ COPY DESTINY ]"; }, 2000);
             } catch (e) {
                 oracleCopyBtn.textContent = "[ COPIED! ]";
             }
@@ -3887,8 +4553,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 "tag2": "PANEL 2 • PURE BLISS",
                 "speech2": "\"The crisis isn't real!\"",
                 "caption": "\"Unopened emails exist in a superposition of both urgent and non-existent.\"",
-                "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Laptop screen with 99+ emails -->\n            <rect x=\"18\" y=\"24\" width=\"38\" height=\"26\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M12 50 L62 50 L56 56 L18 56 Z\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <!-- Red notification badge 99+ -->\n            <rect x=\"22\" y=\"28\" width=\"22\" height=\"12\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"33\" y=\"37\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"white\">✉ 99+</text>\n            <!-- Gator shielding eyes -->\n            <path d=\"M82 62 L82 34 Q90 26 104 26 Q116 26 122 34 L122 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Gator Snout -->\n            <path d=\"M96 36 Q118 36 126 40 C128 43 124 46 114 46 L96 46 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Hands covering eyes -->\n            <ellipse cx=\"94\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <ellipse cx=\"106\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M84 48 Q90 32 94 32 M114 48 Q110 32 106 32\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.2\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk with closed laptop -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <rect x=\"18\" y=\"52\" width=\"34\" height=\"10\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Coffee mug on closed laptop -->\n            <rect x=\"28\" y=\"42\" width=\"10\" height=\"10\" rx=\"1\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <path d=\"M38 44 C41 44 41 48 38 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Gator lounging back with sunglasses -->\n            <!-- Chair back -->\n            <line x1=\"68\" y1=\"20\" x2=\"82\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"4\"/>\n            <!-- Slumped Gator -->\n            <path d=\"M78 40 Q94 28 112 34 C120 37 124 45 116 52 Q96 58 84 56 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Cool Sunglasses -->\n            <rect x=\"98\" y=\"32\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <rect x=\"108\" y=\"34\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <line x1=\"106\" y1=\"35\" x2=\"108\" y2=\"35\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Content Smirk -->\n            <path d=\"M106 44 Q116 46 122 42\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Relaxed arms behind head -->\n            <path d=\"M86 38 Q94 24 102 26\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <text x=\"124\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"10\" font-weight=\"700\" fill=\"#40916c\">✨</text>\n        </svg>"
+                "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Laptop screen with 99+ emails -->\n            <rect x=\"18\" y=\"24\" width=\"38\" height=\"26\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M12 50 L62 50 L56 56 L18 56 Z\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <!-- Red notification badge 99+ -->\n            <rect x=\"22\" y=\"28\" width=\"22\" height=\"12\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"33\" y=\"37\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"white\">99+ MSG</text>\n            <!-- Gator shielding eyes -->\n            <path d=\"M82 62 L82 34 Q90 26 104 26 Q116 26 122 34 L122 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Gator Snout -->\n            <path d=\"M96 36 Q118 36 126 40 C128 43 124 46 114 46 L96 46 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Hands covering eyes -->\n            <ellipse cx=\"94\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <ellipse cx=\"106\" cy=\"30\" rx=\"6\" ry=\"8\" fill=\"#2d6a4f\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <path d=\"M84 48 Q90 32 94 32 M114 48 Q110 32 106 32\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.2\"/>\n        </svg>",
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Desk with closed laptop -->\n            <line x1=\"8\" y1=\"62\" x2=\"142\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <rect x=\"18\" y=\"52\" width=\"34\" height=\"10\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Coffee mug on closed laptop -->\n            <rect x=\"28\" y=\"42\" width=\"10\" height=\"10\" rx=\"1\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <path d=\"M38 44 C41 44 41 48 38 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Gator lounging back with sunglasses -->\n            <!-- Chair back -->\n            <line x1=\"68\" y1=\"20\" x2=\"82\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"4\"/>\n            <!-- Slumped Gator -->\n            <path d=\"M78 40 Q94 28 112 34 C120 37 124 45 116 52 Q96 58 84 56 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Cool Sunglasses -->\n            <rect x=\"98\" y=\"32\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <rect x=\"108\" y=\"34\" width=\"8\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <line x1=\"106\" y1=\"35\" x2=\"108\" y2=\"35\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Content Smirk -->\n            <path d=\"M106 44 Q116 46 122 42\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Relaxed arms behind head -->\n            <path d=\"M86 38 Q94 24 102 26\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <text x=\"124\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"10\" font-weight=\"700\" fill=\"#40916c\">★</text>\n        </svg>"
         },
         {
                 "title": "EP. 3: THE 2:01 TRAGEDY",
@@ -3898,7 +4564,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "speech2": "\"Missed it. Next: 3:00.\"",
                 "caption": "\"Work can only legally begin on timestamps ending in 0 or 5.\"",
                 "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Wall clock showing 2:00 -->\n            <circle cx=\"28\" cy=\"28\" r=\"16\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"28\" y2=\"16\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"38\" y2=\"28\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <circle cx=\"28\" cy=\"28\" r=\"2\" fill=\"var(--ink)\"/>\n            <text x=\"28\" y=\"52\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"var(--ink)\">02:00 PM</text>\n            <!-- Desk -->\n            <line x1=\"56\" y1=\"62\" x2=\"144\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator sitting alert and ready -->\n            <path d=\"M84 62 L84 34 Q92 24 108 24 Q118 24 124 34 L124 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"98\" cy=\"28\" r=\"4.5\" fill=\"white\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <circle cx=\"99\" cy=\"28\" r=\"1.8\" fill=\"var(--ink)\"/>\n            <!-- Determined smile -->\n            <path d=\"M104 38 Q118 38 126 34\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Notebook and pencil ready -->\n            <rect x=\"64\" y=\"52\" width=\"20\" height=\"10\" rx=\"1\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <line x1=\"88\" y1=\"46\" x2=\"78\" y2=\"54\" stroke=\"#b91c1c\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Wall clock showing 2:01 -->\n            <circle cx=\"28\" cy=\"28\" r=\"16\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"29\" y2=\"16\" stroke=\"#b91c1c\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"38\" y2=\"28\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <circle cx=\"28\" cy=\"28\" r=\"2\" fill=\"var(--ink)\"/>\n            <text x=\"28\" y=\"52\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"#b91c1c\">02:01 PM!</text>\n            <!-- Desk -->\n            <line x1=\"56\" y1=\"62\" x2=\"144\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator completely melted flat onto desk -->\n            <path d=\"M72 62 Q78 50 102 50 Q130 50 136 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Flat eyes closed in defeat -->\n            <line x1=\"90\" y1=\"55\" x2=\"98\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"106\" y1=\"55\" x2=\"114\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Dropped pencil on floor -->\n            <line x1=\"60\" y1=\"68\" x2=\"72\" y2=\"70\" stroke=\"#b91c1c\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n            <text x=\"122\" y=\"44\" font-family=\"'Space Mono', monospace\" font-size=\"8\" fill=\"#b91c1c\">💤</text>\n        </svg>"
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <!-- Wall clock showing 2:01 -->\n            <circle cx=\"28\" cy=\"28\" r=\"16\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"29\" y2=\"16\" stroke=\"#b91c1c\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <line x1=\"28\" y1=\"28\" x2=\"38\" y2=\"28\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <circle cx=\"28\" cy=\"28\" r=\"2\" fill=\"var(--ink)\"/>\n            <text x=\"28\" y=\"52\" font-family=\"'Space Mono', monospace\" font-size=\"6\" font-weight=\"700\" text-anchor=\"middle\" fill=\"#b91c1c\">02:01 PM!</text>\n            <!-- Desk -->\n            <line x1=\"56\" y1=\"62\" x2=\"144\" y2=\"62\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator completely melted flat onto desk -->\n            <path d=\"M72 62 Q78 50 102 50 Q130 50 136 62 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Flat eyes closed in defeat -->\n            <line x1=\"90\" y1=\"55\" x2=\"98\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <line x1=\"106\" y1=\"55\" x2=\"114\" y2=\"55\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Dropped pencil on floor -->\n            <line x1=\"60\" y1=\"68\" x2=\"72\" y2=\"70\" stroke=\"#b91c1c\" stroke-width=\"1.8\" stroke-linecap=\"round\"/>\n            <text x=\"122\" y=\"44\" font-family=\"'Space Mono', monospace\" font-size=\"8\" fill=\"#b91c1c\">Zzz</text>\n        </svg>"
         },
         {
                 "title": "EP. 4: STRATEGIC HOUSEKEEPING",
@@ -3908,7 +4574,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "speech2": "\"Baseboards need buffing!\"",
                 "caption": "\"Never does a home shine brighter than on the eve of a major deadline.\"",
                 "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Giant ominous calendar marked DEADLINE -->\n            <rect x=\"18\" y=\"16\" width=\"34\" height=\"42\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <rect x=\"18\" y=\"16\" width=\"34\" height=\"10\" fill=\"#b91c1c\"/>\n            <text x=\"35\" y=\"23\" font-family=\"'Space Mono', monospace\" font-size=\"5\" font-weight=\"700\" text-anchor=\"middle\" fill=\"white\">TODAY</text>\n            <text x=\"35\" y=\"42\" font-family=\"'Space Mono', monospace\" font-size=\"12\" font-weight=\"900\" text-anchor=\"middle\" fill=\"#b91c1c\">DUE</text>\n            <!-- Gator frozen in terror staring at blank page -->\n            <path d=\"M78 64 L78 36 Q86 26 102 26 Q114 26 120 36 L120 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"94\" cy=\"30\" r=\"5\" fill=\"white\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <circle cx=\"95\" cy=\"30\" r=\"2\" fill=\"var(--ink)\"/>\n            <circle cx=\"106\" cy=\"30\" r=\"5\" fill=\"white\" stroke=\"var(--ink)\" stroke-width=\"1.5\"/>\n            <circle cx=\"107\" cy=\"30\" r=\"2\" fill=\"var(--ink)\"/>\n            <!-- Sweat -->\n            <path d=\"M84 20 C82 18 82 14 84 12 C86 14 86 18 84 20 Z\" fill=\"#38bdf8\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <line x1=\"60\" y1=\"64\" x2=\"72\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"3\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator vigorously mopping floor with big joyful smile -->\n            <path d=\"M68 64 Q80 44 98 44 Q116 44 122 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Joyful squinting eyes -->\n            <path d=\"M86 48 Q90 44 94 48 M102 48 Q106 44 110 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Big happy grin -->\n            <path d=\"M88 54 Q100 60 114 54\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Broom/Mop -->\n            <line x1=\"42\" y1=\"20\" x2=\"68\" y2=\"64\" stroke=\"#854d0e\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <path d=\"M38 18 L46 22 L42 26 L34 22 Z\" fill=\"#ca8a04\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Suds & Sparkles everywhere -->\n            <circle cx=\"34\" cy=\"60\" r=\"4\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <circle cx=\"26\" cy=\"62\" r=\"3\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <text x=\"54\" y=\"32\" font-family=\"'Space Mono', monospace\" font-size=\"11\" fill=\"#eab308\">✨</text>\n            <text x=\"124\" y=\"36\" font-family=\"'Space Mono', monospace\" font-size=\"13\" fill=\"#eab308\">✨</text>\n        </svg>"
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Gator vigorously mopping floor with big joyful smile -->\n            <path d=\"M68 64 Q80 44 98 44 Q116 44 122 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Joyful squinting eyes -->\n            <path d=\"M86 48 Q90 44 94 48 M102 48 Q106 44 110 48\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Big happy grin -->\n            <path d=\"M88 54 Q100 60 114 54\" fill=\"none\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Broom/Mop -->\n            <line x1=\"42\" y1=\"20\" x2=\"68\" y2=\"64\" stroke=\"#854d0e\" stroke-width=\"2.5\" stroke-linecap=\"round\"/>\n            <path d=\"M38 18 L46 22 L42 26 L34 22 Z\" fill=\"#ca8a04\" stroke=\"var(--ink)\" stroke-width=\"1.2\"/>\n            <!-- Suds & Sparkles everywhere -->\n            <circle cx=\"34\" cy=\"60\" r=\"4\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <circle cx=\"26\" cy=\"62\" r=\"3\" fill=\"#bae6fd\" stroke=\"var(--ink)\" stroke-width=\"1\"/>\n            <text x=\"54\" y=\"32\" font-family=\"'Space Mono', monospace\" font-size=\"11\" fill=\"#eab308\">★</text>\n            <text x=\"124\" y=\"36\" font-family=\"'Space Mono', monospace\" font-size=\"13\" fill=\"#eab308\">★</text>\n        </svg>"
         },
         {
                 "title": "EP. 5: TO-DO LIST ZEN",
@@ -3948,7 +4614,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "speech2": "\"10,000 WPM UNLEASHED!\"",
                 "caption": "\"Panic is nature's ultimate performance-enhancing drug.\"",
                 "svg1": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- Clock 11:58 -->\n            <rect x=\"18\" y=\"24\" width=\"34\" height=\"18\" rx=\"2\" fill=\"var(--paper)\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <text x=\"35\" y=\"36\" font-family=\"'Space Mono', monospace\" font-size=\"7\" font-weight=\"900\" text-anchor=\"middle\" fill=\"#b91c1c\">11:58</text>\n            <!-- Gator weeping in despair -->\n            <path d=\"M78 64 Q84 48 106 48 Q128 48 132 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Tears streaming -->\n            <path d=\"M96 52 C94 56 94 62 96 64 M108 52 C110 56 110 62 108 64\" stroke=\"#38bdf8\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n        </svg>",
-                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- 11:59 Clock -->\n            <rect x=\"8\" y=\"16\" width=\"32\" height=\"16\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"24\" y=\"27\" font-family=\"'Space Mono', monospace\" font-size=\"6.5\" font-weight=\"900\" text-anchor=\"middle\" fill=\"white\">11:59</text>\n            <!-- Flames around keyboard -->\n            <path d=\"M26 62 Q28 50 32 54 Q36 44 40 56 Q44 48 48 62 Z\" fill=\"#f97316\"/>\n            <!-- Keyboard with smoke -->\n            <rect x=\"24\" y=\"58\" width=\"28\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <!-- Multitasking God Mode Gator with 6 arms typing at lightspeed -->\n            <path d=\"M82 64 L82 32 Q92 20 108 20 Q122 20 126 32 L126 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Intense glowing eyes -->\n            <circle cx=\"98\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"98\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <!-- Multi-arm blur lines -->\n            <path d=\"M82 36 L48 52 M82 42 L52 56 M82 48 L46 60 M124 36 L144 48 M124 42 L142 54 M124 48 L140 60\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <text x=\"64\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">⚡</text>\n            <text x=\"126\" y=\"20\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">⚡</text>\n        </svg>"
+                "svg2": "\n        <svg viewBox=\"0 0 150 80\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">\n            <line x1=\"8\" y1=\"64\" x2=\"142\" y2=\"64\" stroke=\"var(--ink)\" stroke-width=\"2\"/>\n            <!-- 11:59 Clock -->\n            <rect x=\"8\" y=\"16\" width=\"32\" height=\"16\" rx=\"2\" fill=\"#b91c1c\"/>\n            <text x=\"24\" y=\"27\" font-family=\"'Space Mono', monospace\" font-size=\"6.5\" font-weight=\"900\" text-anchor=\"middle\" fill=\"white\">11:59</text>\n            <!-- Flames around keyboard -->\n            <path d=\"M26 62 Q28 50 32 54 Q36 44 40 56 Q44 48 48 62 Z\" fill=\"#f97316\"/>\n            <!-- Keyboard with smoke -->\n            <rect x=\"24\" y=\"58\" width=\"28\" height=\"6\" rx=\"1\" fill=\"var(--ink)\"/>\n            <!-- Multitasking God Mode Gator with 6 arms typing at lightspeed -->\n            <path d=\"M82 64 L82 32 Q92 20 108 20 Q122 20 126 32 L126 64 Z\" fill=\"#40916c\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <!-- Intense glowing eyes -->\n            <circle cx=\"98\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"98\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"6\" fill=\"#facc15\" stroke=\"var(--ink)\" stroke-width=\"1.8\"/>\n            <circle cx=\"112\" cy=\"26\" r=\"2\" fill=\"var(--ink)\"/>\n            <!-- Multi-arm blur lines -->\n            <path d=\"M82 36 L48 52 M82 42 L52 56 M82 48 L46 60 M124 36 L144 48 M124 42 L142 54 M124 48 L140 60\" stroke=\"var(--ink)\" stroke-width=\"2.2\" stroke-linecap=\"round\"/>\n            <text x=\"64\" y=\"24\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">★</text>\n            <text x=\"126\" y=\"20\" font-family=\"'Space Mono', monospace\" font-size=\"12\" fill=\"#eab308\">★</text>\n        </svg>"
         }
 ];
 
@@ -4024,18 +4690,18 @@ document.addEventListener('DOMContentLoaded', () => {
         comicCopyBtn.addEventListener('click', async () => {
             const item = COMIC_STRIPS[comicIdx];
             if (!item) return;
-            const copyMsg = `📰 *THE CHRONICLES OF LATER GATOR* — ${item.title}\n` +
+            const copyMsg = `★ *THE CHRONICLES OF LATER GATOR* — ${item.title}\n` +
                 `[${item.tag1}]: ${item.speech1}\n` +
                 `[${item.tag2}]: ${item.speech2}\n` +
                 `> "${item.caption.replace(/^"|"$/g, '')}"\n` +
                 `— via LaterGator.live`;
             try {
                 await navigator.clipboard.writeText(copyMsg);
-                comicCopyBtn.textContent = "COPIED! ✓";
-                setTimeout(() => { comicCopyBtn.textContent = "📋 COPY"; }, 2000);
+                comicCopyBtn.textContent = "[ COPIED! ✓ ]";
+                setTimeout(() => { comicCopyBtn.textContent = "[ COPY ]"; }, 2000);
             } catch (e) {
-                comicCopyBtn.textContent = "COPIED!";
-                setTimeout(() => { comicCopyBtn.textContent = "📋 COPY"; }, 2000);
+                comicCopyBtn.textContent = "[ COPIED! ]";
+                setTimeout(() => { comicCopyBtn.textContent = "[ COPY ]"; }, 2000);
             }
         });
     }
@@ -4119,6 +4785,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     }).join('');
                 }
             }
+            // 5. Operative Dossier
+            const cachedDossier = localStorage.getItem('lg_cached_dossier');
+            if (cachedDossier) {
+                const data = JSON.parse(cachedDossier);
+                if (typeof renderDossier === 'function') {
+                    renderDossier(data);
+                }
+            }
         } catch (e) {}
     };
 
@@ -4170,7 +4844,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Telegraph Network Resilience (Offline / Online Status)
     window.addEventListener('offline', () => {
         if (statusMessage) {
-            statusMessage.textContent = "⚡ TELEGRAPH CABLE DISRUPTED // OPERATING OFFLINE";
+            statusMessage.textContent = "★ TELEGRAPH CABLE DISRUPTED // OPERATING OFFLINE ★";
             setTimeout(() => {
                 if (statusMessage.textContent.includes("TELEGRAPH")) statusMessage.textContent = "";
             }, 6000);
@@ -4179,7 +4853,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.addEventListener('online', () => {
         if (statusMessage) {
-            statusMessage.textContent = "⚡ TELEGRAPH CONNECTION RESTORED";
+            statusMessage.textContent = "★ TELEGRAPH CONNECTION RESTORED ★";
             setTimeout(() => {
                 if (statusMessage.textContent.includes("RESTORED")) statusMessage.textContent = "";
             }, 3000);
@@ -4242,6 +4916,12 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
         if (currentGator && gatorToken) {
+            // Render cached dossier immediately at 0ms if present
+            try {
+                const cached = localStorage.getItem('lg_cached_dossier');
+                if (cached) renderDossier(JSON.parse(cached));
+            } catch (e) {}
+            // Then background refresh
             window.fetchDossier();
         }
     };
@@ -4255,7 +4935,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.closeBureauModal = closeBureauModal;
 
     const renderDossier = (data) => {
-        if (!data || !data.dispatches) return;
+        if (!data || !data.dispatches || !dossierListEl) return;
 
         const count = data.dispatches.length;
         const total = data.totalSympathy || 0;
@@ -4292,18 +4972,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (feedContainer) {
                     myTaskIds.forEach(id => {
                         const item = feedContainer.querySelector(`.feed-item[data-task-id="${id}"]`);
-                        if (item && !item.querySelector('.feed-shred-btn')) {
-                            const rx = item.querySelector('.feed-reactions');
-                            if (rx) {
-                                const btn = document.createElement('button');
-                                btn.type = 'button';
-                                btn.className = 'feed-shred-btn';
-                                btn.setAttribute('data-task-id', String(id));
-                                btn.title = 'Expunge & Shred This Dispatch from the Wire';
-                                btn.setAttribute('aria-label', 'Shred Dispatch');
-                                btn.innerHTML = '[ SHRED ]';
-                                rx.appendChild(btn);
-                            }
+                        if (item && !item.querySelector('.feed-owner-bar')) {
+                            const bar = document.createElement('div');
+                            bar.className = 'feed-owner-bar';
+                            bar.innerHTML = `
+                                <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
+                                <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
+                                    [ I DID IT! ➔ ]
+                                </button>
+                            `;
+                            item.appendChild(bar);
                         }
                     });
                 }
@@ -4340,6 +5018,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!res.ok) return;
             const data = await res.json();
             if (!data || !data.dispatches) return;
+
             try {
                 localStorage.setItem('lg_cached_dossier', JSON.stringify(data));
             } catch (e) {}
@@ -4466,6 +5145,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 })
                 .catch(() => updateBureauUI());
+        } else {
+            updateBureauUI();
         }
 
         // 2. Tab switching inside modal
@@ -4499,13 +5180,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!/^[a-zA-Z0-9_]+$/.test(raw)) {
                 isTagValid = false;
-                if (bureauTagStatus) bureauTagStatus.textContent = '❌';
+                if (bureauTagStatus) bureauTagStatus.textContent = '[✕]';
                 if (bureauClaimError) bureauClaimError.textContent = 'Only letters, numbers, and underscores.';
                 if (bureauClaimBtn) bureauClaimBtn.disabled = true;
                 return;
             }
 
-            if (bureauTagStatus) bureauTagStatus.textContent = '⏳';
+            if (bureauTagStatus) bureauTagStatus.textContent = '[...]';
             if (bureauClaimError) bureauClaimError.textContent = '';
 
             fetch(`/api/gator?action=check&tag=${encodeURIComponent(raw)}`)
@@ -4513,12 +5194,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.available) {
                         isTagValid = true;
-                        if (bureauTagStatus) bureauTagStatus.textContent = '✅';
+                        if (bureauTagStatus) bureauTagStatus.textContent = '[✓]';
                         if (bureauClaimError) bureauClaimError.textContent = '';
                         validateClaimForm();
                     } else {
                         isTagValid = false;
-                        if (bureauTagStatus) bureauTagStatus.textContent = '❌';
+                        if (bureauTagStatus) bureauTagStatus.textContent = '[✕]';
                         if (bureauClaimError) bureauClaimError.textContent = data.reason || 'Occupied. Someone claimed that tag first.';
                         if (bureauClaimBtn) bureauClaimBtn.disabled = true;
                     }
