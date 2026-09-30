@@ -52,19 +52,20 @@ module.exports = async function handler(req, res) {
 
             const body = req.body || {};
 
-            // 1. Reaction action: praise, cheers, respect
-            if (body.action === 'react') {
+            // 1. Reaction action: praise, cheers, respect (react or remove)
+            if (body.action === 'react' || body.action === 'remove') {
                 const { triumphId, reactionType } = body;
                 if (!triumphId || !['praise', 'cheers', 'respect'].includes(reactionType)) {
                     return res.status(400).json({ error: 'Invalid reaction request' });
                 }
 
+                const isRemove = body.action === 'remove';
                 const col = `${reactionType}_count`;
 
                 // Update in-memory
                 const memItem = inMemoryTriumphs.find(t => String(t.id) === String(triumphId));
                 if (memItem) {
-                    memItem[col] = (memItem[col] || 0) + 1;
+                    memItem[col] = isRemove ? Math.max(0, (memItem[col] || 0) - 1) : (memItem[col] || 0) + 1;
                 }
 
                 if (supabase) {
@@ -76,7 +77,8 @@ module.exports = async function handler(req, res) {
                             .maybeSingle();
 
                         if (data) {
-                            const updatedVal = (data[col] || 0) + 1;
+                            const currentVal = data[col] || 0;
+                            const updatedVal = isRemove ? Math.max(0, currentVal - 1) : currentVal + 1;
                             const updateObj = {};
                             updateObj[col] = updatedVal;
                             await supabase.from('triumphs').update(updateObj).eq('id', triumphId);
@@ -89,7 +91,7 @@ module.exports = async function handler(req, res) {
                     ok: true,
                     triumphId,
                     reactionType,
-                    count: memItem ? memItem[col] : 1
+                    count: memItem ? memItem[col] : (isRemove ? 0 : 1)
                 });
             }
 
@@ -100,8 +102,6 @@ module.exports = async function handler(req, res) {
                 name,
                 country,
                 avoidedDuration,
-                timeTaken,
-                lore,
                 commendationTitle,
                 gatorId
             } = body;
@@ -121,12 +121,12 @@ module.exports = async function handler(req, res) {
                 author_name: cleanName,
                 country: cleanCountry,
                 avoided_duration: avoidedDuration || 'Several grueling days',
-                time_taken: timeTaken || '10 minutes',
-                lore: lore || 'Fuelled by sheer panic and an impending deadline.',
+                time_taken: null,
+                lore: null,
                 commendation_title: commendationTitle || 'Order of the 11th-Hour Miracle',
-                praise_count: 1,
-                cheers_count: 1,
-                respect_count: 1,
+                praise_count: 0,
+                cheers_count: 0,
+                respect_count: 0,
                 created_at: new Date().toISOString()
             };
 
@@ -151,12 +151,12 @@ module.exports = async function handler(req, res) {
                         author_name: newTriumph.author_name,
                         country: newTriumph.country,
                         avoided_duration: newTriumph.avoided_duration,
-                        time_taken: newTriumph.time_taken,
-                        lore: newTriumph.lore,
+                        time_taken: null,
+                        lore: null,
                         commendation_title: newTriumph.commendation_title,
-                        praise_count: 1,
-                        cheers_count: 1,
-                        respect_count: 1
+                        praise_count: 0,
+                        cheers_count: 0,
+                        respect_count: 0
                     };
                     const { data: dbRow, error: insertErr } = await supabase
                         .from('triumphs')

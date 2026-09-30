@@ -7969,13 +7969,14 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .victory-calculus-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 6px;
     background: transparent;
     border: 1px dotted var(--ink);
-    padding: 6px 8px;
+    padding: 8px 10px;
     box-sizing: border-box;
     width: 100%;
+    margin-bottom: 12px;
 }
 
 .calc-col {
@@ -7996,44 +7997,11 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .calc-val {
     font-family: 'Space Mono', monospace;
-    font-size: 0.80rem;
+    font-size: 0.82rem;
     font-weight: 800;
     color: var(--ink);
     white-space: nowrap;
     text-transform: uppercase;
-}
-
-.calc-val.gold {
-    color: var(--ink);
-}
-
-.victory-lore-box {
-    border-left: 2px solid var(--ink);
-    background: rgba(0, 0, 0, 0.03);
-    padding: 6px 10px;
-    box-sizing: border-box;
-}
-
-.lore-label {
-    display: block;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.58rem;
-    font-weight: 700;
-    color: var(--ink-light);
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    margin-bottom: 2px;
-}
-
-.lore-text {
-    font-family: 'Space Mono', monospace;
-    font-style: italic;
-    font-size: 0.78rem;
-    color: var(--ink);
-    line-height: 1.35;
-    margin: 0;
-    word-break: break-word;
 }
 
 .victory-merit-badge {

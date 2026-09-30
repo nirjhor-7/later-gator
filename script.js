@@ -2065,8 +2065,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const victoryCardCountry = document.getElementById('victory-card-country');
     const victoryCardTask = document.getElementById('victory-card-task');
     const victoryCardAvoided = document.getElementById('victory-card-avoided');
-    const victoryCardTimeTaken = document.getElementById('victory-card-timetaken');
-    const victoryCardLore = document.getElementById('victory-card-lore');
     const victoryCardTitle = document.getElementById('victory-card-title');
     const victoryViewFeedBtn = document.getElementById('victory-view-feed-btn');
     const victoryCopyBtn = document.getElementById('victory-copy-btn');
@@ -2118,32 +2116,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (savedRx) myTriumphReactions = new Set(JSON.parse(savedRx));
     } catch (e) {}
 
-    // Hilarious Lore of Execution Randomizer
-    const LORE_OF_EXECUTION = [
-        "Fuelled by 3 iced coffees, unadulterated panic, and sheer adrenaline.",
-        "Completed at 3:17 AM in a manic trance after watching 4 irrelevant YouTube video essays.",
-        "Accomplished strictly out of spite after a calendar notification made a smug pinging noise.",
-        "Finished with 1% battery remaining while walking aggressively to find a charger.",
-        "Executed in a 7-minute blur while waiting for the microwave noodles to heat.",
-        "Resolved 3 minutes before the scheduled meeting, pretending it was completed last Thursday.",
-        "Tackled after spending 2 hours alphabetizing desktop folders and cleaning the keyboard.",
-        "Conquered under the acute existential dread of tomorrow's to-do list.",
-        "Done in a breathless burst of sudden, completely unexpected adult competence.",
-        "Achieved because avoiding an even worse task made this one seem remarkably manageable.",
-        "Power-walked through completion while listening to synthwave on 1.5x speed.",
-        "Drafted 14 revisions mentally over 3 weeks, then finished it in 180 sweaty seconds.",
-        "Resolved after staring at the wall in silent contemplation for 45 minutes.",
-        "Fuelled by 90s Eurodance and the acute threat of visitors arriving in 20 minutes.",
-        "Accomplished solely so the internal guilt demon would stop whispering during dinner.",
-        "Conquered after realizing that not doing it was taking 10× more energy than doing it.",
-        "Finished while aggressively pacing around the room with intense hand gestures.",
-        "Executed during a sudden, unexplainable 15-minute window of peak executive function.",
-        "Completed at the exact moment of giving up on hope, yielding an accidental breakthrough.",
-        "Done right after declaring 'I will start at 4:00' and looking at the clock at 4:01.",
-        "Accomplished while pretending to be on an important phone call.",
-        "Finished solely so I could brag about it on this exact website."
-    ];
-
     // Bureau Commendation Titles
     const COMMENDATION_TITLES = [
         "★ GRAND MARSHAL OF THE 11TH-HOUR MIRACLE ★",
@@ -2159,8 +2131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         "★ CITIZEN-HERO OF THE NICK OF TIME ★",
         "★ SUPREME VANQUISHER OF THE GUILT PILE ★"
     ];
-
-    const QUICK_TIMES = ["3 minutes", "4 minutes", "6 minutes", "7 minutes", "8 minutes", "9 minutes", "11 minutes", "14 minutes"];
 
     // Update between Victory (Redemption) and Surrender (Destruction)
     const updateResolutionProtocol = (protocol) => {
@@ -2358,8 +2328,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const author = (taskObj && (taskObj.city || taskObj.name)) || currentAlias || 'Anonymous';
         const country = (taskObj && taskObj.country) || 'Parts Unknown';
         const avoided = calculateAvoidedDuration(taskObj);
-        const timeTaken = QUICK_TIMES[Math.floor(Math.random() * QUICK_TIMES.length)];
-        const lore = LORE_OF_EXECUTION[Math.floor(Math.random() * LORE_OF_EXECUTION.length)];
         const title = COMMENDATION_TITLES[Math.floor(Math.random() * COMMENDATION_TITLES.length)];
 
         // 1. Play Triumphant Fanfare audio
@@ -2458,8 +2426,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (victoryCardCountry) victoryCardCountry.textContent = country;
             if (victoryCardTask) victoryCardTask.textContent = `"${item.text}"`;
             if (victoryCardAvoided) victoryCardAvoided.textContent = avoided;
-            if (victoryCardTimeTaken) victoryCardTimeTaken.textContent = timeTaken;
-            if (victoryCardLore) victoryCardLore.textContent = `"${lore}"`;
             if (victoryCardTitle) victoryCardTitle.textContent = title;
 
             // Hide chamber, protocol selector, and controls, display the glorious victory certificate
@@ -2468,7 +2434,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (victoryControls) victoryControls.style.display = 'none';
             if (resolutionVictoryCard) resolutionVictoryCard.style.display = 'block';
 
-            // Construct new triumph object
+            // Construct new triumph object with genuine 0 reaction counts
             const newTriumph = {
                 id: Date.now(),
                 task_id: targetId ? String(targetId) : null,
@@ -2476,12 +2442,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 author_name: author,
                 country: country,
                 avoided_duration: avoided,
-                time_taken: timeTaken,
-                lore: lore,
+                time_taken: null,
+                lore: null,
                 commendation_title: title,
-                praise_count: 1,
-                cheers_count: 1,
-                respect_count: 1,
+                praise_count: 0,
+                cheers_count: 0,
+                respect_count: 0,
                 created_at: new Date().toISOString()
             };
 
@@ -2491,7 +2457,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Update breaking ribbon ticker
             updateTriumphRibbon(newTriumph);
 
-            // Send triumph to backend API & await
+            // Send triumph to backend API & synchronize real ID
             try {
                 const res = await fetch('/api/triumphs', {
                     method: 'POST',
@@ -2505,8 +2471,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         name: author,
                         country: country,
                         avoidedDuration: avoided,
-                        timeTaken: timeTaken,
-                        lore: lore,
                         commendationTitle: title,
                         gatorId: (currentGator && currentGator.gatorId) || null
                     })
@@ -2514,7 +2478,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (res.ok) {
                     const data = await res.json();
                     if (data && data.triumph) {
-                        newTriumph.id = data.triumph.id;
+                        const tempId = newTriumph.id;
+                        const realId = data.triumph.id;
+                        newTriumph.id = realId;
+
+                        // Synchronize DOM elements that used tempId
+                        if (accomplishedFeedContainer) {
+                            const cardEl = accomplishedFeedContainer.querySelector(`.accomplished-item[data-triumph-id="${tempId}"]`);
+                            if (cardEl) {
+                                cardEl.setAttribute('data-triumph-id', String(realId));
+                                const rxEl = cardEl.querySelector('.accomplished-reactions');
+                                if (rxEl) rxEl.setAttribute('data-triumph-id', String(realId));
+                            }
+                        }
+
+                        // Synchronize any reaction keys clicked while request was inflight
+                        ['praise', 'cheers', 'respect'].forEach(rxType => {
+                            if (myTriumphReactions.has(`${tempId}-${rxType}`)) {
+                                myTriumphReactions.delete(`${tempId}-${rxType}`);
+                                myTriumphReactions.add(`${realId}-${rxType}`);
+                            }
+                        });
+                        try { localStorage.setItem('lg_triumph_reactions', JSON.stringify(Array.from(myTriumphReactions))); } catch (e) {}
+                        try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
                     }
                 }
             } catch (apiErr) {
@@ -2883,13 +2869,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const country = escapeHtml(triumph.country || 'Parts Unknown');
         const taskText = escapeHtml(triumph.text || '');
         const avoided = escapeHtml(triumph.avoided_duration || 'Several days');
-        const timeTaken = escapeHtml(triumph.time_taken || '10 mins');
-        const lore = escapeHtml(triumph.lore || 'Fuelled by sheer panic.');
         const merit = escapeHtml(triumph.commendation_title || 'Order of the 11th-Hour Miracle');
 
-        const praiseCount = triumph.praise_count || 1;
-        const cheersCount = triumph.cheers_count || 1;
-        const respectCount = triumph.respect_count || 1;
+        const praiseCount = parseInt(triumph.praise_count, 10) || 0;
+        const cheersCount = parseInt(triumph.cheers_count, 10) || 0;
+        const respectCount = parseInt(triumph.respect_count, 10) || 0;
 
         const hasPraise = myTriumphReactions.has(`${id}-praise`);
         const hasCheers = myTriumphReactions.has(`${id}-cheers`);
@@ -2909,11 +2893,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="accomplished-calculus-bar">
                 <span class="calc-metric"><span class="calc-lbl">AVOIDED:</span> <strong class="calc-val">${avoided}</strong></span>
-                <span class="calc-sep">•</span>
-                <span class="calc-metric"><span class="calc-lbl">TOOK:</span> <strong class="calc-val">${timeTaken}</strong></span>
-            </div>
-            <div class="accomplished-lore">
-                "${lore}"
             </div>
             <div class="accomplished-merit-row">
                 <span class="accomplished-merit">★ ${merit} ★</span>
@@ -3011,11 +2990,43 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!triumphId) return;
 
         const reactionKey = `${triumphId}-${type}`;
-        if (myTriumphReactions.has(reactionKey)) {
-            // Already reacted
+        const isAlreadyReacted = myTriumphReactions.has(reactionKey);
+        const countEl = btn.querySelector('.rx-count');
+        const currentCount = parseInt(countEl ? countEl.textContent : '0', 10) || 0;
+
+        if (isAlreadyReacted) {
+            // Un-react (toggle off)
+            myTriumphReactions.delete(reactionKey);
+            btn.classList.remove('reacted');
+            const newCount = Math.max(0, currentCount - 1);
+            if (countEl) countEl.textContent = String(newCount);
+
+            // Update in-memory triumphs
+            const triumphItem = allTriumphs.find(t => String(t.id) === String(triumphId));
+            if (triumphItem) {
+                triumphItem[`${type}_count`] = newCount;
+            }
+            try { localStorage.setItem('lg_triumph_reactions', JSON.stringify(Array.from(myTriumphReactions))); } catch (e) {}
+            try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
+
+            try {
+                await fetch('/api/triumphs', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Gator-Token': 'chomp-chomp'
+                    },
+                    body: JSON.stringify({
+                        action: 'remove',
+                        triumphId: triumphId,
+                        reactionType: type
+                    })
+                });
+            } catch (e) {}
             return;
         }
 
+        // React (toggle on)
         myTriumphReactions.add(reactionKey);
         try { localStorage.setItem('lg_triumph_reactions', JSON.stringify(Array.from(myTriumphReactions))); } catch (e) {}
 
@@ -3033,11 +3044,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const rot = (Math.random() * 6 - 3).toFixed(1);
         btn.style.setProperty('--stamp-rot', `${rot}deg`);
 
-        const countEl = btn.querySelector('.rx-count');
-        if (countEl) {
-            const current = parseInt(countEl.textContent || '0', 10);
-            countEl.textContent = String(current + 1);
+        const newCount = currentCount + 1;
+        if (countEl) countEl.textContent = String(newCount);
+
+        // Update in-memory triumphs
+        const triumphItem = allTriumphs.find(t => String(t.id) === String(triumphId));
+        if (triumphItem) {
+            triumphItem[`${type}_count`] = newCount;
         }
+        try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
 
         // Send to backend
         try {
@@ -3055,6 +3070,9 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         } catch (e) {}
     };
+
+    window.buildAccomplishedItemHtml = buildAccomplishedItemHtml;
+    window.handleTriumphReaction = handleTriumphReaction;
 
     function handleFeedShredClick(feedBtn) {
         let taskId = feedBtn.getAttribute('data-task-id');
