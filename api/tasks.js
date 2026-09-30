@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
 const geoip = require('geoip-lite');
 
@@ -165,6 +166,32 @@ if (process.env.SUPABASE_URL && supabaseKey) {
     supabase = createClient(process.env.SUPABASE_URL, supabaseKey);
 }
 
+function getSecret() {
+    return process.env.DELETE_SECRET
+        || process.env.SUPABASE_SERVICE_ROLE_KEY
+        || process.env.SUPABASE_SERVICE_KEY
+        || process.env.SUPABASE_KEY
+        || process.env.SUPABASE_ANON_KEY
+        || 'later-gator-stateless-delete-key-v1';
+}
+
+function generateDeleteToken(taskId) {
+    if (!taskId) return null;
+    const secret = getSecret();
+    return crypto.createHmac('sha256', secret).update(`delete_task_${taskId}`).digest('hex');
+}
+
+function verifyDeleteToken(taskId, token) {
+    if (!taskId || !token || typeof token !== 'string') return false;
+    const expected = generateDeleteToken(taskId);
+    if (!expected || token.length !== expected.length) return false;
+    try {
+        return crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expected));
+    } catch {
+        return false;
+    }
+}
+
 async function verifySession(supabaseClient, token) {
     if (!token || !supabaseClient) return null;
     try {
@@ -181,27 +208,10 @@ async function verifySession(supabaseClient, token) {
     }
 }
 
-async function verifyDeleteAuthorization(supabaseClient, taskId, authHeader) {
+async function verifyDeleteAuthorization(supabaseClient, taskId, authHeader, clientIp) {
     if (!supabaseClient) {
         return { authorized: false, error: "Database unavailable.", status: 500 };
     }
-    if (!authHeader) {
-        return { authorized: false, error: "Missing authorization token.", status: 401 };
-    }
-
-    const token = typeof authHeader === 'string'
-        ? authHeader.replace(/^Bearer\s+/i, '').trim()
-        : null;
-
-    if (!token) {
-        return { authorized: false, error: "Invalid authorization token.", status: 401 };
-    }
-
-    const session = await verifySession(supabaseClient, token);
-    if (!session || !session.gatorId) {
-        return { authorized: false, error: "Unauthorized: Invalid or expired session.", status: 401 };
-    }
-
     if (!taskId) {
         return { authorized: false, error: "Missing dispatch ID.", status: 400 };
     }
@@ -213,7 +223,7 @@ async function verifyDeleteAuthorization(supabaseClient, taskId, authHeader) {
 
     const { data: task, error } = await supabaseClient
         .from('tasks')
-        .select('id, author_gator_id')
+        .select('id, author_gator_id, ip_address')
         .eq('id', parsedId)
         .maybeSingle();
 
@@ -221,11 +231,47 @@ async function verifyDeleteAuthorization(supabaseClient, taskId, authHeader) {
         return { authorized: false, error: "Dispatch not found.", status: 404 };
     }
 
-    if (!task.author_gator_id || task.author_gator_id !== session.gatorId) {
-        return { authorized: false, error: "Forbidden: You do not own this dispatch.", status: 403 };
+    const token = typeof authHeader === 'string'
+        ? authHeader.replace(/^Bearer\s+/i, '').trim()
+        : null;
+
+    // 1. Authenticated Gator Session check
+    if (token) {
+        const session = await verifySession(supabaseClient, token);
+        if (session && session.gatorId) {
+            // If the dispatch was authored by a registered Gator, enforce strict ID match
+            if (task.author_gator_id) {
+                if (task.author_gator_id === session.gatorId) {
+                    return { authorized: true, method: 'gator_session', session, task };
+                }
+                return { authorized: false, error: "Forbidden: You do not own this dispatch.", status: 403 };
+            }
+            // If the dispatch was anonymous, allow if delete token or IP matches
+            if (verifyDeleteToken(parsedId, token) || (task.ip_address && clientIp && clientIp !== 'unknown' && task.ip_address === clientIp)) {
+                return { authorized: true, method: 'gator_claimed_or_ip', session, task };
+            }
+        }
+
+        // 2. Cryptographic Deletion Token check (for anonymous creators)
+        if (verifyDeleteToken(parsedId, token)) {
+            // If task belongs to an authenticated Gator, raw delete token is not accepted unless authorized above
+            if (!task.author_gator_id) {
+                return { authorized: true, method: 'delete_token', task };
+            }
+        }
     }
 
-    return { authorized: true, session, task };
+    // 3. Fallback: IP-based verification for anonymous dispatches (author_gator_id IS NULL)
+    if (!task.author_gator_id && task.ip_address && clientIp && clientIp !== 'unknown' && task.ip_address === clientIp) {
+        return { authorized: true, method: 'ip_match', task };
+    }
+
+    // 4. Missing or unauthorized
+    if (!token && (!clientIp || clientIp === 'unknown')) {
+        return { authorized: false, error: "Missing authorization token.", status: 401 };
+    }
+
+    return { authorized: false, error: "Forbidden: You do not own this dispatch.", status: 403 };
 }
 
 async function handler(req, res) {
@@ -497,7 +543,12 @@ async function handler(req, res) {
                 }
             }
 
-            return res.status(201).json(newTask);
+            const deleteToken = generateDeleteToken(newTask.id);
+
+            return res.status(201).json({
+                ...newTask,
+                delete_token: deleteToken
+            });
         } catch (err) {
             return res.status(500).json({ error: err.message });
         }
@@ -527,9 +578,15 @@ async function handler(req, res) {
                 return res.status(400).json({ error: "Invalid dispatch ID." });
             }
 
-            // Extract auth token from Authorization header or ?token query param
+            // Client IP
+            const rawIp = req.headers['x-forwarded-for'] || req.headers['x-real-ip'] || '';
+            const clientIp = rawIp.split(',')[0].trim() || 'unknown';
+
+            // Extract auth token from Authorization header, X-Delete-Token, query, or body
             let authHeader = req.headers['authorization']
                 || req.headers['Authorization']
+                || req.headers['x-delete-token']
+                || req.headers['X-Delete-Token']
                 || req.query?.token
                 || req.body?.token
                 || null;
@@ -541,8 +598,8 @@ async function handler(req, res) {
                 } catch (e) {}
             }
 
-            // Verify ownership: session must be valid and must own the task
-            const authResult = await verifyDeleteAuthorization(supabase, taskId, authHeader);
+            // Verify ownership: session must be valid, delete token must match, or IP must match anonymous task
+            const authResult = await verifyDeleteAuthorization(supabase, taskId, authHeader, clientIp);
             if (!authResult.authorized) {
                 return res.status(authResult.status || 403).json({ error: authResult.error });
             }
@@ -583,6 +640,8 @@ async function handler(req, res) {
 }
 
 handler.verifySession = verifySession;
+handler.generateDeleteToken = generateDeleteToken;
+handler.verifyDeleteToken = verifyDeleteToken;
 handler.verifyDeleteAuthorization = verifyDeleteAuthorization;
 
 module.exports = handler;
