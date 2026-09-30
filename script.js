@@ -1823,6 +1823,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             window.myTaskIds = myTaskIds;
                             try { localStorage.setItem('lg_my_task_ids', JSON.stringify(myTaskIds)); } catch (e) {}
                         }
+                        if (newTask.delete_token) {
+                            try {
+                                const rawTokens = localStorage.getItem('lg_task_delete_tokens');
+                                const deleteTokens = rawTokens ? JSON.parse(rawTokens) : {};
+                                deleteTokens[String(newTask.id)] = newTask.delete_token;
+                                localStorage.setItem('lg_task_delete_tokens', JSON.stringify(deleteTokens));
+                            } catch (e) {}
+                        }
                         if (optEl && optEl.parentNode) {
                             optEl.setAttribute('data-task-id', newTask.id);
                             const clipBtn = optEl.querySelector('.feed-clip-btn');
@@ -2763,17 +2771,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 try {
+                    let token = localStorage.getItem('lg_gator_token') || '';
+                    if (!token) {
+                        try {
+                            const rawTokens = localStorage.getItem('lg_task_delete_tokens');
+                            if (rawTokens) {
+                                const deleteTokens = JSON.parse(rawTokens);
+                                token = deleteTokens[String(targetId)] || '';
+                            }
+                        } catch (e) {}
+                    }
+                    if (!token) {
+                        token = localStorage.getItem('lg_session_id') || '';
+                    }
+
                     const delRes = await fetch(`/api/tasks?id=${encodeURIComponent(targetId)}`, {
                         method: 'DELETE',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-Gator-Token': 'chomp-chomp'
+                            'Authorization': `Bearer ${token}`
                         },
                         body: JSON.stringify({ id: targetId })
                     });
                     if (!delRes.ok) {
                         const err = await delRes.text().catch(() => '');
                         console.error('Failed to expunge task on server:', delRes.status, err);
+                    } else {
+                        console.log('Task successfully shredded from database archives:', targetId);
+                        try {
+                            const rawTokens = localStorage.getItem('lg_task_delete_tokens');
+                            if (rawTokens) {
+                                const deleteTokens = JSON.parse(rawTokens);
+                                delete deleteTokens[String(targetId)];
+                                localStorage.setItem('lg_task_delete_tokens', JSON.stringify(deleteTokens));
+                            }
+                        } catch (e) {}
                     }
                 } catch (netErr) {
                     console.error('Network error during task shredding:', netErr);
