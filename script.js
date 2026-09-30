@@ -2959,26 +2959,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderAllTriumphs = () => {
         if (!accomplishedFeedContainer) return;
+        updateTriumphsBadges();
         if (!allTriumphs || allTriumphs.length === 0) {
             accomplishedFeedContainer.innerHTML = '<div class="loading">No recorded triumphs yet. Conquer an avoided dispatch to claim your commendation!</div>';
+            if (triumphRibbon) triumphRibbon.style.display = 'none';
             return;
         }
 
         accomplishedFeedContainer.innerHTML = allTriumphs.map(t => buildAccomplishedItemHtml(t, false)).join('');
-        updateTriumphsBadges();
         if (allTriumphs.length > 0) {
             updateTriumphRibbon(allTriumphs[0]);
         }
     };
 
     const fetchTriumphs = async () => {
-        // Try local storage cache first for instant render
+        // Try local storage cache first for instant render, filtering out any legacy seed data
         try {
             const rawCache = localStorage.getItem('lg_triumphs');
             if (rawCache) {
                 const cached = JSON.parse(rawCache);
-                if (Array.isArray(cached) && cached.length > 0) {
-                    allTriumphs = cached;
+                if (Array.isArray(cached)) {
+                    allTriumphs = cached.filter(t => t && t.task_id && !String(t.task_id).startsWith('seed-'));
                     renderAllTriumphs();
                 }
             }
@@ -2988,11 +2989,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('/api/triumphs');
             if (res.ok) {
                 const data = await res.json();
-                if (Array.isArray(data) && data.length > 0) {
-                    // Merge local-only triumphs that haven't synced yet
-                    const serverIds = new Set(data.map(d => String(d.id)));
-                    const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)));
-                    allTriumphs = [...localOnly, ...data];
+                if (Array.isArray(data)) {
+                    const cleanData = data.filter(t => t && t.task_id && !String(t.task_id).startsWith('seed-'));
+                    if (cleanData.length > 0) {
+                        const serverIds = new Set(cleanData.map(d => String(d.id)));
+                        const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)) && !String(t.task_id).startsWith('seed-'));
+                        allTriumphs = [...localOnly, ...cleanData];
+                    } else {
+                        allTriumphs = [];
+                    }
                     try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
                     renderAllTriumphs();
                 }
@@ -3148,7 +3153,8 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
         const rawTriumphs = localStorage.getItem('lg_triumphs');
         if (rawTriumphs) {
-            allTriumphs = JSON.parse(rawTriumphs);
+            const parsed = JSON.parse(rawTriumphs);
+            allTriumphs = Array.isArray(parsed) ? parsed.filter(t => t && t.task_id && !String(t.task_id).startsWith('seed-')) : [];
             renderAllTriumphs();
         }
     } catch (e) {}

@@ -6,71 +6,8 @@ if (process.env.SUPABASE_URL && supabaseKey) {
     supabase = createClient(process.env.SUPABASE_URL, supabaseKey);
 }
 
-// In-memory fallback and cache for instant responsiveness
-const SEED_TRIUMPHS = [
-    {
-        id: 101,
-        task_id: "seed-1",
-        text: "Cleaned the moldy coffee mugs behind the monitor",
-        author_name: "Alex",
-        country: "Japan",
-        avoided_duration: "18 days, 4 hours",
-        time_taken: "4 minutes",
-        lore: "Achieved at 2:15 AM after a terrifying realization that the mugs were developing their own civilization.",
-        commendation_title: "Order of the 11th-Hour Miracle",
-        praise_count: 42,
-        cheers_count: 29,
-        respect_count: 61,
-        created_at: new Date(Date.now() - 3600000 * 5).toISOString()
-    },
-    {
-        id: 102,
-        task_id: "seed-2",
-        text: "Sent the email asking for a recommendation letter",
-        author_name: "Sarah",
-        country: "Canada",
-        avoided_duration: "24 days, 11 hours",
-        time_taken: "3 minutes",
-        lore: "Drafted 17 revisions over 3 weeks, then deleted everything and sent 2 sentences with sweaty palms.",
-        commendation_title: "Hero of Sudden Panic-Induced Competence",
-        praise_count: 88,
-        cheers_count: 54,
-        respect_count: 102,
-        created_at: new Date(Date.now() - 3600000 * 12).toISOString()
-    },
-    {
-        id: 103,
-        task_id: "seed-3",
-        text: "Cancelled the gym membership I haven't used since January",
-        author_name: "Marco",
-        country: "Italy",
-        avoided_duration: "4 months, 2 days",
-        time_taken: "6 minutes",
-        lore: "Required physically walking into the building and looking a personal trainer in the eyes without flinching.",
-        commendation_title: "Supreme Victor Over Sunk Cost Fallacy",
-        praise_count: 135,
-        cheers_count: 97,
-        respect_count: 180,
-        created_at: new Date(Date.now() - 3600000 * 28).toISOString()
-    },
-    {
-        id: 104,
-        task_id: "seed-4",
-        text: "Folded and put away the mountain of clean laundry",
-        author_name: "Priya",
-        country: "United Kingdom",
-        avoided_duration: "11 days, 19 hours",
-        time_taken: "14 minutes",
-        lore: "Fuelled by 90s Eurodance and the acute threat of visitors arriving in 20 minutes.",
-        commendation_title: "Grand Marshal of the Last Minute",
-        praise_count: 76,
-        cheers_count: 63,
-        respect_count: 89,
-        created_at: new Date(Date.now() - 3600000 * 40).toISOString()
-    }
-];
-
-let inMemoryTriumphs = [...SEED_TRIUMPHS];
+// In-memory cache for recent triumphs
+let inMemoryTriumphs = [];
 
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
@@ -94,7 +31,7 @@ module.exports = async function handler(req, res) {
                     .order('created_at', { ascending: false })
                     .limit(60);
 
-                if (!error && Array.isArray(data) && data.length > 0) {
+                if (!error && Array.isArray(data)) {
                     return res.status(200).json(data);
                 }
             } catch (err) {
