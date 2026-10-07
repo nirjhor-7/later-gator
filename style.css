@@ -3826,6 +3826,7 @@ body.sepia-edition .footer-credit {
     body.mobile-view-wire #box-input,
     body.mobile-view-wire #box-stats,
     body.mobile-view-wire #box-index,
+    body.mobile-view-wire #box-dispatch,
     body.mobile-view-wire #box-visitors {
         display: none !important;
     }
@@ -3845,8 +3846,7 @@ body.sepia-edition .footer-credit {
         display: block !important;
     }
 
-    body.mobile-view-wire #box-wire,
-    body.mobile-view-wire #box-dispatch {
+    body.mobile-view-wire #box-wire {
         display: block !important;
     }
 
@@ -3854,7 +3854,7 @@ body.sepia-edition .footer-credit {
         display: flex !important;
     }
 
-    /* 3. STATS TAB MODE (Live Stats, Global Index, Procrastinator Count) */
+    /* 3. STATS TAB MODE (Live Stats, Global Index, Procrastinator Count & Telegraph Dispatch) */
     body.mobile-view-stats {
         padding-bottom: 20px;
     }
@@ -3863,7 +3863,6 @@ body.sepia-edition .footer-credit {
     body.mobile-view-stats #box-input,
     body.mobile-view-stats #box-wire,
     body.mobile-view-stats #hall-of-shame,
-    body.mobile-view-stats #box-dispatch,
     body.mobile-view-stats .right-col,
     body.mobile-view-stats .mobile-fab-post,
     body.mobile-view-stats .wire-jump-latest-btn {
@@ -3877,6 +3876,7 @@ body.sepia-edition .footer-credit {
 
     body.mobile-view-stats #box-stats,
     body.mobile-view-stats #box-index,
+    body.mobile-view-stats #box-dispatch,
     body.mobile-view-stats #box-visitors {
         display: block !important;
     }
@@ -3886,6 +3886,10 @@ body.sepia-edition .footer-credit {
     }
 
     body.mobile-view-stats #box-index {
+        margin-bottom: 20px;
+    }
+
+    body.mobile-view-stats #box-dispatch {
         margin-bottom: 20px;
     }
 
@@ -8134,8 +8138,7 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 /* Feed clearance on mobile wire view so floating button never covers bottom dispatches */
 body.mobile-view-wire .feed-container,
-body.mobile-view-wire .accomplished-feed-container,
-body.mobile-view-wire #box-dispatch {
+body.mobile-view-wire .accomplished-feed-container {
     padding-bottom: 110px !important;
 }
 
