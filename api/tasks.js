@@ -340,7 +340,7 @@ async function handler(req, res) {
                 supabase.from('tasks').delete().in('id', badTaskIds).then(() => {}).catch(() => {});
             }
 
-            // Strip ip_address from public feed response to reduce payload and protect client privacy
+            // Strip ip_address from public feed response to reduce response size and protect client privacy
             const publicTasks = cleanTasks.map(({ ip_address, ...rest }) => rest);
 
             return res.status(200).json(publicTasks);
@@ -365,7 +365,7 @@ async function handler(req, res) {
             // 0. Hardcoded Blacklist (Instant execution, 100% immune to DB / RLS issues)
             if (HARDCODED_BANNED_IPS.has(clientIp)) {
                 await supabase.from('tasks').delete().eq('ip_address', clientIp);
-                return res.status(403).json({ error: "Your IP has been permanently banned from this sector." });
+                return res.status(403).json({ error: "Your IP has been permanently banned from submitting." });
             }
 
             // 1. Dynamic Database Blacklist Check
@@ -378,7 +378,7 @@ async function handler(req, res) {
 
                 if (isBanned && isBanned.length > 0) {
                     await supabase.from('tasks').delete().eq('ip_address', clientIp);
-                    return res.status(403).json({ error: "Your IP has been permanently banned from this sector." });
+                    return res.status(403).json({ error: "Your IP has been permanently banned from submitting." });
                 }
             }
 
@@ -410,6 +410,7 @@ async function handler(req, res) {
             // Gibberish & keyboard mash detection with suggestion
             const TASK_SUGGESTIONS = [
                 "Sleep",
+                "Tax Forms",
                 "Study",
                 "Replying to emails",
                 "Doing laundry",
@@ -512,17 +513,17 @@ async function handler(req, res) {
                 }
             }
             
-            const insertPayload = {
+            const insertRecord = {
                 text: cleanText,
                 city: finalName,
                 country: finalCountry,
                 ip_address: clientIp,
             };
-            if (gatorId) insertPayload.author_gator_id = gatorId;
+            if (gatorId) insertRecord.author_gator_id = gatorId;
 
             const { data: newTask, error } = await supabase
                 .from('tasks')
-                .insert([insertPayload])
+                .insert([insertRecord])
                 .select()
                 .single();
                 

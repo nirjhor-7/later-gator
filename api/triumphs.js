@@ -145,7 +145,7 @@ module.exports = async function handler(req, res) {
 
                 // Insert into triumphs table
                 try {
-                    const insertPayload = {
+                    const insertRecord = {
                         task_id: newTriumph.task_id,
                         text: newTriumph.text,
                         author_name: newTriumph.author_name,
@@ -160,7 +160,7 @@ module.exports = async function handler(req, res) {
                     };
                     const { data: dbRow, error: insertErr } = await supabase
                         .from('triumphs')
-                        .insert([insertPayload])
+                        .insert([insertRecord])
                         .select()
                         .single();
 

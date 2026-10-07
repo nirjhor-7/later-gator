@@ -6951,7 +6951,7 @@ body.midnight-edition .shred-slice.is-shredding {
         border-color: #FF5500;
     }
     42% {
-        /* Fire consumes paper: curling, 3D warp, scorching embers */
+        /* Fire consumes paper: curling, 3D distortion, scorching embers */
         transform: translateY(14px) scale(0.93) rotate(-2deg) perspective(600px) rotateX(16deg);
         filter: contrast(1.8) sepia(0.8) hue-rotate(-25deg) brightness(0.9);
         box-shadow: inset 0 0 38px #FF3300, 0 0 35px #FFAA00;

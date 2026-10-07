@@ -150,9 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const stripBrackets = (str) => typeof str === 'string' ? str.replace(/^\s*\[\s*/, '').replace(/\s*\]\s*$/, '').trim() : str;
 
-    const setButtonLabels = (laterText = "POST TO THE WIRE ➔", panicText = "DO IT NOW (PANIC MODE)") => {
-        const cleanLater = stripBrackets(laterText || "POST TO THE WIRE ➔");
-        const cleanPanic = stripBrackets(panicText || "DO IT NOW (PANIC MODE)");
+    const setButtonLabels = (laterText = "SEND INTO THE VOID ➔", panicText = "RETURN TO EARTH (PANIC MODE)") => {
+        const cleanLater = stripBrackets(laterText || "SEND INTO THE VOID ➔");
+        const cleanPanic = stripBrackets(panicText || "RETURN TO EARTH (PANIC MODE)");
         if (laterBtnText) {
             laterBtnText.textContent = cleanLater;
         } else if (laterBtn) {
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveEvasionPhrase = selected;
         isTaskReactiveActive = false;
-        setButtonLabels("POST TO THE WIRE ➔", "DO IT NOW (PANIC MODE)");
+        setButtonLabels("SEND INTO THE VOID ➔", "RETURN TO EARTH (PANIC MODE)");
 
         if (isUserInitiated && shufflePhraseBtn) {
             shufflePhraseBtn.classList.remove('spinning');
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTaskReactiveButtons = (rawText) => {
         if (!rawText || rawText.trim().length === 0) {
             if (isTaskReactiveActive) {
-                setButtonLabels("POST TO THE WIRE ➔", "DO IT NOW (PANIC MODE)");
+                setButtonLabels("SEND INTO THE VOID ➔", "RETURN TO EARTH (PANIC MODE)");
                 isTaskReactiveActive = false;
             }
             return;
@@ -211,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matched) {
             isTaskReactiveActive = true;
-            setButtonLabels("POST TO THE WIRE ➔", matched.panic || "DO IT NOW (PANIC MODE)");
+            setButtonLabels("SEND INTO THE VOID ➔", matched.panic || "RETURN TO EARTH (PANIC MODE)");
         } else if (isTaskReactiveActive) {
-            setButtonLabels("POST TO THE WIRE ➔", "DO IT NOW (PANIC MODE)");
+            setButtonLabels("SEND INTO THE VOID ➔", "RETURN TO EARTH (PANIC MODE)");
             isTaskReactiveActive = false;
         }
     };
@@ -827,17 +827,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetSeq = target.seq;
                 pendingReactions.delete(taskId);
 
-                const payload = {
+                const taskData = {
                     taskId,
                     reactionType: target.reactionType,
                     action: target.action,
                     sessionId: SESSION_ID
                 };
                 if (target.clearedType) {
-                    payload.clearedType = target.clearedType;
+                    taskData.clearedType = target.clearedType;
                 }
                 if (currentGator && currentGator.gatorId) {
-                    payload.gatorId = currentGator.gatorId;
+                    taskData.gatorId = currentGator.gatorId;
                 }
 
                 try {
@@ -847,7 +847,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const res = await fetch('/api/react', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload),
+                        body: JSON.stringify(taskData),
                         signal: controller ? controller.signal : undefined
                     });
 
@@ -1458,14 +1458,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendHeartbeat = () => {
         if (isDeveloper) return;
         try {
-            const payload = JSON.stringify({ sessionId });
+            const statsData = JSON.stringify({ sessionId });
             if (navigator.sendBeacon) {
-                navigator.sendBeacon('/api/stats', payload);
+                navigator.sendBeacon('/api/stats', statsData);
             } else {
                 fetch('/api/stats', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: payload,
+                    body: statsData,
                     keepalive: true
                 }).catch(() => {});
             }
@@ -1702,6 +1702,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Gibberish & Keyboard Smash Detection with Interactive Suggestion
         const TASK_SUGGESTIONS = [
             "Sleep",
+            "Tax Forms",
             "Study",
             "Replying to emails",
             "Doing laundry",
@@ -1777,15 +1778,15 @@ document.addEventListener('DOMContentLoaded', () => {
             else panicBtn.textContent = "DOING IT NOW";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            if (laterBtnText) laterBtnText.textContent = "POSTED TO THE WIRE ✓";
-            else laterBtn.textContent = "POSTED TO THE WIRE ✓";
-            statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
+            if (laterBtnText) laterBtnText.textContent = "SENT INTO THE VOID ✓";
+            else laterBtn.textContent = "SENT INTO THE VOID ✓";
+            statusMessage.textContent = "SUCCESSFULLY SENT INTO THE VOID.";
         }
 
         // 3. Dispatch network request in parallel
-        const postPayload = { text, name: submittedAuthorName, sessionId: SESSION_ID };
+        const postData = { text, name: submittedAuthorName, sessionId: SESSION_ID };
         if (currentGator && currentGator.gatorId) {
-            postPayload.gatorId = currentGator.gatorId;
+            postData.gatorId = currentGator.gatorId;
         }
         const postPromise = fetch('/api/tasks', {
             method: 'POST',
@@ -1793,7 +1794,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Content-Type': 'application/json',
                 'X-Gator-Token': 'chomp-chomp'
             },
-            body: JSON.stringify(postPayload)
+            body: JSON.stringify(postData)
         }).catch(err => ({ ok: false, error: err }));
 
         // 4. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
@@ -1805,8 +1806,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.textContent = "";
 
                 // Reset button text
-                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
-                if (panicBtnText) panicBtnText.textContent = "DO IT NOW (PANIC MODE)";
+                if (laterBtnText) laterBtnText.textContent = "SEND INTO THE VOID ➔";
+                if (panicBtnText) panicBtnText.textContent = "RETURN TO EARTH (PANIC MODE)";
                 rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate

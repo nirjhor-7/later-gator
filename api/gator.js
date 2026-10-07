@@ -287,7 +287,7 @@ async function handleMe(req, res, supabase) {
     const totalSympathy = tasks.reduce((sum, t) =>
         sum + (t.same_count || 0) + (t.valid_count || 0) + (t.rip_count || 0), 0);
 
-    const payload = {
+    const responseData = {
         ok: true,
         gatorId: session.gatorId,
         tag: session.tag,
@@ -296,11 +296,11 @@ async function handleMe(req, res, supabase) {
     };
 
     if (includeDossier) {
-        payload.dispatches = tasks;
-        payload.totalSympathy = totalSympathy;
+        responseData.dispatches = tasks;
+        responseData.totalSympathy = totalSympathy;
     }
 
-    return res.status(200).json(payload);
+    return res.status(200).json(responseData);
 }
 
 async function handleLogout(req, res, supabase) {
