@@ -2,8 +2,10 @@
   "name": "later-gator",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dev.js",
   "scripts": {
+    "dev": "node dev.js",
+    "start": "node dev.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
