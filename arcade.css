@@ -1,0 +1,1047 @@
+/**
+ * LATER, GATORS // THE POSTPONEMENT PARLOR
+ * OPTION A: NEO-GEO & CAPCOM ARCADE CABINET (1989 COIN-OP PORTAL)
+ * High-immersion retro arcade aesthetics, CRT phosphor bloom, T-molding cabinet chassis.
+ */
+
+/* ==========================================================================
+   1. ROOT VARIABLES & PALETTE
+   ========================================================================== */
+:root {
+    --arcade-bg: #06070c;
+    --arcade-cabinet: #0e0f18;
+    --arcade-cabinet-border: #1f2133;
+    --arcade-crt-glass: #090a12;
+    
+    /* Neon & Phosphor Accent Palette */
+    --neon-cyan: #00f0ff;
+    --neon-cyan-glow: rgba(0, 240, 255, 0.5);
+    --neon-magenta: #ff0077;
+    --neon-magenta-glow: rgba(255, 0, 119, 0.5);
+    --neon-gold: #ffbe00;
+    --neon-gold-glow: rgba(255, 190, 0, 0.5);
+    --neon-green: #00ff66;
+    --neon-green-glow: rgba(0, 255, 102, 0.5);
+    --neon-red: #ff3344;
+    
+    /* CRT Phosphor Text Colors */
+    --crt-amber: #ffb732;
+    --crt-green: #39ff14;
+    --crt-cyan: #52e5ff;
+    --crt-white: #f0f3ff;
+    --crt-dim: #7a829e;
+    
+    /* Typography Stacks */
+    --font-arcade: 'Press Start 2P', monospace, cursive;
+    --font-crt: 'VT323', monospace;
+    --font-pixel: 'Silkscreen', monospace;
+}
+
+/* ==========================================================================
+   2. PAGE BODY & CABINET HOUSING
+   ========================================================================== */
+body, html {
+    background-color: var(--arcade-bg) !important;
+    background-image: 
+        radial-gradient(circle at 50% 15%, rgba(26, 32, 58, 0.8) 0%, rgba(4, 5, 8, 1) 100%),
+        repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.012) 0, rgba(255, 255, 255, 0.012) 2px, transparent 0, transparent 8px) !important;
+    color: var(--crt-white) !important;
+    font-family: var(--font-crt) !important;
+    font-size: 1.15rem;
+    line-height: 1.4;
+    min-height: 100vh;
+}
+
+/* The Heavy Arcade Cabinet Frame */
+.page-border {
+    background: var(--arcade-cabinet) !important;
+    border: 6px solid var(--arcade-cabinet-border) !important;
+    outline: 4px solid var(--neon-cyan) !important;
+    outline-offset: -2px !important;
+    box-shadow: 
+        0 0 30px rgba(0, 240, 255, 0.35),
+        0 25px 70px rgba(0, 0, 0, 0.95),
+        inset 0 0 35px rgba(0, 0, 0, 0.85) !important;
+    border-radius: 8px !important;
+    position: relative;
+    overflow: hidden;
+    max-width: 960px !important;
+    margin: 30px auto !important;
+    padding: 24px 32px 36px 32px !important;
+}
+
+/* Metallic Cabinet Chamfer & T-Molding Trim */
+.page-border::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, var(--neon-magenta), var(--neon-cyan), var(--neon-gold), var(--neon-green));
+    box-shadow: 0 0 14px var(--neon-cyan);
+    z-index: 100;
+}
+
+/* ==========================================================================
+   3. CRT SCREEN EFFECT & PHOSPHOR SCANLINES
+   ========================================================================== */
+body:not(.crt-off) .page-border::after {
+    content: " ";
+    display: block;
+    position: absolute;
+    top: 0; left: 0; bottom: 0; right: 0;
+    background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.42) 50%);
+    background-size: 100% 4px;
+    z-index: 99;
+    pointer-events: none;
+    opacity: 0.65;
+}
+
+/* Subtle Vignette & Curvature */
+body:not(.crt-off) .page-border {
+    box-shadow: 
+        0 0 30px rgba(0, 240, 255, 0.35),
+        0 25px 70px rgba(0, 0, 0, 0.95),
+        inset 0 0 60px rgba(0, 0, 0, 0.9) !important;
+}
+
+/* ==========================================================================
+   4. ILLUMINATED CABINET MARQUEE (HEADER)
+   ========================================================================== */
+.masthead {
+    border-bottom: 3px solid var(--neon-cyan) !important;
+    padding-bottom: 24px !important;
+    margin-bottom: 24px !important;
+    position: relative;
+}
+
+/* Marquee Top Meta Bar */
+.masthead-meta {
+    background: #090a14 !important;
+    border: 2px solid #20233a !important;
+    border-radius: 4px;
+    padding: 6px 12px !important;
+    font-family: var(--font-pixel) !important;
+    font-size: 0.72rem !important;
+    color: var(--crt-cyan) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+#masthead-vol {
+    background: var(--neon-magenta) !important;
+    color: #fff !important;
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-weight: 700;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
+}
+
+.meta-journal-title {
+    color: var(--neon-gold) !important;
+    font-weight: 700;
+}
+
+/* Hide old broadsheet midnight button in arcade mode */
+#midnight-toggle-btn {
+    display: none !important;
+}
+
+/* Marquee Arcade Control Buttons Toolbar */
+.meta-row-right {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.meta-row-right button,
+.arcade-btn,
+.header-pass-btn,
+.header-auth-btn {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.58rem !important;
+    padding: 6px 8px !important;
+    background: #141728 !important;
+    color: var(--neon-cyan) !important;
+    border: 2px solid var(--neon-cyan) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 0 8px rgba(0, 240, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.08s ease !important;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
+.meta-row-right button:hover,
+.arcade-btn:hover,
+.header-pass-btn:hover,
+.header-auth-btn:hover {
+    background: var(--neon-cyan) !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px var(--neon-cyan) !important;
+}
+
+.meta-row-right button:active,
+.arcade-btn:active,
+.header-pass-btn:active,
+.header-auth-btn:active {
+    transform: translateY(2px) !important;
+}
+
+/* Audio button custom accent */
+#arcade-audio-toggle-btn {
+    border-color: var(--neon-gold) !important;
+    color: var(--neon-gold) !important;
+    box-shadow: 0 0 8px rgba(255, 190, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+#arcade-audio-toggle-btn:hover {
+    background: var(--neon-gold) !important;
+    color: #000 !important;
+    box-shadow: 0 0 15px var(--neon-gold) !important;
+}
+
+/* Neon Glow Masthead Title */
+.masthead h1 {
+    font-family: var(--font-arcade) !important;
+    font-size: 2.8rem !important;
+    color: #ffffff !important;
+    text-shadow: 
+        0 0 10px var(--neon-cyan),
+        0 0 22px var(--neon-cyan),
+        0 0 45px var(--neon-magenta),
+        3px 3px 0px #000 !important;
+    letter-spacing: 3px !important;
+    margin: 18px 0 10px 0 !important;
+    animation: arcadePulse 3s infinite alternate;
+}
+
+@keyframes arcadePulse {
+    0% {
+        text-shadow: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 35px var(--neon-magenta);
+    }
+    100% {
+        text-shadow: 0 0 14px var(--neon-cyan), 0 0 30px var(--neon-cyan), 0 0 55px var(--neon-magenta);
+    }
+}
+
+.masthead-sub {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.85rem !important;
+    color: var(--neon-gold) !important;
+    letter-spacing: 2px !important;
+    text-shadow: 0 0 8px var(--neon-gold-glow) !important;
+    margin-bottom: 8px !important;
+}
+
+.masthead-tagline {
+    font-family: var(--font-crt) !important;
+    font-size: 1.15rem !important;
+    color: var(--crt-cyan) !important;
+    letter-spacing: 1px !important;
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px dashed rgba(0, 240, 255, 0.3) !important;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+/* ==========================================================================
+   5. TELEMETRY RADAR TICKER
+   ========================================================================== */
+.telegraph-ticker {
+    background: #090b14 !important;
+    border: 2px solid #20233b !important;
+    border-left: 5px solid var(--neon-green) !important;
+    color: var(--neon-green) !important;
+    font-family: var(--font-crt) !important;
+    font-size: 1.25rem !important;
+    text-shadow: 0 0 6px var(--neon-green-glow) !important;
+    border-radius: 4px;
+    margin-bottom: 22px !important;
+    box-shadow: inset 0 0 12px rgba(0, 255, 102, 0.1) !important;
+}
+
+.ticker-badge {
+    background: var(--neon-green) !important;
+    color: #050608 !important;
+    font-family: var(--font-arcade) !important;
+    font-size: 0.60rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 1px;
+    padding: 6px 10px !important;
+}
+
+/* ==========================================================================
+   6. WORLD BOSS OF THE DAY (LEAD STORY BANNER)
+   ========================================================================== */
+.lead-story-banner {
+    background: linear-gradient(180deg, #18121e 0%, #0d0a14 100%) !important;
+    border: 3px solid var(--neon-magenta) !important;
+    box-shadow: 0 0 20px rgba(255, 0, 119, 0.3), inset 0 0 20px rgba(255, 0, 119, 0.1) !important;
+    border-radius: 8px !important;
+    margin-bottom: 24px !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.lead-story-header {
+    background: var(--neon-magenta) !important;
+    color: #fff !important;
+    font-family: var(--font-arcade) !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 1.5px !important;
+    padding: 8px 12px !important;
+    text-align: center;
+    text-shadow: 0 0 6px rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.lead-story-eyebrow {
+    animation: bossWarningFlicker 1.5s infinite;
+}
+
+@keyframes bossWarningFlicker {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.65; }
+}
+
+.lead-story-headline {
+    font-family: var(--font-arcade) !important;
+    font-size: 1.18rem !important;
+    line-height: 1.5 !important;
+    color: #fff !important;
+    text-shadow: 0 0 10px var(--neon-gold) !important;
+    padding: 16px 20px 8px 20px !important;
+    margin: 0 !important;
+    text-align: center;
+}
+
+.lead-story-meta {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.72rem !important;
+    color: var(--crt-dim) !important;
+    text-align: center;
+    padding-bottom: 14px !important;
+}
+
+.lead-story-badge {
+    color: var(--neon-gold) !important;
+    font-weight: 700;
+}
+
+.lead-story-actions {
+    background: #090810 !important;
+    border-top: 1px solid rgba(255, 0, 119, 0.3) !important;
+    padding: 12px 20px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.lead-stamp-prompt {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.60rem !important;
+    color: var(--crt-cyan) !important;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   7. INPUT DESK: INSERT TOKEN // CHOOSE YOUR BOSS
+   ========================================================================== */
+.article-box {
+    background: #0b0d18 !important;
+    border: 2px solid #22253d !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), inset 0 0 12px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 6px !important;
+    padding: 18px !important;
+    margin-bottom: 22px !important;
+}
+
+.section-title {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.85rem !important;
+    color: var(--neon-cyan) !important;
+    letter-spacing: 1px !important;
+    text-shadow: 0 0 8px var(--neon-cyan-glow) !important;
+    border-bottom: 2px solid #20243d !important;
+    padding-bottom: 10px !important;
+    margin-top: 0 !important;
+    margin-bottom: 16px !important;
+}
+
+/* CRT Terminal Input Wrapper */
+.task-input-wrap {
+    background: #05060b !important;
+    border: 2px solid var(--neon-cyan) !important;
+    border-radius: 4px !important;
+    box-shadow: inset 0 0 14px rgba(0, 240, 255, 0.15) !important;
+    padding: 12px !important;
+}
+
+#task-input {
+    font-family: var(--font-crt) !important;
+    font-size: 1.45rem !important;
+    color: var(--crt-green) !important;
+    text-shadow: 0 0 8px var(--neon-green-glow) !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    width: 100% !important;
+    min-height: 80px !important;
+    resize: vertical;
+}
+
+#task-input::placeholder {
+    color: rgba(0, 255, 102, 0.45) !important;
+}
+
+.task-char-bar {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.65rem !important;
+    color: var(--crt-dim) !important;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 6px;
+}
+
+/* Quick Chips: Boss Spawns */
+.quick-chips-wrapper {
+    margin: 14px 0 !important;
+}
+
+.chips-label {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.68rem !important;
+    color: var(--neon-gold) !important;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.chip-btn {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.55rem !important;
+    background: #121526 !important;
+    color: var(--crt-white) !important;
+    border: 1px solid #2f3554 !important;
+    border-radius: 4px !important;
+    padding: 6px 9px !important;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.chip-btn:hover {
+    background: var(--neon-magenta) !important;
+    color: #fff !important;
+    border-color: var(--neon-magenta) !important;
+    box-shadow: 0 0 10px var(--neon-magenta-glow);
+}
+
+.chip-btn:active {
+    transform: scale(0.95);
+}
+
+/* Meta Inputs (Location / Alias) */
+.byline-input-row,
+.byline-field-group input {
+    background: #06070e !important;
+    border: 2px solid #262a44 !important;
+    color: var(--crt-cyan) !important;
+    font-family: var(--font-crt) !important;
+    font-size: 1.15rem !important;
+    border-radius: 4px !important;
+}
+
+.byline-input-row:focus-within,
+.byline-field-group input:focus {
+    border-color: var(--neon-cyan) !important;
+    box-shadow: 0 0 10px var(--neon-cyan-glow) !important;
+    outline: none;
+}
+
+.byline-tag {
+    background: #141728 !important;
+    color: var(--neon-cyan) !important;
+    font-family: var(--font-arcade) !important;
+    font-size: 0.60rem !important;
+}
+
+/* ==========================================================================
+   8. TACTILE ARCADE PUSH BUTTONS
+   ========================================================================== */
+/* Hero Submit Button: Illuminated Cyan Push Button (High Specificity Override) */
+body #later-btn,
+body .btn-post-wire,
+body .btn-heavy {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.78rem !important;
+    background: linear-gradient(180deg, #00f0ff 0%, #0088b3 100%) !important;
+    color: #060912 !important;
+    border: 3px solid #00f0ff !important;
+    border-radius: 6px !important;
+    box-shadow: 
+        0 6px 0 #005273,
+        0 8px 20px rgba(0, 240, 255, 0.45),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7) !important;
+    padding: 14px 20px !important;
+    cursor: pointer;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    width: 100% !important;
+    text-transform: uppercase;
+    transition: all 0.08s ease !important;
+    position: relative;
+    top: 0;
+    user-select: none;
+}
+
+body #later-btn:hover,
+body .btn-post-wire:hover,
+body .btn-heavy:hover {
+    box-shadow: 
+        0 6px 0 #005273,
+        0 10px 28px rgba(0, 240, 255, 0.7),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+    filter: brightness(1.12);
+}
+
+body #later-btn:active,
+body .btn-post-wire:active,
+body .btn-heavy:active {
+    top: 4px !important;
+    box-shadow: 
+        0 2px 0 #005273,
+        0 4px 10px rgba(0, 240, 255, 0.5) !important;
+}
+
+/* Panic Finisher Button */
+body #panic-btn,
+body .btn-panic-clean,
+body .btn-outline {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.65rem !important;
+    background: repeating-linear-gradient(45deg, #cc2233, #cc2233 10px, #991122 10px, #991122 20px) !important;
+    color: #ffffff !important;
+    border: 2px solid #ff4455 !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 0 #660a14, 0 6px 14px rgba(255, 50, 70, 0.35) !important;
+    padding: 11px 14px !important;
+    margin-top: 10px !important;
+    cursor: pointer;
+    letter-spacing: 1px;
+    width: 100%;
+    position: relative;
+    top: 0;
+    transition: all 0.08s ease;
+}
+
+body #panic-btn:active,
+body .btn-panic-clean:active,
+body .btn-outline:active {
+    top: 3px !important;
+    box-shadow: 0 1px 0 #660a14 !important;
+}
+
+/* Mobile FAB Post Button */
+.mobile-fab-post {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.65rem !important;
+    background: linear-gradient(180deg, #00f0ff 0%, #0088b3 100%) !important;
+    color: #050811 !important;
+    border: 2px solid #00f0ff !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 0 #005273, 0 0 18px var(--neon-cyan-glow) !important;
+    padding: 10px 14px !important;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
+.mobile-fab-post:active {
+    transform: translateY(2px) scale(0.96);
+    box-shadow: 0 1px 0 #005273 !important;
+}
+
+/* ==========================================================================
+   9. THE PUBLIC WIRE: SPECTATOR ARENA & BATTLE LOGS
+   ========================================================================== */
+.wire-box-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    border-bottom: 2px solid #20243d !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 16px !important;
+    gap: 10px;
+}
+
+.wire-section-title {
+    margin-bottom: 0 !important;
+    border-bottom: none !important;
+    padding-bottom: 0 !important;
+}
+
+.wire-tab-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.wire-nav-tab {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.50rem !important;
+    background: #101220 !important;
+    color: var(--crt-dim) !important;
+    border: 2px solid #262a42 !important;
+    border-radius: 4px !important;
+    padding: 6px 8px !important;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    white-space: nowrap;
+}
+
+.wire-nav-tab.active {
+    background: var(--neon-cyan) !important;
+    color: #060912 !important;
+    border-color: var(--neon-cyan) !important;
+    box-shadow: 0 0 10px var(--neon-cyan-glow) !important;
+}
+
+/* Battle Card / Feed Item */
+.feed-item {
+    background: #070810 !important;
+    border: 2px solid #1a1d30 !important;
+    border-left: 4px solid var(--neon-cyan) !important;
+    border-radius: 4px !important;
+    padding: 14px 16px !important;
+    margin-bottom: 14px !important;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.45) !important;
+    transition: transform 0.1s ease, border-color 0.1s ease;
+}
+
+.feed-item:hover {
+    border-color: #31375a !important;
+    border-left-color: var(--neon-magenta) !important;
+    transform: translateY(-2px);
+}
+
+.feed-item-meta {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.68rem !important;
+    color: var(--crt-cyan) !important;
+    margin-bottom: 8px !important;
+}
+
+.feed-item-text {
+    font-family: var(--font-crt) !important;
+    font-size: 1.45rem !important;
+    line-height: 1.35 !important;
+    color: #ffffff !important;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.3) !important;
+    margin-bottom: 12px !important;
+}
+
+.feed-item-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-top: 1px dashed #1a1d30 !important;
+    padding-top: 10px !important;
+}
+
+.feed-item-time {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.62rem !important;
+    color: var(--crt-dim) !important;
+}
+
+/* Arcade Reaction Buttons */
+.reaction-stamp-btn,
+.feed-clip-btn,
+.feed-resolve-btn {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.55rem !important;
+    background: #0f1220 !important;
+    color: var(--crt-white) !important;
+    border: 2px solid #272d48 !important;
+    border-radius: 4px !important;
+    padding: 6px 9px !important;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #15182a !important;
+    transition: all 0.08s ease !important;
+}
+
+.reaction-stamp-btn:hover,
+.feed-clip-btn:hover {
+    background: #171b32 !important;
+    border-color: var(--neon-cyan) !important;
+    color: var(--neon-cyan) !important;
+    box-shadow: 0 0 8px var(--neon-cyan-glow) !important;
+}
+
+.reaction-stamp-btn:active,
+.feed-clip-btn:active {
+    transform: translateY(2px);
+    box-shadow: none !important;
+}
+
+/* Active Stamped State (Combos) */
+.reaction-stamp-btn.stamped[data-type="same"] {
+    background: var(--neon-cyan) !important;
+    color: #060912 !important;
+    border-color: var(--neon-cyan) !important;
+    box-shadow: 0 0 12px var(--neon-cyan) !important;
+}
+
+.reaction-stamp-btn.stamped[data-type="valid"] {
+    background: var(--neon-green) !important;
+    color: #060912 !important;
+    border-color: var(--neon-green) !important;
+    box-shadow: 0 0 12px var(--neon-green) !important;
+}
+
+.reaction-stamp-btn.stamped[data-type="rip"] {
+    background: var(--neon-magenta) !important;
+    color: #ffffff !important;
+    border-color: var(--neon-magenta) !important;
+    box-shadow: 0 0 12px var(--neon-magenta) !important;
+}
+
+/* Stage Clear Button */
+.feed-resolve-btn {
+    background: #141c10 !important;
+    color: var(--neon-green) !important;
+    border-color: var(--neon-green) !important;
+}
+
+.feed-resolve-btn:hover {
+    background: var(--neon-green) !important;
+    color: #000 !important;
+    box-shadow: 0 0 12px var(--neon-green) !important;
+}
+
+/* Return to Latest Button */
+.feed-back-to-top-btn,
+.feed-load-older-btn {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.58rem !important;
+    background: #101220 !important;
+    color: var(--neon-cyan) !important;
+    border: 2px solid #20243d !important;
+    border-radius: 4px;
+    padding: 8px 14px;
+    cursor: pointer;
+    box-shadow: 0 2px 0 #15182a;
+}
+
+.feed-back-to-top-btn:hover,
+.feed-load-older-btn:hover {
+    border-color: var(--neon-cyan) !important;
+    box-shadow: 0 0 10px var(--neon-cyan-glow) !important;
+}
+
+/* ==========================================================================
+   10. LIVE STATS & HIGH SCORE TABLE (GLOBAL INDEX)
+   ========================================================================== */
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.stat-item {
+    background: #06070e !important;
+    border: 2px solid #1c1f33 !important;
+    border-radius: 4px;
+    padding: 12px;
+    text-align: center;
+}
+
+.stat-value {
+    font-family: var(--font-arcade) !important;
+    font-size: 1.4rem !important;
+    color: var(--neon-gold) !important;
+    text-shadow: 0 0 10px var(--neon-gold-glow) !important;
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.60rem !important;
+    color: var(--crt-dim) !important;
+    letter-spacing: 0.5px;
+}
+
+/* High Score Board */
+.leaderboard-meta {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.68rem !important;
+    color: var(--neon-magenta) !important;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+}
+
+.country-item {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.65rem !important;
+    color: var(--crt-white) !important;
+    padding: 8px 10px !important;
+    background: #06070c !important;
+    border: 1px solid #1a1d30 !important;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.country-item:nth-child(1) {
+    border-color: var(--neon-gold) !important;
+    color: var(--neon-gold) !important;
+    box-shadow: 0 0 8px var(--neon-gold-glow);
+}
+
+.country-item:nth-child(2) {
+    border-color: #ccd0db !important;
+    color: #ccd0db !important;
+}
+
+.country-item:nth-child(3) {
+    border-color: #d18a4a !important;
+    color: #d18a4a !important;
+}
+
+/* 7-Segment Mechanical Rolling Coin Meter */
+.visitor-footer {
+    background: #05060a !important;
+    border: 2px solid #20243d !important;
+    border-radius: 6px;
+    padding: 14px 18px !important;
+}
+
+.counter-label {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.65rem !important;
+    color: var(--neon-gold) !important;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.counter-value {
+    font-family: var(--font-arcade) !important;
+    font-size: 1.35rem !important;
+    color: #ff3344 !important;
+    background: #140406 !important;
+    border: 2px solid #ff2233 !important;
+    border-radius: 4px;
+    padding: 6px 14px;
+    display: inline-block;
+    box-shadow: inset 0 0 10px rgba(255, 34, 51, 0.4), 0 0 8px rgba(255, 34, 51, 0.4);
+    letter-spacing: 4px;
+}
+
+/* ==========================================================================
+   11. TELEGRAPH DISPATCH: 2P VERSUS CHALLENGE
+   ========================================================================== */
+.dispatch-desk-box {
+    background: #0b0d18 !important;
+    border: 2px solid var(--neon-cyan) !important;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.25) !important;
+}
+
+.dispatch-desk-banner {
+    background: #06070e !important;
+    border: 1px dashed var(--neon-cyan) !important;
+    color: var(--neon-cyan) !important;
+    font-family: var(--font-arcade) !important;
+    font-size: 0.60rem !important;
+    letter-spacing: 1px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.dispatch-desk-pitch {
+    font-family: var(--font-crt) !important;
+    font-size: 1.25rem !important;
+    color: var(--crt-white) !important;
+    line-height: 1.4;
+    margin-bottom: 14px;
+}
+
+.dispatch-act-btn {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.58rem !important;
+    background: #121528 !important;
+    color: var(--crt-cyan) !important;
+    border: 2px solid #282f50 !important;
+    border-radius: 4px;
+    padding: 10px 12px !important;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #181d33 !important;
+    transition: all 0.08s ease;
+}
+
+.dispatch-act-btn:hover {
+    background: var(--neon-cyan) !important;
+    color: #060912 !important;
+    border-color: var(--neon-cyan) !important;
+    box-shadow: 0 0 12px var(--neon-cyan) !important;
+}
+
+.dispatch-act-btn:active {
+    transform: translateY(2px);
+    box-shadow: none !important;
+}
+
+.dispatch-desk-footer {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.58rem !important;
+    color: var(--crt-dim) !important;
+    margin-top: 12px;
+    text-align: center;
+}
+
+/* ==========================================================================
+   12. FOOTER & CREDITS
+   ========================================================================== */
+.site-footer {
+    border-top: 3px solid var(--neon-cyan) !important;
+    padding-top: 24px !important;
+    margin-top: 30px !important;
+    text-align: center;
+}
+
+.footer-share-btn {
+    font-family: var(--font-arcade) !important;
+    font-size: 0.65rem !important;
+    background: #121528 !important;
+    color: var(--neon-gold) !important;
+    border: 2px solid var(--neon-gold) !important;
+    border-radius: 6px;
+    box-shadow: 0 4px 0 #805e00, 0 0 12px var(--neon-gold-glow) !important;
+    padding: 12px 18px !important;
+    cursor: pointer;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+}
+
+.footer-share-btn:hover {
+    background: var(--neon-gold) !important;
+    color: #06070e !important;
+}
+
+.footer-quote {
+    font-family: var(--font-crt) !important;
+    font-size: 1.35rem !important;
+    color: var(--crt-green) !important;
+    text-shadow: 0 0 6px var(--neon-green-glow);
+    margin-bottom: 10px;
+}
+
+.footer-credit {
+    font-family: var(--font-pixel) !important;
+    font-size: 0.65rem !important;
+    color: var(--crt-dim) !important;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   13. MOBILE RESPONSIVENESS & SEGMENTED TABS
+   ========================================================================== */
+@media (max-width: 768px) {
+    .page-border {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border-left: none !important;
+        border-right: none !important;
+        padding: 12px 12px 28px 12px !important;
+    }
+
+    .masthead-meta {
+        padding: 6px 8px !important;
+    }
+
+    .meta-row-right {
+        gap: 4px;
+    }
+
+    .meta-row-right button,
+    .arcade-btn,
+    .header-pass-btn,
+    .header-auth-btn {
+        font-size: 0.50rem !important;
+        padding: 5px 6px !important;
+    }
+
+    .masthead h1 {
+        font-size: 1.85rem !important;
+        letter-spacing: 1.5px !important;
+    }
+
+    .mobile-segmented-bar {
+        background: #070810 !important;
+        border: 2px solid #20243d !important;
+        border-radius: 6px;
+        padding: 4px;
+        display: flex !important;
+        gap: 4px;
+        margin-bottom: 16px;
+    }
+
+    .mobile-tab-btn {
+        font-family: var(--font-arcade) !important;
+        font-size: 0.60rem !important;
+        background: transparent !important;
+        color: var(--crt-dim) !important;
+        border: 1px solid transparent !important;
+        border-radius: 4px;
+        padding: 8px 6px !important;
+        flex: 1;
+        cursor: pointer;
+    }
+
+    .mobile-tab-btn.active {
+        background: var(--neon-cyan) !important;
+        color: #060912 !important;
+        font-weight: 700;
+        box-shadow: 0 0 10px var(--neon-cyan-glow) !important;
+    }
+
+    .wire-live-badge {
+        background: var(--neon-magenta) !important;
+        color: #fff !important;
+        font-size: 0.45rem !important;
+        padding: 1px 3px !important;
+        border-radius: 2px;
+    }
+
+    .lead-story-headline {
+        font-size: 0.95rem !important;
+    }
+
+    body #later-btn,
+    body .btn-post-wire,
+    body .btn-heavy {
+        font-size: 0.68rem !important;
+        padding: 12px 14px !important;
+    }
+}
