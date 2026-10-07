@@ -790,6 +790,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const countEl = btn.querySelector('.reaction-count');
                 if (countEl && newCount != null) {
                     countEl.textContent = newCount;
+                    countEl.classList.remove('count-bump');
+                    requestAnimationFrame(() => {
+                        countEl.classList.add('count-bump');
+                    });
                 }
             }
 
@@ -802,6 +806,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (prevCountEl) {
                         const val = parseInt(prevCountEl.textContent, 10) || 0;
                         prevCountEl.textContent = Math.max(0, val - 1);
+                        prevCountEl.classList.remove('count-bump');
+                        requestAnimationFrame(() => {
+                            prevCountEl.classList.add('count-bump');
+                        });
                     }
                 }
             }
@@ -906,8 +914,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.setProperty('--stamp-rot', `${rot}deg`);
 
         btn.classList.remove('stamp-slam');
-        void btn.offsetWidth;
-        btn.classList.add('stamp-slam');
+        requestAnimationFrame(() => {
+            btn.classList.add('stamp-slam');
+        });
 
         const prevActiveType = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
         const isAlreadyStamped = (prevActiveType === reactionType);
@@ -3495,7 +3504,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const val = btn.getAttribute('data-task');
             if (taskInput) {
                 taskInput.value = val;
-                taskInput.focus();
+                if (window.innerWidth > 768) {
+                    taskInput.focus();
+                }
                 updateCharCount();
                 updateTaskReactiveButtons(taskInput.value);
                 if (navigator.vibrate) {
@@ -3514,7 +3525,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const randomExcuse = RANDOM_EXCUSES[Math.floor(Math.random() * RANDOM_EXCUSES.length)];
             if (taskInput) {
                 taskInput.value = randomExcuse;
-                taskInput.focus();
+                if (window.innerWidth > 768) {
+                    taskInput.focus();
+                }
                 updateCharCount();
                 updateTaskReactiveButtons(taskInput.value);
                 if (navigator.vibrate) {

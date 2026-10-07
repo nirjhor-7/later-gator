@@ -1452,7 +1452,8 @@ button {
 }
 
 .reaction-stamp-btn:active {
-    transform: scale(0.92);
+    transform: scale(0.94) translateY(1px) rotate(var(--stamp-rot, 0deg));
+    background: rgba(17, 17, 17, 0.08);
 }
 
 .reaction-stamp-btn {
@@ -1465,7 +1466,7 @@ button {
     font-weight: 900;
     letter-spacing: 0.8px;
     box-shadow: inset 0 0 0 1px currentColor, 0 1px 3px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transition: transform 0.18s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .reaction-stamp-btn[data-type="same"].stamped {
@@ -1496,7 +1497,8 @@ button {
 }
 
 .reaction-stamp-btn.stamp-slam {
-    animation: stampSlamImpact 0.42s cubic-bezier(0.2, 0.8, 0.2, 1.25) forwards;
+    animation: stampSlamImpact 0.36s cubic-bezier(0.2, 0.8, 0.2, 1.25) forwards;
+    will-change: transform, opacity;
 }
 
 .reaction-stamp-btn.stamp-rejected {
@@ -1513,17 +1515,15 @@ button {
 
 @keyframes stampSlamImpact {
     0% {
-        transform: scale(1.65) rotate(calc(var(--stamp-rot, -1.8deg) * 2.2));
-        filter: blur(1.5px);
-        opacity: 0.35;
+        transform: scale(1.24) rotate(calc(var(--stamp-rot, -1.8deg) * 1.4));
+        opacity: 0.75;
     }
     45% {
-        transform: scale(0.88) rotate(calc(var(--stamp-rot, -1.8deg) * 0.7));
-        filter: blur(0);
+        transform: scale(0.92) rotate(calc(var(--stamp-rot, -1.8deg) * 0.8));
         opacity: 1;
     }
     75% {
-        transform: scale(1.06) rotate(var(--stamp-rot, -1.8deg));
+        transform: scale(1.04) rotate(var(--stamp-rot, -1.8deg));
     }
     100% {
         transform: scale(1) rotate(var(--stamp-rot, -1.8deg));
@@ -1546,6 +1546,7 @@ button {
     border-radius: 50%;
     background: currentColor;
     opacity: 0.9;
+    will-change: transform, opacity;
     animation: inkDropFly 0.45s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
 }
 
@@ -1561,8 +1562,20 @@ button {
 }
 
 .reaction-count {
+    display: inline-block;
     font-weight: 900;
     opacity: 0.95;
+    transition: transform 0.12s ease;
+}
+
+.reaction-count.count-bump {
+    animation: countBumpAnim 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes countBumpAnim {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.28); }
+    100% { transform: scale(1); }
 }
 
 /* Dispatch Clipping Action Buttons */
@@ -3443,7 +3456,7 @@ body.sepia-edition .footer-credit {
         -webkit-tap-highlight-color: transparent;
     }
 
-    button, input, textarea, select, a, .chip-btn, .reaction-stamp-btn {
+    button, input, textarea, select, a, .chip-btn, .reaction-stamp-btn, .wire-nav-tab, .mobile-tab-btn, .triumph-react-btn, .feed-clip-btn, .lead-clip-btn, .feed-resolve-btn, .mobile-fab-post, .wire-jump-latest-btn {
         touch-action: manipulation;
     }
 
@@ -3850,6 +3863,22 @@ body.sepia-edition .footer-credit {
         display: block !important;
     }
 
+    /* Unconstrained natural flow on mobile: full 120Hz native scrolling without scroll-trapping */
+    body.mobile-view-wire .feed-container {
+        max-height: none !important;
+        height: auto !important;
+        overflow-y: visible !important;
+        overscroll-behavior-y: auto !important;
+        scrollbar-gutter: auto !important;
+    }
+
+    body.mobile-view-wire .accomplished-feed-container {
+        max-height: none !important;
+        height: auto !important;
+        overflow-y: visible !important;
+        overscroll-behavior-y: auto !important;
+    }
+
     body.mobile-view-wire .mobile-fab-post {
         display: flex !important;
     }
@@ -3901,7 +3930,7 @@ body.sepia-edition .footer-credit {
     @keyframes mobileTabFadeIn {
         0% {
             opacity: 0;
-            transform: translate3d(0, 6px, 0);
+            transform: translate3d(0, 8px, 0);
         }
         100% {
             opacity: 1;
@@ -3914,8 +3943,9 @@ body.sepia-edition .footer-credit {
     body.mobile-view-wire .right-col,
     body.mobile-view-stats #box-stats,
     body.mobile-view-stats #box-index,
+    body.mobile-view-stats #box-dispatch,
     body.mobile-view-stats #box-visitors {
-        animation: mobileTabFadeIn 0.16s cubic-bezier(0.16, 1, 0.3, 1) both;
+        animation: mobileTabFadeIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) both;
         will-change: opacity, transform;
     }
 
@@ -3925,6 +3955,7 @@ body.sepia-edition .footer-credit {
         body.mobile-view-wire .right-col,
         body.mobile-view-stats #box-stats,
         body.mobile-view-stats #box-index,
+        body.mobile-view-stats #box-dispatch,
         body.mobile-view-stats #box-visitors {
             animation: none !important;
         }
@@ -3933,7 +3964,7 @@ body.sepia-edition .footer-credit {
     /* Mobile Floating Action Button (FAB) */
     .mobile-fab-post {
         position: fixed;
-        bottom: 20px;
+        bottom: calc(20px + env(safe-area-inset-bottom, 0px));
         right: 18px;
         background: var(--ink);
         color: var(--paper);
@@ -4096,6 +4127,8 @@ body.sepia-edition .footer-credit {
         flex-wrap: nowrap;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        overscroll-behavior-x: contain;
         gap: 6px;
         padding: 2px 28px 8px 2px;   /* right padding keeps last chip clear of fade+arrow */
         scrollbar-width: thin;
@@ -4398,8 +4431,19 @@ body.sepia-edition .footer-credit {
 
     .wire-nav-tab {
         flex: 0 0 auto;
-        padding: 2px 5px;
-        font-size: 0.60rem;
+        min-height: 32px;
+        padding: 4px 10px;
+        font-size: clamp(0.64rem, 2.2vw, 0.70rem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        touch-action: manipulation;
+        box-sizing: border-box;
+        transition: background 0.12s ease, color 0.12s ease, transform 0.08s ease;
+    }
+
+    .wire-nav-tab:active {
+        transform: scale(0.95);
     }
 
     .accomplished-reactions {
