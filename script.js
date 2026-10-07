@@ -148,17 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
         return pool;
     };
 
-    const setButtonLabels = (laterText = "[ POST TO THE WIRE ➔ ]", panicText = "[ DO IT NOW (PANIC MODE) ]") => {
+    const stripBrackets = (str) => typeof str === 'string' ? str.replace(/^\s*\[\s*/, '').replace(/\s*\]\s*$/, '').trim() : str;
+
+    const setButtonLabels = (laterText = "POST TO THE WIRE ➔", panicText = "DO IT NOW (PANIC MODE)") => {
+        const cleanLater = stripBrackets(laterText || "POST TO THE WIRE ➔");
+        const cleanPanic = stripBrackets(panicText || "DO IT NOW (PANIC MODE)");
         if (laterBtnText) {
-            laterBtnText.textContent = "[ POST TO THE WIRE ➔ ]";
+            laterBtnText.textContent = cleanLater;
         } else if (laterBtn) {
-            laterBtn.textContent = "[ POST TO THE WIRE ➔ ]";
+            laterBtn.textContent = cleanLater;
         }
 
         if (panicBtnText) {
-            panicBtnText.textContent = panicText || "[ DO IT NOW (PANIC MODE) ]";
+            panicBtnText.textContent = cleanPanic;
         } else if (panicBtn) {
-            panicBtn.textContent = panicText || "[ DO IT NOW (PANIC MODE) ]";
+            panicBtn.textContent = cleanPanic;
         }
     };
 
@@ -171,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveEvasionPhrase = selected;
         isTaskReactiveActive = false;
-        setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
+        setButtonLabels("POST TO THE WIRE ➔", "DO IT NOW (PANIC MODE)");
 
         if (isUserInitiated && shufflePhraseBtn) {
             shufflePhraseBtn.classList.remove('spinning');
@@ -186,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTaskReactiveButtons = (rawText) => {
         if (!rawText || rawText.trim().length === 0) {
             if (isTaskReactiveActive) {
-                setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
+                setButtonLabels("POST TO THE WIRE ➔", "DO IT NOW (PANIC MODE)");
                 isTaskReactiveActive = false;
             }
             return;
@@ -207,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matched) {
             isTaskReactiveActive = true;
-            setButtonLabels("[ POST TO THE WIRE ➔ ]", matched.panic || "[ DO IT NOW (PANIC MODE) ]");
+            setButtonLabels("POST TO THE WIRE ➔", matched.panic || "DO IT NOW (PANIC MODE)");
         } else if (isTaskReactiveActive) {
-            setButtonLabels("[ POST TO THE WIRE ➔ ]", "[ DO IT NOW (PANIC MODE) ]");
+            setButtonLabels("POST TO THE WIRE ➔", "DO IT NOW (PANIC MODE)");
             isTaskReactiveActive = false;
         }
     };
@@ -257,7 +261,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateCharCount = () => {
         if (!taskCharCount || !taskInput) return;
         const len = taskInput.value.length;
-        taskCharCount.textContent = `[ ${len} / 150 LETTERS ]`;
+        taskCharCount.textContent = `${len} / 150 LETTERS`;
         taskCharCount.classList.toggle('near-limit', len >= 130);
         if (taskInputWrap) {
             taskInputWrap.classList.toggle('has-value', len > 0);
@@ -509,16 +513,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span class="feed-item-time" data-created-at="${escapeHtml(task.created_at || '')}">${timeAgo(task.created_at)}</span>
                 <div class="feed-reactions" data-task-id="${task.id}">
                     <button type="button" class="reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}" ${myStamp === 'same' ? `style="--stamp-rot: ${defaultRot}deg;"` : ''} data-type="same" title="I am doing this right now">
-                        [ SAME <span class="reaction-count">${sameCount}</span> ]
+                        SAME <span class="reaction-count">${sameCount}</span>
                     </button>
                     <button type="button" class="reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}" ${myStamp === 'valid' ? `style="--stamp-rot: ${defaultRot}deg;"` : ''} data-type="valid" title="Completely justifiable excuse">
-                        [ VALID <span class="reaction-count">${validCount}</span> ]
+                        VALID <span class="reaction-count">${validCount}</span>
                     </button>
                     <button type="button" class="reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}" ${myStamp === 'rip' ? `style="--stamp-rot: ${defaultRot}deg;"` : ''} data-type="rip" title="Thoughts and prayers for your deadline">
-                        [ RIP <span class="reaction-count">${ripCount}</span> ]
+                        RIP <span class="reaction-count">${ripCount}</span>
                     </button>
                     <button type="button" class="feed-clip-btn" data-task-id="${task.id}" title="Print & Clip Newspaper Snippet" aria-label="Clip Dispatch">
-                        [ CLIP ]
+                        CLIP
                     </button>
                 </div>
             </div>
@@ -526,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="feed-owner-bar">
                 <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
                 <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${task.id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
-                    [ I DID IT! ➔ ]
+                    I DID IT! ➔
                 </button>
             </div>` : ''}
         </div>`;
@@ -581,7 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return `
                 <div class="feed-end-banner" id="feed-end-banner">
                     <button type="button" class="feed-load-older-btn" id="feed-load-older-btn" title="Unroll older historical transmissions" aria-label="Load older dispatches">
-                        [ + UNROLL OLDER ARCHIVES ➔ ]
+                        + UNROLL OLDER ARCHIVES ➔
                     </button>
                     <div class="feed-end-divider" style="margin-top: 10px;">
                         <span class="feed-end-ornament">✦</span>
@@ -613,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const loadBtn = document.getElementById('feed-load-older-btn');
         if (loadBtn) {
             loadBtn.disabled = true;
-            loadBtn.textContent = '[ RETRIEVING ARCHIVES... ]';
+            loadBtn.textContent = 'RETRIEVING ARCHIVES...';
         }
         isLoadingOlderArchives = true;
         try {
@@ -626,7 +630,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             if (loadBtn) {
                 loadBtn.disabled = false;
-                loadBtn.textContent = '[ RETRY ARCHIVES ➔ ]';
+                loadBtn.textContent = 'RETRY ARCHIVES ➔';
             }
         } finally {
             isLoadingOlderArchives = false;
@@ -759,10 +763,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ==========================================
     // SYNCHRONIZED REACTION STAMPS (WIRE & LEAD STORY)
+    // Instant 0ms Optimistic Local State with Non-blocking Background Sync
     // ==========================================
-    const inFlightReactions = new Set();
-    const lastReactionTime = new Map();
     const recentLocalStamps = new Map();
+    const pendingReactions = new Map(); // taskId -> { reactionType, action, clearedType, seq }
+    const activeReactionSync = new Set(); // set of taskIds currently running a background sync worker
+    let reactionSeqCounter = 0;
 
     const syncReactionInDOM = (taskId, reactionType, isStamped, newCount, clearedType = null, rot = null) => {
         const containers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
@@ -802,12 +808,82 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const handleReactionClick = async (btn) => {
+    // Background sync worker that processes pending desired reaction for a task without freezing UI
+    const runReactionSyncWorker = async (taskId) => {
+        if (activeReactionSync.has(taskId)) return;
+        activeReactionSync.add(taskId);
+
+        try {
+            while (pendingReactions.has(taskId)) {
+                const target = pendingReactions.get(taskId);
+                const targetSeq = target.seq;
+                pendingReactions.delete(taskId);
+
+                const payload = {
+                    taskId,
+                    reactionType: target.reactionType,
+                    action: target.action,
+                    sessionId: SESSION_ID
+                };
+                if (target.clearedType) {
+                    payload.clearedType = target.clearedType;
+                }
+                if (currentGator && currentGator.gatorId) {
+                    payload.gatorId = currentGator.gatorId;
+                }
+
+                try {
+                    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+                    const timeoutId = controller ? setTimeout(() => controller.abort(), 7000) : null;
+
+                    const res = await fetch('/api/react', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                        signal: controller ? controller.signal : undefined
+                    });
+
+                    if (timeoutId) clearTimeout(timeoutId);
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Only reconcile server counts if the user hasn't made another tap since we sent this request!
+                        const currentPending = pendingReactions.get(taskId);
+                        if (!currentPending || currentPending.seq <= targetSeq) {
+                            if (data && data.counts) {
+                                ['same', 'valid', 'rip'].forEach(type => {
+                                    if (data.counts[type] != null) {
+                                        const countContainers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
+                                        countContainers.forEach(c => {
+                                            const cEl = c.querySelector(`.reaction-stamp-btn[data-type="${type}"] .reaction-count`);
+                                            if (cEl) {
+                                                cEl.textContent = data.counts[type];
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        }
+                    }
+                } catch (netErr) {
+                    console.warn(`Reaction sync non-fatal notice for task ${taskId}:`, netErr);
+                }
+            }
+        } finally {
+            activeReactionSync.delete(taskId);
+            // If another tap queued up right as we were exiting, restart worker
+            if (pendingReactions.has(taskId)) {
+                runReactionSyncWorker(taskId);
+            }
+        }
+    };
+
+    const handleReactionClick = (btn) => {
         const reactionsContainer = btn.closest('.feed-reactions');
         if (!reactionsContainer) return;
 
         const rawTaskId = reactionsContainer.getAttribute('data-task-id');
-        // FIX 5: Prevent clicking stamps on optimistic cards before server assignment
+        // Prevent clicking stamps on optimistic cards before server assignment
         if (!rawTaskId || rawTaskId.startsWith('opt-')) {
             return;
         }
@@ -816,37 +892,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const reactionType = btn.getAttribute('data-type');
         if (!taskId || isNaN(taskId) || taskId <= 0 || !reactionType) return;
 
-        // FIX 1 & FIX 8: Concurrency lock & 300ms cooldown per task
         const now = Date.now();
-        const lastClick = lastReactionTime.get(taskId) || 0;
-        if (inFlightReactions.has(taskId) || (now - lastClick < 300)) {
-            return;
-        }
-        lastReactionTime.set(taskId, now);
-        inFlightReactions.add(taskId);
-
-        // Lock pointer-events on buttons for this task during flight
-        const relatedBtns = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"] .reaction-stamp-btn`);
-        relatedBtns.forEach(b => b.style.setProperty('pointer-events', 'none'));
-
-        // Save snapshot of previous state for rollback on error (FIX 10)
-        const prevActiveType = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
-        const isAlreadyStamped = btn.classList.contains('stamped');
-        const countEl = btn.querySelector('.reaction-count');
-        const currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
-
-        let prevClearedCount = null;
-        if (!isAlreadyStamped && prevActiveType && prevActiveType !== reactionType) {
-            const prevActiveBtn = reactionsContainer.querySelector(`.reaction-stamp-btn[data-type="${prevActiveType}"]`);
-            if (prevActiveBtn) {
-                const cEl = prevActiveBtn.querySelector('.reaction-count');
-                prevClearedCount = cEl ? parseInt(cEl.textContent, 10) || 0 : 0;
-            }
-        }
-
         recentLocalStamps.set(taskId, now);
 
-        // 1. Tactile sound & mobile vibration
+        // 1. Tactile sound & mobile vibration immediately (0ms)
         playStampSlamSound();
         if (navigator.vibrate) {
             try { navigator.vibrate(14); } catch (err) {}
@@ -860,7 +909,12 @@ document.addEventListener('DOMContentLoaded', () => {
         void btn.offsetWidth;
         btn.classList.add('stamp-slam');
 
-        // Micro ink splatter burst particles
+        const prevActiveType = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
+        const isAlreadyStamped = (prevActiveType === reactionType);
+        const countEl = btn.querySelector('.reaction-count');
+        const currentCount = countEl ? parseInt(countEl.textContent, 10) || 0 : 0;
+
+        // Micro ink splatter burst particles when stamping
         if (!isAlreadyStamped) {
             const burst = document.createElement('span');
             burst.className = 'ink-splatter-burst';
@@ -883,18 +937,20 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => { burst.remove(); }, 480);
         }
 
-        // 3. Optimistic toggle
+        // 3. Instant local optimistic toggle
         let action = 'add';
         let clearedType = null;
         let newCount = currentCount;
 
         if (isAlreadyStamped) {
+            // Toggling off
             action = 'remove';
             delete userStamps[taskId];
             newCount = Math.max(0, currentCount - 1);
             btn.style.removeProperty('--stamp-rot');
             syncReactionInDOM(taskId, reactionType, false, newCount);
         } else {
+            // Toggling on (or switching from another stamp)
             if (prevActiveType && prevActiveType !== reactionType) {
                 clearedType = prevActiveType;
             }
@@ -905,72 +961,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         saveUserStamps();
 
-        // 4. Background sync to /api/react with rollback on failure
-        try {
-            // FIX 2a: If switching stamps, await removal of old stamp before adding new one
-            if (clearedType) {
-                const clearPayload = { taskId, reactionType: clearedType, action: 'remove', sessionId: SESSION_ID };
-                if (currentGator && currentGator.gatorId) clearPayload.gatorId = currentGator.gatorId;
-                const clearRes = await fetch('/api/react', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(clearPayload)
-                });
-                if (!clearRes.ok) {
-                    console.warn('Removal of previous stamp returned HTTP', clearRes.status);
-                }
-            }
+        // 4. Queue background sync to server without blocking touch or execution
+        const seq = ++reactionSeqCounter;
+        pendingReactions.set(taskId, {
+            reactionType,
+            action,
+            clearedType,
+            seq
+        });
 
-            const reactPayload = { taskId, reactionType, action, sessionId: SESSION_ID };
-            if (currentGator && currentGator.gatorId) reactPayload.gatorId = currentGator.gatorId;
-            const res = await fetch('/api/react', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(reactPayload)
-            });
-
-            if (res.ok) {
-                const data = await res.json();
-                if (data && data.counts && data.counts[reactionType] != null) {
-                    syncReactionInDOM(taskId, reactionType, !isAlreadyStamped, data.counts[reactionType], null, rot);
-                    // Also update cleared type count if present in server response
-                    if (clearedType && data.counts[clearedType] != null) {
-                        const containers = document.querySelectorAll(`.feed-reactions[data-task-id="${taskId}"]`);
-                        containers.forEach(c => {
-                            const prevEl = c.querySelector(`.reaction-stamp-btn[data-type="${clearedType}"] .reaction-count`);
-                            if (prevEl) prevEl.textContent = data.counts[clearedType];
-                        });
-                    }
-                }
-            } else {
-                throw new Error(`API responded with status ${res.status}`);
-            }
-        } catch (err) {
-            console.error('Reaction sync failed, rolling back optimistic state:', err);
-            // FIX 10: Rollback optimistic updates on failure
-            if (prevActiveType) {
-                userStamps[taskId] = prevActiveType;
-            } else {
-                delete userStamps[taskId];
-            }
-            saveUserStamps();
-
-            // Revert DOM state
-            syncReactionInDOM(taskId, reactionType, isAlreadyStamped, currentCount);
-            if (clearedType && prevClearedCount != null) {
-                syncReactionInDOM(taskId, clearedType, true, prevClearedCount);
-            }
-
-            // Visual rejection shake feedback
-            btn.classList.remove('stamp-slam');
-            btn.classList.add('stamp-rejected');
-            setTimeout(() => {
-                btn.classList.remove('stamp-rejected');
-            }, 600);
-        } finally {
-            inFlightReactions.delete(taskId);
-            relatedBtns.forEach(b => b.style.removeProperty('pointer-events'));
-        }
+        runReactionSyncWorker(taskId);
     };
 
 
@@ -1367,7 +1367,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!tasks || tasks.length === 0) {
             tickerTrack.innerHTML = `
                 <div class="ticker-item">
-                    <span class="ticker-tag">[TELEGRAPH]</span>
+                    <span class="ticker-tag">TELEGRAPH</span>
                     <span class="ticker-text">AWAITING LIVE TRANSMISSIONS FROM THE WIRE...</span>
                     <span class="ticker-bullet">•</span>
                 </div>
@@ -1422,7 +1422,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const html = fullList.map(item => `
             <div class="ticker-item">
-                <span class="ticker-tag">[${escapeHtml(item.tag)}]</span>
+                <span class="ticker-tag">${escapeHtml(item.tag)}</span>
                 <span class="ticker-text">${escapeHtml(item.text)}</span>
                 <span class="ticker-bullet">•</span>
             </div>
@@ -1764,12 +1764,12 @@ document.addEventListener('DOMContentLoaded', () => {
         triggerRubberStamp(isPanic);
 
         if (isPanic) {
-            if (panicBtnText) panicBtnText.textContent = "[ DOING IT NOW ]";
-            else panicBtn.textContent = "[ DOING IT NOW ]";
+            if (panicBtnText) panicBtnText.textContent = "DOING IT NOW";
+            else panicBtn.textContent = "DOING IT NOW";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            if (laterBtnText) laterBtnText.textContent = "[ POSTED TO THE WIRE ✓ ]";
-            else laterBtn.textContent = "[ POSTED TO THE WIRE ✓ ]";
+            if (laterBtnText) laterBtnText.textContent = "POSTED TO THE WIRE ✓";
+            else laterBtn.textContent = "POSTED TO THE WIRE ✓";
             statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
         }
 
@@ -1796,8 +1796,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.textContent = "";
 
                 // Reset button text
-                if (laterBtnText) laterBtnText.textContent = "[ POST TO THE WIRE ➔ ]";
-                if (panicBtnText) panicBtnText.textContent = "[ DO IT NOW (PANIC MODE) ]";
+                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
+                if (panicBtnText) panicBtnText.textContent = "DO IT NOW (PANIC MODE)";
                 rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate
@@ -1966,7 +1966,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.click();
 
             const orig = shareCertBtn.textContent;
-            shareCertBtn.textContent = '[ CERTIFICATE DOWNLOADED ✓ ]';
+            shareCertBtn.textContent = 'CERTIFICATE DOWNLOADED ✓';
             setTimeout(() => {
                 shareCertBtn.textContent = orig;
             }, 2500);
@@ -2175,7 +2175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (shredderMouth) shredderMouth.style.display = 'flex';
             if (furnaceStage) furnaceStage.style.display = 'none';
             if (crankBtnIcon) crankBtnIcon.textContent = '';
-            if (crankBtnText) crankBtnText.textContent = '[ CRANK MECHANICAL SHREDDER ➔ ]';
+            if (crankBtnText) crankBtnText.textContent = 'CRANK MECHANICAL SHREDDER ➔';
         } else {
             if (modeFurnaceBtn) modeFurnaceBtn.classList.add('active');
             if (modeShredderBtn) modeShredderBtn.classList.remove('active');
@@ -2183,7 +2183,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (shredderMouth) shredderMouth.style.display = 'none';
             if (furnaceStage) furnaceStage.style.display = 'block';
             if (crankBtnIcon) crankBtnIcon.textContent = '';
-            if (crankBtnText) crankBtnText.textContent = '[ IGNITE BLAST FURNACE (1400°F) ➔ ]';
+            if (crankBtnText) crankBtnText.textContent = 'IGNITE BLAST FURNACE (1400°F) ➔';
         }
     };
 
@@ -2899,13 +2899,13 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="accomplished-reactions" data-triumph-id="${id}">
                 <button type="button" class="triumph-react-btn ${hasPraise ? 'reacted' : ''}" data-type="praise" title="Praise this triumph">
-                    [ PRAISE <span class="rx-count">${praiseCount}</span> ]
+                    PRAISE <span class="rx-count">${praiseCount}</span>
                 </button>
                 <button type="button" class="triumph-react-btn ${hasCheers ? 'reacted' : ''}" data-type="cheers" title="Cheers to this triumph">
-                    [ CHEERS <span class="rx-count">${cheersCount}</span> ]
+                    CHEERS <span class="rx-count">${cheersCount}</span>
                 </button>
                 <button type="button" class="triumph-react-btn ${hasRespect ? 'reacted' : ''}" data-type="respect" title="Salute this accomplishment">
-                    [ SALUTE <span class="rx-count">${respectCount}</span> ]
+                    SALUTE <span class="rx-count">${respectCount}</span>
                 </button>
             </div>
         </article>`;
@@ -3333,7 +3333,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     await navigator.clipboard.writeText(shareUrl);
                     const originalHTML = footerShareBtn.innerHTML;
-                    footerShareBtn.innerHTML = '<span class="footer-share-copied">[&nbsp;LINK COPIED — GO DISTRACT THEM!&nbsp;]</span>';
+                    footerShareBtn.innerHTML = '<span class="footer-share-copied">LINK COPIED — GO DISTRACT THEM!</span>';
                     setTimeout(() => {
                         footerShareBtn.innerHTML = originalHTML;
                     }, 2500);
@@ -3650,13 +3650,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     const getClickerBtnText = (count) => {
-        if (count >= 500) return "[ TRANSCENDENT SLOTH ]";
-        if (count >= 200) return "[ DEFYING DEADLINES ]";
-        if (count >= 100) return "[ UNSTOPPABLE SLACKER ]";
-        if (count >= 50) return "[ ESCALATE AVOIDANCE ]";
-        if (count >= 25) return "[ KEEP DODGING WORK ]";
-        if (count >= 10) return "[ AVOID RESPONSIBILITY ]";
-        return "[ CLICK TO DO NOTHING ]";
+        if (count >= 500) return "TRANSCENDENT SLOTH";
+        if (count >= 200) return "DEFYING DEADLINES";
+        if (count >= 100) return "UNSTOPPABLE SLACKER";
+        if (count >= 50) return "ESCALATE AVOIDANCE";
+        if (count >= 25) return "KEEP DODGING WORK";
+        if (count >= 10) return "AVOID RESPONSIBILITY";
+        return "CLICK TO DO NOTHING";
     };
 
     let prevRank = getClickerRank(clickerCount);
@@ -3794,7 +3794,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('sepia-edition', enable);
         document.documentElement.classList.toggle('sepia-edition', enable);
         if (sepiaToggleBtn) {
-            sepiaToggleBtn.textContent = enable ? '[ 1890s PRINT: ON ]' : '[ 1890s PRINT: OFF ]';
+            sepiaToggleBtn.textContent = enable ? '1890s PRINT: ON' : '1890s PRINT: OFF';
         }
         if (enable) {
             if (document.body.classList.contains('midnight-edition')) {
@@ -3829,9 +3829,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (document.body.classList.contains('sepia-edition')) {
                 document.body.classList.remove('sepia-edition');
                 document.documentElement.classList.remove('sepia-edition');
-                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '[ 1890s PRINT: OFF ]';
+                if (sepiaToggleBtn) sepiaToggleBtn.textContent = '1890s PRINT: OFF';
             }
-            if (midnightBtnText) midnightBtnText.textContent = '[ MIDNIGHT: ON ]';
+            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
             if (mastheadSub) mastheadSub.textContent = 'PRINTED UNDER GASLIGHT FOR THE PROFOUNDLY AWAKE';
             if (taskInput) {
@@ -3840,7 +3840,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             document.body.classList.remove('midnight-edition');
             document.documentElement.classList.remove('midnight-edition');
-            if (midnightBtnText) midnightBtnText.textContent = '[ MIDNIGHT: OFF ]';
+            if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: OFF';
             const savedSepia = localStorage.getItem('lg_sepia_mode') === 'true';
             if (savedSepia) {
                 applySepiaMode(true);
@@ -3991,7 +3991,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (GatorAudio.playPaperShuffle) GatorAudio.playPaperShuffle();
         if (camoPaperBtn) {
             const orig = camoPaperBtn.textContent;
-            camoPaperBtn.textContent = '[ SHUFFLING... ]';
+            camoPaperBtn.textContent = 'SHUFFLING...';
             camoPaperBtn.classList.add('playing');
             setTimeout(() => {
                 camoPaperBtn.textContent = orig;
@@ -4076,7 +4076,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.click();
 
             const orig = credentialDownloadBtn.textContent;
-            credentialDownloadBtn.textContent = '[ PRESS PASS DOWNLOADED ✓ ]';
+            credentialDownloadBtn.textContent = 'PRESS PASS DOWNLOADED ✓';
             setTimeout(() => {
                 credentialDownloadBtn.textContent = orig;
             }, 2500);
@@ -4258,7 +4258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             link.click();
 
             const orig = clippingDownloadBtn.textContent;
-            clippingDownloadBtn.textContent = '[ CLIPPING DOWNLOADED ✓ ]';
+            clippingDownloadBtn.textContent = 'CLIPPING DOWNLOADED ✓';
             setTimeout(() => { clippingDownloadBtn.textContent = orig; }, 2500);
         });
     }
@@ -4431,10 +4431,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const slackText = `> ★ *OFFICIAL ALIBI DISPATCH*:\n> "${item.text}"\n> — _${item.ref} via LaterGator.live_`;
             try {
                 await navigator.clipboard.writeText(slackText);
-                alibiCopyBtn.textContent = "[ COPIED TO SLACK! ✓ ]";
-                setTimeout(() => { alibiCopyBtn.textContent = "[ COPY FOR SLACK ]"; }, 2000);
+                alibiCopyBtn.textContent = "COPIED TO SLACK! ✓";
+                setTimeout(() => { alibiCopyBtn.textContent = "COPY FOR SLACK"; }, 2000);
             } catch (e) {
-                alibiCopyBtn.textContent = "[ COPIED! ]";
+                alibiCopyBtn.textContent = "COPIED!";
             }
         });
     }
@@ -4540,10 +4540,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const copyMsg = `★ *CELESTIAL SLACKER ORACLE*:\n"${item.title}"\n${item.text}\n— via LaterGator.live`;
             try {
                 await navigator.clipboard.writeText(copyMsg);
-                oracleCopyBtn.textContent = "[ COPIED DESTINY! ✓ ]";
-                setTimeout(() => { oracleCopyBtn.textContent = "[ COPY DESTINY ]"; }, 2000);
+                oracleCopyBtn.textContent = "COPIED DESTINY! ✓";
+                setTimeout(() => { oracleCopyBtn.textContent = "COPY DESTINY"; }, 2000);
             } catch (e) {
-                oracleCopyBtn.textContent = "[ COPIED! ]";
+                oracleCopyBtn.textContent = "COPIED!";
             }
         });
     }
@@ -4715,11 +4715,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 `— via LaterGator.live`;
             try {
                 await navigator.clipboard.writeText(copyMsg);
-                comicCopyBtn.textContent = "[ COPIED! ✓ ]";
-                setTimeout(() => { comicCopyBtn.textContent = "[ COPY ]"; }, 2000);
+                comicCopyBtn.textContent = "COPIED! ✓";
+                setTimeout(() => { comicCopyBtn.textContent = "COPY"; }, 2000);
             } catch (e) {
-                comicCopyBtn.textContent = "[ COPIED! ]";
-                setTimeout(() => { comicCopyBtn.textContent = "[ COPY ]"; }, 2000);
+                comicCopyBtn.textContent = "COPIED!";
+                setTimeout(() => { comicCopyBtn.textContent = "COPY"; }, 2000);
             }
         });
     }
@@ -4996,7 +4996,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             bar.innerHTML = `
                                 <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
                                 <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
-                                    [ I DID IT! ➔ ]
+                                    I DID IT! ➔
                                 </button>
                             `;
                             item.appendChild(bar);
@@ -5014,9 +5014,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="dossier-item" data-task-id="${t.id}">
                         <div class="dossier-item-task">"${taskText}"</div>
                         <div class="dossier-item-counts">
-                            <span>[ SAME: ${same} ]</span>
-                            <span>[ VALID: ${valid} ]</span>
-                            <span>[ RIP: ${rip} ]</span>
+                            <span>SAME: ${same}</span>
+                            <span>VALID: ${valid}</span>
+                            <span>RIP: ${rip}</span>
                         </div>
                     </div>
                 `;
@@ -5048,10 +5048,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update top-right header button (HackerNews-style)
         if (headerAuthBtn) {
             if (currentGator && gatorToken) {
-                headerAuthBtn.textContent = `[@${currentGator.displayTag || currentGator.tag}]`;
+                headerAuthBtn.textContent = `@${currentGator.displayTag || currentGator.tag}`;
                 headerAuthBtn.setAttribute('title', `Operative @${currentGator.displayTag || currentGator.tag} — Click to view Dossier`);
             } else {
-                headerAuthBtn.textContent = '[ LOGIN ]';
+                headerAuthBtn.textContent = 'LOGIN';
                 headerAuthBtn.setAttribute('title', 'Bureau of Idleness — Sign in or Claim Tag');
             }
         }
@@ -5060,10 +5060,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (shareDossierMsg && shareDossierBtn) {
             if (currentGator && gatorToken) {
                 shareDossierMsg.textContent = 'Dispatch recorded under your tag.';
-                shareDossierBtn.textContent = '[ View Dossier ]';
+                shareDossierBtn.textContent = 'VIEW DOSSIER';
             } else {
                 shareDossierMsg.textContent = 'Want to track this confession?';
-                shareDossierBtn.textContent = '[ Claim a Gator Tag ]';
+                shareDossierBtn.textContent = 'CLAIM A GATOR TAG';
             }
         }
 
@@ -5198,13 +5198,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!/^[a-zA-Z0-9_]+$/.test(raw)) {
                 isTagValid = false;
-                if (bureauTagStatus) bureauTagStatus.textContent = '[✕]';
+                if (bureauTagStatus) bureauTagStatus.textContent = '✕';
                 if (bureauClaimError) bureauClaimError.textContent = 'Only letters, numbers, and underscores.';
                 if (bureauClaimBtn) bureauClaimBtn.disabled = true;
                 return;
             }
 
-            if (bureauTagStatus) bureauTagStatus.textContent = '[...]';
+            if (bureauTagStatus) bureauTagStatus.textContent = '...';
             if (bureauClaimError) bureauClaimError.textContent = '';
 
             fetch(`/api/gator?action=check&tag=${encodeURIComponent(raw)}`)
@@ -5212,12 +5212,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(data => {
                     if (data.available) {
                         isTagValid = true;
-                        if (bureauTagStatus) bureauTagStatus.textContent = '[✓]';
+                        if (bureauTagStatus) bureauTagStatus.textContent = '✓';
                         if (bureauClaimError) bureauClaimError.textContent = '';
                         validateClaimForm();
                     } else {
                         isTagValid = false;
-                        if (bureauTagStatus) bureauTagStatus.textContent = '[✕]';
+                        if (bureauTagStatus) bureauTagStatus.textContent = '✕';
                         if (bureauClaimError) bureauClaimError.textContent = data.reason || 'Occupied. Someone claimed that tag first.';
                         if (bureauClaimBtn) bureauClaimBtn.disabled = true;
                     }
@@ -5254,7 +5254,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!tag || password.length < 8) return;
 
                 bureauClaimBtn.disabled = true;
-                bureauClaimBtn.textContent = '[ CLAIMING... ]';
+                bureauClaimBtn.textContent = 'CLAIMING...';
                 if (bureauClaimError) bureauClaimError.textContent = '';
 
                 try {
@@ -5287,7 +5287,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (bureauClaimError) bureauClaimError.textContent = 'Telegraph line down. Try again.';
                 } finally {
                     if (bureauClaimBtn) {
-                        bureauClaimBtn.textContent = '[ CLAIM MY TAG ]';
+                        bureauClaimBtn.textContent = 'CLAIM MY TAG';
                         validateClaimForm();
                     }
                 }
@@ -5306,7 +5306,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
 
                 bureauLoginBtn.disabled = true;
-                bureauLoginBtn.textContent = '[ REPORTING... ]';
+                bureauLoginBtn.textContent = 'REPORTING...';
                 if (bureauLoginError) bureauLoginError.textContent = '';
 
                 try {
@@ -5340,7 +5340,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } finally {
                     if (bureauLoginBtn) {
                         bureauLoginBtn.disabled = false;
-                        bureauLoginBtn.textContent = '[ REPORT FOR DUTY ]';
+                        bureauLoginBtn.textContent = 'REPORT FOR DUTY';
                     }
                 }
             });

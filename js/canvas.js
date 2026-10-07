@@ -128,7 +128,7 @@
         ctx.fillText('THIS INSTRUMENT CONFIRMS THAT THE BEARER:', 600, 275);
 
         ctx.font = '900 24px "Space Mono", monospace';
-        ctx.fillText(`[ ${displayHolder} ]`, 600, 312);
+        ctx.fillText(`${displayHolder}`, 600, 312);
 
         const currentRank = (typeof window.getSlackerRank === 'function'
             ? window.getSlackerRank(postponementsCount, sympathyCount, timeStolenSeconds)
@@ -314,7 +314,7 @@
 
         ctx.font = '700 12px "Space Mono", monospace';
         ctx.fillStyle = gatorTag ? '#b91c1c' : '#555555';
-        ctx.fillText(gatorTag ? 'OPERATIVE / GATOR TAG [★ VERIFIED]:' : 'OPERATIVE / ACCREDITED HOLDER:', 60, 214);
+        ctx.fillText(gatorTag ? 'OPERATIVE / GATOR TAG ★ VERIFIED:' : 'OPERATIVE / ACCREDITED HOLDER:', 60, 214);
         ctx.font = '900 18px "Space Mono", monospace';
         ctx.fillStyle = '#111111';
         ctx.fillText(cleanHolder.length > 28 ? cleanHolder.substring(0, 26) + '...' : cleanHolder, 60, 236);
@@ -639,7 +639,7 @@
         let rankTag = '';
         const flairMatch = authorRaw.match(/^\[(.*?)\]\s*(.*)$/);
         if (flairMatch) {
-            rankTag = `[${flairMatch[1].toUpperCase()}] `;
+            rankTag = `${flairMatch[1].toUpperCase()} `;
             authorClean = flairMatch[2] || 'Anonymous';
         }
 
@@ -687,7 +687,7 @@
 
         ctx.font = '700 11px "Space Mono", monospace';
         ctx.fillStyle = inkSecondary;
-        ctx.fillText(`PUBLIC SYMPATHY: [ SAME: ${sameCount} ] • [ VALID: ${validCount} ] • [ RIP: ${ripCount} ]`, 80, dossierY + 62);
+        ctx.fillText(`PUBLIC SYMPATHY: SAME ${sameCount} • VALID ${validCount} • RIP ${ripCount}`, 80, dossierY + 62);
 
         // 4. Legal / Inaction Exemption Box
         const boxY = dossierY + 76;

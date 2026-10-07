@@ -3530,9 +3530,9 @@ body.sepia-edition .footer-credit {
     .meta-row-right .header-auth-btn {
         flex: 1 1 0;
         min-width: 0;
-        min-height: 28px;
-        padding: 4px 2px;
-        font-size: clamp(0.56rem, 2vw, 0.64rem);
+        min-height: 38px;
+        padding: 6px 4px;
+        font-size: clamp(0.66rem, 2.2vw, 0.74rem);
         font-family: 'Space Mono', monospace;
         font-weight: 700;
         letter-spacing: 0.3px;
@@ -3546,6 +3546,7 @@ body.sepia-edition .footer-credit {
         background: transparent;
         color: var(--ink);
         margin: 0;
+        touch-action: manipulation;
     }
 
     h1 {
@@ -3674,9 +3675,9 @@ body.sepia-edition .footer-credit {
     .lead-reactions .lead-clip-btn {
         flex: 1 1 0;
         min-width: 0;
-        min-height: 36px;
-        font-size: clamp(0.58rem, 2.1vw, 0.66rem);
-        padding: 4px 1px;
+        min-height: 44px;
+        font-size: clamp(0.68rem, 2.4vw, 0.76rem);
+        padding: 6px 2px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
@@ -3684,6 +3685,7 @@ body.sepia-edition .footer-credit {
         border: 1.5px solid var(--ink);
         margin: 0;
         box-sizing: border-box;
+        touch-action: manipulation;
     }
 
     /* ==========================================
@@ -4325,9 +4327,9 @@ body.sepia-edition .footer-credit {
     .feed-reactions .feed-clip-btn {
         flex: 1 1 0;
         min-width: 0;
-        min-height: 36px;
-        font-size: clamp(0.58rem, 2.1vw, 0.66rem);
-        padding: 4px 1px;
+        min-height: 44px;
+        font-size: clamp(0.68rem, 2.4vw, 0.76rem);
+        padding: 6px 2px;
         white-space: nowrap;
         display: inline-flex;
         align-items: center;
@@ -4335,12 +4337,13 @@ body.sepia-edition .footer-credit {
         border: 1.5px solid var(--ink);
         margin: 0;
         box-sizing: border-box;
+        touch-action: manipulation;
     }
 
     .feed-clip-btn {
-        min-height: 36px;
-        font-size: clamp(0.6rem, 2.2vw, 0.68rem);
-        padding: 6px 6px;
+        min-height: 44px;
+        font-size: clamp(0.68rem, 2.4vw, 0.76rem);
+        padding: 6px 4px;
     }
 
     .feed-owner-bar {
@@ -4404,10 +4407,14 @@ body.sepia-edition .footer-credit {
     .accomplished-reactions .triumph-react-btn {
         flex: 1 1 0;
         min-width: 0;
+        min-height: 44px;
         text-align: center;
         justify-content: center;
-        padding: 4px 2px;
-        font-size: clamp(0.58rem, 2.2vw, 0.66rem);
+        padding: 6px 4px;
+        font-size: clamp(0.66rem, 2.3vw, 0.74rem);
+        display: inline-flex;
+        align-items: center;
+        touch-action: manipulation;
     }
 
     @keyframes fresh-wire-flash {
@@ -4678,10 +4685,11 @@ body.sepia-edition .footer-credit {
 
     .feed-reactions .reaction-stamp-btn,
     .feed-reactions .feed-clip-btn {
-        font-size: clamp(0.55rem, 2.2vw, 0.62rem);
-        padding: 4px 2px;
-        letter-spacing: -0.2px;
-        min-height: 36px;
+        font-size: clamp(0.64rem, 2.2vw, 0.72rem);
+        padding: 6px 2px;
+        letter-spacing: 0;
+        min-height: 44px;
+        touch-action: manipulation;
     }
 
     .feed-owner-bar {
@@ -8128,7 +8136,7 @@ body.sepia-edition .btn-shred-guilt:hover {
 body.mobile-view-wire .feed-container,
 body.mobile-view-wire .accomplished-feed-container,
 body.mobile-view-wire #box-dispatch {
-    padding-bottom: 95px !important;
+    padding-bottom: 110px !important;
 }
 
 /* Theme Overrides for Redemption & Accomplished Affairs: Midnight Edition */

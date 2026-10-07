@@ -51,8 +51,7 @@ module.exports = async function handler(req, res) {
     }
 
     try {
-        const { taskId, reactionType, action, sessionId, gatorId } = req.body || {};
-
+        const { taskId, reactionType, action, clearedType, sessionId, gatorId } = req.body || {};
 
         if (!taskId) {
             return res.status(400).json({ error: 'Task ID required' });
@@ -101,6 +100,12 @@ module.exports = async function handler(req, res) {
         const newVal = Math.max(0, currentVal + delta);
         const updateObj = {};
         updateObj[colName] = newVal;
+
+        if (clearedType && validReactions.includes(clearedType) && action !== 'remove') {
+            const clearCol = `${clearedType}_count`;
+            const currentClearVal = task[clearCol] != null ? task[clearCol] : 0;
+            updateObj[clearCol] = Math.max(0, currentClearVal - 1);
+        }
 
         await supabase.from('tasks').update(updateObj).eq('id', taskId);
 
