@@ -3892,7 +3892,6 @@ body.sepia-edition .footer-credit {
     body.mobile-view-stats #box-input,
     body.mobile-view-stats #box-wire,
     body.mobile-view-stats #hall-of-shame,
-    body.mobile-view-stats .right-col,
     body.mobile-view-stats .mobile-fab-post,
     body.mobile-view-stats .wire-jump-latest-btn {
         display: none !important;
@@ -3900,6 +3899,11 @@ body.sepia-edition .footer-credit {
 
     body.mobile-view-stats .left-col {
         order: 1;
+        display: block !important;
+    }
+
+    body.mobile-view-stats .right-col {
+        order: 2;
         display: block !important;
     }
 
