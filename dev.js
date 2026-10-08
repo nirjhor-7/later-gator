@@ -51,8 +51,12 @@ const server = http.createServer((req, res) => {
 
         proxyReq.on('error', (err) => {
             console.error('API Proxy error:', err.message);
-            res.writeHead(502, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'API Proxy unavailable' }));
+            if (!res.headersSent) {
+                res.writeHead(502, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'API Proxy unavailable' }));
+            } else {
+                res.destroy();
+            }
         });
 
         req.pipe(proxyReq);
