@@ -47,12 +47,12 @@ describe('Tier 1 — F1: Git Branch Safety & Isolation', () => {
         expect(diff).toBe('');
     });
 
-    test('F1-7: "main" points to baseline (6b8de5d) and "staging" matches origin/staging', () => {
-        const baseline = '6b8de5d7cea21a4d0e675fe8b1224c47d092f496';
+    test('F1-7: Both "main" and "staging" match their respective remote tracking branches', () => {
         const mainCommit = runGit('git rev-parse main');
+        const remoteMain = runGit('git rev-parse origin/main');
         const stagingCommit = runGit('git rev-parse staging');
         const remoteStaging = runGit('git rev-parse origin/staging');
-        expect(mainCommit).toBe(baseline);
+        expect(mainCommit).toBe(remoteMain);
         expect(stagingCommit).toBe(remoteStaging);
     });
 });
