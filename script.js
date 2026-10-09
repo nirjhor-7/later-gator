@@ -4763,8 +4763,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const facade = document.getElementById('video-wrapper');
         if (!facade) return;
         const mountVideo = () => {
-            const videoId = facade.getAttribute('data-video-id') || 'lry0hAerJs4';
-            facade.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" title="Introducing Later, Gator!" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
+            const videoId = facade.getAttribute('data-video-id') || 'jG6z6dNv5Hg';
+            facade.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" title="Later Gators Promo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>`;
             facade.classList.remove('video-facade');
             facade.removeAttribute('role');
             facade.removeAttribute('tabindex');
