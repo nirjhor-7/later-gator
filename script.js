@@ -529,9 +529,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ${isMyTaskId(task.id) ? `
             <div class="feed-owner-bar">
                 <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
-                <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${task.id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
-                    I DID IT! ➔
-                </button>
+                <div class="feed-owner-actions">
+                    <button type="button" class="feed-resolve-btn feed-conquer-btn" data-task-id="${task.id}" title="Conquered and completed your task! Record your victory" aria-label="I Conquered It">
+                        ★ I CONQUERED IT!
+                    </button>
+                    <button type="button" class="feed-shred-btn" data-task-id="${task.id}" title="Surrender and shred guilt into paper strips" aria-label="Shred Guilt">
+                        ✂ SHRED GUILT
+                    </button>
+                </div>
             </div>` : ''}
         </div>`;
     };
@@ -1053,11 +1058,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
-            const shredBtn = e.target.closest('.feed-resolve-btn, .feed-shred-btn');
-            if (shredBtn) {
+            const actionBtn = e.target.closest('.feed-resolve-btn, .feed-conquer-btn, .feed-shred-btn');
+            if (actionBtn) {
                 e.preventDefault();
                 e.stopPropagation();
-                handleFeedShredClick(shredBtn);
+                const isShred = actionBtn.classList.contains('feed-shred-btn');
+                const protocol = isShred ? 'surrender' : 'victory';
+                handleFeedResolveClick(actionBtn, protocol);
                 return;
             }
 
@@ -1841,6 +1848,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             if (clipBtn) clipBtn.setAttribute('data-task-id', newTask.id);
                             const rxContainer = optEl.querySelector('.feed-reactions');
                             if (rxContainer) rxContainer.setAttribute('data-task-id', newTask.id);
+                            const feedConquerBtn = optEl.querySelector('.feed-conquer-btn, .feed-resolve-btn');
+                            if (feedConquerBtn) feedConquerBtn.setAttribute('data-task-id', newTask.id);
                             const feedShredBtn = optEl.querySelector('.feed-shred-btn');
                             if (feedShredBtn) feedShredBtn.setAttribute('data-task-id', newTask.id);
                         }
@@ -2146,7 +2155,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateResolutionProtocol = (protocol) => {
         currentProtocol = protocol;
 
+        const nameplateSeal = disposalModal ? disposalModal.querySelector('.nameplate-seal') : null;
+        const nameplateModel = disposalModal ? disposalModal.querySelector('.nameplate-model') : null;
+
         if (protocol === 'victory') {
+            if (nameplateSeal) nameplateSeal.textContent = '★ THE REDEMPTION DESK ★';
+            if (nameplateModel) nameplateModel.textContent = 'OFFICIAL CONQUEST CITATION & WIRE BROADCAST';
             if (protocolVictoryBtn) protocolVictoryBtn.classList.add('active');
             if (protocolSurrenderBtn) protocolSurrenderBtn.classList.remove('active');
             if (disposalModeBar) disposalModeBar.style.display = 'none';
@@ -2163,6 +2177,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (memoSheetStamp) memoSheetStamp.textContent = 'DOSSIER OF AVOIDED LABOR';
             if (memoSheetTitle) memoSheetTitle.textContent = 'STATEMENT OF CHRONIC PROCRASTINATION:';
         } else {
+            if (nameplateSeal) nameplateSeal.textContent = '★ GUILT DISPOSAL DESK ★';
+            if (nameplateModel) nameplateModel.textContent = 'OFFICIAL RECORD DESTRUCTION PROTOCOL';
             if (protocolSurrenderBtn) protocolSurrenderBtn.classList.add('active');
             if (protocolVictoryBtn) protocolVictoryBtn.classList.remove('active');
             if (disposalModeBar) disposalModeBar.style.display = 'flex';
@@ -2268,7 +2284,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return `${fakeDays} days, ${fakeHours} hours`;
     };
 
-    const openResolutionUnit = ({ text, taskId = null, source = 'wire' }) => {
+    const openResolutionUnit = ({ text, taskId = null, source = 'wire', initialProtocol = 'victory' }) => {
         if (!disposalModal || !taskId) return;
 
         // Strict authorization check: Only allow user's own tasks
@@ -2304,7 +2320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (shredTallyNumber) shredTallyNumber.textContent = String(shredTally);
 
         resetDisposalChamber();
-        updateResolutionProtocol('victory'); // Victory is the default, primary path!
+        updateResolutionProtocol(initialProtocol || 'victory');
 
         disposalModal.style.display = 'flex';
     };
@@ -3084,7 +3100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.buildAccomplishedItemHtml = buildAccomplishedItemHtml;
     window.handleTriumphReaction = handleTriumphReaction;
 
-    function handleFeedShredClick(feedBtn) {
+    function handleFeedResolveClick(feedBtn, initialProtocol = 'victory') {
         let taskId = feedBtn.getAttribute('data-task-id');
         if (!taskId) return;
         if (taskId.startsWith('opt-') && optToRealIdMap.has(taskId)) {
@@ -3103,9 +3119,13 @@ document.addEventListener('DOMContentLoaded', () => {
         openResolutionUnit({
             text: taskText || 'AVOIDED DISPATCH',
             taskId: taskId,
-            source: 'wire'
+            source: 'wire',
+            initialProtocol: initialProtocol
         });
     }
+    const handleFeedShredClick = handleFeedResolveClick;
+    window.handleFeedResolveClick = handleFeedResolveClick;
+    window.handleFeedShredClick = handleFeedShredClick;
 
     // Modal protocol & mode listeners
     if (protocolVictoryBtn) protocolVictoryBtn.addEventListener('click', () => updateResolutionProtocol('victory'));
@@ -5009,9 +5029,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             bar.className = 'feed-owner-bar';
                             bar.innerHTML = `
                                 <span class="feed-owner-badge">★ YOUR ACTIVE DISPATCH</span>
-                                <button type="button" class="feed-resolve-btn feed-ididit-btn" data-task-id="${id}" title="Conquered or surrender? Record your dispatch" aria-label="I Did It">
-                                    I DID IT! ➔
-                                </button>
+                                <div class="feed-owner-actions">
+                                    <button type="button" class="feed-resolve-btn feed-conquer-btn" data-task-id="${id}" title="Conquered and completed your task! Record your victory" aria-label="I Conquered It">
+                                        ★ I CONQUERED IT!
+                                    </button>
+                                    <button type="button" class="feed-shred-btn" data-task-id="${id}" title="Surrender and shred guilt into paper strips" aria-label="Shred Guilt">
+                                        ✂ SHRED GUILT
+                                    </button>
+                                </div>
                             `;
                             item.appendChild(bar);
                         }

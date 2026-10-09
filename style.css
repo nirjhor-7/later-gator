@@ -4747,16 +4747,31 @@ body.sepia-edition .footer-credit {
     .feed-owner-bar {
         flex-direction: column;
         align-items: stretch;
-        gap: 5px;
+        gap: 6px;
     }
 
     .feed-owner-badge {
         text-align: center;
     }
 
-    .feed-ididit-btn {
-        text-align: center;
+    .feed-owner-actions {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+        gap: 6px;
         width: 100%;
+    }
+
+    .feed-ididit-btn,
+    .feed-resolve-btn,
+    .feed-conquer-btn,
+    .feed-shred-btn {
+        flex: 1 1 0;
+        text-align: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 6px 4px;
+        font-size: clamp(0.62rem, 2.2vw, 0.70rem);
     }
 
     .comic-panel-art {
@@ -7439,7 +7454,7 @@ body.sepia-edition .btn-shred-guilt:hover {
     }
 }
 
-/* User's Own Wire Post: Dedicated Broadsheet Action Bar & [ I DID IT! ] button */
+/* User's Own Wire Post: Dedicated Broadsheet Action Bar & Dual Action buttons */
 .feed-owner-bar {
     display: flex;
     flex-direction: row;
@@ -7463,7 +7478,15 @@ body.sepia-edition .btn-shred-guilt:hover {
     white-space: nowrap;
 }
 
-.feed-ididit-btn, .feed-resolve-btn {
+.feed-owner-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+}
+
+.feed-ididit-btn, .feed-resolve-btn, .feed-conquer-btn {
     font-family: 'Space Mono', monospace;
     font-size: 0.68rem;
     font-weight: 800;
@@ -7472,21 +7495,50 @@ body.sepia-edition .btn-shred-guilt:hover {
     background: var(--ink, #111);
     color: var(--paper, #FAF6EE);
     border: 1px solid var(--ink, #111);
-    padding: 3px 8px;
+    padding: 4px 10px;
     cursor: pointer;
     white-space: nowrap;
     border-radius: 0;
-    transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease;
+    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+    transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
-.feed-ididit-btn:hover, .feed-resolve-btn:hover {
-    background: transparent;
-    border-color: var(--ink, #111);
-    color: var(--ink, #111);
+.feed-ididit-btn:hover, .feed-resolve-btn:hover, .feed-conquer-btn:hover {
+    background: #047857;
+    border-color: #047857;
+    color: #ffffff;
     transform: translateY(-1px);
 }
 
-.feed-ididit-btn:active, .feed-resolve-btn:active {
+.feed-ididit-btn:active, .feed-resolve-btn:active, .feed-conquer-btn:active {
+    transform: scale(0.96);
+}
+
+.feed-shred-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--ink, #222);
+    border: 1px dashed var(--ink, #222);
+    padding: 4px 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    border-radius: 0;
+    transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.feed-shred-btn:hover {
+    background: #b91c1c;
+    border-style: solid;
+    border-color: #b91c1c;
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+.feed-shred-btn:active {
     transform: scale(0.96);
 }
 
@@ -8219,16 +8271,34 @@ body.midnight-edition .feed-owner-badge {
     color: #A39686;
 }
 
-body.midnight-edition .feed-ididit-btn {
+body.midnight-edition .feed-ididit-btn,
+body.midnight-edition .feed-resolve-btn,
+body.midnight-edition .feed-conquer-btn {
     background: #EFE3D3;
     color: #141210;
     border-color: #EFE3D3;
+    box-shadow: 1px 1px 0px rgba(239, 227, 211, 0.2);
 }
 
-body.midnight-edition .feed-ididit-btn:hover {
+body.midnight-edition .feed-ididit-btn:hover,
+body.midnight-edition .feed-resolve-btn:hover,
+body.midnight-edition .feed-conquer-btn:hover {
+    background: #10b981;
+    border-color: #10b981;
+    color: #141210;
+}
+
+body.midnight-edition .feed-shred-btn {
     background: transparent;
     color: #EFE3D3;
-    border-color: #EFE3D3;
+    border-color: rgba(239, 227, 211, 0.6);
+}
+
+body.midnight-edition .feed-shred-btn:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    border-style: solid;
+    color: #ffffff;
 }
 
 body.midnight-edition .accomplished-item {

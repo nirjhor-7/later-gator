@@ -231,7 +231,7 @@
         document.addEventListener('click', (e) => {
             if (e.target.closest('.reaction-stamp-btn')) {
                 playStarlightDroplet();
-            } else if (e.target.closest('.feed-resolve-btn')) {
+            } else if (e.target.closest('.feed-conquer-btn, .feed-resolve-btn, .feed-shred-btn')) {
                 playReliefChime();
             } else if (e.target.closest('.chip-btn')) {
                 playStarlightDroplet();
@@ -375,11 +375,23 @@
             fab.textContent = 'CONFESS DELAY';
         }
 
-        // Resolve buttons
-        document.querySelectorAll('.feed-resolve-btn').forEach(btn => {
+        // Active dispatch owner buttons
+        document.querySelectorAll('.feed-conquer-btn').forEach(btn => {
             if (!btn.classList.contains('portal-styled')) {
                 btn.classList.add('portal-styled');
-                btn.textContent = 'I FINALLY DID IT! ✦';
+                btn.textContent = '★ I CONQUERED IT!';
+            }
+        });
+        document.querySelectorAll('.feed-shred-btn').forEach(btn => {
+            if (!btn.classList.contains('portal-styled')) {
+                btn.classList.add('portal-styled');
+                btn.textContent = '✂ SHRED GUILT';
+            }
+        });
+        document.querySelectorAll('.feed-resolve-btn:not(.feed-conquer-btn)').forEach(btn => {
+            if (!btn.classList.contains('portal-styled')) {
+                btn.classList.add('portal-styled');
+                btn.textContent = '★ I CONQUERED IT!';
             }
         });
     }
