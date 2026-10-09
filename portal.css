@@ -202,10 +202,6 @@ body::before,
     text-shadow: none !important;
 }
 
-.portal-gator-logo {
-    stroke: var(--ink-black) !important;
-}
-
 .masthead-sub {
     text-align: center !important;
     font-family: var(--font-mono) !important;
@@ -850,10 +846,6 @@ html.midnight-edition .midnight-toggle-btn:hover {
 html.midnight-edition .masthead h1, body.midnight-edition .masthead h1 {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
-}
-
-html.midnight-edition .portal-gator-logo {
-    stroke: #ffffff !important;
 }
 
 html.midnight-edition .masthead-sub {

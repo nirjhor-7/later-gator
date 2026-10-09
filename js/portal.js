@@ -362,7 +362,7 @@
 
         const fab = document.querySelector('.mobile-fab-post');
         if (fab && !fab.textContent.includes('CONFESS DELAY')) {
-            fab.textContent = '✍️ CONFESS DELAY';
+            fab.textContent = 'CONFESS DELAY';
         }
 
         // Resolve buttons
