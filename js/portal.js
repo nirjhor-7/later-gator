@@ -267,9 +267,9 @@
 
         // Ticker Badge
         const tBadgeFull = document.querySelector('.ticker-badge-full');
-        if (tBadgeFull) tBadgeFull.textContent = 'LIVE FROM EARTH';
+        if (tBadgeFull) tBadgeFull.textContent = 'THE WIRE';
         const tBadgeShort = document.querySelector('.ticker-badge-short');
-        if (tBadgeShort) tBadgeShort.textContent = 'EARTH';
+        if (tBadgeShort) tBadgeShort.textContent = 'WIRE';
 
         // Input Desk Title & Subtitle
         const inputTitle = document.querySelector('#box-input .section-title');

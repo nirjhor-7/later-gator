@@ -218,21 +218,23 @@ body::before,
 .masthead-sub {
     text-align: center !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.96rem !important;
+    font-size: clamp(0.72rem, 1.2vw, 0.95rem) !important;
     font-weight: 700 !important;
-    letter-spacing: 0.14em !important;
+    letter-spacing: 0.08em !important;
     color: var(--ink-black) !important;
     margin: 8px 0 6px 0 !important;
     text-transform: uppercase !important;
+    white-space: nowrap !important;
 }
 
 .masthead-tagline {
     text-align: center !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.85rem !important;
+    font-size: clamp(0.65rem, 1.0vw, 0.85rem) !important;
     color: var(--ink-muted) !important;
     letter-spacing: 0.04em !important;
     margin-top: 4px !important;
+    white-space: nowrap !important;
 }
 
 .tagline-ornament {
@@ -684,9 +686,9 @@ body::before,
 .feed-item, .feed-card {
     background: var(--paper-surface) !important;
     border: 2px solid var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 18px 22px !important;
-    margin-bottom: 18px !important;
+    border-radius: 3px !important;
+    padding: 16px 20px !important;
+    margin-bottom: 16px !important;
     box-shadow: 4px 4px 0px var(--ink-rule) !important;
     box-sizing: border-box !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
@@ -694,31 +696,31 @@ body::before,
 
 .feed-item:hover, .feed-card:hover {
     transform: translate(-1px, -1px) !important;
-    box-shadow: 6px 6px 0px var(--ink-rule) !important;
+    box-shadow: 5px 5px 0px var(--ink-rule) !important;
 }
 
 .feed-item-meta, .feed-card-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
+    font-size: 0.70rem !important;
     font-weight: 700 !important;
     color: var(--ink-muted) !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.05em !important;
     text-transform: uppercase !important;
 }
 
 .feed-item-text, .card-headline {
     font-family: var(--font-heading) !important;
-    font-size: 1.7rem !important;
+    font-size: 1.35rem !important;
     font-weight: 900 !important;
-    line-height: 1.25 !important;
+    line-height: 1.22 !important;
     letter-spacing: 0.5px !important;
     text-transform: uppercase !important;
     color: var(--ink-black) !important;
-    margin: 0 0 12px 0 !important;
+    margin: 0 0 10px 0 !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
 }
@@ -727,16 +729,24 @@ body::before,
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 12px !important;
-    padding-top: 12px !important;
-    border-top: 1px solid #e0ded9 !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    padding-top: 10px !important;
+    margin-top: 8px !important;
+    border-top: 1px solid var(--ink-rule) !important;
 }
 
 .feed-item-time, .feed-card-time {
     font-family: var(--font-mono) !important;
-    font-size: 0.72rem !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
     color: var(--ink-dim) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.04em !important;
+    white-space: nowrap !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 /* Tactile Broadsheet Solidarity Stamps */
@@ -1110,6 +1120,25 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
     .tagline-short {
         display: inline !important;
+        white-space: nowrap !important;
+    }
+
+    .masthead-sub {
+        font-size: clamp(0.58rem, 2.8vw, 0.80rem) !important;
+        letter-spacing: 0.04em !important;
+        white-space: nowrap !important;
+        margin: 6px 0 4px 0 !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    .masthead-tagline {
+        font-size: clamp(0.52rem, 2.4vw, 0.70rem) !important;
+        letter-spacing: 0.02em !important;
+        white-space: nowrap !important;
+        margin-top: 2px !important;
+        text-align: center !important;
+        width: 100% !important;
     }
 
     .feed-container,
@@ -1121,11 +1150,11 @@ html.midnight-edition .reaction-stamp-btn:hover {
     /* Mobile Segmented View Control */
     .mobile-segmented-bar {
         display: flex !important;
-        gap: 4px !important;
+        gap: 6px !important;
         background: var(--paper-surface) !important;
         border: 2px solid var(--ink-rule) !important;
         border-radius: 4px !important;
-        padding: 4px 6px !important;
+        padding: 5px !important;
         margin-bottom: 16px !important;
         position: sticky !important;
         top: 10px !important;
@@ -1137,22 +1166,28 @@ html.midnight-edition .reaction-stamp-btn:hover {
     .mobile-tab-btn {
         flex: 1 !important;
         min-height: 44px !important;
-        background: transparent !important;
-        border: none !important;
-        color: var(--ink-muted) !important;
-        font-family: var(--font-mono) !important;
-        font-size: 0.74rem !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.02em !important;
+        background: var(--paper-surface) !important;
+        border: 2px solid var(--ink-rule) !important;
         border-radius: 2px !important;
+        color: var(--ink-black) !important;
+        font-family: var(--font-mono) !important;
+        font-size: clamp(0.68rem, 2.8vw, 0.78rem) !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.03em !important;
         cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 3px !important;
+        gap: 4px !important;
         white-space: nowrap !important;
-        padding: 6px 2px !important;
+        padding: 6px 4px !important;
+        box-shadow: 1px 1px 0px var(--ink-rule) !important;
         transition: all 0.15s ease !important;
+        box-sizing: border-box !important;
+    }
+
+    .mobile-tab-btn:hover {
+        background: #ece7de !important;
     }
 
     .tab-label {
@@ -1162,6 +1197,8 @@ html.midnight-edition .reaction-stamp-btn:hover {
     .mobile-tab-btn.active {
         background: var(--ink-black) !important;
         color: var(--paper-surface) !important;
+        border-color: var(--ink-black) !important;
+        box-shadow: none !important;
     }
 
     .wire-live-badge {
@@ -1185,9 +1222,68 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .feed-item, .feed-card {
-        padding: 14px 14px !important;
+        padding: 12px 14px !important;
         margin-bottom: 12px !important;
+        border: 2px solid var(--ink-rule) !important;
+        border-radius: 2px !important;
         box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    }
+
+    .feed-item-meta, .feed-card-header {
+        font-size: 0.65rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .feed-item-text, .card-headline {
+        font-size: 1.15rem !important;
+        line-height: 1.25 !important;
+        margin: 0 0 8px 0 !important;
+    }
+
+    .feed-item-footer, .feed-card-footer {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 6px !important;
+        padding-top: 8px !important;
+        margin-top: 6px !important;
+        border-top: 1px solid var(--ink-rule) !important;
+    }
+
+    .feed-item-time, .feed-card-time {
+        font-size: 0.65rem !important;
+        letter-spacing: 0.04em !important;
+        color: var(--ink-dim) !important;
+        text-align: left !important;
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.2 !important;
+    }
+
+    .feed-reactions {
+        display: flex !important;
+        width: 100% !important;
+        gap: 5px !important;
+        margin: 0 !important;
+    }
+
+    .feed-reactions .reaction-stamp-btn,
+    .feed-reactions .feed-clip-btn {
+        flex: 1 1 0px !important;
+        min-width: 0 !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 0 2px !important;
+        font-size: clamp(0.58rem, 2.4vw, 0.68rem) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 3px !important;
+        box-sizing: border-box !important;
+        border: 2px solid var(--ink-rule) !important;
+        border-radius: 2px !important;
+        box-shadow: 1px 1px 0px var(--ink-rule) !important;
     }
 
     .article-box.input-box {
@@ -1362,12 +1458,21 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     html.midnight-edition .mobile-tab-btn {
-        color: #c2bab0 !important;
+        background: #25221e !important;
+        border: 2px solid #e5ded4 !important;
+        color: #f5f2eb !important;
+        box-shadow: 1px 1px 0px #e5ded4 !important;
+    }
+
+    html.midnight-edition .mobile-tab-btn:hover {
+        background: #35302a !important;
     }
 
     html.midnight-edition .mobile-tab-btn.active {
         background: #e5ded4 !important;
         color: #111111 !important;
+        border-color: #e5ded4 !important;
+        box-shadow: none !important;
     }
 
     html.midnight-edition .mobile-fab-post {
