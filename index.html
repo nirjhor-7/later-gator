@@ -50,10 +50,7 @@
     <meta name="twitter:image:alt" content="LATER, GATORS — Global Procrastination Journal">
 </head>
 <body>
-
-
-
-
+    <div class="portal-earth-horizon" aria-hidden="true"></div>
     <div class="page-border">
         
         <header class="masthead">
@@ -69,7 +66,8 @@
                     <span id="mobile-date" class="meta-mobile-date">Today</span>
                 </div>
                 <div class="meta-col-center">
-                    <span id="current-date" class="meta-desktop-date">
+                    <span class="orbital-status-pill"><span class="telemetry-dot"></span> 1,420 TIRED EARTHLINGS IN ORBIT</span>
+                    <span id="current-date" class="meta-desktop-date" style="display:none;">
                         <span class="date-full">Today</span>
                         <span class="date-short">Today</span>
                     </span>
@@ -86,7 +84,14 @@
                     <button type="button" id="header-auth-btn" class="header-auth-btn" title="Bureau Dossier & Gator Tag">LOGIN</button>
                 </div>
             </div>
-            <h1>LATER, GATORS</h1>
+            <div class="masthead-brand-row" style="display: flex; align-items: center; justify-content: center; gap: 14px;">
+                <svg class="portal-gator-logo" viewBox="0 0 64 32" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width: 44px; height: 24px;" aria-hidden="true">
+                    <path d="M4 18 C10 14, 18 14, 24 16 L34 12 L44 14 L56 10 C59 14, 58 18, 52 20 L58 22 C54 26, 46 25, 40 24 L32 26 L22 24 L14 26 L8 24 Z"/>
+                    <path d="M12 16 L18 20 M26 15 L32 21 M38 14 L42 19 M48 13 L52 17"/>
+                    <circle cx="50" cy="13" r="1.5" fill="#38bdf8"/>
+                </svg>
+                <h1>LATER, GATORS</h1>
+            </div>
             <div class="masthead-sub" id="masthead-sub">THE COSMIC SANCTUARY OF PROCRASTINATION</div>
             <div class="masthead-tagline" id="masthead-tagline">
                 <span class="tagline-ornament" aria-hidden="true">✦</span>
@@ -124,6 +129,10 @@
 
         <!-- Front Page Lead Story of the Day (Crown Dispatch) -->
         <section class="lead-story-banner" id="lead-story-banner" aria-label="Lead Story of the Day">
+            <div class="bento-telemetry-bar">
+                <span class="telemetry-coord">+, [ · ]</span>
+                <span class="telemetry-clock">SPOTLIGHT DISPATCH <span class="telemetry-dot" style="background:#fbbf24;box-shadow:0 0 8px #fbbf24;">●</span></span>
+            </div>
             <div class="lead-story-header">
                 <span class="lead-story-ornament">✦ ✦ ✦</span>
                 <span class="lead-story-eyebrow">
@@ -165,7 +174,11 @@
             <section class="left-col">
                 
                 <div class="article-box input-box" id="box-input">
-                    <h2 class="section-title">WHAT ARE YOU AVOIDING DOWN ON EARTH?</h2>
+                    <div class="bento-telemetry-bar">
+                        <span class="telemetry-coord">+, [ · ]</span>
+                        <span class="telemetry-clock">23:45 UTC <span class="telemetry-dot">●</span></span>
+                    </div>
+                    <h2 class="section-title">LOG AVOIDED BURDEN</h2>
                     <div class="input-section">
                         <!-- 1. The Avoided Task (Hero Input) -->
                         <div class="field-group task-field-group">
@@ -263,7 +276,11 @@
                 </div>
 
                 <div class="article-box stats-box" id="box-stats">
-                    <h2 class="section-title">LIVE STATISTICS</h2>
+                    <div class="bento-telemetry-bar">
+                        <span class="telemetry-coord">+, [ · ]</span>
+                        <span class="telemetry-clock">23:45 UTC <span class="telemetry-dot">●</span></span>
+                    </div>
+                    <h2 class="section-title">GLOBAL AVOIDANCE TRENDS</h2>
                     <div class="stats-section">
                         <div class="stat-group">
                             <div class="stat-value" id="stat-current">...</div>
@@ -272,6 +289,21 @@
                         <div class="stat-group">
                             <div class="stat-value" id="stat-total">...</div>
                             <div class="stat-label">TOTAL TASKS POSTPONED</div>
+                        </div>
+                    </div>
+                    <div class="telemetry-chart-wrap" aria-hidden="true">
+                        <svg class="telemetry-svg" viewBox="0 0 300 60" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="telemetryGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.4"/>
+                                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.0"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M 0 45 Q 35 15, 75 35 T 150 20 T 225 35 T 300 15 L 300 60 L 0 60 Z" fill="url(#telemetryGrad)"/>
+                            <path d="M 0 45 Q 35 15, 75 35 T 150 20 T 225 35 T 300 15" fill="none" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+                        </svg>
+                        <div class="telemetry-axis">
+                            <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>NOW</span>
                         </div>
                     </div>
                 </div>
@@ -308,6 +340,10 @@
                 </div>
 
                 <div class="article-box wire-box" id="box-wire">
+                    <div class="bento-telemetry-bar">
+                        <span class="telemetry-coord">+, [ · ]</span>
+                        <span class="telemetry-clock">LIVE FEED <span class="telemetry-dot">●</span></span>
+                    </div>
 
                     <!-- Section Masthead with Section Title & Dual Feed Switcher -->
                     <div class="wire-box-header">

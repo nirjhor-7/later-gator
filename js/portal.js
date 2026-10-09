@@ -245,7 +245,7 @@
     function applyHumaneLabels() {
         // Masthead Sub & Tagline
         const sub = document.getElementById('masthead-sub');
-        if (sub) sub.textContent = 'THE COSMIC SANCTUARY OF PROCRASTINATION';
+        if (sub) sub.textContent = 'ORBITAL SANCTUARY OF PROCRASTINATION';
 
         const tagline = document.getElementById('masthead-tagline');
         if (tagline) {
@@ -263,7 +263,7 @@
 
         // Input Desk Title & Subtitle
         const inputTitle = document.querySelector('#box-input .section-title');
-        if (inputTitle) inputTitle.textContent = 'WHAT ARE YOU AVOIDING DOWN ON EARTH?';
+        if (inputTitle) inputTitle.textContent = 'LOG AVOIDED BURDEN';
 
         const taskInput = document.getElementById('task-input');
         if (taskInput) {
@@ -345,6 +345,11 @@
 
     // Enforce dynamic button labels across re-renders
     function enforceDynamicLabels() {
+        const sub = document.getElementById('masthead-sub');
+        if (sub && sub.textContent.includes('GASLIGHT')) {
+            sub.textContent = 'ORBITAL SANCTUARY OF PROCRASTINATION';
+        }
+
         const laterBtnText = document.getElementById('later-btn-text');
         if (laterBtnText && (laterBtnText.textContent.includes('POST TO THE WIRE') || laterBtnText.textContent.includes('POST TO WIRE') || laterBtnText.textContent.includes('DODGE ATTACK'))) {
             laterBtnText.textContent = 'SEND INTO THE VOID ➔';
