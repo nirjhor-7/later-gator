@@ -5449,15 +5449,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const savedTab = (() => {
                 try { return sessionStorage.getItem('lg_mobile_tab'); } catch(e) { return null; }
             })();
-            const validTabs = ['wire', 'stats'];
-            setMobileTab(validTabs.includes(savedTab) ? savedTab : 'dispatch', false);
+            const validTabs = ['wire', 'dispatch', 'stats'];
+            setMobileTab(validTabs.includes(savedTab) ? savedTab : 'wire', false);
         }
 
         window.addEventListener('resize', () => {
             if (window.innerWidth > 768) {
                 document.body.classList.remove('mobile-view-dispatch', 'mobile-view-wire', 'mobile-view-stats');
             } else if (!ALL_TABS.some(t => document.body.classList.contains(`mobile-view-${t}`))) {
-                setMobileTab('dispatch', false);
+                setMobileTab('wire', false);
             }
         });
 

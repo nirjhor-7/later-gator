@@ -245,14 +245,14 @@
     function applyHumaneLabels() {
         // Masthead Sub & Tagline
         const sub = document.getElementById('masthead-sub');
-        if (sub) sub.textContent = 'ORBITAL SANCTUARY OF PROCRASTINATION';
+        if (sub) sub.textContent = 'THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS';
 
         const tagline = document.getElementById('masthead-tagline');
         if (tagline) {
             const tFull = tagline.querySelector('.tagline-full');
             const tShort = tagline.querySelector('.tagline-short');
-            if (tFull) tFull.textContent = '✦ AN ESCAPE PORTAL FOR TIRED EARTHLINGS • STEP AWAY FROM YOUR DEADLINES AND BREATHE ✦';
-            if (tShort) tShort.textContent = '✦ A SANCTUARY FOR TIRED EARTHLINGS ✦';
+            if (tFull) tFull.textContent = '✦ PUBLISHED DAILY (EVENTUALLY) • THE OFFICIAL RECORD OF THINGS THAT CAN WAIT UNTIL TOMORROW ✦';
+            if (tShort) tShort.textContent = '✦ THE OFFICIAL RECORD OF DELAYS ✦';
         }
 
         // Ticker Badge
@@ -263,7 +263,7 @@
 
         // Input Desk Title & Subtitle
         const inputTitle = document.querySelector('#box-input .section-title');
-        if (inputTitle) inputTitle.textContent = 'LOG AVOIDED BURDEN';
+        if (inputTitle) inputTitle.textContent = 'CONFESS AN AVOIDED BURDEN';
 
         const taskInput = document.getElementById('task-input');
         if (taskInput) {
@@ -272,11 +272,11 @@
 
         // Quick Chips Label
         const chipsLabel = document.querySelector('.chips-label');
-        if (chipsLabel) chipsLabel.textContent = 'TOO TIRED TO THINK? CHOOSE AN EARTHLY BURDEN:';
+        if (chipsLabel) chipsLabel.textContent = 'TOO TIRED TO THINK? CHOOSE AN AVOIDED TASK:';
 
         // Lead Story Eyebrow
         const leadEyebrow = document.querySelector('.eyebrow-full');
-        if (leadEyebrow) leadEyebrow.textContent = "✦ TODAY'S MOST SYMPATHIZED EARTHLY CONFESSION ✦";
+        if (leadEyebrow) leadEyebrow.textContent = "✦ TODAY'S MOST SYMPATHIZED CONFESSION ✦";
         const leadEyebrowShort = document.querySelector('.eyebrow-short');
         if (leadEyebrowShort) leadEyebrowShort.textContent = '✦ CHIEF CONFESSION ✦';
 
@@ -285,9 +285,9 @@
 
         // Wire Title
         const wireTitleFull = document.querySelector('.wire-title-full');
-        if (wireTitleFull) wireTitleFull.textContent = 'THE EARTH VISITOR STREAM';
+        if (wireTitleFull) wireTitleFull.textContent = 'THE FRONT PAGE WIRE';
         const wireTitleShort = document.querySelector('.wire-title-short');
-        if (wireTitleShort) wireTitleShort.textContent = 'EARTH STREAM';
+        if (wireTitleShort) wireTitleShort.textContent = 'THE WIRE';
 
         // Wire Tabs
         const tabAvoidLabel = document.querySelector('#tab-wire-avoiding .tab-label-full');
@@ -314,14 +314,14 @@
 
         // Total Visitors
         const counterLabel = document.querySelector('.counter-label');
-        if (counterLabel) counterLabel.textContent = 'TOTAL UNIQUE EARTHLINGS OBSERVED:';
+        if (counterLabel) counterLabel.textContent = 'TOTAL UNIQUE PROCRASTINATORS VISITING:';
 
         // Telegraph Dispatch (Share box)
         const dispatchTitle = document.querySelector('#box-dispatch .section-title');
-        if (dispatchTitle) dispatchTitle.textContent = 'INVITE TIRED FRIENDS TO THE PORTAL';
+        if (dispatchTitle) dispatchTitle.textContent = 'INVITE TIRED FRIENDS TO THE WIRE';
 
         const dispatchBanner = document.querySelector('.dispatch-banner-text');
-        if (dispatchBanner) dispatchBanner.textContent = 'MANDATE: SPREAD STRATEGIC PEACE';
+        if (dispatchBanner) dispatchBanner.textContent = 'MANDATE: SPREAD STRATEGIC RELIEF';
 
         const dispatchPitch = document.querySelector('.dispatch-desk-pitch');
         if (dispatchPitch) {
@@ -333,43 +333,43 @@
         if (footerQuote) footerQuote.textContent = '"The stars have existed for billions of years. Your deadline can wait twenty minutes."';
 
         const footerCredit = document.querySelector('.footer-credit');
-        if (footerCredit) footerCredit.textContent = '// BUILT BY NIRJHOR INSTEAD OF SLEEPING • A TRANQUIL COSMIC SANCTUARY';
+        if (footerCredit) footerCredit.textContent = '// BUILT BY NIRJHOR INSTEAD OF SLEEPING • A TRANQUIL SANCTUARY FOR PROCRASTINATORS';
 
         // Share button
         const shareBtn = document.getElementById('footer-share-btn');
         if (shareBtn) {
             const fFull = shareBtn.querySelector('.footer-share-full');
-            if (fFull) fFull.textContent = 'SHARE THE PORTAL WITH PARTNERS IN CRIME';
+            if (fFull) fFull.textContent = 'SHARE THE WIRE WITH PARTNERS IN CRIME';
         }
     }
 
     // Enforce dynamic button labels across re-renders
     function enforceDynamicLabels() {
         const sub = document.getElementById('masthead-sub');
-        if (sub && sub.textContent.includes('GASLIGHT')) {
-            sub.textContent = 'ORBITAL SANCTUARY OF PROCRASTINATION';
+        if (sub && (sub.textContent.includes('GASLIGHT') || sub.textContent.includes('ORBITAL'))) {
+            sub.textContent = 'THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS';
         }
 
         const laterBtnText = document.getElementById('later-btn-text');
-        if (laterBtnText && (laterBtnText.textContent.includes('POST TO THE WIRE') || laterBtnText.textContent.includes('POST TO WIRE') || laterBtnText.textContent.includes('DODGE ATTACK'))) {
-            laterBtnText.textContent = 'SEND INTO THE VOID ➔';
+        if (laterBtnText && (laterBtnText.textContent.includes('POST TO THE WIRE') || laterBtnText.textContent.includes('POST TO WIRE') || laterBtnText.textContent.includes('DODGE ATTACK') || laterBtnText.textContent.includes('SEND INTO THE VOID'))) {
+            laterBtnText.textContent = 'POST TO THE FRONT PAGE ➔';
         }
 
         const panicBtnText = document.getElementById('panic-btn-text');
-        if (panicBtnText && (panicBtnText.textContent.includes('DO IT NOW') || panicBtnText.textContent.includes('PANIC MODE') || panicBtnText.textContent.includes('RAGE QUIT'))) {
-            panicBtnText.textContent = 'RETURN TO EARTH (PANIC MODE)';
+        if (panicBtnText && (panicBtnText.textContent.includes('DO IT NOW') || panicBtnText.textContent.includes('PANIC MODE') || panicBtnText.textContent.includes('RAGE QUIT') || panicBtnText.textContent.includes('RETURN TO EARTH'))) {
+            panicBtnText.textContent = 'RETURN TO WORK (PANIC MODE)';
         }
 
         const fab = document.querySelector('.mobile-fab-post');
-        if (fab && !fab.textContent.includes('SEND INTO VOID')) {
-            fab.textContent = '+ SEND INTO VOID';
+        if (fab && !fab.textContent.includes('CONFESS DELAY')) {
+            fab.textContent = '✍️ CONFESS DELAY';
         }
 
         // Resolve buttons
         document.querySelectorAll('.feed-resolve-btn').forEach(btn => {
             if (!btn.classList.contains('portal-styled')) {
                 btn.classList.add('portal-styled');
-                btn.textContent = 'I DID IT! ✦';
+                btn.textContent = 'I FINALLY DID IT! ✦';
             }
         });
     }

@@ -92,16 +92,25 @@
                 </svg>
                 <h1>LATER, GATORS</h1>
             </div>
-            <div class="masthead-sub" id="masthead-sub">THE COSMIC SANCTUARY OF PROCRASTINATION</div>
+            <div class="masthead-sub" id="masthead-sub">THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS</div>
             <div class="masthead-tagline" id="masthead-tagline">
                 <span class="tagline-ornament" aria-hidden="true">✦</span>
                 <span class="tagline-text">
-                    <span class="tagline-full">✦ AN ESCAPE PORTAL FOR TIRED EARTHLINGS • STEP AWAY FROM YOUR DEADLINES AND BREATHE ✦</span>
-                    <span class="tagline-short">✦ A SANCTUARY FOR TIRED EARTHLINGS ✦</span>
+                    <span class="tagline-full">✦ PUBLISHED DAILY (EVENTUALLY) • THE OFFICIAL RECORD OF THINGS THAT CAN WAIT UNTIL TOMORROW ✦</span>
+                    <span class="tagline-short">✦ THE OFFICIAL RECORD OF DELAYS ✦</span>
                 </span>
                 <span class="tagline-ornament" aria-hidden="true">✦</span>
             </div>
         </header>
+
+        <!-- Front Page Editorial Notice: Crystal Clear Premise (Option 2 + 3) -->
+        <aside class="newspaper-frontpage-notice" id="frontpage-notice" role="region" aria-label="Welcome Notice">
+            <div class="notice-meta-tag">★ FRONT PAGE EDITORIAL NOTICE ★</div>
+            <h2 class="notice-headline">Whatever you're supposed to be doing right now, you're not the only one avoiding it.</h2>
+            <p class="notice-body">
+                Your deadline can wait five minutes. Welcome to collective procrastination — read what the world is dodging today, or confess your own delay below.
+            </p>
+        </aside>
 
         <!-- Breaking News Telegraph Wire Ticker -->
         <div class="telegraph-ticker" id="telegraph-ticker" aria-label="Telegraph Wire Service">
@@ -116,14 +125,14 @@
 
         <!-- Mobile Segmented View Switcher (Hidden on Desktop) -->
         <nav class="mobile-segmented-bar" id="mobile-segmented-bar" aria-label="Mobile View Switcher">
-            <button type="button" class="mobile-tab-btn active" id="tab-dispatch-btn" data-tab="dispatch">
-                <span class="tab-label">DISPATCH</span>
+            <button type="button" class="mobile-tab-btn active" id="tab-wire-btn" data-tab="wire">
+                <span class="tab-label">📰 THE WIRE</span> <span class="wire-live-badge">LIVE</span>
             </button>
-            <button type="button" class="mobile-tab-btn" id="tab-wire-btn" data-tab="wire">
-                <span class="tab-label">WIRE</span> <span class="wire-live-badge">LIVE</span>
+            <button type="button" class="mobile-tab-btn" id="tab-dispatch-btn" data-tab="dispatch">
+                <span class="tab-label">✍️ CONFESS</span>
             </button>
             <button type="button" class="mobile-tab-btn" id="tab-stats-btn" data-tab="stats">
-                <span class="tab-label">STATS</span>
+                <span class="tab-label">📊 STATS</span>
             </button>
         </nav>
 
@@ -178,7 +187,7 @@
                         <span class="telemetry-coord">+, [ · ]</span>
                         <span class="telemetry-clock">23:45 UTC <span class="telemetry-dot">●</span></span>
                     </div>
-                    <h2 class="section-title">LOG AVOIDED BURDEN</h2>
+                    <h2 class="section-title">CONFESS AN AVOIDED BURDEN</h2>
                     <div class="input-section">
                         <!-- 1. The Avoided Task (Hero Input) -->
                         <div class="field-group task-field-group">
@@ -194,7 +203,7 @@
 
                         <!-- Quick Chips / Presets (Directly under task textarea) -->
                         <div class="quick-chips-wrapper">
-                            <span class="chips-label">TOO TIRED TO THINK? CHOOSE AN EARTHLY BURDEN:</span>
+                            <span class="chips-label">TOO TIRED TO THINK? CHOOSE AN AVOIDED TASK:</span>
                             <div class="quick-chips">
                                 <button type="button" class="chip-btn" data-task="Sleep">SLEEP</button>
                                 <button type="button" class="chip-btn" data-task="Tax Forms">TAX FORMS</button>
@@ -220,10 +229,10 @@
 
                         <div class="action-buttons">
                             <button id="later-btn" class="btn-heavy btn-post-wire">
-                                <span id="later-btn-text">SEND INTO THE VOID ➔</span>
+                                <span id="later-btn-text">POST TO THE FRONT PAGE ➔</span>
                             </button>
                             <button id="panic-btn" class="btn-outline btn-panic-clean">
-                                <span id="panic-btn-text">RETURN TO EARTH (PANIC MODE)</span>
+                                <span id="panic-btn-text">RETURN TO WORK (PANIC MODE)</span>
                             </button>
                         </div>
                         <div id="status-message" class="status-msg"></div>
@@ -790,7 +799,7 @@
 
     <!-- Floating Action Button for Mobile: Quick Return to Dispatch -->
     <button type="button" id="mobile-fab-post" class="mobile-fab-post" aria-label="Post a dispatch">
-        <span class="fab-label">+ SEND INTO VOID</span>
+        <span class="fab-label">✍️ CONFESS DELAY</span>
     </button>
 
     <!-- Floating Jump to Latest Dispatch Button -->
