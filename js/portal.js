@@ -245,14 +245,14 @@
     function applyHumaneLabels() {
         // Masthead Sub & Tagline
         const sub = document.getElementById('masthead-sub');
-        if (sub) sub.textContent = 'THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS';
+        if (sub) sub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
 
         const tagline = document.getElementById('masthead-tagline');
         if (tagline) {
             const tFull = tagline.querySelector('.tagline-full');
             const tShort = tagline.querySelector('.tagline-short');
-            if (tFull) tFull.textContent = '✦ PUBLISHED DAILY (EVENTUALLY) • THE OFFICIAL RECORD OF THINGS THAT CAN WAIT UNTIL TOMORROW ✦';
-            if (tShort) tShort.textContent = '✦ THE OFFICIAL RECORD OF DELAYS ✦';
+            if (tFull) tFull.textContent = 'THE OFFICIAL RECORD OF THINGS THAT CAN WAIT UNTIL TOMORROW • CONFESS YOUR DELAY OR WITNESS THE WORLD’S GUILT';
+            if (tShort) tShort.textContent = 'THE OFFICIAL RECORD OF DELAYS';
         }
 
         // Ticker Badge
@@ -346,8 +346,8 @@
     // Enforce dynamic button labels across re-renders
     function enforceDynamicLabels() {
         const sub = document.getElementById('masthead-sub');
-        if (sub && (sub.textContent.includes('GASLIGHT') || sub.textContent.includes('ORBITAL'))) {
-            sub.textContent = 'THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS';
+        if (sub && (sub.textContent.includes('GASLIGHT') || sub.textContent.includes('ORBITAL') || sub.textContent.includes('ANONYMOUS WIRE'))) {
+            sub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
         }
 
         const laterBtnText = document.getElementById('later-btn-text');

@@ -147,14 +147,19 @@ body::before,
 
 /* Header Action Pills */
 .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
+    width: 122px !important;
+    height: 32px !important;
+    box-sizing: border-box !important;
     background: var(--paper-surface) !important;
     border: 2px solid var(--ink-rule) !important;
     color: var(--ink-black) !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.75rem !important;
+    font-size: 0.72rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.04em !important;
-    padding: 5px 12px !important;
+    letter-spacing: 0.03em !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
     border-radius: 2px !important;
     cursor: pointer !important;
     box-shadow: 2px 2px 0px var(--ink-rule) !important;
@@ -162,6 +167,9 @@ body::before,
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    white-space: nowrap !important;
 }
 
 .portal-control-btn:hover, .header-pass-btn:hover, .header-auth-btn:hover, .midnight-toggle-btn:hover {
@@ -1054,15 +1062,20 @@ html.midnight-edition .reaction-stamp-btn:hover {
     .meta-col-right {
         display: flex !important;
         justify-content: center !important;
+        align-items: center !important;
         gap: 6px !important;
-        flex-wrap: wrap !important;
+        flex-wrap: nowrap !important;
         width: 100% !important;
     }
 
     .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-        padding: 5px 8px !important;
-        font-size: 0.70rem !important;
-        min-height: 38px !important;
+        flex: 1 1 0px !important;
+        width: auto !important;
+        min-width: 0 !important;
+        height: 36px !important;
+        min-height: 36px !important;
+        font-size: clamp(0.58rem, 2.3vw, 0.68rem) !important;
+        padding: 0 2px !important;
     }
 
     .tagline-full {
