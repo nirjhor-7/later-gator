@@ -3847,7 +3847,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
-            if (mastheadSub) mastheadSub.textContent = 'THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS';
+            if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             if (taskInput) {
                 taskInput.placeholder = "";
             }
@@ -3860,7 +3860,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applySepiaMode(true);
             } else {
                 if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
-                if (mastheadSub) mastheadSub.textContent = 'THE ANONYMOUS WIRE FOR CHRONIC PROCRASTINATORS';
+                if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
             if (taskInput) {
                 taskInput.placeholder = "";

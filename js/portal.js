@@ -239,6 +239,16 @@
                 playPortalSendSound();
             }
         });
+
+        const midnightBtn = document.getElementById('midnight-toggle-btn');
+        if (midnightBtn) {
+            midnightBtn.addEventListener('click', () => {
+                setTimeout(() => {
+                    applyHumaneLabels();
+                    enforceDynamicLabels();
+                }, 20);
+            });
+        }
     }
 
     // Apply Humane, Relatable Portal Copy
