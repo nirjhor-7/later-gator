@@ -1512,7 +1512,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     let taskName = data.text;
                     if (taskName.startsWith('[PANIC] ')) taskName = taskName.replace('[PANIC] ', '');
                     
-                    shameContainer.style.display = 'block';
+                    shameContainer.style.display = 'none';
                     shameTask.innerHTML = `"${censorNsfwHtml(escapeHtml(taskName))}"`;
                     shameCount.textContent = data.count;
                     try {
@@ -4812,7 +4812,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (data && data.count > 0 && typeof data.text === 'string' && data.text.trim() && shameContainer && shameTask && shameCount) {
                     let taskName = data.text;
                     if (taskName.startsWith('[PANIC] ')) taskName = taskName.replace('[PANIC] ', '');
-                    shameContainer.style.display = 'block';
+                    shameContainer.style.display = 'none';
                     shameTask.innerHTML = `"${censorNsfwHtml(escapeHtml(taskName))}"`;
                     shameCount.textContent = data.count;
                 }

@@ -267,9 +267,9 @@
 
         // Ticker Badge
         const tBadgeFull = document.querySelector('.ticker-badge-full');
-        if (tBadgeFull) tBadgeFull.textContent = 'THE WIRE';
+        if (tBadgeFull) tBadgeFull.textContent = 'TELEGRAPH';
         const tBadgeShort = document.querySelector('.ticker-badge-short');
-        if (tBadgeShort) tBadgeShort.textContent = 'WIRE';
+        if (tBadgeShort) tBadgeShort.textContent = 'TELEGRAPH';
 
         // Input Desk Title & Subtitle
         const inputTitle = document.querySelector('#box-input .section-title');

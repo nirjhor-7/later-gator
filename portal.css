@@ -261,6 +261,12 @@ body::before,
     display: none !important;
 }
 
+.hall-of-shame,
+.shame-ribbon,
+#hall-of-shame {
+    display: none !important;
+}
+
 /* ==========================================================================
    5. TELEGRAPH WIRE TICKER (#telegraph-ticker)
    ========================================================================== */

@@ -1248,20 +1248,11 @@ button {
     padding: 10px 0;
 }
 
-/* Hall of Shame — Slim Broadsheet Bulletin Ribbon */
+/* Hall of Shame — Slim Broadsheet Bulletin Ribbon (Hidden for clean expression) */
 .hall-of-shame.shame-ribbon,
-.hall-of-shame {
-    border: 2px solid var(--ink);
-    background: rgba(0, 0, 0, 0.03);
-    padding: 6px 10px;
-    margin-bottom: 14px;
-    box-shadow: 2px 2px 0 var(--ink);
-    box-sizing: border-box;
-    text-align: left;
-    width: 100%;
-    max-width: 100%;
-    overflow: hidden;
-    transition: background-color 0.15s ease, border-color 0.15s ease;
+.hall-of-shame,
+#hall-of-shame {
+    display: none !important;
 }
 
 .shame-ribbon-inner {
