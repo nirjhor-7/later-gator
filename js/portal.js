@@ -361,8 +361,8 @@
         }
 
         const laterBtnText = document.getElementById('later-btn-text');
-        if (laterBtnText && (laterBtnText.textContent.includes('POST TO THE WIRE') || laterBtnText.textContent.includes('POST TO WIRE') || laterBtnText.textContent.includes('DODGE ATTACK') || laterBtnText.textContent.includes('SEND INTO THE VOID'))) {
-            laterBtnText.textContent = 'POST TO THE FRONT PAGE ➔';
+        if (laterBtnText && (laterBtnText.textContent.includes('POST TO THE FRONT PAGE') || laterBtnText.textContent.includes('POST TO FRONT PAGE') || laterBtnText.textContent.includes('DODGE ATTACK') || laterBtnText.textContent.includes('SEND INTO THE VOID'))) {
+            laterBtnText.textContent = 'POST TO THE WIRE ➔';
         }
 
         const panicBtnText = document.getElementById('panic-btn-text');

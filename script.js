@@ -150,9 +150,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const stripBrackets = (str) => typeof str === 'string' ? str.replace(/^\s*\[\s*/, '').replace(/\s*\]\s*$/, '').trim() : str;
 
-    const setButtonLabels = (laterText = "SEND INTO THE VOID ➔", panicText = "RETURN TO EARTH (PANIC MODE)") => {
-        const cleanLater = stripBrackets(laterText || "SEND INTO THE VOID ➔");
-        const cleanPanic = stripBrackets(panicText || "RETURN TO EARTH (PANIC MODE)");
+    const setButtonLabels = (laterText = "POST TO THE WIRE ➔", panicText = "RETURN TO WORK (PANIC MODE)") => {
+        const cleanLater = stripBrackets(laterText || "POST TO THE WIRE ➔");
+        const cleanPanic = stripBrackets(panicText || "RETURN TO WORK (PANIC MODE)");
         if (laterBtnText) {
             laterBtnText.textContent = cleanLater;
         } else if (laterBtn) {
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         currentActiveEvasionPhrase = selected;
         isTaskReactiveActive = false;
-        setButtonLabels("SEND INTO THE VOID ➔", "RETURN TO EARTH (PANIC MODE)");
+        setButtonLabels("POST TO THE WIRE ➔", "RETURN TO WORK (PANIC MODE)");
 
         if (isUserInitiated && shufflePhraseBtn) {
             shufflePhraseBtn.classList.remove('spinning');
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const updateTaskReactiveButtons = (rawText) => {
         if (!rawText || rawText.trim().length === 0) {
             if (isTaskReactiveActive) {
-                setButtonLabels("SEND INTO THE VOID ➔", "RETURN TO EARTH (PANIC MODE)");
+                setButtonLabels("POST TO THE WIRE ➔", "RETURN TO WORK (PANIC MODE)");
                 isTaskReactiveActive = false;
             }
             return;
@@ -211,9 +211,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (matched) {
             isTaskReactiveActive = true;
-            setButtonLabels("SEND INTO THE VOID ➔", matched.panic || "RETURN TO EARTH (PANIC MODE)");
+            setButtonLabels("POST TO THE WIRE ➔", matched.panic || "RETURN TO WORK (PANIC MODE)");
         } else if (isTaskReactiveActive) {
-            setButtonLabels("SEND INTO THE VOID ➔", "RETURN TO EARTH (PANIC MODE)");
+            setButtonLabels("POST TO THE WIRE ➔", "RETURN TO WORK (PANIC MODE)");
             isTaskReactiveActive = false;
         }
     };
@@ -1785,9 +1785,9 @@ document.addEventListener('DOMContentLoaded', () => {
             else panicBtn.textContent = "DOING IT NOW";
             statusMessage.textContent = "FINE. WE BELIEVE IN YOU. PROBABLY.";
         } else {
-            if (laterBtnText) laterBtnText.textContent = "SENT INTO THE VOID ✓";
-            else laterBtn.textContent = "SENT INTO THE VOID ✓";
-            statusMessage.textContent = "SUCCESSFULLY SENT INTO THE VOID.";
+            if (laterBtnText) laterBtnText.textContent = "POSTED TO THE WIRE ✓";
+            else laterBtn.textContent = "POSTED TO THE WIRE ✓";
+            statusMessage.textContent = "SUCCESSFULLY POSTED TO THE WIRE.";
         }
 
         // 3. Dispatch network request in parallel
@@ -1813,8 +1813,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusMessage.textContent = "";
 
                 // Reset button text
-                if (laterBtnText) laterBtnText.textContent = "SEND INTO THE VOID ➔";
-                if (panicBtnText) panicBtnText.textContent = "RETURN TO EARTH (PANIC MODE)";
+                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
+                if (panicBtnText) panicBtnText.textContent = "RETURN TO WORK (PANIC MODE)";
                 rollEvasionPhrase(false);
 
                 // Reveal official share slip & certificate
