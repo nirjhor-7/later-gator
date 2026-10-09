@@ -2255,7 +2255,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (furnaceEmbers) furnaceEmbers.innerHTML = '';
         if (furnaceHeatFlash) furnaceHeatFlash.classList.remove('flash');
 
-        if (resolutionProtocolBar) resolutionProtocolBar.style.display = 'flex';
+        if (resolutionProtocolBar) resolutionProtocolBar.style.display = 'none';
         if (disposalChamber) disposalChamber.style.display = 'flex';
         if (resolutionVictoryCard) resolutionVictoryCard.style.display = 'none';
         if (disposalAbsolutionCard) disposalAbsolutionCard.style.display = 'none';

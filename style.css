@@ -7771,16 +7771,9 @@ body.sepia-edition .btn-shred-guilt:hover {
     font-weight: 800;
 }
 
-/* Resolution Protocol Selector Bar */
+/* Resolution Protocol Selector Bar (Hidden for clean expression) */
 .resolution-protocol-bar {
-    display: flex;
-    flex-direction: column;
-    padding: 10px 16px 8px 16px;
-    background: #F2EDE2;
-    border-bottom: 2px solid var(--ink, #111);
-    gap: 6px;
-    width: 100%;
-    box-sizing: border-box;
+    display: none !important;
 }
 
 .protocol-bar-label {

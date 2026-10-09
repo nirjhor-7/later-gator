@@ -251,48 +251,14 @@ body::before,
 }
 
 /* ==========================================================================
-   4. FRONT PAGE EDITORIAL NOTICE (#frontpage-notice)
+   4. FRONT PAGE CLEAN EXPRESSION (REDUNDANT NOTICE & PROTOCOL BAR REMOVED)
    ========================================================================== */
 .newspaper-frontpage-notice {
-    background: var(--paper-card) !important;
-    border: 3px double var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 18px 24px !important;
-    margin-bottom: 22px !important;
-    position: relative !important;
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.08) !important;
-    text-align: center !important;
-    box-sizing: border-box !important;
+    display: none !important;
 }
 
-.notice-meta-tag {
-    font-family: var(--font-mono) !important;
-    font-size: 0.76rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.18em !important;
-    color: var(--ink-black) !important;
-    text-transform: uppercase !important;
-    margin-bottom: 6px !important;
-}
-
-.notice-headline {
-    font-family: var(--font-heading) !important;
-    font-size: 1.85rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 0.5px !important;
-    text-transform: uppercase !important;
-    line-height: 1.2 !important;
-    color: var(--ink-black) !important;
-    margin: 4px 0 8px 0 !important;
-}
-
-.notice-body {
-    font-family: var(--font-mono) !important;
-    font-size: 0.92rem !important;
-    line-height: 1.6 !important;
-    color: var(--ink-dark) !important;
-    margin: 0 auto !important;
-    max-width: 840px !important;
+.resolution-protocol-bar {
+    display: none !important;
 }
 
 /* ==========================================================================
@@ -873,21 +839,11 @@ html.midnight-edition .tagline-ornament {
 }
 
 html.midnight-edition .newspaper-frontpage-notice {
-    background: #201e1a !important;
-    border-color: #e5ded4 !important;
-    color: #f5f2eb !important;
+    display: none !important;
 }
 
-html.midnight-edition .notice-meta-tag {
-    color: #fbbf24 !important;
-}
-
-html.midnight-edition .notice-headline {
-    color: #ffffff !important;
-}
-
-html.midnight-edition .notice-body {
-    color: #d6cfc5 !important;
+html.midnight-edition .resolution-protocol-bar {
+    display: none !important;
 }
 
 html.midnight-edition .telegraph-ticker {
@@ -1307,16 +1263,11 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .newspaper-frontpage-notice {
-        padding: 14px 16px !important;
-        margin-bottom: 16px !important;
+        display: none !important;
     }
 
-    .notice-headline {
-        font-size: 1.35rem !important;
-    }
-
-    .notice-body {
-        font-size: 0.88rem !important;
+    .resolution-protocol-bar {
+        display: none !important;
     }
 
     .newspaper-grid {

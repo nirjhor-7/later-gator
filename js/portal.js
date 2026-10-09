@@ -261,7 +261,7 @@
         if (tagline) {
             const tFull = tagline.querySelector('.tagline-full');
             const tShort = tagline.querySelector('.tagline-short');
-            if (tFull) tFull.textContent = 'THE OFFICIAL RECORD OF THINGS THAT CAN WAIT UNTIL TOMORROW • CONFESS YOUR DELAY OR WITNESS THE WORLD’S GUILT';
+            if (tFull) tFull.textContent = 'THE OFFICIAL RECORD OF DELAYS';
             if (tShort) tShort.textContent = 'THE OFFICIAL RECORD OF DELAYS';
         }
 
