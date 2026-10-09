@@ -139,12 +139,6 @@ body::before,
     gap: 6px !important;
 }
 
-.orbital-status-pill {
-    display: inline-flex !important;
-    align-items: center !important;
-    gap: 6px !important;
-}
-
 .meta-col-right {
     display: flex !important;
     align-items: center !important;
@@ -337,28 +331,6 @@ body::before,
     text-align: center !important;
 }
 
-.bento-telemetry-bar {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.75rem !important;
-    font-weight: 700 !important;
-    color: var(--ink-muted) !important;
-    letter-spacing: 0.08em !important;
-    margin-bottom: 12px !important;
-    text-transform: uppercase !important;
-}
-
-.telemetry-dot {
-    display: inline-block !important;
-    width: 8px !important;
-    height: 8px !important;
-    background: var(--stamp-green) !important;
-    border-radius: 50% !important;
-    margin-left: 4px !important;
-}
-
 .lead-story-header {
     display: flex !important;
     justify-content: center !important;
@@ -369,11 +341,15 @@ body::before,
 
 .lead-story-eyebrow {
     font-family: var(--font-mono) !important;
-    font-size: 0.82rem !important;
+    font-size: 0.74rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.14em !important;
-    color: var(--ink-black) !important;
+    letter-spacing: 0.12em !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    padding: 3px 12px !important;
+    border-radius: 2px !important;
     text-transform: uppercase !important;
+    display: inline-block !important;
 }
 
 .lead-story-ornament {
@@ -467,6 +443,13 @@ body::before,
     padding: 22px !important;
     position: relative !important;
     box-sizing: border-box !important;
+}
+
+.article-box.wire-box {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
 }
 
 .section-title {
@@ -899,7 +882,11 @@ html.midnight-edition .lead-story-banner {
     box-shadow: 6px 6px 0px #38342f !important;
 }
 
-html.midnight-edition .lead-story-eyebrow,
+html.midnight-edition .lead-story-eyebrow {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
 html.midnight-edition .lead-story-ornament,
 html.midnight-edition .lead-stamp-prompt {
     color: #e5ded4 !important;
@@ -922,6 +909,12 @@ html.midnight-edition .article-box {
     background: #181614 !important;
     border-color: #e5ded4 !important;
     box-shadow: 6px 6px 0px #38342f !important;
+}
+
+html.midnight-edition .article-box.wire-box {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 html.midnight-edition .section-title {
@@ -1037,12 +1030,24 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .meta-col-left {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 6px !important;
+        font-size: 0.70rem !important;
+        width: 100% !important;
+        margin-bottom: 8px !important;
+    }
+
+    .meta-col-center {
         display: none !important;
     }
 
     .masthead-meta {
+        flex-direction: column !important;
+        align-items: center !important;
         justify-content: center !important;
-        margin-bottom: 10px !important;
+        margin-bottom: 12px !important;
         padding-bottom: 8px !important;
     }
 
@@ -1066,6 +1071,12 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
     .tagline-short {
         display: inline !important;
+    }
+
+    .feed-container,
+    .accomplished-feed-container {
+        border: none !important;
+        padding: 0 !important;
     }
 
     /* Mobile Segmented View Control */
@@ -1123,6 +1134,26 @@ html.midnight-edition .reaction-stamp-btn:hover {
         margin-left: 2px !important;
         font-weight: 800 !important;
         white-space: nowrap !important;
+    }
+
+    .page-border {
+        margin: 6px auto 16px !important;
+        padding: 12px 10px 24px !important;
+        border: 2px solid var(--ink-rule) !important;
+        outline: none !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+    }
+
+    .feed-item, .feed-card {
+        padding: 14px 14px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    }
+
+    .article-box.input-box {
+        padding: 14px 14px !important;
+        box-shadow: 3px 3px 0px var(--ink-rule) !important;
     }
 
     .telegraph-ticker {

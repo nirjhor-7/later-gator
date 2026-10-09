@@ -285,7 +285,7 @@
 
         // Wire Title
         const wireTitleFull = document.querySelector('.wire-title-full');
-        if (wireTitleFull) wireTitleFull.textContent = 'THE FRONT PAGE WIRE';
+        if (wireTitleFull) wireTitleFull.textContent = 'THE WIRE';
         const wireTitleShort = document.querySelector('.wire-title-short');
         if (wireTitleShort) wireTitleShort.textContent = 'THE WIRE';
 
