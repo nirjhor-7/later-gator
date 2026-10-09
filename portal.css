@@ -1039,10 +1039,18 @@ html.midnight-edition .reaction-stamp-btn:hover {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        gap: 6px !important;
-        font-size: 0.70rem !important;
+        gap: 4px !important;
+        font-size: clamp(0.56rem, 2.2vw, 0.65rem) !important;
         width: 100% !important;
         margin-bottom: 8px !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        white-space: nowrap !important;
+    }
+
+    #masthead-vol {
+        padding: 2px 5px !important;
+        font-size: inherit !important;
     }
 
     .meta-col-center {
