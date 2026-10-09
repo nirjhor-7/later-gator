@@ -1,158 +1,100 @@
 /**
- * LATER, GATORS // ORBITAL SANCTUARY
- * Concept A: Modern Orbital Bento Grid UI
- * Sleek translucent smoked glassmorphism, deep space void with radiant Earth horizon,
- * humane everyday procrastination empathy, and tactical micro-telemetry.
+ * LATER, GATORS // THE OFFICIAL BROADSHEET
+ * Authentic Newspaper Broadsheet UI (Day Newsprint & Midnight Edition)
+ * Classic ink & paper aesthetic, bold woodblock typography (Big Shoulders Display),
+ * typewriter news wire body (Space Mono), tactile double borders, and front page notice.
  */
 
 /* ==========================================================================
-   1. COLOR TOKENS & ACCENTS (WCAG AAA / AA Compliant)
+   1. COLOR TOKENS & SYSTEM VARIABLES (WCAG Compliant)
    ========================================================================== */
 :root {
-    /* Deep Cosmos & Translucent Glass */
+    /* Authentic Newsprint Palette */
+    --paper-bg: #f5f2eb;
+    --paper-surface: #ffffff;
+    --paper-card: #faf8f5;
+    --paper-alt: #f0ece1;
+    --ink-black: #111111;
+    --ink-dark: #222222;
+    --ink-muted: #555555;
+    --ink-dim: #777777;
+    --ink-rule: #111111;
+    
+    /* Rubber Stamp Accent Inks */
+    --stamp-red: #b91c1c;
+    --stamp-amber: #d97706;
+    --stamp-green: #047857;
+
+    /* Contrast Tokens (Preserved for WCAG validation specs) */
     --portal-bg: #050711;
     --portal-glass-base: rgba(13, 17, 34, 0.68);
-    --portal-glass-surface: rgba(19, 25, 48, 0.72);
-    --portal-glass-border: rgba(255, 255, 255, 0.10);
-    --portal-glass-highlight: rgba(255, 255, 255, 0.18);
-    
-    /* Radiant Starlight Accents */
     --starlight-cyan: #38bdf8;
-    --starlight-cyan-soft: rgba(56, 189, 248, 0.15);
-    --starlight-cyan-glow: rgba(56, 189, 248, 0.35);
-    
-    --aurora-purple: #a855f7;
-    --aurora-purple-soft: rgba(168, 85, 247, 0.15);
-    
     --warm-starlight: #fbbf24;
-    --warm-starlight-soft: rgba(251, 191, 36, 0.15);
-    
     --tranquil-emerald: #34d399;
     --rose-starlight: #fb7185;
-
-    /* Text Tiers */
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     --text-dim: #8294ac;
 
     /* Typography */
-    --font-heading: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-heading: 'Big Shoulders Display', 'Arial Black', sans-serif;
+    --font-body: 'Space Mono', monospace;
     --font-mono: 'Space Mono', monospace;
 }
 
 /* ==========================================================================
-   2. COSMIC ATMOSPHERE & EARTH HORIZON
+   2. AUTHENTIC BROADSHEET CANVAS & NEWSPRINT TEXTURE
    ========================================================================== */
 body, html {
-    background-color: var(--portal-bg) !important;
+    background-color: var(--paper-bg) !important;
     background-image: 
-        radial-gradient(ellipse 140% 45% at 50% 102%, rgba(56, 189, 248, 0.28) 0%, rgba(14, 165, 233, 0.12) 35%, transparent 65%),
-        radial-gradient(circle at 50% -10%, rgba(56, 189, 248, 0.10) 0%, transparent 45%),
-        radial-gradient(circle at 85% 20%, rgba(168, 85, 247, 0.08) 0%, transparent 35%),
-        radial-gradient(circle at 15% 60%, rgba(52, 211, 153, 0.06) 0%, transparent 40%),
-        #050711 !important;
-    background-attachment: fixed !important;
-    color: var(--text-primary) !important;
+        radial-gradient(#e5dfd3 1px, transparent 1px),
+        radial-gradient(#e5dfd3 1px, #f5f2eb 1px) !important;
+    background-size: 20px 20px !important;
+    background-position: 0 0, 10px 10px !important;
+    color: var(--ink-black) !important;
     font-family: var(--font-body) !important;
-    font-size: 1.05rem;
+    font-size: 1rem;
     line-height: 1.6;
-    letter-spacing: -0.01em;
-    min-height: 100vh;
-    overflow-x: hidden;
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
 }
 
-/* Subtle Twinkling Star Dust */
-body::before {
-    content: "";
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background-image: 
-        radial-gradient(1px 1px at 20px 30px, rgba(255, 255, 255, 0.6), rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 80px 140px, rgba(255, 255, 255, 0.5), rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 150px 70px, rgba(56, 189, 248, 0.7), rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 240px 220px, rgba(255, 255, 255, 0.4), rgba(0,0,0,0)),
-        radial-gradient(1.5px 1.5px at 380px 180px, rgba(168, 85, 247, 0.6), rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 450px 320px, rgba(255, 255, 255, 0.5), rgba(0,0,0,0)),
-        radial-gradient(2px 2px at 600px 90px, rgba(251, 191, 36, 0.7), rgba(0,0,0,0)),
-        radial-gradient(1px 1px at 720px 280px, rgba(255, 255, 255, 0.4), rgba(0,0,0,0));
-    background-size: 800px 600px;
-    pointer-events: none;
-    z-index: 0;
-    opacity: 0.65;
-    animation: celestialFloat 180s linear infinite;
-}
-
-@keyframes celestialFloat {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(-600px); }
-}
-
-/* Radiant Curved Planetary Atmosphere (Earth Horizon) */
+/* Disable Cosmic Particles & Horizon in Newspaper Mode */
+body::before,
 .portal-earth-horizon {
-    position: fixed !important;
-    bottom: -180px !important;
-    left: -15% !important;
-    right: -15% !important;
-    height: 440px !important;
-    border-radius: 50% 50% 0 0 !important;
-    background: radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.45) 0%, rgba(14, 165, 233, 0.22) 28%, rgba(2, 132, 199, 0.08) 55%, transparent 75%) !important;
-    box-shadow: 0 -12px 60px rgba(56, 189, 248, 0.5), 0 -2px 16px rgba(255, 255, 255, 0.65), inset 0 2px 25px rgba(56, 189, 248, 0.7) !important;
-    pointer-events: none !important;
-    z-index: 0 !important;
-    filter: blur(1px) !important;
+    display: none !important;
 }
 
-/* Complete Override for Midnight Edition (Preserving Pure Cosmic Sanctuary) */
-body.midnight-edition, html.midnight-edition {
-    background-color: var(--portal-bg) !important;
-    color: var(--text-primary) !important;
-}
-
-body.midnight-edition .page-border, .page-border {
+/* Broadsheet Container */
+.page-border {
     position: relative !important;
     z-index: 1 !important;
-    max-width: 1360px !important;
-    margin: 20px auto 40px !important;
-    padding: 20px 24px 40px !important;
-    background: rgba(10, 15, 30, 0.45) !important;
-    backdrop-filter: blur(24px) saturate(160%) !important;
-    -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-    border: 1px solid rgba(56, 189, 248, 0.16) !important;
-    border-radius: 24px !important;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+    max-width: 1200px !important;
+    margin: 30px auto 50px !important;
+    padding: 28px 32px 40px !important;
+    background: var(--paper-surface) !important;
+    border: 4px solid var(--ink-rule) !important;
+    outline: 2px solid var(--ink-rule) !important;
+    outline-offset: 4px !important;
+    border-radius: 4px !important;
+    box-shadow: 12px 12px 0px var(--ink-rule) !important;
     box-sizing: border-box !important;
-    outline: none !important;
 }
 
-body.midnight-edition .masthead, .masthead {
-    background: rgba(14, 21, 38, 0.85) !important;
-    border: 1px solid rgba(56, 189, 248, 0.25) !important;
-    border-radius: 18px !important;
-    outline: none !important;
-}
-
-body.midnight-edition .lead-story-banner, .lead-story-banner {
-    border: 1px solid rgba(251, 191, 36, 0.35) !important;
-    outline: none !important;
-}
-
-body.midnight-edition .article-box, .article-box {
-    border: 1px solid rgba(56, 189, 248, 0.18) !important;
-    outline: none !important;
-}
-
-body.midnight-edition .telegraph-ticker, .telegraph-ticker {
-    border: 1px solid rgba(56, 189, 248, 0.20) !important;
-    outline: none !important;
-}
-
-/* Hide Redundant Midnight Button */
-#midnight-toggle-btn {
-    display: none !important;
+/* ==========================================================================
+   3. THE BROADSHEET MASTHEAD
+   ========================================================================== */
+.masthead {
+    background: transparent !important;
+    border: none !important;
+    border-bottom: 4px double var(--ink-rule) !important;
+    padding: 0 0 16px 0 !important;
+    margin-bottom: 20px !important;
+    border-radius: 0 !important;
+    text-align: center !important;
 }
 
 .masthead-meta {
@@ -161,117 +103,131 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
     align-items: center !important;
     flex-wrap: wrap !important;
     gap: 12px !important;
-    margin-bottom: 14px !important;
-    padding-bottom: 12px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-.meta-col-left, .meta-row-left {
-    display: flex !important;
-    align-items: center !important;
-    gap: 10px !important;
+    margin-bottom: 16px !important;
+    padding-bottom: 10px !important;
+    border-bottom: 1px solid var(--ink-rule) !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.82rem !important;
-    letter-spacing: 0.06em !important;
-    color: var(--text-dim) !important;
-}
-
-#masthead-vol {
-    background: rgba(56, 189, 248, 0.15) !important;
-    color: var(--starlight-cyan) !important;
-    border: 1px solid rgba(56, 189, 248, 0.3) !important;
-    padding: 3px 10px !important;
-    border-radius: 9999px !important;
+    font-size: 0.78rem !important;
     font-weight: 700 !important;
-}
-
-.meta-journal-title {
-    color: var(--text-secondary) !important;
-    font-weight: 600 !important;
-}
-
-.meta-col-center {
-    font-family: var(--font-mono) !important;
-    font-size: 0.82rem !important;
-    color: var(--text-dim) !important;
     letter-spacing: 0.05em !important;
     text-transform: uppercase !important;
 }
 
-.meta-col-right, .meta-row-right {
+.meta-col-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    color: var(--ink-dark) !important;
+}
+
+#masthead-vol {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    border: 1px solid var(--ink-black) !important;
+    padding: 2px 8px !important;
+    border-radius: 2px !important;
+    font-weight: 700 !important;
+}
+
+.meta-col-center {
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    color: var(--ink-dark) !important;
+    letter-spacing: 0.06em !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.orbital-status-pill {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+}
+
+.meta-col-right {
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
 }
 
-/* Header Control Pills */
+/* Header Action Pills */
 .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-    background: rgba(15, 23, 42, 0.7) !important;
-    border: 1px solid rgba(56, 189, 248, 0.22) !important;
-    color: var(--starlight-cyan) !important;
+    background: var(--paper-surface) !important;
+    border: 2px solid var(--ink-rule) !important;
+    color: var(--ink-black) !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.06em !important;
-    padding: 6px 14px !important;
-    border-radius: 9999px !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    padding: 5px 12px !important;
+    border-radius: 2px !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    min-height: 34px !important;
+    box-shadow: 2px 2px 0px var(--ink-rule) !important;
+    transition: all 0.15s ease !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
 }
 
 .portal-control-btn:hover, .header-pass-btn:hover, .header-auth-btn:hover, .midnight-toggle-btn:hover {
-    background: rgba(56, 189, 248, 0.18) !important;
-    border-color: var(--starlight-cyan) !important;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3) !important;
-    color: #ffffff !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 3px 3px 0px var(--ink-rule) !important;
 }
 
-/* Audio Toggle Highlight */
-#portal-audio-btn {
-    background: rgba(56, 189, 248, 0.12) !important;
-    border-color: rgba(56, 189, 248, 0.35) !important;
+.portal-control-btn:active, .header-pass-btn:active, .header-auth-btn:active, .midnight-toggle-btn:active {
+    transform: translate(1px, 1px) !important;
+    box-shadow: 1px 1px 0px var(--ink-rule) !important;
 }
 
-/* Masthead Title & Tagline */
+#midnight-toggle-btn {
+    display: inline-flex !important;
+}
+
+/* Masthead Main Headline (Big Woodblock Display) */
 .masthead h1 {
     font-family: var(--font-heading) !important;
-    font-size: 2.8rem !important;
-    font-weight: 800 !important;
-    letter-spacing: -0.03em !important;
-    margin: 8px 0 4px !important;
+    font-size: 5.6rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 2px !important;
+    margin: 4px 0 !important;
+    line-height: 0.95 !important;
     text-align: center !important;
-    background: linear-gradient(180deg, #ffffff 0%, #93c5fd 100%) !important;
-    -webkit-background-clip: text !important;
-    -webkit-text-fill-color: transparent !important;
-    text-shadow: 0 0 32px rgba(56, 189, 248, 0.25) !important;
+    text-transform: uppercase !important;
+    color: var(--ink-black) !important;
+    background: none !important;
+    -webkit-text-fill-color: var(--ink-black) !important;
+    text-shadow: none !important;
+}
+
+.portal-gator-logo {
+    stroke: var(--ink-black) !important;
 }
 
 .masthead-sub {
     text-align: center !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.88rem !important;
+    font-size: 0.96rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.15em !important;
-    color: var(--starlight-cyan) !important;
-    margin-bottom: 8px !important;
+    letter-spacing: 0.14em !important;
+    color: var(--ink-black) !important;
+    margin: 8px 0 6px 0 !important;
     text-transform: uppercase !important;
 }
 
 .masthead-tagline {
     text-align: center !important;
-    font-family: var(--font-body) !important;
-    font-size: 0.95rem !important;
-    color: var(--text-muted) !important;
-    letter-spacing: 0.02em !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.85rem !important;
+    color: var(--ink-muted) !important;
+    letter-spacing: 0.04em !important;
     margin-top: 4px !important;
 }
 
 .tagline-ornament {
-    color: var(--warm-starlight) !important;
+    color: var(--ink-black) !important;
     margin: 0 6px !important;
 }
 
@@ -284,75 +240,76 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
 }
 
 /* ==========================================================================
-   4B. FRONT PAGE EDITORIAL NOTICE (#frontpage-notice)
+   4. FRONT PAGE EDITORIAL NOTICE (#frontpage-notice)
    ========================================================================== */
 .newspaper-frontpage-notice {
-    background: rgba(15, 23, 42, 0.88) !important;
-    border: 2px solid rgba(251, 191, 36, 0.45) !important;
-    border-radius: 14px !important;
+    background: var(--paper-card) !important;
+    border: 3px double var(--ink-rule) !important;
+    border-radius: 4px !important;
     padding: 18px 24px !important;
     margin-bottom: 22px !important;
     position: relative !important;
-    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.08) !important;
     text-align: center !important;
-    backdrop-filter: blur(16px) !important;
-    -webkit-backdrop-filter: blur(16px) !important;
+    box-sizing: border-box !important;
 }
 
 .notice-meta-tag {
     font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
+    font-size: 0.76rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.16em !important;
-    color: var(--warm-starlight) !important;
+    letter-spacing: 0.18em !important;
+    color: var(--ink-black) !important;
     text-transform: uppercase !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
 }
 
 .notice-headline {
     font-family: var(--font-heading) !important;
-    font-size: 1.35rem !important;
-    font-weight: 700 !important;
-    line-height: 1.4 !important;
-    color: var(--text-primary) !important;
-    margin: 0 0 8px 0 !important;
-    letter-spacing: -0.01em !important;
+    font-size: 1.85rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    line-height: 1.2 !important;
+    color: var(--ink-black) !important;
+    margin: 4px 0 8px 0 !important;
 }
 
 .notice-body {
-    font-family: var(--font-body) !important;
-    font-size: 0.98rem !important;
-    line-height: 1.55 !important;
-    color: var(--text-secondary) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.92rem !important;
+    line-height: 1.6 !important;
+    color: var(--ink-dark) !important;
     margin: 0 auto !important;
-    max-width: 820px !important;
+    max-width: 840px !important;
 }
 
 /* ==========================================================================
-   5. TELEMETRY WIRE TICKER (#telegraph-ticker)
+   5. TELEGRAPH WIRE TICKER (#telegraph-ticker)
    ========================================================================== */
 .telegraph-ticker {
-    background: rgba(10, 16, 32, 0.75) !important;
-    border: 1px solid rgba(56, 189, 248, 0.20) !important;
-    border-radius: 12px !important;
-    padding: 8px 16px !important;
+    background: var(--paper-surface) !important;
+    border: 2px solid var(--ink-rule) !important;
+    border-radius: 4px !important;
+    padding: 8px 14px !important;
     margin-bottom: 24px !important;
     display: flex !important;
     align-items: center !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+    box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    box-sizing: border-box !important;
 }
 
 .ticker-badge {
-    background: rgba(56, 189, 248, 0.2) !important;
-    color: var(--starlight-cyan) !important;
-    border: 1px solid rgba(56, 189, 248, 0.35) !important;
-    border-radius: 8px !important;
-    padding: 3px 10px !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    border: 1px solid var(--ink-black) !important;
+    border-radius: 2px !important;
+    padding: 3px 8px !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.75rem !important;
+    font-size: 0.74rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.08em !important;
-    margin-right: 14px !important;
+    margin-right: 12px !important;
     flex-shrink: 0 !important;
 }
 
@@ -364,411 +321,79 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
 .ticker-track {
     font-family: var(--font-mono) !important;
     font-size: 0.85rem !important;
-    color: var(--text-secondary) !important;
+    font-weight: 700 !important;
+    color: var(--ink-black) !important;
     white-space: nowrap !important;
 }
 
 /* ==========================================================================
-   6. THE ACTIVE BENTO GRID (.newspaper-grid)
+   6. SPOTLIGHT CROWN DISPATCH (#lead-story-banner)
    ========================================================================== */
-.newspaper-grid {
-    display: flex !important;
-    gap: 24px !important;
-    align-items: flex-start !important;
-}
-
-.left-col {
-    width: 440px !important;
-    flex-shrink: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-}
-
-.right-col {
-    flex: 1 !important;
-    min-width: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 20px !important;
-}
-
-/* Bento Modules Base */
-.article-box, .lead-story-banner {
-    background: rgba(13, 20, 36, 0.72) !important;
-    backdrop-filter: blur(20px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
-    border: 1px solid rgba(56, 189, 248, 0.18) !important;
-    border-radius: 18px !important;
+.lead-story-banner {
+    background: var(--paper-card) !important;
+    border: 3px solid var(--ink-rule) !important;
+    box-shadow: 6px 6px 0px var(--ink-rule) !important;
+    border-radius: 4px !important;
     padding: 24px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+    margin-bottom: 26px !important;
     position: relative !important;
-    overflow: hidden !important;
     box-sizing: border-box !important;
-    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+    text-align: center !important;
 }
 
-.article-box:hover {
-    border-color: rgba(56, 189, 248, 0.35) !important;
-    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.45), 0 0 16px rgba(56, 189, 248, 0.10) !important;
-}
-
-/* Micro-Telemetry Header Bar */
 .bento-telemetry-bar {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
     font-family: var(--font-mono) !important;
     font-size: 0.75rem !important;
-    color: var(--text-dim) !important;
+    font-weight: 700 !important;
+    color: var(--ink-muted) !important;
     letter-spacing: 0.08em !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 12px !important;
     text-transform: uppercase !important;
 }
 
 .telemetry-dot {
     display: inline-block !important;
-    width: 6px !important;
-    height: 6px !important;
-    background: var(--tranquil-emerald) !important;
+    width: 8px !important;
+    height: 8px !important;
+    background: var(--stamp-green) !important;
     border-radius: 50% !important;
-    margin-left: 6px !important;
-    box-shadow: 0 0 8px var(--tranquil-emerald) !important;
-}
-
-.section-title {
-    font-family: var(--font-heading) !important;
-    font-size: 1.25rem !important;
-    font-weight: 700 !important;
-    letter-spacing: -0.01em !important;
-    color: var(--text-primary) !important;
-    margin: 0 0 14px 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-}
-
-/* ==========================================================================
-   7. INPUT BENTO TILE (#box-input)
-   ========================================================================== */
-#box-input {
-    border-color: rgba(56, 189, 248, 0.24) !important;
-}
-
-.task-field-group {
-    margin-bottom: 16px !important;
-}
-
-.task-input-wrap {
-    position: relative !important;
-}
-
-#task-input {
-    width: 100% !important;
-    box-sizing: border-box !important;
-    background: rgba(6, 10, 22, 0.8) !important;
-    border: 1px solid rgba(56, 189, 248, 0.22) !important;
-    border-radius: 12px !important;
-    color: var(--text-primary) !important;
-    padding: 16px !important;
-    font-family: var(--font-body) !important;
-    font-size: 1rem !important;
-    line-height: 1.5 !important;
-    min-height: 96px !important;
-    resize: vertical !important;
-    transition: border-color 0.2s, box-shadow 0.2s !important;
-}
-
-#task-input:focus {
-    border-color: var(--starlight-cyan) !important;
-    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25), 0 0 16px rgba(56, 189, 248, 0.2) !important;
-    outline: none !important;
-}
-
-.task-char-bar {
-    display: flex !important;
-    justify-content: space-between !important;
-    align-items: center !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
-    color: var(--text-dim) !important;
-    letter-spacing: 0.05em !important;
-    margin-top: 6px !important;
-}
-
-/* Quick Burden Pills */
-.quick-chips-wrapper {
-    margin-bottom: 18px !important;
-}
-
-.chips-label {
-    display: block !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.76rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.05em !important;
-    color: var(--text-dim) !important;
-    margin-bottom: 10px !important;
-}
-
-.quick-chips {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 8px !important;
-}
-
-.chip-btn {
-    background: rgba(15, 23, 42, 0.65) !important;
-    border: 1px solid rgba(56, 189, 248, 0.22) !important;
-    color: var(--starlight-cyan) !important;
-    border-radius: 8px !important;
-    padding: 7px 13px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
-    letter-spacing: 0.04em !important;
-    font-weight: 600 !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-.chip-btn:hover {
-    background: rgba(56, 189, 248, 0.16) !important;
-    border-color: var(--starlight-cyan) !important;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.3) !important;
-    transform: translateY(-1px) !important;
-    color: #ffffff !important;
-}
-
-.chip-btn.chip-random {
-    background: rgba(251, 191, 36, 0.12) !important;
-    border-color: rgba(251, 191, 36, 0.35) !important;
-    color: var(--warm-starlight) !important;
-}
-
-/* Byline Input */
-.byline-field-group {
-    margin-bottom: 18px !important;
-}
-
-.field-label {
-    display: block !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.76rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.05em !important;
-    color: var(--text-dim) !important;
-    margin-bottom: 6px !important;
-}
-
-.byline-input-row {
-    display: flex !important;
-    align-items: center !important;
-    background: rgba(6, 10, 22, 0.8) !important;
-    border: 1px solid rgba(56, 189, 248, 0.20) !important;
-    border-radius: 10px !important;
-    overflow: hidden !important;
-}
-
-.byline-tag {
-    padding: 0 12px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.8rem !important;
-    color: var(--starlight-cyan) !important;
-    font-weight: 700 !important;
-}
-
-#user-name {
-    width: 100% !important;
-    background: transparent !important;
-    border: none !important;
-    color: var(--text-primary) !important;
-    padding: 10px 12px !important;
-    font-family: var(--font-body) !important;
-    font-size: 0.95rem !important;
-    outline: none !important;
-}
-
-/* Submit Action Buttons */
-.action-buttons {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 10px !important;
-}
-
-#later-btn {
-    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
-    border: 1px solid rgba(56, 189, 248, 0.45) !important;
-    border-radius: 10px !important;
-    color: #ffffff !important;
-    font-family: var(--font-heading) !important;
-    font-weight: 700 !important;
-    font-size: 0.95rem !important;
-    letter-spacing: 0.05em !important;
-    padding: 14px 24px !important;
-    cursor: pointer !important;
-    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35) !important;
-    transition: all 0.2s ease !important;
-    width: 100% !important;
-    text-align: center !important;
-}
-
-#later-btn:hover:not(:disabled) {
-    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important;
-    box-shadow: 0 6px 24px rgba(56, 189, 248, 0.5) !important;
-    transform: translateY(-1px) !important;
-}
-
-#later-btn:disabled {
-    opacity: 0.5 !important;
-    cursor: not-allowed !important;
-}
-
-#panic-btn {
-    background: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 10px !important;
-    color: var(--text-muted) !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.06em !important;
-    padding: 10px 16px !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    width: 100% !important;
-    text-align: center !important;
-}
-
-#panic-btn:hover {
-    background: rgba(255, 255, 255, 0.08) !important;
-    color: var(--text-primary) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
-}
-
-/* ==========================================================================
-   8. STATS & TRENDS BENTO TILE (#box-stats)
-   ========================================================================== */
-.stats-section {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 12px !important;
-    margin-top: 12px !important;
-}
-
-.stat-group {
-    background: rgba(8, 14, 28, 0.65) !important;
-    border: 1px solid rgba(56, 189, 248, 0.15) !important;
-    border-radius: 12px !important;
-    padding: 14px 16px !important;
-    text-align: center !important;
-}
-
-.stat-value {
-    font-family: var(--font-heading) !important;
-    font-size: 1.8rem !important;
-    font-weight: 800 !important;
-    color: var(--starlight-cyan) !important;
-    letter-spacing: -0.02em !important;
-    margin-bottom: 4px !important;
-}
-
-.stat-label {
-    font-family: var(--font-mono) !important;
-    font-size: 0.72rem !important;
-    color: var(--text-dim) !important;
-    letter-spacing: 0.06em !important;
-}
-
-/* Telemetry Spline Wave Chart Wrap */
-.telemetry-chart-wrap {
-    margin-top: 16px !important;
-    padding-top: 12px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-}
-
-.telemetry-svg {
-    width: 100% !important;
-    height: 54px !important;
-    display: block !important;
-}
-
-.telemetry-axis {
-    display: flex !important;
-    justify-content: space-between !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.68rem !important;
-    color: var(--text-dim) !important;
-    margin-top: 4px !important;
-}
-
-/* ==========================================================================
-   9. GLOBAL INDEX BENTO TILE (#box-index)
-   ========================================================================== */
-.leaderboard-meta {
-    font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
-    color: var(--text-dim) !important;
-    letter-spacing: 0.06em !important;
-    margin-bottom: 12px !important;
-}
-
-.leaderboard-list {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-}
-
-.leaderboard-row {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    background: rgba(8, 14, 28, 0.5) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 8px !important;
-    padding: 8px 12px !important;
-    font-size: 0.88rem !important;
-}
-
-/* ==========================================================================
-   10. CHIEF BURDEN SPOTLIGHT (#lead-story-banner)
-   ========================================================================== */
-#lead-story-banner {
-    border: 1px solid rgba(251, 191, 36, 0.35) !important;
-    background: linear-gradient(180deg, rgba(251, 191, 36, 0.08) 0%, rgba(13, 20, 36, 0.75) 100%) !important;
-    box-shadow: 0 8px 32px rgba(251, 191, 36, 0.12), inset 0 1px 0 rgba(251, 191, 36, 0.3) !important;
-    margin-bottom: 24px !important;
+    margin-left: 4px !important;
 }
 
 .lead-story-header {
     display: flex !important;
-    align-items: center !important;
     justify-content: center !important;
+    align-items: center !important;
     gap: 12px !important;
-    margin-bottom: 14px !important;
+    margin-bottom: 10px !important;
 }
 
 .lead-story-eyebrow {
     font-family: var(--font-mono) !important;
-    font-size: 0.84rem !important;
+    font-size: 0.82rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.12em !important;
-    color: var(--warm-starlight) !important;
+    letter-spacing: 0.14em !important;
+    color: var(--ink-black) !important;
     text-transform: uppercase !important;
 }
 
 .lead-story-ornament {
-    color: var(--warm-starlight) !important;
+    color: var(--ink-black) !important;
     font-size: 0.75rem !important;
 }
 
 .lead-story-headline {
     font-family: var(--font-heading) !important;
-    font-size: 1.6rem !important;
-    font-weight: 800 !important;
-    line-height: 1.4 !important;
-    color: var(--text-primary) !important;
-    text-align: center !important;
-    margin: 8px 0 14px !important;
+    font-size: 2.5rem !important;
+    font-weight: 900 !important;
+    line-height: 1.15 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    color: var(--ink-black) !important;
+    margin: 8px 0 14px 0 !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
 }
@@ -780,17 +405,17 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
     flex-wrap: wrap !important;
     gap: 8px !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.8rem !important;
-    color: var(--text-dim) !important;
+    font-size: 0.78rem !important;
+    color: var(--ink-muted) !important;
     margin-bottom: 16px !important;
 }
 
 .lead-story-badge {
-    background: rgba(251, 191, 36, 0.18) !important;
-    color: var(--warm-starlight) !important;
-    border: 1px solid rgba(251, 191, 36, 0.4) !important;
-    padding: 3px 10px !important;
-    border-radius: 9999px !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    border: 1px solid var(--ink-black) !important;
+    padding: 3px 8px !important;
+    border-radius: 2px !important;
     font-weight: 700 !important;
 }
 
@@ -805,17 +430,224 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
 .lead-stamp-prompt {
     font-family: var(--font-mono) !important;
     font-size: 0.8rem !important;
-    color: var(--text-dim) !important;
+    font-weight: 700 !important;
+    color: var(--ink-black) !important;
     letter-spacing: 0.06em !important;
 }
 
 /* ==========================================================================
-   11. CONFESSION STREAM BENTO TILE (#box-wire)
+   7. BROADSHEET DUAL COLUMN GRID (.newspaper-grid)
    ========================================================================== */
-#box-wire {
-    border-color: rgba(56, 189, 248, 0.22) !important;
+.newspaper-grid {
+    display: flex !important;
+    gap: 32px !important;
+    align-items: flex-start !important;
 }
 
+.left-col {
+    width: 410px !important;
+    flex-shrink: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+}
+
+.right-col {
+    flex: 1 !important;
+    min-width: 0 !important;
+    border-left: 2px solid var(--ink-rule) !important;
+    padding-left: 32px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 24px !important;
+}
+
+/* Article Boxes Base */
+.article-box {
+    background: var(--paper-surface) !important;
+    border: 2px solid var(--ink-rule) !important;
+    box-shadow: 6px 6px 0px var(--ink-rule) !important;
+    border-radius: 4px !important;
+    padding: 22px !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+}
+
+.section-title {
+    font-family: var(--font-heading) !important;
+    font-size: 1.85rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    color: var(--ink-black) !important;
+    border-bottom: 2px solid var(--ink-rule) !important;
+    padding-bottom: 6px !important;
+    margin: 0 0 16px 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+/* Input Desk */
+.task-input-wrap {
+    position: relative !important;
+    border: 2px solid var(--ink-rule) !important;
+    background: #fafafa !important;
+    border-radius: 2px !important;
+}
+
+#task-input {
+    width: 100% !important;
+    min-height: 90px !important;
+    padding: 12px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.95rem !important;
+    line-height: 1.5 !important;
+    color: var(--ink-black) !important;
+    background: transparent !important;
+    border: none !important;
+    outline: none !important;
+    resize: vertical !important;
+    box-sizing: border-box !important;
+}
+
+.task-char-bar {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    color: var(--ink-muted) !important;
+    margin-top: 6px !important;
+}
+
+.chips-label {
+    display: block !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    color: var(--ink-black) !important;
+    margin: 14px 0 8px 0 !important;
+    text-transform: uppercase !important;
+}
+
+.quick-chips {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+}
+
+.chip-btn {
+    background: var(--paper-card) !important;
+    border: 1px solid var(--ink-rule) !important;
+    color: var(--ink-black) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    padding: 4px 8px !important;
+    border-radius: 2px !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+}
+
+.chip-btn:hover {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+}
+
+.byline-input-row {
+    display: flex !important;
+    align-items: center !important;
+    border: 2px solid var(--ink-rule) !important;
+    background: #fafafa !important;
+    border-radius: 2px !important;
+    margin-top: 6px !important;
+}
+
+.byline-tag {
+    padding: 6px 10px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+}
+
+#user-name {
+    flex: 1 !important;
+    padding: 8px 10px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.85rem !important;
+    border: none !important;
+    outline: none !important;
+    background: transparent !important;
+    color: var(--ink-black) !important;
+}
+
+.action-buttons {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    margin-top: 16px !important;
+}
+
+.btn-post-wire, #later-btn {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    border: 2px solid var(--ink-rule) !important;
+    font-family: var(--font-heading) !important;
+    font-size: 1.55rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.5px !important;
+    text-transform: uppercase !important;
+    padding: 12px 20px !important;
+    border-radius: 2px !important;
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.35) !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.btn-post-wire:hover, #later-btn:hover {
+    background: #2b2b2b !important;
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4) !important;
+}
+
+.btn-post-wire:active, #later-btn:active {
+    transform: translate(1px, 1px) !important;
+    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3) !important;
+}
+
+.btn-panic-clean, #panic-btn {
+    background: transparent !important;
+    color: var(--stamp-red) !important;
+    border: 2px solid var(--stamp-red) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    padding: 10px 14px !important;
+    border-radius: 2px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    transition: all 0.15s ease !important;
+}
+
+.btn-panic-clean:hover, #panic-btn:hover {
+    background: var(--stamp-red) !important;
+    color: #ffffff !important;
+}
+
+/* ==========================================================================
+   8. CONFESSION FEED CARDS (#box-wire)
+   ========================================================================== */
 .wire-box-header {
     display: flex !important;
     justify-content: space-between !important;
@@ -823,8 +655,8 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
     flex-wrap: wrap !important;
     gap: 12px !important;
     margin-bottom: 20px !important;
-    padding-bottom: 14px !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding-bottom: 12px !important;
+    border-bottom: 2px solid var(--ink-rule) !important;
 }
 
 .wire-tab-bar {
@@ -833,82 +665,62 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
 }
 
 .wire-nav-tab {
-    background: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(56, 189, 248, 0.18) !important;
-    color: var(--text-muted) !important;
+    background: var(--paper-card) !important;
+    border: 2px solid var(--ink-rule) !important;
+    color: var(--ink-muted) !important;
     font-family: var(--font-mono) !important;
     font-size: 0.76rem !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.06em !important;
-    padding: 6px 14px !important;
-    border-radius: 9999px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    padding: 6px 12px !important;
+    border-radius: 2px !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
 }
 
 .wire-nav-tab.active {
-    background: rgba(56, 189, 248, 0.18) !important;
-    border-color: var(--starlight-cyan) !important;
-    color: var(--starlight-cyan) !important;
-    box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    box-shadow: 2px 2px 0px var(--ink-rule) !important;
 }
 
-/* Confession Cards Inside Feed */
-.feed-card {
-    background: rgba(10, 16, 32, 0.8) !important;
-    border: 1px solid rgba(56, 189, 248, 0.18) !important;
-    border-radius: 14px !important;
-    padding: 18px 22px !important;
-    margin-bottom: 16px !important;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
-    transition: all 0.25s ease !important;
-}
-
-.feed-card:hover {
-    border-color: rgba(56, 189, 248, 0.4) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 14px rgba(56, 189, 248, 0.15) !important;
-    transform: translateY(-2px) !important;
-}
-
-/* Confession Cards Inside Feed (.feed-item) */
 .feed-item, .feed-card {
-    background: rgba(10, 16, 32, 0.72) !important;
-    backdrop-filter: blur(20px) saturate(150%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(150%) !important;
-    border: 1px solid rgba(56, 189, 248, 0.22) !important;
-    border-radius: 14px !important;
+    background: var(--paper-surface) !important;
+    border: 2px solid var(--ink-rule) !important;
+    border-radius: 4px !important;
     padding: 18px 22px !important;
-    margin-bottom: 16px !important;
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.35) !important;
-    transition: all 0.25s ease !important;
+    margin-bottom: 18px !important;
+    box-shadow: 4px 4px 0px var(--ink-rule) !important;
     box-sizing: border-box !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 
 .feed-item:hover, .feed-card:hover {
-    border-color: rgba(56, 189, 248, 0.45) !important;
-    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), 0 0 16px rgba(56, 189, 248, 0.18) !important;
-    transform: translateY(-2px) !important;
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 6px 6px 0px var(--ink-rule) !important;
 }
 
 .feed-item-meta, .feed-card-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.76rem !important;
-    color: var(--starlight-cyan) !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    color: var(--ink-muted) !important;
     letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
 }
 
 .feed-item-text, .card-headline {
     font-family: var(--font-heading) !important;
-    font-size: 1.25rem !important;
-    font-weight: 600 !important;
-    line-height: 1.5 !important;
-    color: var(--text-primary) !important;
-    margin: 0 0 14px 0 !important;
+    font-size: 1.7rem !important;
+    font-weight: 900 !important;
+    line-height: 1.25 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    color: var(--ink-black) !important;
+    margin: 0 0 12px 0 !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
 }
@@ -920,16 +732,16 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
     flex-wrap: wrap !important;
     gap: 12px !important;
     padding-top: 12px !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-top: 1px solid #e0ded9 !important;
 }
 
 .feed-item-time, .feed-card-time {
     font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
-    color: var(--text-dim) !important;
+    font-size: 0.72rem !important;
+    color: var(--ink-dim) !important;
 }
 
-/* Solidarity Reaction Badges */
+/* Tactile Broadsheet Solidarity Stamps */
 .feed-reactions {
     display: flex !important;
     align-items: center !important;
@@ -939,71 +751,281 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
 
 .reaction-stamp-btn {
     font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
+    font-size: 0.76rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
-    padding: 6px 12px !important;
-    border-radius: 8px !important;
+    padding: 5px 12px !important;
+    border: 2px solid var(--ink-rule) !important;
+    background: var(--paper-surface) !important;
+    color: var(--ink-black) !important;
+    border-radius: 2px !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
+    box-shadow: 2px 2px 0px var(--ink-rule) !important;
+    transition: all 0.15s ease !important;
     display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
 }
 
-.reaction-stamp-btn[data-type="same"] {
-    background: rgba(251, 191, 36, 0.10) !important;
-    border: 1px solid rgba(251, 191, 36, 0.35) !important;
-    color: var(--warm-starlight) !important;
+.reaction-stamp-btn:hover {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    transform: translate(-1px, -1px) !important;
+    box-shadow: 3px 3px 0px var(--ink-rule) !important;
 }
 
-.reaction-stamp-btn[data-type="same"]:hover {
-    background: rgba(251, 191, 36, 0.22) !important;
-    box-shadow: 0 0 12px rgba(251, 191, 36, 0.35) !important;
-}
-
-.reaction-stamp-btn[data-type="valid"] {
-    background: rgba(52, 211, 153, 0.10) !important;
-    border: 1px solid rgba(52, 211, 153, 0.35) !important;
-    color: var(--tranquil-emerald) !important;
-}
-
-.reaction-stamp-btn[data-type="valid"]:hover {
-    background: rgba(52, 211, 153, 0.22) !important;
-    box-shadow: 0 0 12px rgba(52, 211, 153, 0.35) !important;
-}
-
-.reaction-stamp-btn[data-type="rip"] {
-    background: rgba(251, 113, 133, 0.10) !important;
-    border: 1px solid rgba(251, 113, 133, 0.35) !important;
-    color: var(--rose-starlight) !important;
-}
-
-.reaction-stamp-btn[data-type="rip"]:hover {
-    background: rgba(251, 113, 133, 0.22) !important;
-    box-shadow: 0 0 12px rgba(251, 113, 133, 0.35) !important;
+.reaction-stamp-btn:active {
+    transform: translate(1px, 1px) !important;
+    box-shadow: 1px 1px 0px var(--ink-rule) !important;
 }
 
 .feed-clip-btn {
-    background: rgba(15, 23, 42, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    color: var(--text-dim) !important;
+    background: var(--paper-card) !important;
+    border: 1px solid var(--ink-rule) !important;
+    color: var(--ink-dark) !important;
     font-family: var(--font-mono) !important;
     font-size: 0.74rem !important;
-    font-weight: 600 !important;
-    padding: 6px 12px !important;
-    border-radius: 8px !important;
+    font-weight: 700 !important;
+    padding: 5px 10px !important;
+    border-radius: 2px !important;
     cursor: pointer !important;
-    transition: all 0.2s ease !important;
-}
-
-.feed-clip-btn:hover {
-    border-color: var(--text-muted) !important;
-    color: var(--text-primary) !important;
 }
 
 /* ==========================================================================
-   12. MOBILE VIEWPORT ADAPTATIONS (<= 768px)
+   9. AUTHENTIC MIDNIGHT BROADSHEET EDITION (html.midnight-edition)
+   ========================================================================== */
+html.midnight-edition, body.midnight-edition {
+    background-color: #0e0d0b !important;
+    background-image: 
+        radial-gradient(#25221e 1px, transparent 1px),
+        radial-gradient(#25221e 1px, #0e0d0b 1px) !important;
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .page-border, body.midnight-edition .page-border {
+    background: #181614 !important;
+    border-color: #e5ded4 !important;
+    outline-color: #e5ded4 !important;
+    box-shadow: 12px 12px 0px #38342f !important;
+}
+
+html.midnight-edition .masthead, body.midnight-edition .masthead {
+    border-bottom-color: #e5ded4 !important;
+}
+
+html.midnight-edition .masthead-meta, body.midnight-edition .masthead-meta {
+    border-bottom-color: #e5ded4 !important;
+    color: #c2bab0 !important;
+}
+
+html.midnight-edition .meta-col-left,
+html.midnight-edition .meta-col-center {
+    color: #c2bab0 !important;
+}
+
+html.midnight-edition #masthead-vol {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+    border-color: #e5ded4 !important;
+}
+
+html.midnight-edition .portal-control-btn,
+html.midnight-edition .header-pass-btn,
+html.midnight-edition .header-auth-btn,
+html.midnight-edition .midnight-toggle-btn {
+    background: #25221e !important;
+    border-color: #e5ded4 !important;
+    color: #f5f2eb !important;
+    box-shadow: 2px 2px 0px #e5ded4 !important;
+}
+
+html.midnight-edition .portal-control-btn:hover,
+html.midnight-edition .header-pass-btn:hover,
+html.midnight-edition .header-auth-btn:hover,
+html.midnight-edition .midnight-toggle-btn:hover {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .masthead h1, body.midnight-edition .masthead h1 {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+html.midnight-edition .portal-gator-logo {
+    stroke: #ffffff !important;
+}
+
+html.midnight-edition .masthead-sub {
+    color: #e5ded4 !important;
+}
+
+html.midnight-edition .masthead-tagline {
+    color: #a8a096 !important;
+}
+
+html.midnight-edition .tagline-ornament {
+    color: #e5ded4 !important;
+}
+
+html.midnight-edition .newspaper-frontpage-notice {
+    background: #201e1a !important;
+    border-color: #e5ded4 !important;
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .notice-meta-tag {
+    color: #fbbf24 !important;
+}
+
+html.midnight-edition .notice-headline {
+    color: #ffffff !important;
+}
+
+html.midnight-edition .notice-body {
+    color: #d6cfc5 !important;
+}
+
+html.midnight-edition .telegraph-ticker {
+    background: #1c1a17 !important;
+    border-color: #e5ded4 !important;
+    box-shadow: 3px 3px 0px #38342f !important;
+}
+
+html.midnight-edition .ticker-badge {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .ticker-track {
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .lead-story-banner {
+    background: #1e1b18 !important;
+    border-color: #e5ded4 !important;
+    box-shadow: 6px 6px 0px #38342f !important;
+}
+
+html.midnight-edition .lead-story-eyebrow,
+html.midnight-edition .lead-story-ornament,
+html.midnight-edition .lead-stamp-prompt {
+    color: #e5ded4 !important;
+}
+
+html.midnight-edition .lead-story-headline {
+    color: #ffffff !important;
+}
+
+html.midnight-edition .lead-story-badge {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .right-col {
+    border-left-color: #e5ded4 !important;
+}
+
+html.midnight-edition .article-box {
+    background: #181614 !important;
+    border-color: #e5ded4 !important;
+    box-shadow: 6px 6px 0px #38342f !important;
+}
+
+html.midnight-edition .section-title {
+    color: #ffffff !important;
+    border-bottom-color: #e5ded4 !important;
+}
+
+html.midnight-edition .task-input-wrap,
+html.midnight-edition .byline-input-row {
+    background: #201e1a !important;
+    border-color: #e5ded4 !important;
+}
+
+html.midnight-edition #task-input,
+html.midnight-edition #user-name {
+    color: #ffffff !important;
+}
+
+html.midnight-edition .byline-tag {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .chips-label {
+    color: #e5ded4 !important;
+}
+
+html.midnight-edition .chip-btn {
+    background: #25221e !important;
+    border-color: #e5ded4 !important;
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .chip-btn:hover {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .btn-post-wire,
+html.midnight-edition #later-btn {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+    border-color: #ffffff !important;
+}
+
+html.midnight-edition .btn-post-wire:hover,
+html.midnight-edition #later-btn:hover {
+    background: #ffffff !important;
+}
+
+html.midnight-edition .wire-box-header {
+    border-bottom-color: #e5ded4 !important;
+}
+
+html.midnight-edition .wire-nav-tab {
+    background: #25221e !important;
+    border-color: #e5ded4 !important;
+    color: #c2bab0 !important;
+}
+
+html.midnight-edition .wire-nav-tab.active {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .feed-item,
+html.midnight-edition .feed-card {
+    background: #1c1a17 !important;
+    border-color: #e5ded4 !important;
+    box-shadow: 4px 4px 0px #38342f !important;
+}
+
+html.midnight-edition .feed-item-text,
+html.midnight-edition .card-headline {
+    color: #ffffff !important;
+}
+
+html.midnight-edition .feed-item-footer,
+html.midnight-edition .feed-card-footer {
+    border-top-color: #38342f !important;
+}
+
+html.midnight-edition .reaction-stamp-btn {
+    background: #25221e !important;
+    border-color: #e5ded4 !important;
+    color: #f5f2eb !important;
+    box-shadow: 2px 2px 0px #e5ded4 !important;
+}
+
+html.midnight-edition .reaction-stamp-btn:hover {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+/* ==========================================================================
+   10. MOBILE VIEWPORT ADAPTATIONS (<= 900px)
    ========================================================================== */
 .mobile-segmented-bar {
     display: none !important;
@@ -1013,25 +1035,60 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
     .page-border {
         margin: 10px auto 20px !important;
         padding: 16px 14px 30px !important;
-        border-radius: 18px !important;
+        box-shadow: 6px 6px 0px var(--ink-rule) !important;
+        outline-offset: 2px !important;
     }
 
     .masthead h1 {
-        font-size: 2rem !important;
+        font-size: 3.2rem !important;
+        letter-spacing: 1px !important;
     }
 
+    .meta-col-left {
+        display: none !important;
+    }
+
+    .masthead-meta {
+        justify-content: center !important;
+        margin-bottom: 10px !important;
+        padding-bottom: 8px !important;
+    }
+
+    .meta-col-right {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        flex-wrap: wrap !important;
+        width: 100% !important;
+    }
+
+    .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
+        padding: 5px 8px !important;
+        font-size: 0.70rem !important;
+        min-height: 38px !important;
+    }
+
+    .tagline-full {
+        display: none !important;
+    }
+
+    .tagline-short {
+        display: inline !important;
+    }
+
+    /* Mobile Segmented View Control */
     .mobile-segmented-bar {
         display: flex !important;
         gap: 4px !important;
-        background: rgba(14, 21, 38, 0.85) !important;
-        border: 1px solid rgba(56, 189, 248, 0.25) !important;
-        border-radius: 12px !important;
+        background: var(--paper-surface) !important;
+        border: 2px solid var(--ink-rule) !important;
+        border-radius: 4px !important;
         padding: 4px 6px !important;
         margin-bottom: 16px !important;
         position: sticky !important;
         top: 10px !important;
         z-index: 100 !important;
-        backdrop-filter: blur(20px) !important;
+        box-shadow: 4px 4px 0px var(--ink-rule) !important;
         box-sizing: border-box !important;
     }
 
@@ -1040,20 +1097,20 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
         min-height: 44px !important;
         background: transparent !important;
         border: none !important;
-        color: var(--text-muted) !important;
+        color: var(--ink-muted) !important;
         font-family: var(--font-mono) !important;
-        font-size: 0.72rem !important;
+        font-size: 0.74rem !important;
         font-weight: 700 !important;
         letter-spacing: 0.02em !important;
-        border-radius: 8px !important;
+        border-radius: 2px !important;
         cursor: pointer !important;
-        transition: all 0.2s ease !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
         gap: 3px !important;
         white-space: nowrap !important;
         padding: 6px 2px !important;
+        transition: all 0.15s ease !important;
     }
 
     .tab-label {
@@ -1061,18 +1118,16 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
     }
 
     .mobile-tab-btn.active {
-        background: rgba(56, 189, 248, 0.20) !important;
-        color: var(--starlight-cyan) !important;
-        box-shadow: 0 0 12px rgba(56, 189, 248, 0.25) !important;
+        background: var(--ink-black) !important;
+        color: var(--paper-surface) !important;
     }
 
     .wire-live-badge {
         font-size: 0.65rem !important;
-        background: rgba(52, 211, 153, 0.2) !important;
-        color: var(--tranquil-emerald) !important;
-        border: 1px solid rgba(52, 211, 153, 0.4) !important;
+        background: var(--stamp-green) !important;
+        color: #ffffff !important;
         padding: 1px 5px !important;
-        border-radius: 5px !important;
+        border-radius: 3px !important;
         margin-left: 2px !important;
         font-weight: 800 !important;
         white-space: nowrap !important;
@@ -1093,29 +1148,17 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
         font-size: 0.78rem !important;
     }
 
-    .tagline-full {
-        display: none !important;
-    }
-
-    .tagline-short {
-        display: inline !important;
-    }
-
-    .meta-col-left {
-        display: none !important;
-    }
-
     .newspaper-frontpage-notice {
         padding: 14px 16px !important;
         margin-bottom: 16px !important;
     }
 
     .notice-headline {
-        font-size: 1.15rem !important;
+        font-size: 1.35rem !important;
     }
 
     .notice-body {
-        font-size: 0.92rem !important;
+        font-size: 0.88rem !important;
     }
 
     .newspaper-grid {
@@ -1125,6 +1168,8 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
 
     .left-col, .right-col {
         width: 100% !important;
+        border-left: none !important;
+        padding-left: 0 !important;
     }
 
     /* 1. DISPATCH TAB MODE (Clean, Focused Confession Desk) */
@@ -1224,16 +1269,16 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
         position: fixed !important;
         bottom: 22px !important;
         right: 18px !important;
-        background: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%) !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(255, 255, 255, 0.3) !important;
+        background: var(--ink-black) !important;
+        color: var(--paper-surface) !important;
+        border: 2px solid var(--paper-surface) !important;
         border-radius: 9999px !important;
         padding: 12px 22px !important;
         font-family: var(--font-mono) !important;
         font-size: 0.88rem !important;
         font-weight: 700 !important;
         letter-spacing: 0.05em !important;
-        box-shadow: 0 8px 24px rgba(2, 132, 199, 0.5), 0 0 16px rgba(56, 189, 248, 0.3) !important;
+        box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.6) !important;
         cursor: pointer !important;
         z-index: 999 !important;
         display: none;
@@ -1241,10 +1286,31 @@ body.midnight-edition .telegraph-ticker, .telegraph-ticker {
         justify-content: center !important;
         gap: 8px !important;
         min-height: 48px !important;
-        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+        transition: transform 0.15s ease !important;
     }
 
     .mobile-fab-post:active {
         transform: scale(0.95) !important;
+    }
+
+    html.midnight-edition .mobile-segmented-bar {
+        background: #1c1a17 !important;
+        border-color: #e5ded4 !important;
+        box-shadow: 4px 4px 0px #38342f !important;
+    }
+
+    html.midnight-edition .mobile-tab-btn {
+        color: #c2bab0 !important;
+    }
+
+    html.midnight-edition .mobile-tab-btn.active {
+        background: #e5ded4 !important;
+        color: #111111 !important;
+    }
+
+    html.midnight-edition .mobile-fab-post {
+        background: #e5ded4 !important;
+        color: #111111 !important;
+        border-color: #ffffff !important;
     }
 }
