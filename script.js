@@ -2331,9 +2331,21 @@ document.addEventListener('DOMContentLoaded', () => {
     window.updateDisposalMode = updateDisposalMode;
     window.updateResolutionProtocol = updateResolutionProtocol;
 
+    let lastTriumphOccurred = false;
+
     const closeDisposalUnit = () => {
         if (disposalModal) disposalModal.style.display = 'none';
         resetDisposalChamber();
+        if (lastTriumphOccurred) {
+            lastTriumphOccurred = false;
+            switchWireTab('accomplished');
+            const wireTab = document.getElementById('tab-wire-btn');
+            if (wireTab && !wireTab.classList.contains('active')) wireTab.click();
+            if (accomplishedFeedContainer) {
+                const target = accomplishedFeedContainer.firstElementChild;
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
     };
 
     // ──────────────────────────────────────────────────────────────────
@@ -2482,6 +2494,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Update breaking ribbon ticker
             updateTriumphRibbon(newTriumph);
+
+            // Ensure wire feed immediately switches to accomplished triumphs
+            lastTriumphOccurred = true;
+            switchWireTab('accomplished');
 
             // Send triumph to backend API & synchronize real ID
             try {
@@ -2978,7 +2994,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (rawCache) {
                 const cached = JSON.parse(rawCache);
                 if (Array.isArray(cached)) {
-                    allTriumphs = cached.filter(t => t && t.task_id && !String(t.task_id).startsWith('seed-'));
+                    allTriumphs = cached.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
                     renderAllTriumphs();
                 }
             }
@@ -2989,14 +3005,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    const cleanData = data.filter(t => t && t.task_id && !String(t.task_id).startsWith('seed-'));
-                    if (cleanData.length > 0) {
-                        const serverIds = new Set(cleanData.map(d => String(d.id)));
-                        const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)) && !String(t.task_id).startsWith('seed-'));
-                        allTriumphs = [...localOnly, ...cleanData];
-                    } else {
-                        allTriumphs = [];
-                    }
+                    const cleanData = data.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
+                    const serverIds = new Set(cleanData.map(d => String(d.id)));
+                    const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)) && (!t.task_id || !String(t.task_id).startsWith('seed-')));
+                    allTriumphs = [...localOnly, ...cleanData];
                     try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
                     renderAllTriumphs();
                 }
@@ -3196,7 +3208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawTriumphs = localStorage.getItem('lg_triumphs');
         if (rawTriumphs) {
             const parsed = JSON.parse(rawTriumphs);
-            allTriumphs = Array.isArray(parsed) ? parsed.filter(t => t && t.task_id && !String(t.task_id).startsWith('seed-')) : [];
+            allTriumphs = Array.isArray(parsed) ? parsed.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-'))) : [];
             renderAllTriumphs();
         }
     } catch (e) {}

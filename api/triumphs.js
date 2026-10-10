@@ -32,7 +32,9 @@ module.exports = async function handler(req, res) {
                     .limit(60);
 
                 if (!error && Array.isArray(data)) {
-                    return res.status(200).json(data);
+                    const dbIds = new Set(data.map(d => String(d.id)));
+                    const memOnly = inMemoryTriumphs.filter(m => !dbIds.has(String(m.id)));
+                    return res.status(200).json([...memOnly, ...data]);
                 }
             } catch (err) {
                 // Fall back gracefully to memory cache
@@ -131,16 +133,18 @@ module.exports = async function handler(req, res) {
             };
 
             // Remove from active tasks table so it graduates off the wire
-            if (supabase && taskId) {
-                try {
-                    const parsedId = parseInt(taskId, 10);
-                    if (!isNaN(parsedId)) {
-                        await supabase.from('dispatch_notifications').delete().eq('task_id', String(parsedId));
-                        await supabase.from('user_reactions').delete().eq('task_id', String(parsedId));
-                        await supabase.from('tasks').delete().eq('id', parsedId);
+            if (supabase) {
+                if (taskId) {
+                    try {
+                        const parsedId = parseInt(taskId, 10);
+                        if (!isNaN(parsedId)) {
+                            await supabase.from('dispatch_notifications').delete().eq('task_id', String(parsedId));
+                            await supabase.from('user_reactions').delete().eq('task_id', String(parsedId));
+                            await supabase.from('tasks').delete().eq('id', parsedId);
+                        }
+                    } catch (delErr) {
+                        console.warn('Could not auto-delete task from tasks table:', delErr.message);
                     }
-                } catch (delErr) {
-                    console.warn('Could not auto-delete task from tasks table:', delErr.message);
                 }
 
                 // Insert into triumphs table

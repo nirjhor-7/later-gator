@@ -318,13 +318,17 @@
             tabDoneShort.innerHTML = `CONQUERED (<span class="tab-badge-short" id="triumphs-count-badge-short">${cnt}</span>)`;
         }
 
+        // Stats Box Title
+        const statsTitle = document.querySelector('#box-stats .section-title');
+        if (statsTitle) statsTitle.textContent = 'LIVE STATS';
+
         // Leaderboard Meta
         const leadMeta = document.querySelector('.leaderboard-meta');
         if (leadMeta) leadMeta.textContent = 'GLOBAL PROCRASTINATION INDEX (WHERE EARTH DELAYS MOST)';
 
         // Total Visitors
         const counterLabel = document.querySelector('.counter-label');
-        if (counterLabel) counterLabel.textContent = 'TOTAL UNIQUE PROCRASTINATORS VISITING:';
+        if (counterLabel) counterLabel.textContent = 'TOTAL UNIQUE PROCRASTINATORS';
 
         // Telegraph Dispatch (Share box)
         const dispatchTitle = document.querySelector('#box-dispatch .section-title');
