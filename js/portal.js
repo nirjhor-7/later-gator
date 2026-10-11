@@ -322,9 +322,9 @@
         const statsTitle = document.querySelector('#box-stats .section-title');
         if (statsTitle) statsTitle.textContent = 'LIVE STATS';
 
-        // Leaderboard Meta
+        // Leaderboard Meta (removed per design)
         const leadMeta = document.querySelector('.leaderboard-meta');
-        if (leadMeta) leadMeta.textContent = 'GLOBAL PROCRASTINATION INDEX (WHERE EARTH DELAYS MOST)';
+        if (leadMeta) leadMeta.remove();
 
         // Total Visitors
         const counterLabel = document.querySelector('.counter-label');

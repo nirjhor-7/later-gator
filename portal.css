@@ -263,7 +263,8 @@ body::before,
 
 .hall-of-shame,
 .shame-ribbon,
-#hall-of-shame {
+#hall-of-shame,
+.leaderboard-meta {
     display: none !important;
 }
 
