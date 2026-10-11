@@ -656,7 +656,7 @@ body::before,
     box-shadow: 2px 2px 0px var(--ink-rule) !important;
 }
 
-.feed-item, .feed-card {
+.feed-item, .feed-card, .accomplished-item {
     background: var(--paper-surface) !important;
     border: 2px solid var(--ink-rule) !important;
     border-radius: 3px !important;
@@ -665,6 +665,8 @@ body::before,
     box-shadow: 4px 4px 0px var(--ink-rule) !important;
     box-sizing: border-box !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+    content-visibility: auto;
+    contain-intrinsic-size: 0 130px;
 }
 
 .feed-item:hover, .feed-card:hover {

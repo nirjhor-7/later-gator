@@ -1567,17 +1567,17 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchTasks();
         fetchStats();
 
-        // Tier 2: Accomplished feed & secondary widgets (staggered to give priority to live wire)
-        setTimeout(() => {
-            fetchTriumphs();
-            fetchWeeklyStats();
-            fetchCountries();
-        }, 350);
+        // Tier 2: Accomplished feed & secondary widgets (parallelized via HTTP/2 multiplexing)
+        fetchTriumphs();
+        fetchWeeklyStats();
+        fetchCountries();
 
-        // Tier 3: Heartbeat presence tracking (deferred after primary interactions)
-        setTimeout(() => {
-            sendHeartbeat();
-        }, 1500);
+        // Tier 3: Heartbeat presence tracking (deferred to idle thread)
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(() => sendHeartbeat());
+        } else {
+            setTimeout(sendHeartbeat, 1500);
+        }
     };
 
     const FUNNY_CENSOR_MESSAGES = GatorEvasion.FUNNY_CENSOR_MESSAGES || [];

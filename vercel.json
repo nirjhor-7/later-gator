@@ -9,8 +9,12 @@
       "headers": [
         { "key": "Access-Control-Allow-Origin", "value": "*" }
       ]
+    },
+    {
+      "source": "/(.*)\\.(css|js|png|jpg|jpeg|svg|ico|woff2|woff|ttf)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }
+      ]
     }
   ]
 }
-
-
