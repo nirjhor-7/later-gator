@@ -1042,7 +1042,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     color: #111111 !important;
 }
 
-@media (min-width: 901px) and (max-width: 1050px) {
+@media (min-width: 769px) and (max-width: 1050px) {
     .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
         width: 92px !important;
         font-size: 0.60rem !important;
@@ -1058,13 +1058,13 @@ html.midnight-edition .reaction-stamp-btn:hover {
 }
 
 /* ==========================================================================
-   10. MOBILE VIEWPORT ADAPTATIONS (<= 900px)
+   10. MOBILE VIEWPORT ADAPTATIONS (<= 768px)
    ========================================================================== */
 .mobile-segmented-bar {
     display: none !important;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 768px) {
     .page-border {
         margin: 10px auto 20px !important;
         padding: 16px 14px 30px !important;
@@ -1108,22 +1108,33 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .meta-col-right {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
         gap: 6px !important;
-        flex-wrap: nowrap !important;
         width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-        flex: 1 1 0px !important;
-        width: auto !important;
-        min-width: 0 !important;
-        height: 36px !important;
-        min-height: 36px !important;
-        font-size: clamp(0.58rem, 2.3vw, 0.68rem) !important;
-        padding: 0 2px !important;
+        width: 100% !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        font-size: clamp(0.64rem, 2.4vw, 0.72rem) !important;
+        padding: 0 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+    }
+
+    .header-pass-btn .btn-text-short {
+        display: none !important;
+    }
+
+    .header-pass-btn .btn-text-full {
+        display: inline !important;
     }
 
     .tagline-full {
@@ -1176,23 +1187,24 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .mobile-tab-btn {
-        flex: 1 !important;
+        flex: 1 1 0px !important;
+        min-width: 0 !important;
         min-height: 44px !important;
         background: var(--paper-surface) !important;
         border: 2px solid var(--ink-rule) !important;
         border-radius: 2px !important;
         color: var(--ink-black) !important;
         font-family: var(--font-mono) !important;
-        font-size: clamp(0.68rem, 2.8vw, 0.78rem) !important;
+        font-size: clamp(0.60rem, 2.3vw, 0.76rem) !important;
         font-weight: 700 !important;
-        letter-spacing: 0.03em !important;
+        letter-spacing: 0.02em !important;
         cursor: pointer !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 4px !important;
+        gap: 3px !important;
         white-space: nowrap !important;
-        padding: 6px 4px !important;
+        padding: 6px 2px !important;
         box-shadow: 1px 1px 0px var(--ink-rule) !important;
         transition: all 0.15s ease !important;
         box-sizing: border-box !important;
@@ -1214,13 +1226,14 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .wire-live-badge {
-        font-size: 0.65rem !important;
+        font-size: clamp(0.54rem, 2.0vw, 0.65rem) !important;
         background: var(--stamp-green) !important;
         color: #ffffff !important;
-        padding: 1px 5px !important;
-        border-radius: 3px !important;
-        margin-left: 2px !important;
+        padding: 1px 3px !important;
+        border-radius: 2px !important;
+        margin-left: 1px !important;
         font-weight: 800 !important;
+        line-height: 1.1 !important;
         white-space: nowrap !important;
     }
 
@@ -1231,6 +1244,20 @@ html.midnight-edition .reaction-stamp-btn:hover {
         outline: none !important;
         box-shadow: none !important;
         border-radius: 0 !important;
+    }
+
+    .lead-story-banner {
+        padding: 16px 14px !important;
+        margin-bottom: 16px !important;
+        box-shadow: 4px 4px 0px var(--ink-rule) !important;
+    }
+
+    .lead-story-headline {
+        font-size: clamp(1.65rem, 6.5vw, 2.3rem) !important;
+        line-height: 1.15 !important;
+        margin: 8px 0 12px 0 !important;
+        word-break: normal !important;
+        overflow-wrap: break-word !important;
     }
 
     .feed-item, .feed-card {
@@ -1273,7 +1300,8 @@ html.midnight-edition .reaction-stamp-btn:hover {
         line-height: 1.2 !important;
     }
 
-    .feed-reactions {
+    .feed-reactions,
+    .lead-reactions {
         display: flex !important;
         width: 100% !important;
         gap: 5px !important;
@@ -1281,13 +1309,15 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .feed-reactions .reaction-stamp-btn,
-    .feed-reactions .feed-clip-btn {
+    .feed-reactions .feed-clip-btn,
+    .lead-reactions .reaction-stamp-btn,
+    .lead-reactions .lead-clip-btn {
         flex: 1 1 0px !important;
         min-width: 0 !important;
-        height: 32px !important;
-        min-height: 32px !important;
-        padding: 0 2px !important;
-        font-size: clamp(0.58rem, 2.4vw, 0.68rem) !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 4px !important;
+        font-size: clamp(0.60rem, 2.3vw, 0.70rem) !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -1298,9 +1328,39 @@ html.midnight-edition .reaction-stamp-btn:hover {
         box-shadow: 1px 1px 0px var(--ink-rule) !important;
     }
 
+    .feed-reactions .reaction-stamp-btn:active,
+    .feed-reactions .feed-clip-btn:active,
+    .lead-reactions .reaction-stamp-btn:active,
+    .lead-reactions .lead-clip-btn:active {
+        transform: translate(1px, 1px) !important;
+        box-shadow: none !important;
+    }
+
     .article-box.input-box {
         padding: 14px 14px !important;
         box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    }
+
+    .quick-chips-wrapper::after {
+        display: none !important;
+    }
+
+    .btn-post-wire, #later-btn {
+        font-size: clamp(1.05rem, 4.6vw, 1.45rem) !important;
+        padding: 12px 10px !important;
+        min-height: 48px !important;
+        letter-spacing: 1px !important;
+        white-space: nowrap !important;
+        box-sizing: border-box !important;
+    }
+
+    .btn-panic-clean, #panic-btn {
+        font-size: clamp(0.68rem, 2.6vw, 0.80rem) !important;
+        padding: 10px 8px !important;
+        min-height: 44px !important;
+        letter-spacing: 0.04em !important;
+        white-space: nowrap !important;
+        box-sizing: border-box !important;
     }
 
     .telegraph-ticker {
@@ -1369,7 +1429,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
     /* 2. WIRE TAB MODE (Full-Screen Live Public Wire) */
     body.mobile-view-wire {
-        padding-bottom: 80px !important;
+        padding-bottom: 20px !important;
     }
 
     body.mobile-view-wire .right-col {
@@ -1384,6 +1444,12 @@ html.midnight-edition .reaction-stamp-btn:hover {
         display: block !important;
     }
 
+    body.mobile-view-wire .feed-container,
+    body.mobile-view-wire .accomplished-feed-container,
+    body.mobile-view-wire #box-wire {
+        padding-bottom: 110px !important;
+    }
+
     body.mobile-view-wire .left-col,
     body.mobile-view-wire #box-input,
     body.mobile-view-wire #box-stats,
@@ -1395,7 +1461,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     body.mobile-view-wire .mobile-fab-post {
-        display: flex !important;
+        display: none !important;
     }
 
     /* 3. STATS TAB MODE (Stats, Index, & Invite Desk) */
@@ -1435,30 +1501,66 @@ html.midnight-edition .reaction-stamp-btn:hover {
     /* Mobile Floating Action Button */
     .mobile-fab-post {
         position: fixed !important;
-        bottom: 22px !important;
-        right: 18px !important;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+        right: 16px !important;
         background: var(--ink-black) !important;
         color: var(--paper-surface) !important;
         border: 2px solid var(--paper-surface) !important;
-        border-radius: 9999px !important;
-        padding: 12px 22px !important;
+        border-radius: 30px !important;
+        padding: 10px 16px !important;
         font-family: var(--font-mono) !important;
-        font-size: 0.88rem !important;
-        font-weight: 700 !important;
+        font-size: 0.76rem !important;
+        font-weight: 800 !important;
         letter-spacing: 0.05em !important;
-        box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.6) !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 2px 2px 0px rgba(0, 0, 0, 0.9) !important;
         cursor: pointer !important;
-        z-index: 999 !important;
+        z-index: 995 !important;
         display: none;
         align-items: center !important;
         justify-content: center !important;
-        gap: 8px !important;
-        min-height: 48px !important;
-        transition: transform 0.15s ease !important;
+        gap: 6px !important;
+        min-height: 44px !important;
+        transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+        white-space: nowrap !important;
     }
 
     .mobile-fab-post:active {
-        transform: scale(0.95) !important;
+        transform: scale(0.95) translate(1px, 1px) !important;
+        box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.9) !important;
+    }
+
+    /* Mobile Wire Header & Navigation Sub-Tabs */
+    .wire-box-header {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+        margin-bottom: 14px !important;
+        padding-bottom: 10px !important;
+    }
+
+    .wire-box-header .wire-section-title {
+        font-size: 1.35rem !important;
+        margin: 0 !important;
+        white-space: nowrap !important;
+    }
+
+    .wire-tab-bar {
+        display: flex !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .wire-nav-tab {
+        padding: 6px 10px !important;
+        min-height: 36px !important;
+        font-size: clamp(0.64rem, 2.4vw, 0.74rem) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
     }
 
     html.midnight-edition .mobile-segmented-bar {
@@ -1550,5 +1652,28 @@ html.midnight-edition .reaction-stamp-btn:hover {
         background: transparent !important;
         color: #EFE3D3 !important;
         border-color: rgba(239, 227, 211, 0.6) !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .wire-box-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+    }
+
+    .wire-tab-bar {
+        width: 100% !important;
+        display: flex !important;
+    }
+
+    .wire-nav-tab {
+        flex: 1 1 0px !important;
+        text-align: center !important;
+    }
+
+    .feed-owner-actions {
+        flex-direction: column !important;
+        gap: 6px !important;
     }
 }
