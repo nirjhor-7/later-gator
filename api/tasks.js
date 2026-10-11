@@ -325,6 +325,7 @@ async function handler(req, res) {
             // Instantly purge any banned IP tasks, inappropriate language, or gibberish from the public feed
             const badTaskIds = [];
             const cleanTasks = (tasks || []).filter(t => {
+                if (t.text && t.text.startsWith('[CONQUERED]')) return false;
                 const isBanned = HARDCODED_BANNED_IPS.has(t.ip_address);
                 const isInappropriate = containsInappropriate(t.text) || containsInappropriate(t.city);
                 const isJunk = isGibberish((t.text || '').replace('[PANIC] ', ''));

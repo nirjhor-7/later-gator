@@ -2993,9 +2993,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const rawCache = localStorage.getItem('lg_triumphs');
             if (rawCache) {
                 const cached = JSON.parse(rawCache);
-                if (Array.isArray(cached)) {
-                    allTriumphs = cached.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
-                    renderAllTriumphs();
+                if (Array.isArray(cached) && cached.length > 0) {
+                    const cleanCached = cached.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
+                    if (cleanCached.length > 0) {
+                        allTriumphs = cleanCached;
+                        renderAllTriumphs();
+                    }
                 }
             }
         } catch (e) {}
@@ -3183,10 +3186,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Wire tabs listeners
     if (tabWireAvoiding) tabWireAvoiding.addEventListener('click', () => switchWireTab('avoiding'));
-    if (tabWireAccomplished) tabWireAccomplished.addEventListener('click', () => switchWireTab('accomplished'));
+    if (tabWireAccomplished) {
+        tabWireAccomplished.addEventListener('click', () => {
+            switchWireTab('accomplished');
+            fetchTriumphs();
+        });
+    }
     if (triumphRibbonViewBtn) {
         triumphRibbonViewBtn.addEventListener('click', () => {
             switchWireTab('accomplished');
+            fetchTriumphs();
             if (accomplishedFeedContainer) accomplishedFeedContainer.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
@@ -4875,10 +4884,11 @@ document.addEventListener('DOMContentLoaded', () => {
         tasksPollTimer = setInterval(fetchTasks, 15000);
         // 2. Active user & total procrastination stats: 30s interval
         statsPollTimer = setInterval(fetchStats, 30000);
-        // 3. Weekly shame & country leaderboard: 60s interval
+        // 3. Weekly shame, country leaderboard, & redeemed triumphs: 60s interval
         slowPollTimer = setInterval(() => {
             fetchWeeklyStats();
             fetchCountries();
+            fetchTriumphs();
         }, 60000);
         // 4. In-place relative timestamps updater: 30s interval
         timeTickerTimer = setInterval(updateRelativeTimestamps, 30000);
