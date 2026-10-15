@@ -1650,6 +1650,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 320);
     }
 
+    let stampSubmissionTimer = null;
+
     const submitTask = async (isPanic = false) => {
         let text = taskInput.value.trim();
         let name = userNameInput ? userNameInput.value.trim() : (document.getElementById('user-name') ? document.getElementById('user-name').value.trim() : '');
@@ -1805,25 +1807,19 @@ document.addEventListener('DOMContentLoaded', () => {
         }).catch(err => ({ ok: false, error: err }));
 
         // 4. Hold stamp proudly on screen for ~1100ms, then smoothly dissolve
-        setTimeout(async () => {
-            dismissRubberStamp(() => {
-                taskInput.value = '';
-                updateCharCount();
-                activeBtn.disabled = false;
-                statusMessage.textContent = "";
+        if (stampSubmissionTimer) {
+            clearTimeout(stampSubmissionTimer);
+            stampSubmissionTimer = null;
+        }
 
-                // Reset button text
-                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
-                if (panicBtnText) panicBtnText.textContent = "RETURN TO WORK (PANIC MODE)";
-                rollEvasionPhrase(false);
-
-                // Reveal official share slip & certificate
-                showShareSlip(submittedText, isPanic);
-            });
+        stampSubmissionTimer = setTimeout(async () => {
+            stampSubmissionTimer = null;
+            let submissionSucceeded = false;
 
             try {
                 const response = await postPromise;
                 if (response && response.ok) {
+                    submissionSucceeded = true;
                     const newTask = await response.json().catch(() => null);
                     if (newTask && newTask.id) {
                         allKnownTasks.delete(optId);
@@ -1860,18 +1856,42 @@ document.addEventListener('DOMContentLoaded', () => {
                     fetchTasks(true);
                     fetchStats();
                     if (typeof fetchDossier === 'function') fetchDossier();
-                } else if (response && response.json) {
-                    const errData = await response.json().catch(() => ({}));
-                    if (errData.error) {
-                        if (optEl && optEl.parentNode) optEl.remove();
-                        allKnownTasks.delete(optId);
-                        statusMessage.textContent = errData.error.toUpperCase();
-                        setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+                } else {
+                    if (optEl && optEl.parentNode) optEl.remove();
+                    allKnownTasks.delete(optId);
+                    if (response && response.json) {
+                        const errData = await response.json().catch(() => ({}));
+                        if (errData.error) {
+                            statusMessage.textContent = errData.error.toUpperCase();
+                            setTimeout(() => { statusMessage.textContent = ""; }, 4000);
+                        }
                     }
                 }
             } catch (e) {
-                // Background refresh error handled
+                if (optEl && optEl.parentNode) optEl.remove();
+                allKnownTasks.delete(optId);
             }
+
+            dismissRubberStamp(() => {
+                if (submissionSucceeded) {
+                    taskInput.value = '';
+                    updateCharCount();
+                    showShareSlip(submittedText, isPanic);
+                } else {
+                    // Preserve draft text in input field if submission encounters error
+                    if (taskInput && (!taskInput.value || taskInput.value.trim() === '')) {
+                        taskInput.value = submittedText;
+                        updateCharCount();
+                    }
+                }
+                activeBtn.disabled = false;
+                statusMessage.textContent = "";
+
+                // Reset button text
+                if (laterBtnText) laterBtnText.textContent = "POST TO THE WIRE ➔";
+                if (panicBtnText) panicBtnText.textContent = "RETURN TO WORK (PANIC MODE)";
+                rollEvasionPhrase(false);
+            });
         }, 1100);
 
     };
@@ -2106,13 +2126,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const triumphRibbonText = document.getElementById('triumph-ribbon-text');
     const triumphRibbonViewBtn = document.getElementById('triumph-ribbon-view-btn');
     const accomplishedFeedContainer = document.getElementById('accomplished-feed-container');
-    const triumphsCountBadge = document.getElementById('triumphs-count-badge');
     const updateTriumphsBadges = () => {
         const count = String(allTriumphs.length);
-        if (triumphsCountBadge) triumphsCountBadge.textContent = count;
+        const desktopBadge = document.getElementById('triumphs-count-badge');
+        if (desktopBadge) desktopBadge.textContent = count;
         const mobileBadge = document.getElementById('triumphs-count-badge-short');
         if (mobileBadge) mobileBadge.textContent = count;
     };
+    window.updateTriumphsBadges = updateTriumphsBadges;
 
     let currentResolutionItem = { text: '', taskId: null, source: 'wire', task: null };
     let currentProtocol = 'victory'; // 'victory' | 'surrender'
@@ -2552,6 +2573,7 @@ document.addEventListener('DOMContentLoaded', () => {
             fetchStats();
             if (typeof window.fetchDossier === 'function') window.fetchDossier();
             fetchTasks(true);
+            fetchTriumphs();
         }, 1500);
     };
 
@@ -2888,6 +2910,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (feedContainer) feedContainer.style.display = 'none';
             if (accomplishedFeedContainer) accomplishedFeedContainer.style.display = 'flex';
+            renderAllTriumphs();
         }
     };
 
@@ -2907,9 +2930,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const buildAccomplishedItemHtml = (triumph, isNew = false) => {
         const id = triumph.id;
-        const author = escapeHtml(triumph.author_name || 'Anonymous');
+        const author = escapeHtml(triumph.author_name || triumph.city || triumph.name || 'Anonymous');
         const country = escapeHtml(triumph.country || 'Parts Unknown');
-        const taskText = escapeHtml(triumph.text || '');
+        const taskText = escapeHtml(triumph.text || triumph.task_text || '');
         const avoided = escapeHtml(triumph.avoided_duration || 'Several days');
         const merit = escapeHtml(triumph.commendation_title || 'Order of the 11th-Hour Miracle');
 
@@ -3004,14 +3027,26 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
 
         try {
-            const res = await fetch('/api/triumphs');
+            const res = await fetch(`/api/triumphs?_t=${Date.now()}`, {
+                cache: 'no-store',
+                headers: { 'Cache-Control': 'no-cache' }
+            });
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data)) {
                     const cleanData = data.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
                     const serverIds = new Set(cleanData.map(d => String(d.id)));
-                    const localOnly = allTriumphs.filter(t => !serverIds.has(String(t.id)) && (!t.task_id || !String(t.task_id).startsWith('seed-')));
-                    allTriumphs = [...localOnly, ...cleanData];
+                    const serverTaskIds = new Set(cleanData.filter(d => d.task_id).map(d => String(d.task_id)));
+                    const localOnly = allTriumphs.filter(t => {
+                        if (!t) return false;
+                        if (t.task_id && String(t.task_id).startsWith('seed-')) return false;
+                        if (serverIds.has(String(t.id))) return false;
+                        if (t.task_id && serverTaskIds.has(String(t.task_id))) return false;
+                        return true;
+                    });
+                    allTriumphs = [...localOnly, ...cleanData].sort((a, b) => {
+                        return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+                    });
                     try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
                     renderAllTriumphs();
                 }
@@ -3020,6 +3055,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.warn('Could not fetch triumphs from server, using local fallback:', err);
         }
     };
+    window.fetchTriumphs = fetchTriumphs;
 
     // Handle community praise reactions on accomplished cards
     const handleTriumphReaction = async (btn) => {
@@ -4880,8 +4916,11 @@ document.addEventListener('DOMContentLoaded', () => {
         stopAllPolling();
         // 0. Non-blocking presence heartbeat: 25s interval
         heartbeatTimer = setInterval(sendHeartbeat, 25000);
-        // 1. Live Public Wire transmissions: standard 15s interval
-        tasksPollTimer = setInterval(fetchTasks, 15000);
+        // 1. Live Public Wire transmissions & real-time triumphs sync: 15s interval
+        tasksPollTimer = setInterval(() => {
+            fetchTasks();
+            fetchTriumphs();
+        }, 15000);
         // 2. Active user & total procrastination stats: 30s interval
         statsPollTimer = setInterval(fetchStats, 30000);
         // 3. Weekly shame, country leaderboard, & redeemed triumphs: 60s interval

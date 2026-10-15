@@ -47,7 +47,7 @@ module.exports = async function handler(req, res) {
 
     // ── GET: Fetch accomplished triumphs ─────────────────────────────────────
     if (req.method === 'GET') {
-        res.setHeader('Cache-Control', 'public, s-maxage=5, stale-while-revalidate=15');
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
 
         let dbTriumphs = [];
 

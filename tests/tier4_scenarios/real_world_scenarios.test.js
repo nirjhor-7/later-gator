@@ -116,7 +116,8 @@ describe('Tier 4 — Real-World Application Scenarios', () => {
         // Switch to Conquered At Last / Redeemed tab
         await client.evaluate(`
             (() => {
-                const redeemedTab = document.getElementById('tab-wire-cleared') ||
+                const redeemedTab = document.getElementById('tab-wire-accomplished') ||
+                                    document.getElementById('tab-wire-cleared') ||
                                     document.querySelector('.tab-redeemed') ||
                                     document.querySelectorAll('.tab-btn')[1];
                 if (redeemedTab) redeemedTab.click();

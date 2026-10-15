@@ -305,17 +305,8 @@
         const tabAvoidShort = document.querySelector('#tab-wire-avoiding .tab-label-short');
         if (tabAvoidShort) tabAvoidShort.textContent = 'AVOIDING';
 
-        const tabDoneLabel = document.querySelector('#tab-wire-accomplished .tab-label-full');
-        if (tabDoneLabel) {
-            const countBadge = document.getElementById('triumphs-count-badge');
-            const cnt = countBadge ? countBadge.textContent : '0';
-            tabDoneLabel.innerHTML = `CONQUERED AT LAST (<span class="tab-badge" id="triumphs-count-badge">${cnt}</span>)`;
-        }
-        const tabDoneShort = document.querySelector('#tab-wire-accomplished .tab-label-short');
-        if (tabDoneShort) {
-            const countBadgeShort = document.getElementById('triumphs-count-badge-short');
-            const cnt = countBadgeShort ? countBadgeShort.textContent : '0';
-            tabDoneShort.innerHTML = `CONQUERED (<span class="tab-badge-short" id="triumphs-count-badge-short">${cnt}</span>)`;
+        if (typeof window.updateTriumphsBadges === 'function') {
+            window.updateTriumphsBadges();
         }
 
         // Stats Box Title
