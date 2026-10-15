@@ -3010,16 +3010,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const isTestTriumph = (t) => {
+        if (!t) return false;
+        const txt = (t.text || t.task_text || '').toLowerCase();
+        return txt.includes('testing triumph sync') || txt.includes('conquer test item') || txt.includes('clean up kitchen sink');
+    };
+
     const fetchTriumphs = async () => {
-        // Try local storage cache first for instant render, filtering out any legacy seed data
+        // Try local storage cache first for instant render, filtering out any legacy seed data or test posts
         try {
             const rawCache = localStorage.getItem('lg_triumphs');
             if (rawCache) {
                 const cached = JSON.parse(rawCache);
                 if (Array.isArray(cached) && cached.length > 0) {
-                    const cleanCached = cached.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
+                    const cleanCached = cached.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')) && !isTestTriumph(t));
                     if (cleanCached.length > 0) {
                         allTriumphs = cleanCached;
+                        renderAllTriumphs();
+                    } else if (allTriumphs.length > 0) {
+                        allTriumphs = [];
                         renderAllTriumphs();
                     }
                 }
@@ -3034,17 +3043,18 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok) {
                 const data = await res.json();
                 if (Array.isArray(data)) {
-                    const cleanData = data.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')));
+                    const cleanData = data.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')) && !isTestTriumph(t));
                     const serverIds = new Set(cleanData.map(d => String(d.id)));
-                    const serverTaskIds = new Set(cleanData.filter(d => d.task_id).map(d => String(d.task_id)));
-                    const localOnly = allTriumphs.filter(t => {
-                        if (!t) return false;
-                        if (t.task_id && String(t.task_id).startsWith('seed-')) return false;
+                    // Only keep local triumphs that are brand new / unconfirmed (created in the last 15s)
+                    const now = Date.now();
+                    const pendingLocal = allTriumphs.filter(t => {
+                        if (!t || isTestTriumph(t)) return false;
                         if (serverIds.has(String(t.id))) return false;
-                        if (t.task_id && serverTaskIds.has(String(t.task_id))) return false;
-                        return true;
+                        const isTempId = String(t.id).startsWith('opt-') || (typeof t.id === 'number' && t.id > 1700000000000);
+                        const isRecent = t.created_at && (now - new Date(t.created_at).getTime() < 15000);
+                        return isTempId && isRecent;
                     });
-                    allTriumphs = [...localOnly, ...cleanData].sort((a, b) => {
+                    allTriumphs = [...pendingLocal, ...cleanData].sort((a, b) => {
                         return new Date(b.created_at || 0) - new Date(a.created_at || 0);
                     });
                     try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
@@ -3253,7 +3263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const rawTriumphs = localStorage.getItem('lg_triumphs');
         if (rawTriumphs) {
             const parsed = JSON.parse(rawTriumphs);
-            allTriumphs = Array.isArray(parsed) ? parsed.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-'))) : [];
+            allTriumphs = Array.isArray(parsed) ? parsed.filter(t => t && (!t.task_id || !String(t.task_id).startsWith('seed-')) && !isTestTriumph(t)) : [];
             renderAllTriumphs();
         }
     } catch (e) {}

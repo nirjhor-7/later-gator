@@ -38,7 +38,7 @@ function parseTaskTriumph(row) {
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Gator-Token, x-gator-token');
 
     if (req.method === 'OPTIONS') {
@@ -296,6 +296,63 @@ module.exports = async function handler(req, res) {
         } catch (err) {
             console.error('Server error in /api/triumphs:', err);
             return res.status(500).json({ error: err.message });
+        }
+    }
+
+    // ── DELETE: Purge test triumphs or specific triumph records ─────────────
+    if (req.method === 'DELETE') {
+        try {
+            const token = req.headers['x-gator-token'] || req.headers['X-Gator-Token'];
+            if (token !== 'chomp-chomp') {
+                return res.status(403).json({ error: "No gators allowed." });
+            }
+
+            const body = req.body || {};
+            const id = req.query?.id || body.id;
+            const ids = body.ids || (id ? [id] : []);
+            const cleanPattern = body.pattern || req.query?.pattern;
+
+            // 1. Clean from in-memory cache
+            if (ids.length > 0) {
+                const idSet = new Set(ids.map(String));
+                inMemoryTriumphs = inMemoryTriumphs.filter(t => !idSet.has(String(t.id)));
+            } else if (cleanPattern) {
+                const reg = new RegExp(cleanPattern, 'i');
+                inMemoryTriumphs = inMemoryTriumphs.filter(t => !reg.test(t.text || ''));
+            } else {
+                inMemoryTriumphs = inMemoryTriumphs.filter(t => {
+                    const text = (t.text || '').toLowerCase();
+                    return !text.includes('test') && !text.includes('kitchen sink');
+                });
+            }
+
+            // 2. Clean from Supabase database
+            if (supabase) {
+                if (ids.length > 0) {
+                    const parsedIds = ids.map(x => parseInt(x, 10)).filter(n => !isNaN(n));
+                    if (parsedIds.length > 0) {
+                        try { await supabase.from('triumphs').delete().in('id', parsedIds); } catch (e) {}
+                        try { await supabase.from('tasks').delete().in('id', parsedIds); } catch (e) {}
+                    }
+                } else if (cleanPattern) {
+                    try {
+                        await supabase.from('triumphs').delete().ilike('text', `%${cleanPattern}%`);
+                        await supabase.from('tasks').delete().ilike('text', `%[CONQUERED]%${cleanPattern}%`);
+                    } catch (e) {}
+                } else {
+                    try {
+                        await supabase.from('triumphs').delete().ilike('text', '%test%');
+                        await supabase.from('triumphs').delete().ilike('text', '%kitchen sink%');
+                        await supabase.from('tasks').delete().ilike('text', '%[CONQUERED]%test%');
+                        await supabase.from('tasks').delete().ilike('text', '%[CONQUERED]%kitchen sink%');
+                    } catch (e) {}
+                }
+            }
+
+            return res.status(200).json({ ok: true, message: "Test triumphs expunged successfully." });
+        } catch (delErr) {
+            console.error('Server error deleting triumphs:', delErr);
+            return res.status(500).json({ error: delErr.message });
         }
     }
 
