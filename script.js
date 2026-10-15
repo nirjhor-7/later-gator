@@ -1,3 +1,14 @@
+// Immediate client purge of test posts
+try {
+    const rawTriumphs = localStorage.getItem('lg_triumphs');
+    if (rawTriumphs) {
+        const lower = rawTriumphs.toLowerCase();
+        if (lower.includes('1792054214819') || lower.includes('1792053936336') || lower.includes('gatortester') || lower.includes('testing triumph sync') || lower.includes('conquer test item') || lower.includes('clean up kitchen sink') || lower.includes('1544') || lower.includes('1545')) {
+            localStorage.removeItem('lg_triumphs');
+        }
+    }
+} catch (e) {}
+
 document.addEventListener('DOMContentLoaded', () => {
     const taskInput = document.getElementById('task-input');
     const userNameInput = document.getElementById('user-name');
@@ -2126,7 +2137,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const triumphRibbonText = document.getElementById('triumph-ribbon-text');
     const triumphRibbonViewBtn = document.getElementById('triumph-ribbon-view-btn');
     const accomplishedFeedContainer = document.getElementById('accomplished-feed-container');
+
+    const isTestTriumph = (t) => {
+        if (!t) return true;
+        const txt = (t.text || t.task_text || '').toLowerCase();
+        const author = (t.author_name || t.name || t.city || '').toLowerCase();
+        const id = String(t.id || '');
+        if (['1544', '1545', '1546', '1547', '1548'].includes(id)) return true;
+        if (author.includes('gatortester')) return true;
+        if (txt.includes('testing triumph sync') || txt.includes('conquer test item') || txt.includes('clean up kitchen sink') || txt.includes('1792054214819') || txt.includes('1792053936336')) return true;
+        return false;
+    };
+    window.isTestTriumph = isTestTriumph;
+
+    let allTriumphs = [];
     const updateTriumphsBadges = () => {
+        allTriumphs = (allTriumphs || []).filter(t => !isTestTriumph(t));
         const count = String(allTriumphs.length);
         const desktopBadge = document.getElementById('triumphs-count-badge');
         if (desktopBadge) desktopBadge.textContent = count;
@@ -2149,7 +2175,6 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (e) {}
 
     let activeWireTab = 'avoiding'; // 'avoiding' | 'accomplished'
-    let allTriumphs = [];
     let myTriumphReactions = new Set();
     try {
         const savedRx = localStorage.getItem('lg_triumph_reactions');
@@ -2915,7 +2940,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const updateTriumphRibbon = (triumph) => {
-        if (!triumphRibbon || !triumphRibbonText || !triumph) return;
+        if (!triumphRibbon || !triumphRibbonText || !triumph || isTestTriumph(triumph)) return;
         const author = escapeHtml(triumph.author_name || 'Anonymous');
         const country = escapeHtml(triumph.country || 'Unknown');
         const text = escapeHtml(triumph.text || '');
@@ -2929,6 +2954,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const buildAccomplishedItemHtml = (triumph, isNew = false) => {
+        if (!triumph || isTestTriumph(triumph)) return '';
         const id = triumph.id;
         const author = escapeHtml(triumph.author_name || triumph.city || triumph.name || 'Anonymous');
         const country = escapeHtml(triumph.country || 'Parts Unknown');
@@ -2977,6 +3003,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const addTriumphToFeed = (triumph, isNew = false) => {
+        if (!triumph || isTestTriumph(triumph)) return;
         allTriumphs.unshift(triumph);
         try { localStorage.setItem('lg_triumphs', JSON.stringify(allTriumphs.slice(0, 50))); } catch (e) {}
 
@@ -2997,6 +3024,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const renderAllTriumphs = () => {
         if (!accomplishedFeedContainer) return;
+        allTriumphs = (allTriumphs || []).filter(t => !isTestTriumph(t));
         updateTriumphsBadges();
         if (!allTriumphs || allTriumphs.length === 0) {
             accomplishedFeedContainer.innerHTML = '<div class="loading">No recorded triumphs yet. Conquer an avoided dispatch to claim your commendation!</div>';
@@ -3008,12 +3036,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (allTriumphs.length > 0) {
             updateTriumphRibbon(allTriumphs[0]);
         }
-    };
-
-    const isTestTriumph = (t) => {
-        if (!t) return false;
-        const txt = (t.text || t.task_text || '').toLowerCase();
-        return txt.includes('testing triumph sync') || txt.includes('conquer test item') || txt.includes('clean up kitchen sink');
     };
 
     const fetchTriumphs = async () => {
@@ -3267,6 +3289,15 @@ document.addEventListener('DOMContentLoaded', () => {
             renderAllTriumphs();
         }
     } catch (e) {}
+
+    // Clean any lingering test triumphs from the DOM directly
+    document.querySelectorAll('.accomplished-item').forEach(el => {
+        const text = (el.textContent || '').toLowerCase();
+        if (text.includes('testing triumph sync') || text.includes('conquer test item') || text.includes('clean up kitchen sink') || text.includes('gatortester') || text.includes('1792054214819') || text.includes('1792053936336')) {
+            el.remove();
+        }
+    });
+    updateTriumphsBadges();
 
     laterBtn.addEventListener('click', () => submitTask(false));
     panicBtn.addEventListener('click', () => submitTask(true));

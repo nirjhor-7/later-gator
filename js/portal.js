@@ -5,7 +5,16 @@
 
 (function () {
     'use strict';
-    console.log("PORTAL_JS_TOP_LOADED");
+    // Purge test triumphs from localStorage immediately
+    try {
+        const rawTriumphs = localStorage.getItem('lg_triumphs');
+        if (rawTriumphs) {
+            const lower = rawTriumphs.toLowerCase();
+            if (lower.includes('1792054214819') || lower.includes('1792053936336') || lower.includes('gatortester') || lower.includes('testing triumph sync') || lower.includes('conquer test item') || lower.includes('clean up kitchen sink') || lower.includes('1544') || lower.includes('1545')) {
+                localStorage.removeItem('lg_triumphs');
+            }
+        }
+    } catch (e) {}
 
     // 1. Procedural Soft Celestial Audio Engine
     let audioCtx = null;

@@ -35,6 +35,17 @@ function parseTaskTriumph(row) {
     }
 }
 
+function isServerTestTriumph(t) {
+    if (!t) return true;
+    const txt = (t.text || '').toLowerCase();
+    const author = (t.author_name || t.city || '').toLowerCase();
+    const id = String(t.id || '');
+    if (['1544', '1545', '1546', '1547', '1548'].includes(id)) return true;
+    if (author.includes('gatortester')) return true;
+    if (txt.includes('testing triumph sync') || txt.includes('conquer test item') || txt.includes('clean up kitchen sink') || txt.includes('1792054214819') || txt.includes('1792053936336')) return true;
+    return false;
+}
+
 module.exports = async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Credentials', 'true');
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -90,9 +101,11 @@ module.exports = async function handler(req, res) {
         // Merge in-memory triumphs
         const dbIds = new Set(dbTriumphs.map(d => String(d.id)));
         const memOnly = inMemoryTriumphs.filter(m => !dbIds.has(String(m.id)));
-        const finalTriumphs = [...memOnly, ...dbTriumphs].sort((a, b) => {
-            return new Date(b.created_at || 0) - new Date(a.created_at || 0);
-        });
+        const finalTriumphs = [...memOnly, ...dbTriumphs]
+            .filter(t => !isServerTestTriumph(t))
+            .sort((a, b) => {
+                return new Date(b.created_at || 0) - new Date(a.created_at || 0);
+            });
 
         return res.status(200).json(finalTriumphs);
     }
@@ -191,6 +204,10 @@ module.exports = async function handler(req, res) {
             const cleanCountry = (country || 'Parts Unknown').trim();
             const cleanAvoided = avoidedDuration || 'Several grueling days';
             const cleanTitle = commendationTitle || 'Order of the 11th-Hour Miracle';
+
+            if (isServerTestTriumph({ text: cleanText, author_name: cleanName })) {
+                return res.status(200).json({ ok: true, message: "Ignored test dispatch" });
+            }
 
             const newTriumph = {
                 id: Date.now(),

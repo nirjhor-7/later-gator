@@ -11,9 +11,23 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap"></noscript>
-    <link rel="stylesheet" href="style.css?v=4.3.3">
-    <link rel="stylesheet" href="portal.css?v=1.0.0">
-    <script src="js/portal.js?v=1.0.0" defer></script>
+    <link rel="stylesheet" href="style.css?v=4.4.0">
+    <link rel="stylesheet" href="portal.css?v=1.0.1">
+    <script>
+        (function() {
+            try {
+                var k = 'lg_triumphs';
+                var r = localStorage.getItem(k);
+                if (r) {
+                    var l = r.toLowerCase();
+                    if (l.indexOf('1792054214819') !== -1 || l.indexOf('1792053936336') !== -1 || l.indexOf('gatortester') !== -1 || l.indexOf('testing triumph sync') !== -1 || l.indexOf('conquer test item') !== -1 || l.indexOf('clean up kitchen sink') !== -1 || l.indexOf('1544') !== -1 || l.indexOf('1545') !== -1) {
+                        localStorage.removeItem(k);
+                    }
+                }
+            } catch(e) {}
+        })();
+    </script>
+    <script src="js/portal.js?v=1.0.1" defer></script>
 
     <link rel="canonical" href="https://latergators.live/">
 
@@ -778,7 +792,7 @@
     <script src="js/audio.js?v=4.0.5" defer></script>
     <script src="js/evasion.js?v=3.7.0" defer></script>
     <script src="js/canvas.js?v=3.8.0" defer></script>
-    <script src="script.js?v=4.3.3" defer></script>
+    <script src="script.js?v=4.4.0" defer></script>
 
     <script>
         // Non-blocking telemetry injection after main thread idle
