@@ -741,17 +741,96 @@ html.midnight-edition .ring-fill {
     background: transparent !important;
     padding: 0 !important;
     box-shadow: none !important;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
-    scrollbar-gutter: auto !important;
 }
 
-.feed-container::-webkit-scrollbar,
-.accomplished-feed-container::-webkit-scrollbar {
-    display: none !important;
-    width: 0 !important;
-    height: 0 !important;
+/* Desktop Dual-Column Height Balance & Editorial Scrollbar */
+@media (min-width: 1101px) {
+    .feed-container,
+    .accomplished-feed-container {
+        height: 1320px !important;
+        max-height: 1320px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: var(--ink-rule) transparent !important;
+        padding-right: 4px !important;
+    }
+
+    .feed-container::-webkit-scrollbar,
+    .accomplished-feed-container::-webkit-scrollbar {
+        display: block !important;
+        width: 6px !important;
+    }
+
+    .feed-container::-webkit-scrollbar-track,
+    .accomplished-feed-container::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    .feed-container::-webkit-scrollbar-thumb,
+    .accomplished-feed-container::-webkit-scrollbar-thumb {
+        background: var(--ink-rule) !important;
+        border-radius: 3px !important;
+    }
+
+    html.midnight-edition .feed-container::-webkit-scrollbar-thumb,
+    html.midnight-edition .accomplished-feed-container::-webkit-scrollbar-thumb {
+        background: rgba(229, 222, 212, 0.4) !important;
+    }
+}
+
+/* Tablet Dual-Column Height Balance */
+@media (min-width: 769px) and (max-width: 1100px) {
+    .feed-container,
+    .accomplished-feed-container {
+        height: 1480px !important;
+        max-height: 1480px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        scrollbar-width: thin !important;
+        scrollbar-color: var(--ink-rule) transparent !important;
+        padding-right: 4px !important;
+    }
+
+    .feed-container::-webkit-scrollbar,
+    .accomplished-feed-container::-webkit-scrollbar {
+        display: block !important;
+        width: 6px !important;
+    }
+
+    .feed-container::-webkit-scrollbar-track,
+    .accomplished-feed-container::-webkit-scrollbar-track {
+        background: transparent !important;
+    }
+
+    .feed-container::-webkit-scrollbar-thumb,
+    .accomplished-feed-container::-webkit-scrollbar-thumb {
+        background: var(--ink-rule) !important;
+        border-radius: 3px !important;
+    }
+
+    html.midnight-edition .feed-container::-webkit-scrollbar-thumb,
+    html.midnight-edition .accomplished-feed-container::-webkit-scrollbar-thumb {
+        background: rgba(229, 222, 212, 0.4) !important;
+    }
+}
+
+/* Mobile: Unconstrained 120Hz Native Stream Flow */
+@media (max-width: 768px) {
+    body.mobile-view-wire .feed-container,
+    body.mobile-view-wire .accomplished-feed-container {
+        height: auto !important;
+        max-height: none !important;
+        overflow-y: visible !important;
+        overflow-x: visible !important;
+    }
+
+    .feed-container::-webkit-scrollbar,
+    .accomplished-feed-container::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
+    }
 }
 
 .feed-item, .feed-card, .accomplished-item {
@@ -2206,6 +2285,7 @@ html.midnight-edition .midnight-toggle-btn:hover {
 
     body.mobile-view-stats #box-stats,
     body.mobile-view-stats #box-index,
+    body.mobile-view-stats #box-dispatch,
     body.mobile-view-stats #box-visitors {
         display: block !important;
         margin-bottom: 16px !important;
@@ -2252,7 +2332,6 @@ html.midnight-edition .midnight-toggle-btn:hover {
         color: #ffffff !important;
     }
 
-    body.mobile-view-stats #box-dispatch,
     body.mobile-view-stats #box-video,
     body.mobile-view-stats #lead-story-banner,
     body.mobile-view-stats #box-input,
