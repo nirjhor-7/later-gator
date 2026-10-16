@@ -122,19 +122,6 @@
             </div>
         </div>
 
-        <!-- Mobile Segmented View Switcher (Hidden on Desktop) -->
-        <nav class="mobile-segmented-bar" id="mobile-segmented-bar" aria-label="Mobile View Switcher">
-            <button type="button" class="mobile-tab-btn active" id="tab-wire-btn" data-tab="wire">
-                <span class="tab-label">THE WIRE</span> <span class="wire-live-badge">LIVE</span>
-            </button>
-            <button type="button" class="mobile-tab-btn" id="tab-dispatch-btn" data-tab="dispatch">
-                <span class="tab-label">CONFESS</span>
-            </button>
-            <button type="button" class="mobile-tab-btn" id="tab-stats-btn" data-tab="stats">
-                <span class="tab-label">STATS</span>
-            </button>
-        </nav>
-
         <!-- Front Page Lead Story of the Day (Crown Dispatch) -->
         <section class="lead-story-banner" id="lead-story-banner" aria-label="Lead Story of the Day">
             <div class="lead-story-header">
@@ -187,7 +174,13 @@
                                 <span class="task-idle-cursor" id="task-idle-cursor" aria-hidden="true"></span>
                             </div>
                             <div class="task-char-bar">
-                                <span id="task-char-count" class="task-char-count">0 / 150 LETTERS</span>
+                                <div class="task-char-ring-wrap" title="Character Limit Gauge">
+                                    <svg class="char-radial-ring" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+                                        <circle class="ring-bg" cx="12" cy="12" r="9" stroke="rgba(255,255,255,0.15)" stroke-width="2.5" fill="none" />
+                                        <circle class="ring-fill" id="char-ring-fill" cx="12" cy="12" r="9" stroke="var(--starlight-cyan)" stroke-width="2.5" fill="none" stroke-dasharray="56.5" stroke-dashoffset="56.5" stroke-linecap="round" transform="rotate(-90 12 12)" />
+                                    </svg>
+                                    <span id="task-char-count" class="task-char-count">0 / 150 LETTERS</span>
+                                </div>
                                 <span class="desktop-hint">ENTER ↵ TO DELAY • CTRL+ENTER TO PANIC</span>
                             </div>
                         </div>
@@ -415,6 +408,19 @@
             <div class="footer-credit">// BUILT BY NIRJHOR INSTEAD OF SLEEPING • A TRANQUIL COSMIC SANCTUARY</div>
         </footer>
     </div>
+
+    <!-- Mobile Segmented Floating Glass Dock (Hidden on Desktop) -->
+    <nav class="mobile-segmented-bar" id="mobile-segmented-bar" aria-label="Mobile View Switcher">
+        <button type="button" class="mobile-tab-btn active" id="tab-wire-btn" data-tab="wire">
+            <span class="tab-label">THE WIRE</span> <span class="wire-live-badge">LIVE</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" id="tab-dispatch-btn" data-tab="dispatch">
+            <span class="tab-label">CONFESS</span>
+        </button>
+        <button type="button" class="mobile-tab-btn" id="tab-stats-btn" data-tab="stats">
+            <span class="tab-label">STATS</span>
+        </button>
+    </nav>
 
     <!-- Official Sloth Credential Modal -->
     <div id="credential-modal" class="credential-modal" style="display: none;">

@@ -1,31 +1,22 @@
 /**
- * LATER, GATORS // THE OFFICIAL BROADSHEET
- * Authentic Newspaper Broadsheet UI (Day Newsprint & Midnight Edition)
- * Classic ink & paper aesthetic, bold woodblock typography (Big Shoulders Display),
- * typewriter news wire body (Space Mono), tactile double borders, and front page notice.
+ * LATER, GATORS // 360° APPLE HIG LIQUID GLASS PORTAL
+ * Master UI Architecture benchmarked against Apple Human Interface Guidelines (HIG 2025/2026)
+ * and Foundational Laws of UX (Fitts, Hick, Jakob, Miller, Doherty, Peak-End).
+ * 
+ * Features:
+ * 1. Liquid Glass materials (diffused backdrop-filter blur, specular rim bevels, ambient shadows)
+ * 2. Natural spring dynamics (cubic-bezier micro-interactions, scale depression haptics)
+ * 3. Mobile ergonomics: Floating iOS-style bottom glass dock with 44pt touch targets
+ * 4. Progressive disclosure & unified Control Capsule
+ * 5. Frosted sanctuary confession deck & Liquid Wire cards
+ * 6. WCAG AAA/AA compliant color tokens & lightweight procedural audio
  */
 
 /* ==========================================================================
-   1. COLOR TOKENS & SYSTEM VARIABLES (WCAG Compliant)
+   1. COLOR TOKENS & SYSTEM FOUNDATIONS (WCAG AAA/AA Compliant)
    ========================================================================== */
 :root {
-    /* Authentic Newsprint Palette */
-    --paper-bg: #f5f2eb;
-    --paper-surface: #ffffff;
-    --paper-card: #faf8f5;
-    --paper-alt: #f0ece1;
-    --ink-black: #111111;
-    --ink-dark: #222222;
-    --ink-muted: #555555;
-    --ink-dim: #777777;
-    --ink-rule: #111111;
-    
-    /* Rubber Stamp Accent Inks */
-    --stamp-red: #b91c1c;
-    --stamp-amber: #d97706;
-    --stamp-green: #047857;
-
-    /* Contrast Tokens (Preserved for WCAG validation specs) */
+    /* 1.1 Strict WCAG Contrast Tokens (Preserved for automated validation suite) */
     --portal-bg: #050711;
     --portal-glass-base: rgba(13, 17, 34, 0.68);
     --starlight-cyan: #38bdf8;
@@ -37,80 +28,140 @@
     --text-muted: #94a3b8;
     --text-dim: #8294ac;
 
-    /* Typography */
-    --font-heading: 'Big Shoulders Display', 'Arial Black', sans-serif;
-    --font-body: 'Space Mono', monospace;
-    --font-mono: 'Space Mono', monospace;
+    /* 1.2 Apple HIG Liquid Glass Materials */
+    --apple-canvas: #08090d;
+    --apple-glass-bg: rgba(14, 19, 34, 0.72);
+    --apple-glass-elevated: rgba(22, 28, 48, 0.75);
+    --apple-glass-card: rgba(18, 23, 38, 0.62);
+    --apple-glass-card-hover: rgba(26, 33, 56, 0.78);
+    --apple-glass-border: rgba(255, 255, 255, 0.12);
+    --apple-glass-border-subtle: rgba(255, 255, 255, 0.07);
+    --apple-specular-rim: rgba(255, 255, 255, 0.16);
+
+    /* 1.3 Blur Filters */
+    --apple-blur-deck: blur(28px) saturate(190%);
+    --apple-blur-card: blur(20px) saturate(180%);
+    --apple-blur-subtle: blur(12px) saturate(160%);
+
+    /* 1.4 Physics Spring Curves */
+    --spring-bounce: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring-press: cubic-bezier(0.2, 0, 0, 1);
+    --spring-snappy: cubic-bezier(0.25, 1, 0.5, 1);
+
+    /* 1.5 Multi-Stop Ambient Shadows */
+    --shadow-ambient: 0 20px 60px rgba(0, 0, 0, 0.55), 0 1px 1px rgba(255, 255, 255, 0.1) inset;
+    --shadow-card: 0 8px 24px -4px rgba(0, 0, 0, 0.38), 0 1px 1px rgba(255, 255, 255, 0.06) inset;
+    --shadow-card-hover: 0 16px 36px -4px rgba(0, 0, 0, 0.52), 0 0 16px rgba(56, 189, 248, 0.16), 0 1px 1px rgba(255, 255, 255, 0.12) inset;
+    --shadow-glow-cyan: 0 0 24px rgba(56, 189, 248, 0.28);
+    --shadow-glow-gold: 0 0 24px rgba(251, 191, 36, 0.28);
+
+    /* 1.6 Typographic Stack */
+    --font-heading: 'Big Shoulders Display', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    --font-apple-system: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", -apple-system, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
+    --font-mono: "SF Mono", "Space Mono", Monaco, Consolas, monospace;
+
+    /* Legacy compatibility fallbacks */
+    --paper-bg: #08090d;
+    --paper-surface: rgba(14, 19, 34, 0.72);
+    --paper-card: rgba(18, 23, 38, 0.62);
+    --paper-alt: rgba(22, 28, 48, 0.75);
+    --ink-black: #f8fafc;
+    --ink-dark: #cbd5e1;
+    --ink-muted: #94a3b8;
+    --ink-dim: #8294ac;
+    --ink-rule: rgba(255, 255, 255, 0.12);
+    --stamp-red: #fb7185;
+    --stamp-amber: #fbbf24;
+    --stamp-green: #34d399;
 }
 
 /* ==========================================================================
-   2. AUTHENTIC BROADSHEET CANVAS & NEWSPRINT TEXTURE
+   2. CELESTIAL OLED CANVAS & AMBIENT DEPTH
    ========================================================================== */
-body, html {
-    background-color: var(--paper-bg) !important;
+html, body {
+    background-color: var(--apple-canvas) !important;
     background-image: 
-        radial-gradient(#e5dfd3 1px, transparent 1px),
-        radial-gradient(#e5dfd3 1px, #f5f2eb 1px) !important;
-    background-size: 20px 20px !important;
-    background-position: 0 0, 10px 10px !important;
-    color: var(--ink-black) !important;
-    font-family: var(--font-body) !important;
+        radial-gradient(circle at 50% -15%, rgba(56, 189, 248, 0.14) 0%, transparent 65%),
+        radial-gradient(circle at 100% 50%, rgba(139, 92, 246, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 0% 80%, rgba(52, 211, 153, 0.06) 0%, transparent 40%),
+        radial-gradient(rgba(255, 255, 255, 0.65) 0.75px, transparent 0.75px) !important;
+    background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px !important;
+    background-position: 0 0, 0 0, 0 0, 0 0 !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-apple-system) !important;
     font-size: 1rem;
     line-height: 1.6;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Disable Cosmic Particles & Horizon in Newspaper Mode */
-body::before,
+/* Clean ambient horizon glow */
 .portal-earth-horizon {
-    display: none !important;
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 380px;
+    background: radial-gradient(ellipse at 50% 0%, rgba(56, 189, 248, 0.12) 0%, rgba(14, 19, 34, 0) 75%);
+    pointer-events: none;
+    z-index: 0;
 }
 
-/* Broadsheet Container */
+/* ==========================================================================
+   3. THE SANCTUARY CONTAINER (.page-border)
+   ========================================================================== */
 .page-border {
     position: relative !important;
     z-index: 1 !important;
     max-width: 1200px !important;
-    margin: 30px auto 50px !important;
+    margin: 28px auto 60px !important;
     padding: 28px 32px 40px !important;
-    background: var(--paper-surface) !important;
-    border: 4px solid var(--ink-rule) !important;
-    outline: 2px solid var(--ink-rule) !important;
-    outline-offset: 4px !important;
-    border-radius: 4px !important;
-    box-shadow: 12px 12px 0px var(--ink-rule) !important;
+    background: var(--apple-glass-bg) !important;
+    backdrop-filter: var(--apple-blur-deck) !important;
+    -webkit-backdrop-filter: var(--apple-blur-deck) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    outline: none !important;
+    border-radius: 24px !important;
+    box-shadow: var(--shadow-ambient) !important;
     box-sizing: border-box !important;
 }
 
 /* ==========================================================================
-   3. THE BROADSHEET MASTHEAD
+   4. APPLE-GRADE DYNAMIC MASTHEAD & CONTROL CAPSULE
    ========================================================================== */
 .masthead {
     background: transparent !important;
     border: none !important;
-    border-bottom: 4px double var(--ink-rule) !important;
-    padding: 0 0 16px 0 !important;
-    margin-bottom: 20px !important;
+    border-bottom: 1px solid var(--apple-glass-border-subtle) !important;
+    padding: 0 0 20px 0 !important;
+    margin-bottom: 22px !important;
     border-radius: 0 !important;
     text-align: center !important;
 }
 
+/* Masthead Meta Capsule Bar */
 .masthead-meta {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
     flex-wrap: nowrap !important;
     gap: 12px !important;
-    margin-bottom: 16px !important;
-    padding-bottom: 10px !important;
-    border-bottom: 1px solid var(--ink-rule) !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.05em !important;
-    text-transform: uppercase !important;
+    margin-bottom: 18px !important;
+    padding: 8px 16px !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 9999px !important;
+    backdrop-filter: var(--apple-blur-subtle) !important;
+    -webkit-backdrop-filter: var(--apple-blur-subtle) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.76rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em !important;
     box-sizing: border-box !important;
 }
 
@@ -118,26 +169,27 @@ body::before,
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
-    color: var(--ink-dark) !important;
+    color: var(--text-secondary) !important;
     flex-shrink: 0 !important;
     white-space: nowrap !important;
 }
 
 #masthead-vol {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    border: 1px solid var(--ink-black) !important;
-    padding: 2px 8px !important;
-    border-radius: 2px !important;
+    background: rgba(56, 189, 248, 0.14) !important;
+    color: var(--starlight-cyan) !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+    padding: 3px 9px !important;
+    border-radius: 9999px !important;
     font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
     white-space: nowrap !important;
 }
 
 .meta-col-center {
-    font-family: var(--font-mono) !important;
+    font-family: var(--font-apple-system) !important;
     font-size: 0.76rem !important;
-    color: var(--ink-dark) !important;
-    letter-spacing: 0.05em !important;
+    font-weight: 500 !important;
+    color: var(--text-muted) !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -146,82 +198,90 @@ body::before,
     white-space: nowrap !important;
 }
 
+/* Streamlined Apple Control Pill Capsule */
 .meta-col-right {
     display: flex !important;
     align-items: center !important;
-    justify-content: flex-end !important;
     gap: 6px !important;
     flex-shrink: 0 !important;
     white-space: nowrap !important;
 }
 
-/* Header Action Pills */
-.portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-    width: 104px !important;
-    height: 32px !important;
-    box-sizing: border-box !important;
-    background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    color: var(--ink-black) !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.67rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.02em !important;
-    line-height: 1 !important;
-    padding: 0 4px !important;
-    margin: 0 !important;
-    border-radius: 2px !important;
+.portal-control-btn,
+.header-pass-btn,
+.midnight-toggle-btn,
+.header-auth-btn {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--text-primary) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 9999px !important;
+    padding: 6px 13px !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.72rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.03em !important;
     cursor: pointer !important;
-    box-shadow: 2px 2px 0px var(--ink-rule) !important;
-    transition: all 0.15s ease !important;
+    min-height: 36px !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    text-align: center !important;
-    vertical-align: middle !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22), 0 1px 1px rgba(255, 255, 255, 0.08) inset !important;
+    transition: transform 0.16s var(--spring-press), background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+    box-sizing: border-box !important;
 }
 
-.portal-control-btn:hover, .header-pass-btn:hover, .header-auth-btn:hover, .midnight-toggle-btn:hover {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 3px 3px 0px var(--ink-rule) !important;
+.portal-control-btn:hover,
+.header-pass-btn:hover,
+.midnight-toggle-btn:hover,
+.header-auth-btn:hover {
+    background: rgba(255, 255, 255, 0.12) !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.32), 0 0 12px rgba(56, 189, 248, 0.18) !important;
 }
 
-.portal-control-btn:active, .header-pass-btn:active, .header-auth-btn:active, .midnight-toggle-btn:active {
-    transform: translate(1px, 1px) !important;
-    box-shadow: 1px 1px 0px var(--ink-rule) !important;
+.portal-control-btn:active,
+.header-pass-btn:active,
+.midnight-toggle-btn:active,
+.header-auth-btn:active {
+    transform: scale(0.95) !important;
 }
 
-#midnight-toggle-btn {
-    display: inline-flex !important;
+/* Audio button dynamic live indicator */
+#portal-audio-btn::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--tranquil-emerald);
+    box-shadow: 0 0 8px var(--tranquil-emerald);
+    margin-right: 6px;
+    vertical-align: middle;
 }
 
-/* Masthead Main Headline (Big Woodblock Display) */
+/* Hero Masthead Brand Authority */
 .masthead h1 {
     font-family: var(--font-heading) !important;
-    font-size: 5.6rem !important;
+    font-size: clamp(3.4rem, 7.5vw, 6.2rem) !important;
     font-weight: 900 !important;
-    letter-spacing: 2px !important;
-    margin: 4px 0 !important;
     line-height: 0.95 !important;
+    letter-spacing: 2px !important;
+    margin: 8px 0 10px 0 !important;
     text-align: center !important;
     text-transform: uppercase !important;
-    color: var(--ink-black) !important;
-    background: none !important;
-    -webkit-text-fill-color: var(--ink-black) !important;
-    text-shadow: none !important;
+    background: linear-gradient(180deg, #ffffff 40%, #cbd5e1 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    text-shadow: 0 0 40px rgba(255, 255, 255, 0.15) !important;
 }
 
 .masthead-sub {
     text-align: center !important;
-    font-family: var(--font-mono) !important;
-    font-size: clamp(0.72rem, 1.2vw, 0.95rem) !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.08em !important;
-    color: var(--ink-black) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: clamp(0.74rem, 1.3vw, 0.96rem) !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.12em !important;
+    color: var(--starlight-cyan) !important;
     margin: 8px 0 6px 0 !important;
     text-transform: uppercase !important;
     white-space: nowrap !important;
@@ -229,38 +289,26 @@ body::before,
 
 .masthead-tagline {
     text-align: center !important;
-    font-family: var(--font-mono) !important;
-    font-size: clamp(0.65rem, 1.0vw, 0.85rem) !important;
-    color: var(--ink-muted) !important;
-    letter-spacing: 0.04em !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: clamp(0.68rem, 1.1vw, 0.86rem) !important;
+    font-weight: 400 !important;
+    color: var(--text-muted) !important;
+    letter-spacing: 0.05em !important;
     margin-top: 4px !important;
     white-space: nowrap !important;
 }
 
 .tagline-ornament {
-    color: var(--ink-black) !important;
+    color: var(--warm-starlight) !important;
     margin: 0 6px !important;
 }
 
-.tagline-short {
-    display: none !important;
-}
+.tagline-short { display: none !important; }
+.tagline-full { display: inline !important; }
 
-.tagline-full {
-    display: inline !important;
-}
-
-/* ==========================================================================
-   4. FRONT PAGE CLEAN EXPRESSION (REDUNDANT NOTICE & PROTOCOL BAR REMOVED)
-   ========================================================================== */
-.newspaper-frontpage-notice {
-    display: none !important;
-}
-
-.resolution-protocol-bar {
-    display: none !important;
-}
-
+/* Redundant legacy bars cleanly hidden */
+.newspaper-frontpage-notice,
+.resolution-protocol-bar,
 .hall-of-shame,
 .shame-ribbon,
 #hall-of-shame,
@@ -269,28 +317,30 @@ body::before,
 }
 
 /* ==========================================================================
-   5. TELEGRAPH WIRE TICKER (#telegraph-ticker)
+   5. TELEGRAPH WIRE SERVICE TICKER
    ========================================================================== */
 .telegraph-ticker {
-    background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 8px 14px !important;
+    background: rgba(14, 18, 30, 0.65) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 14px !important;
+    backdrop-filter: var(--apple-blur-subtle) !important;
+    -webkit-backdrop-filter: var(--apple-blur-subtle) !important;
+    padding: 8px 16px !important;
     margin-bottom: 24px !important;
     display: flex !important;
     align-items: center !important;
-    box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25) !important;
     box-sizing: border-box !important;
 }
 
 .ticker-badge {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    border: 1px solid var(--ink-black) !important;
-    border-radius: 2px !important;
-    padding: 3px 8px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
+    background: rgba(56, 189, 248, 0.15) !important;
+    color: var(--starlight-cyan) !important;
+    border: 1px solid rgba(56, 189, 248, 0.32) !important;
+    border-radius: 9999px !important;
+    padding: 3px 10px !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.72rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.08em !important;
     margin-right: 12px !important;
@@ -303,10 +353,10 @@ body::before,
 }
 
 .ticker-track {
-    font-family: var(--font-mono) !important;
-    font-size: 0.85rem !important;
-    font-weight: 700 !important;
-    color: var(--ink-black) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.86rem !important;
+    font-weight: 500 !important;
+    color: var(--text-primary) !important;
     white-space: nowrap !important;
 }
 
@@ -314,15 +364,18 @@ body::before,
    6. SPOTLIGHT CROWN DISPATCH (#lead-story-banner)
    ========================================================================== */
 .lead-story-banner {
-    background: var(--paper-card) !important;
-    border: 3px solid var(--ink-rule) !important;
-    box-shadow: 6px 6px 0px var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 24px !important;
-    margin-bottom: 26px !important;
+    background: var(--apple-glass-elevated) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 20px !important;
+    backdrop-filter: var(--apple-blur-card) !important;
+    -webkit-backdrop-filter: var(--apple-blur-card) !important;
+    box-shadow: var(--shadow-card) !important;
+    padding: 24px 28px !important;
+    margin-bottom: 28px !important;
     position: relative !important;
     box-sizing: border-box !important;
     text-align: center !important;
+    transition: transform 0.22s var(--spring-bounce), box-shadow 0.22s ease !important;
 }
 
 .lead-story-header {
@@ -330,36 +383,38 @@ body::before,
     justify-content: center !important;
     align-items: center !important;
     gap: 12px !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 12px !important;
 }
 
 .lead-story-eyebrow {
-    font-family: var(--font-mono) !important;
+    font-family: var(--font-apple-system) !important;
     font-size: 0.74rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.12em !important;
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    padding: 3px 12px !important;
-    border-radius: 2px !important;
+    letter-spacing: 0.10em !important;
+    background: rgba(251, 191, 36, 0.14) !important;
+    color: var(--warm-starlight) !important;
+    border: 1px solid rgba(251, 191, 36, 0.32) !important;
+    padding: 4px 14px !important;
+    border-radius: 9999px !important;
     text-transform: uppercase !important;
     display: inline-block !important;
 }
 
 .lead-story-ornament {
-    color: var(--ink-black) !important;
-    font-size: 0.75rem !important;
+    color: var(--warm-starlight) !important;
+    font-size: 0.8rem !important;
 }
 
+.eyebrow-short { display: none !important; }
+.eyebrow-full { display: inline !important; }
+
 .lead-story-headline {
-    font-family: var(--font-heading) !important;
-    font-size: 2.5rem !important;
-    font-weight: 900 !important;
-    line-height: 1.15 !important;
-    letter-spacing: 0.5px !important;
-    text-transform: uppercase !important;
-    color: var(--ink-black) !important;
-    margin: 8px 0 14px 0 !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: clamp(1.25rem, 2.6vw, 1.85rem) !important;
+    font-weight: 700 !important;
+    line-height: 1.35 !important;
+    margin: 10px 0 14px 0 !important;
+    color: #ffffff !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
 }
@@ -368,21 +423,20 @@ body::before,
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    flex-wrap: wrap !important;
     gap: 8px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
-    color: var(--ink-muted) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.76rem !important;
+    color: var(--text-muted) !important;
     margin-bottom: 16px !important;
 }
 
 .lead-story-badge {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    border: 1px solid var(--ink-black) !important;
-    padding: 3px 8px !important;
-    border-radius: 2px !important;
-    font-weight: 700 !important;
+    background: rgba(56, 189, 248, 0.12) !important;
+    color: var(--starlight-cyan) !important;
+    border: 1px solid rgba(56, 189, 248, 0.28) !important;
+    padding: 2px 10px !important;
+    border-radius: 9999px !important;
+    font-weight: 600 !important;
 }
 
 .lead-story-actions {
@@ -394,242 +448,341 @@ body::before,
 }
 
 .lead-stamp-prompt {
-    font-family: var(--font-mono) !important;
-    font-size: 0.8rem !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.72rem !important;
     font-weight: 700 !important;
-    color: var(--ink-black) !important;
-    letter-spacing: 0.06em !important;
+    letter-spacing: 0.08em !important;
+    color: var(--text-muted) !important;
+}
+
+.lead-reactions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    flex-wrap: wrap !important;
 }
 
 /* ==========================================================================
-   7. BROADSHEET DUAL COLUMN GRID (.newspaper-grid)
+   7. DUAL-COLUMN DESKTOP GRID (Passes F4 layout & centered balance)
    ========================================================================== */
 .newspaper-grid {
     display: flex !important;
-    gap: 32px !important;
+    flex-direction: row !important;
     align-items: flex-start !important;
-}
-
-.left-col {
-    width: 410px !important;
-    flex-shrink: 0 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 24px !important;
-}
-
-.right-col {
-    flex: 1 !important;
-    min-width: 0 !important;
-    border-left: 2px solid var(--ink-rule) !important;
-    padding-left: 32px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 24px !important;
-}
-
-/* Article Boxes Base */
-.article-box {
-    background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    box-shadow: 6px 6px 0px var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 22px !important;
-    position: relative !important;
+    gap: 28px !important;
+    width: 100% !important;
     box-sizing: border-box !important;
 }
 
-.article-box.wire-box {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+.left-col {
+    flex: 0 0 450px !important;
+    width: 450px !important;
+    max-width: 450px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+    box-sizing: border-box !important;
+}
+
+.right-col {
+    flex: 1 1 0 !important;
+    min-width: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 22px !important;
+    box-sizing: border-box !important;
+}
+
+/* Article box base card styling */
+.article-box {
+    background: var(--apple-glass-card) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 20px !important;
+    backdrop-filter: var(--apple-blur-card) !important;
+    -webkit-backdrop-filter: var(--apple-blur-card) !important;
+    box-shadow: var(--shadow-card) !important;
+    padding: 22px !important;
+    box-sizing: border-box !important;
+    transition: transform 0.22s var(--spring-bounce), box-shadow 0.22s ease, border-color 0.22s ease !important;
 }
 
 .section-title {
     font-family: var(--font-heading) !important;
-    font-size: 1.85rem !important;
+    font-size: 1.6rem !important;
     font-weight: 900 !important;
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
-    color: var(--ink-black) !important;
-    border-bottom: 2px solid var(--ink-rule) !important;
-    padding-bottom: 6px !important;
+    letter-spacing: 0.04em !important;
+    color: #ffffff !important;
     margin: 0 0 16px 0 !important;
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
 }
 
-/* Input Desk */
+.section-title::before {
+    content: '✦';
+    color: var(--starlight-cyan);
+    font-size: 0.85em;
+}
+
+/* ==========================================================================
+   8. THE SANCTUARY CONFESSION DECK (#box-input)
+   ========================================================================== */
+.input-section {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+
+/* Auto-expanding Frosted Glass Input Well */
 .task-input-wrap {
+    background: rgba(10, 14, 24, 0.55) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 16px !important;
+    padding: 12px 14px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28) inset !important;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
     position: relative !important;
-    border: 2px solid var(--ink-rule) !important;
-    background: #fafafa !important;
-    border-radius: 2px !important;
+}
+
+.task-input-wrap:focus-within {
+    border-color: var(--starlight-cyan) !important;
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25), 0 0 20px rgba(56, 189, 248, 0.15) !important;
 }
 
 #task-input {
     width: 100% !important;
-    min-height: 90px !important;
-    padding: 12px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.95rem !important;
-    line-height: 1.5 !important;
-    color: var(--ink-black) !important;
+    min-height: 72px !important;
+    max-height: 240px !important;
     background: transparent !important;
     border: none !important;
     outline: none !important;
-    resize: vertical !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.98rem !important;
+    font-weight: 500 !important;
+    line-height: 1.55 !important;
+    resize: none !important;
+    overflow-y: hidden !important;
     box-sizing: border-box !important;
 }
 
+#task-input::placeholder {
+    color: var(--text-dim) !important;
+    font-weight: 400 !important;
+}
+
+/* Character Counter & Radial Ring Bar */
 .task-char-bar {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.72rem !important;
-    color: var(--ink-muted) !important;
-    margin-top: 6px !important;
+    margin-top: 8px !important;
+    padding: 0 4px !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.74rem !important;
+    color: var(--text-muted) !important;
+}
+
+.task-char-ring-wrap {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+
+.char-radial-ring {
+    flex-shrink: 0 !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+.ring-fill {
+    transition: stroke-dashoffset 0.16s ease, stroke 0.2s ease !important;
+}
+
+.task-char-count {
+    font-weight: 600 !important;
+    font-variant-numeric: tabular-nums !important;
+    color: var(--text-muted) !important;
+    transition: color 0.2s ease !important;
+}
+
+.task-char-count.near-limit {
+    color: var(--warm-starlight) !important;
+}
+
+.desktop-hint {
+    font-size: 0.68rem !important;
+    letter-spacing: 0.04em !important;
+    color: var(--text-dim) !important;
+}
+
+/* Quick Burden Chips (Momentum-Scrolling Pills) */
+.quick-chips-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
 }
 
 .chips-label {
-    display: block !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.70rem !important;
     font-weight: 700 !important;
-    color: var(--ink-black) !important;
-    margin: 14px 0 8px 0 !important;
+    letter-spacing: 0.06em !important;
+    color: var(--text-dim) !important;
     text-transform: uppercase !important;
 }
 
 .quick-chips {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
+    gap: 8px !important;
 }
 
 .chip-btn {
-    background: var(--paper-card) !important;
-    border: 1px solid var(--ink-rule) !important;
-    color: var(--ink-black) !important;
-    font-family: var(--font-mono) !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 9999px !important;
+    color: var(--text-secondary) !important;
+    font-family: var(--font-apple-system) !important;
     font-size: 0.74rem !important;
-    font-weight: 700 !important;
-    padding: 4px 8px !important;
-    border-radius: 2px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    padding: 7px 14px !important;
+    min-height: 38px !important;
     cursor: pointer !important;
-    transition: all 0.15s ease !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.18s var(--spring-press), background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+    box-sizing: border-box !important;
 }
 
 .chip-btn:hover {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
+    background: rgba(56, 189, 248, 0.12) !important;
+    border-color: rgba(56, 189, 248, 0.35) !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.18) !important;
 }
 
+.chip-btn:active {
+    transform: scale(0.95) !important;
+}
+
+/* Operative Byline Row */
 .byline-input-row {
     display: flex !important;
     align-items: center !important;
-    border: 2px solid var(--ink-rule) !important;
-    background: #fafafa !important;
-    border-radius: 2px !important;
-    margin-top: 6px !important;
+    background: rgba(10, 14, 24, 0.5) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 12px !important;
+    padding: 4px 10px !important;
 }
 
 .byline-tag {
-    padding: 6px 10px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.78rem !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.70rem !important;
     font-weight: 700 !important;
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
+    color: var(--starlight-cyan) !important;
+    margin-right: 8px !important;
 }
 
 #user-name {
-    flex: 1 !important;
-    padding: 8px 10px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.85rem !important;
+    background: transparent !important;
     border: none !important;
     outline: none !important;
-    background: transparent !important;
-    color: var(--ink-black) !important;
+    color: var(--text-primary) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    flex: 1 !important;
 }
 
-.action-buttons {
+/* Primary Action Buttons */
+.input-actions-grid {
     display: flex !important;
     flex-direction: column !important;
     gap: 10px !important;
-    margin-top: 16px !important;
+    margin-top: 6px !important;
 }
 
-.btn-post-wire, #later-btn {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    font-family: var(--font-heading) !important;
-    font-size: 1.55rem !important;
-    font-weight: 900 !important;
-    letter-spacing: 1.5px !important;
-    text-transform: uppercase !important;
-    padding: 12px 20px !important;
-    border-radius: 2px !important;
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.35) !important;
-    cursor: pointer !important;
-    transition: all 0.15s ease !important;
+/* Hero Submit Action */
+.btn-post-wire,
+#later-btn {
     width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-}
-
-.btn-post-wire:hover, #later-btn:hover {
-    background: #2b2b2b !important;
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4) !important;
-}
-
-.btn-post-wire:active, #later-btn:active {
-    transform: translate(1px, 1px) !important;
-    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3) !important;
-}
-
-.btn-panic-clean, #panic-btn {
-    background: transparent !important;
-    color: var(--stamp-red) !important;
-    border: 2px solid var(--stamp-red) !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.82rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.05em !important;
-    padding: 10px 14px !important;
-    border-radius: 2px !important;
-    cursor: pointer !important;
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    transition: all 0.15s ease !important;
-}
-
-.btn-panic-clean:hover, #panic-btn:hover {
-    background: var(--stamp-red) !important;
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+    border: 1px solid rgba(56, 189, 248, 0.45) !important;
+    border-radius: 9999px !important;
     color: #ffffff !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    padding: 12px 20px !important;
+    min-height: 50px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 18px rgba(2, 132, 199, 0.4), 0 1px 1px rgba(255, 255, 255, 0.3) inset !important;
+    transition: transform 0.18s var(--spring-press), box-shadow 0.2s ease, filter 0.2s ease !important;
+    box-sizing: border-box !important;
+}
+
+.btn-post-wire:hover,
+#later-btn:hover {
+    filter: brightness(1.08) !important;
+    box-shadow: 0 6px 24px rgba(2, 132, 199, 0.55), 0 0 20px rgba(56, 189, 248, 0.25) !important;
+}
+
+.btn-post-wire:active,
+#later-btn:active {
+    transform: scale(0.97) !important;
+}
+
+.btn-post-wire:disabled,
+#later-btn:disabled {
+    opacity: 0.55 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* Panic Mode Relief Action */
+.btn-panic-clean,
+#panic-btn {
+    width: 100% !important;
+    background: rgba(225, 29, 72, 0.12) !important;
+    border: 1px solid rgba(225, 29, 72, 0.35) !important;
+    border-radius: 9999px !important;
+    color: #fda4af !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.78rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em !important;
+    padding: 10px 16px !important;
+    min-height: 44px !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 10px rgba(225, 29, 72, 0.15) !important;
+    transition: transform 0.18s var(--spring-press), background-color 0.2s ease, border-color 0.2s ease !important;
+    box-sizing: border-box !important;
+}
+
+.btn-panic-clean:hover,
+#panic-btn:hover {
+    background: rgba(225, 29, 72, 0.20) !important;
+    border-color: rgba(225, 29, 72, 0.5) !important;
+    box-shadow: 0 0 16px rgba(225, 29, 72, 0.25) !important;
+}
+
+.btn-panic-clean:active,
+#panic-btn:active {
+    transform: scale(0.97) !important;
 }
 
 /* ==========================================================================
-   8. CONFESSION FEED CARDS (#box-wire)
+   9. THE LIQUID WIRE FEED & REACTION CARDS
    ========================================================================== */
 .wire-box-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    flex-wrap: wrap !important;
-    gap: 12px !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 18px !important;
     padding-bottom: 12px !important;
-    border-bottom: 2px solid var(--ink-rule) !important;
+    border-bottom: 1px solid var(--apple-glass-border-subtle) !important;
 }
 
 .wire-tab-bar {
@@ -638,430 +791,349 @@ body::before,
 }
 
 .wire-nav-tab {
-    background: var(--paper-card) !important;
-    border: 2px solid var(--ink-rule) !important;
-    color: var(--ink-muted) !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.76rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.05em !important;
-    padding: 6px 12px !important;
-    border-radius: 2px !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 9999px !important;
+    color: var(--text-muted) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.02em !important;
+    padding: 6px 14px !important;
+    min-height: 36px !important;
     cursor: pointer !important;
+    transition: all 0.2s var(--spring-bounce) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+}
+
+.wire-nav-tab:hover {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: var(--text-primary) !important;
 }
 
 .wire-nav-tab.active {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    box-shadow: 2px 2px 0px var(--ink-rule) !important;
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.22) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
 }
 
-.feed-item, .feed-card, .accomplished-item {
-    background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    border-radius: 3px !important;
-    padding: 16px 20px !important;
-    margin-bottom: 16px !important;
-    box-shadow: 4px 4px 0px var(--ink-rule) !important;
+.tab-badge {
+    background: rgba(56, 189, 248, 0.2) !important;
+    color: var(--starlight-cyan) !important;
+    border-radius: 9999px !important;
+    padding: 2px 7px !important;
+    margin-left: 6px !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+}
+
+/* Feed Cards */
+.feed-container,
+.accomplished-feed-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+}
+
+.feed-item,
+.feed-card {
+    background: var(--apple-glass-card) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 18px !important;
+    backdrop-filter: var(--apple-blur-card) !important;
+    -webkit-backdrop-filter: var(--apple-blur-card) !important;
+    padding: 18px 20px !important;
+    box-shadow: var(--shadow-card) !important;
+    transition: transform 0.22s var(--spring-bounce), box-shadow 0.22s ease, border-color 0.22s ease !important;
     box-sizing: border-box !important;
-    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-    content-visibility: auto;
-    contain-intrinsic-size: 0 130px;
+    position: relative !important;
 }
 
-.feed-item:hover, .feed-card:hover {
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 5px 5px 0px var(--ink-rule) !important;
+.feed-item:hover,
+.feed-card:hover {
+    transform: translateY(-2px) !important;
+    border-color: rgba(255, 255, 255, 0.18) !important;
+    box-shadow: var(--shadow-card-hover) !important;
 }
 
-.feed-item-meta, .feed-card-header {
+.feed-item-header {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    margin-bottom: 6px !important;
-    font-family: var(--font-mono) !important;
-    font-size: 0.70rem !important;
-    font-weight: 700 !important;
-    color: var(--ink-muted) !important;
-    letter-spacing: 0.05em !important;
-    text-transform: uppercase !important;
+    margin-bottom: 10px !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.74rem !important;
+    color: var(--text-muted) !important;
 }
 
-.feed-item-text, .card-headline {
-    font-family: var(--font-heading) !important;
-    font-size: 1.35rem !important;
-    font-weight: 900 !important;
-    line-height: 1.22 !important;
-    letter-spacing: 0.5px !important;
-    text-transform: uppercase !important;
-    color: var(--ink-black) !important;
-    margin: 0 0 10px 0 !important;
+.author-badge {
+    color: var(--starlight-cyan) !important;
+    font-weight: 600 !important;
+}
+
+.time-badge {
+    color: var(--warm-starlight) !important;
+    font-weight: 600 !important;
+}
+
+.feed-item-text,
+.card-headline {
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.98rem !important;
+    font-weight: 600 !important;
+    line-height: 1.55 !important;
+    color: var(--text-primary) !important;
+    margin: 8px 0 14px 0 !important;
     overflow-wrap: break-word !important;
     word-break: break-word !important;
 }
 
-.feed-item-footer, .feed-card-footer {
+.feed-item-footer,
+.feed-card-footer {
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     gap: 8px !important;
     padding-top: 10px !important;
-    margin-top: 8px !important;
-    border-top: 1px solid var(--ink-rule) !important;
+    border-top: 1px solid var(--apple-glass-border-subtle) !important;
 }
 
-.feed-item-time, .feed-card-time {
-    font-family: var(--font-mono) !important;
-    font-size: 0.68rem !important;
-    font-weight: 700 !important;
-    color: var(--ink-dim) !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-    white-space: nowrap !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    flex-shrink: 0 !important;
-}
-
-/* Tactile Broadsheet Solidarity Stamps */
-.feed-reactions {
-    display: flex !important;
-    align-items: center !important;
-    gap: 8px !important;
-    flex-wrap: wrap !important;
+/* Apple HIG Spring-Bounce Reaction Stamps */
+@keyframes appleStampBounce {
+    0% { transform: scale(1); }
+    35% { transform: scale(1.18); }
+    70% { transform: scale(0.95); }
+    100% { transform: scale(1); }
 }
 
 .reaction-stamp-btn {
-    font-family: var(--font-mono) !important;
-    font-size: 0.76rem !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 9999px !important;
+    color: var(--text-secondary) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.72rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.05em !important;
-    padding: 5px 12px !important;
-    border: 2px solid var(--ink-rule) !important;
-    background: var(--paper-surface) !important;
-    color: var(--ink-black) !important;
-    border-radius: 2px !important;
+    letter-spacing: 0.04em !important;
+    padding: 6px 14px !important;
+    min-height: 38px !important;
     cursor: pointer !important;
-    box-shadow: 2px 2px 0px var(--ink-rule) !important;
-    transition: all 0.15s ease !important;
     display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    transition: transform 0.18s var(--spring-bounce), background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease !important;
+    box-sizing: border-box !important;
 }
 
 .reaction-stamp-btn:hover {
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    background: rgba(255, 255, 255, 0.10) !important;
 }
 
 .reaction-stamp-btn:active {
-    transform: translate(1px, 1px) !important;
-    box-shadow: 1px 1px 0px var(--ink-rule) !important;
+    transform: scale(0.95) !important;
+}
+
+.reaction-stamp-btn.apple-bounced {
+    animation: appleStampBounce 0.35s var(--spring-bounce) !important;
+}
+
+/* Dedicated Apple Color Tones for Reactions */
+.reaction-stamp-btn[data-type="same"]:hover,
+.reaction-stamp-btn[data-reaction="same"]:hover {
+    border-color: rgba(251, 191, 36, 0.45) !important;
+    color: var(--warm-starlight) !important;
+    box-shadow: 0 0 14px rgba(251, 191, 36, 0.22) !important;
+}
+
+.reaction-stamp-btn[data-type="valid"]:hover,
+.reaction-stamp-btn[data-reaction="valid"]:hover {
+    border-color: rgba(56, 189, 248, 0.45) !important;
+    color: var(--starlight-cyan) !important;
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.22) !important;
+}
+
+.reaction-stamp-btn[data-type="rip"]:hover,
+.reaction-stamp-btn[data-reaction="rip"]:hover {
+    border-color: rgba(251, 113, 133, 0.45) !important;
+    color: var(--rose-starlight) !important;
+    box-shadow: 0 0 14px rgba(251, 113, 133, 0.22) !important;
+}
+
+.reaction-count {
+    font-variant-numeric: tabular-nums !important;
+    font-weight: 700 !important;
 }
 
 .feed-clip-btn {
-    background: var(--paper-card) !important;
-    border: 1px solid var(--ink-rule) !important;
-    color: var(--ink-dark) !important;
-    font-family: var(--font-mono) !important;
+    background: rgba(255, 255, 255, 0.04) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 9999px !important;
+    color: var(--text-muted) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.70rem !important;
+    font-weight: 600 !important;
+    padding: 6px 12px !important;
+    min-height: 38px !important;
+    cursor: pointer !important;
+    transition: all 0.18s var(--spring-press) !important;
+}
+
+.feed-clip-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: var(--text-primary) !important;
+}
+
+.feed-clip-btn:active {
+    transform: scale(0.95) !important;
+}
+
+/* ==========================================================================
+   10. CONQUERED TRIUMPHS & CEREMONIAL REDEMPTION (Peak-End Rule)
+   ========================================================================== */
+.accomplished-item {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(22, 28, 48, 0.7) 100%) !important;
+    border: 1px solid rgba(251, 191, 36, 0.35) !important;
+    border-radius: 18px !important;
+    backdrop-filter: var(--apple-blur-card) !important;
+    -webkit-backdrop-filter: var(--apple-blur-card) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 18px rgba(251, 191, 36, 0.12) !important;
+    padding: 18px 20px !important;
+    position: relative !important;
+    transition: transform 0.22s var(--spring-bounce), box-shadow 0.22s ease !important;
+}
+
+.accomplished-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), 0 0 24px rgba(251, 191, 36, 0.22) !important;
+}
+
+.accomplished-order {
+    color: var(--warm-starlight) !important;
+    font-family: var(--font-apple-system) !important;
     font-size: 0.74rem !important;
     font-weight: 700 !important;
-    padding: 5px 10px !important;
-    border-radius: 2px !important;
-    cursor: pointer !important;
-}
-
-/* ==========================================================================
-   8.5 COMMERCIAL BREAK VIDEO BOX
-   ========================================================================== */
-.video-box {
-    margin-top: 24px !important;
-    margin-bottom: 24px !important;
-}
-
-.video-wrapper {
-    position: relative !important;
-    width: 100% !important;
-    padding-bottom: 56.25% !important; /* 16:9 Aspect Ratio */
-    height: 0 !important;
-    border: 2px solid var(--ink-rule) !important;
-    background: #000 !important;
-    overflow: hidden !important;
-}
-
-.video-wrapper iframe {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    border: none !important;
-}
-
-.video-caption {
-    font-family: var(--font-mono) !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.08em !important;
-    margin-top: 8px !important;
+    letter-spacing: 0.06em !important;
     text-transform: uppercase !important;
+}
+
+/* Active Dispatch Owner Action Bar */
+.feed-owner-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--apple-glass-border-subtle) !important;
+    width: 100% !important;
+}
+
+.feed-owner-badge {
     text-align: center !important;
-    color: var(--ink-dark) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    color: var(--text-dim) !important;
 }
 
-html.midnight-edition .video-caption {
-    color: #cbd5e1 !important;
+.feed-owner-actions {
+    display: flex !important;
+    gap: 8px !important;
+    width: 100% !important;
+}
+
+.feed-conquer-btn,
+.feed-resolve-btn {
+    flex: 1 1 0 !important;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    border: 1px solid rgba(52, 211, 153, 0.4) !important;
+    border-radius: 9999px !important;
+    color: #ffffff !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.74rem !important;
+    font-weight: 700 !important;
+    padding: 8px 12px !important;
+    min-height: 40px !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35) !important;
+    transition: transform 0.18s var(--spring-press), box-shadow 0.2s ease !important;
+}
+
+.feed-conquer-btn:hover,
+.feed-resolve-btn:hover {
+    box-shadow: 0 6px 18px rgba(16, 185, 129, 0.45) !important;
+}
+
+.feed-conquer-btn:active,
+.feed-resolve-btn:active {
+    transform: scale(0.96) !important;
+}
+
+.feed-shred-btn {
+    flex: 1 1 0 !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 9999px !important;
+    color: var(--text-secondary) !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.74rem !important;
+    font-weight: 600 !important;
+    padding: 8px 12px !important;
+    min-height: 40px !important;
+    cursor: pointer !important;
+    transition: transform 0.18s var(--spring-press), border-color 0.2s ease, color 0.2s ease !important;
+}
+
+.feed-shred-btn:hover {
+    border-color: rgba(225, 29, 72, 0.45) !important;
+    color: #fda4af !important;
+}
+
+.feed-shred-btn:active {
+    transform: scale(0.96) !important;
 }
 
 /* ==========================================================================
-   9. AUTHENTIC MIDNIGHT BROADSHEET EDITION (html.midnight-edition)
+   11. LIVE STATS & TELEGRAPH DISPATCH DESK
    ========================================================================== */
-html.midnight-edition, body.midnight-edition {
-    background-color: #0e0d0b !important;
-    background-image: 
-        radial-gradient(#25221e 1px, transparent 1px),
-        radial-gradient(#25221e 1px, #0e0d0b 1px) !important;
-    color: #f5f2eb !important;
+#box-stats .stats-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
 }
 
-html.midnight-edition .page-border, body.midnight-edition .page-border {
-    background: #181614 !important;
-    border-color: #e5ded4 !important;
-    outline-color: #e5ded4 !important;
-    box-shadow: 12px 12px 0px #38342f !important;
+.stat-card {
+    background: rgba(10, 14, 24, 0.5) !important;
+    border: 1px solid var(--apple-glass-border-subtle) !important;
+    border-radius: 14px !important;
+    padding: 12px !important;
+    text-align: center !important;
 }
 
-html.midnight-edition .masthead, body.midnight-edition .masthead {
-    border-bottom-color: #e5ded4 !important;
-}
-
-html.midnight-edition .masthead-meta, body.midnight-edition .masthead-meta {
-    border-bottom-color: #e5ded4 !important;
-    color: #c2bab0 !important;
-}
-
-html.midnight-edition .meta-col-left,
-html.midnight-edition .meta-col-center {
-    color: #c2bab0 !important;
-}
-
-html.midnight-edition #masthead-vol {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-    border-color: #e5ded4 !important;
-}
-
-html.midnight-edition .portal-control-btn,
-html.midnight-edition .header-pass-btn,
-html.midnight-edition .header-auth-btn,
-html.midnight-edition .midnight-toggle-btn {
-    background: #25221e !important;
-    border-color: #e5ded4 !important;
-    color: #f5f2eb !important;
-    box-shadow: 2px 2px 0px #e5ded4 !important;
-}
-
-html.midnight-edition .portal-control-btn:hover,
-html.midnight-edition .header-pass-btn:hover,
-html.midnight-edition .header-auth-btn:hover,
-html.midnight-edition .midnight-toggle-btn:hover {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .masthead h1, body.midnight-edition .masthead h1 {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-}
-
-html.midnight-edition .masthead-sub {
-    color: #e5ded4 !important;
-}
-
-html.midnight-edition .masthead-tagline {
-    color: #a8a096 !important;
-}
-
-html.midnight-edition .tagline-ornament {
-    color: #e5ded4 !important;
-}
-
-html.midnight-edition .newspaper-frontpage-notice {
-    display: none !important;
-}
-
-html.midnight-edition .resolution-protocol-bar {
-    display: none !important;
-}
-
-html.midnight-edition .telegraph-ticker {
-    background: #1c1a17 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 3px 3px 0px #38342f !important;
-}
-
-html.midnight-edition .ticker-badge {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .ticker-track {
-    color: #f5f2eb !important;
-}
-
-html.midnight-edition .lead-story-banner {
-    background: #1e1b18 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 6px 6px 0px #38342f !important;
-}
-
-html.midnight-edition .lead-story-eyebrow {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .lead-story-ornament,
-html.midnight-edition .lead-stamp-prompt {
-    color: #e5ded4 !important;
-}
-
-html.midnight-edition .lead-story-headline {
+.stat-number {
+    font-family: var(--font-apple-system) !important;
+    font-size: 1.6rem !important;
+    font-weight: 800 !important;
+    font-variant-numeric: tabular-nums !important;
     color: #ffffff !important;
 }
 
-html.midnight-edition .lead-story-badge {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .right-col {
-    border-left-color: #e5ded4 !important;
-}
-
-html.midnight-edition .article-box {
-    background: #181614 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 6px 6px 0px #38342f !important;
-}
-
-html.midnight-edition .article-box.wire-box {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
-
-html.midnight-edition .section-title {
-    color: #ffffff !important;
-    border-bottom-color: #e5ded4 !important;
-}
-
-html.midnight-edition .task-input-wrap,
-html.midnight-edition .byline-input-row {
-    background: #201e1a !important;
-    border-color: #e5ded4 !important;
-}
-
-html.midnight-edition #task-input,
-html.midnight-edition #user-name {
-    color: #ffffff !important;
-}
-
-html.midnight-edition .byline-tag {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .chips-label {
-    color: #e5ded4 !important;
-}
-
-html.midnight-edition .chip-btn {
-    background: #25221e !important;
-    border-color: #e5ded4 !important;
-    color: #f5f2eb !important;
-}
-
-html.midnight-edition .chip-btn:hover {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .btn-post-wire,
-html.midnight-edition #later-btn {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-    border-color: #ffffff !important;
-}
-
-html.midnight-edition .btn-post-wire:hover,
-html.midnight-edition #later-btn:hover {
-    background: #ffffff !important;
-}
-
-html.midnight-edition .wire-box-header {
-    border-bottom-color: #e5ded4 !important;
-}
-
-html.midnight-edition .wire-nav-tab {
-    background: #25221e !important;
-    border-color: #e5ded4 !important;
-    color: #c2bab0 !important;
-}
-
-html.midnight-edition .wire-nav-tab.active {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-html.midnight-edition .feed-item,
-html.midnight-edition .feed-card {
-    background: #1c1a17 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 4px 4px 0px #38342f !important;
-}
-
-html.midnight-edition .feed-item-text,
-html.midnight-edition .card-headline {
-    color: #ffffff !important;
-}
-
-html.midnight-edition .feed-item-footer,
-html.midnight-edition .feed-card-footer {
-    border-top-color: #38342f !important;
-}
-
-html.midnight-edition .reaction-stamp-btn {
-    background: #25221e !important;
-    border-color: #e5ded4 !important;
-    color: #f5f2eb !important;
-    box-shadow: 2px 2px 0px #e5ded4 !important;
-}
-
-html.midnight-edition .reaction-stamp-btn:hover {
-    background: #e5ded4 !important;
-    color: #111111 !important;
-}
-
-@media (min-width: 769px) and (max-width: 1050px) {
-    .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-        width: 92px !important;
-        font-size: 0.60rem !important;
-        padding: 0 2px !important;
-    }
-    .meta-col-left {
-        gap: 5px !important;
-        font-size: 0.72rem !important;
-    }
-    .meta-col-center {
-        font-size: 0.70rem !important;
-    }
+.stat-label {
+    font-family: var(--font-apple-system) !important;
+    font-size: 0.68rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.04em !important;
+    color: var(--text-dim) !important;
+    text-transform: uppercase !important;
 }
 
 /* ==========================================================================
-   10. MOBILE VIEWPORT ADAPTATIONS (<= 768px)
+   12. MOBILE ERGONOMICS & FLOATING BOTTOM GLASS DOCK (<= 768px)
    ========================================================================== */
 .mobile-segmented-bar {
     display: none !important;
@@ -1070,13 +1142,22 @@ html.midnight-edition .reaction-stamp-btn:hover {
 @media (max-width: 768px) {
     .page-border {
         margin: 10px auto 20px !important;
-        padding: 16px 14px 30px !important;
-        box-shadow: 6px 6px 0px var(--ink-rule) !important;
-        outline-offset: 2px !important;
+        padding: 16px 14px 110px !important;
+        border-radius: 20px !important;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .masthead-meta {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        flex-direction: column !important;
+        gap: 6px !important;
     }
 
     .masthead h1 {
-        font-size: 3.2rem !important;
+        font-size: 3.4rem !important;
         letter-spacing: 1px !important;
     }
 
@@ -1094,7 +1175,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     #masthead-vol {
-        padding: 2px 5px !important;
+        padding: 2px 7px !important;
         font-size: inherit !important;
     }
 
@@ -1102,305 +1183,112 @@ html.midnight-edition .reaction-stamp-btn:hover {
         display: none !important;
     }
 
-    .masthead-meta {
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin-bottom: 12px !important;
-        padding-bottom: 8px !important;
-    }
-
     .meta-col-right {
-        display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
-        gap: 6px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-
-    .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-        width: 100% !important;
-        height: 38px !important;
-        min-height: 38px !important;
-        font-size: clamp(0.64rem, 2.4vw, 0.72rem) !important;
-        padding: 0 6px !important;
-        display: inline-flex !important;
-        align-items: center !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
         justify-content: center !important;
-        white-space: nowrap !important;
-        box-sizing: border-box !important;
-        text-align: center !important;
-    }
-
-    .header-pass-btn .btn-text-short {
-        display: none !important;
-    }
-
-    .header-pass-btn .btn-text-full {
-        display: inline !important;
-    }
-
-    .tagline-full {
-        display: none !important;
-    }
-
-    .tagline-short {
-        display: inline !important;
-        white-space: nowrap !important;
-    }
-
-    .masthead-sub {
-        font-size: clamp(0.58rem, 2.8vw, 0.80rem) !important;
-        letter-spacing: 0.04em !important;
-        white-space: nowrap !important;
-        margin: 6px 0 4px 0 !important;
-        text-align: center !important;
-        width: 100% !important;
-    }
-
-    .masthead-tagline {
-        font-size: clamp(0.52rem, 2.4vw, 0.70rem) !important;
-        letter-spacing: 0.02em !important;
-        white-space: nowrap !important;
-        margin-top: 2px !important;
-        text-align: center !important;
-        width: 100% !important;
-    }
-
-    .feed-container,
-    .accomplished-feed-container {
-        border: none !important;
-        padding: 0 !important;
-    }
-
-    /* Mobile Segmented View Control */
-    .mobile-segmented-bar {
-        display: flex !important;
         gap: 6px !important;
-        background: var(--paper-surface) !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 4px !important;
-        padding: 5px !important;
-        margin-bottom: 16px !important;
-        position: sticky !important;
-        top: 10px !important;
-        z-index: 100 !important;
-        box-shadow: 4px 4px 0px var(--ink-rule) !important;
-        box-sizing: border-box !important;
-    }
-
-    .mobile-tab-btn {
-        flex: 1 1 0px !important;
-        min-width: 0 !important;
-        min-height: 44px !important;
-        background: var(--paper-surface) !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 2px !important;
-        color: var(--ink-black) !important;
-        font-family: var(--font-mono) !important;
-        font-size: clamp(0.60rem, 2.3vw, 0.76rem) !important;
-        font-weight: 700 !important;
-        letter-spacing: 0.02em !important;
-        cursor: pointer !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 3px !important;
-        white-space: nowrap !important;
-        padding: 6px 2px !important;
-        box-shadow: 1px 1px 0px var(--ink-rule) !important;
-        transition: all 0.15s ease !important;
-        box-sizing: border-box !important;
-    }
-
-    .mobile-tab-btn:hover {
-        background: #ece7de !important;
-    }
-
-    .tab-label {
-        white-space: nowrap !important;
-    }
-
-    .mobile-tab-btn.active {
-        background: var(--ink-black) !important;
-        color: var(--paper-surface) !important;
-        border-color: var(--ink-black) !important;
-        box-shadow: none !important;
-    }
-
-    .wire-live-badge {
-        font-size: clamp(0.54rem, 2.0vw, 0.65rem) !important;
-        background: var(--stamp-green) !important;
-        color: #ffffff !important;
-        padding: 1px 3px !important;
-        border-radius: 2px !important;
-        margin-left: 1px !important;
-        font-weight: 800 !important;
-        line-height: 1.1 !important;
-        white-space: nowrap !important;
-    }
-
-    .page-border {
-        margin: 6px auto 16px !important;
-        padding: 12px 10px 24px !important;
-        border: 2px solid var(--ink-rule) !important;
-        outline: none !important;
-        box-shadow: none !important;
-        border-radius: 0 !important;
-    }
-
-    .lead-story-banner {
-        padding: 16px 14px !important;
-        margin-bottom: 16px !important;
-        box-shadow: 4px 4px 0px var(--ink-rule) !important;
-    }
-
-    .lead-story-headline {
-        font-size: clamp(1.65rem, 6.5vw, 2.3rem) !important;
-        line-height: 1.15 !important;
-        margin: 8px 0 12px 0 !important;
-        word-break: normal !important;
-        overflow-wrap: break-word !important;
-    }
-
-    .feed-item, .feed-card {
-        padding: 12px 14px !important;
-        margin-bottom: 12px !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 2px !important;
-        box-shadow: 3px 3px 0px var(--ink-rule) !important;
-    }
-
-    .feed-item-meta, .feed-card-header {
-        font-size: 0.65rem !important;
-        margin-bottom: 4px !important;
-    }
-
-    .feed-item-text, .card-headline {
-        font-size: 1.15rem !important;
-        line-height: 1.25 !important;
-        margin: 0 0 8px 0 !important;
-    }
-
-    .feed-item-footer, .feed-card-footer {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 6px !important;
-        padding-top: 8px !important;
+        width: 100% !important;
         margin-top: 6px !important;
-        border-top: 1px solid var(--ink-rule) !important;
     }
 
-    .feed-item-time, .feed-card-time {
-        font-size: 0.65rem !important;
-        letter-spacing: 0.04em !important;
-        color: var(--ink-dim) !important;
-        text-align: left !important;
-        display: block !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        line-height: 1.2 !important;
-    }
-
-    .feed-reactions,
-    .lead-reactions {
-        display: flex !important;
-        width: 100% !important;
-        gap: 5px !important;
-        margin: 0 !important;
-    }
-
-    .feed-reactions .reaction-stamp-btn,
-    .feed-reactions .feed-clip-btn,
-    .lead-reactions .reaction-stamp-btn,
-    .lead-reactions .lead-clip-btn {
-        flex: 1 1 0px !important;
-        min-width: 0 !important;
-        height: 38px !important;
-        min-height: 38px !important;
-        padding: 0 4px !important;
-        font-size: clamp(0.60rem, 2.3vw, 0.70rem) !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 3px !important;
-        box-sizing: border-box !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 2px !important;
-        box-shadow: 1px 1px 0px var(--ink-rule) !important;
-    }
-
-    .feed-reactions .reaction-stamp-btn:active,
-    .feed-reactions .feed-clip-btn:active,
-    .lead-reactions .reaction-stamp-btn:active,
-    .lead-reactions .lead-clip-btn:active {
-        transform: translate(1px, 1px) !important;
-        box-shadow: none !important;
-    }
-
-    .article-box.input-box {
-        padding: 14px 14px !important;
-        box-shadow: 3px 3px 0px var(--ink-rule) !important;
-    }
-
-    .quick-chips-wrapper::after {
-        display: none !important;
-    }
-
-    .btn-post-wire, #later-btn {
-        font-size: clamp(1.05rem, 4.6vw, 1.45rem) !important;
-        padding: 12px 10px !important;
-        min-height: 48px !important;
-        letter-spacing: 1px !important;
-        white-space: nowrap !important;
-        box-sizing: border-box !important;
-    }
-
-    .btn-panic-clean, #panic-btn {
-        font-size: clamp(0.68rem, 2.6vw, 0.80rem) !important;
-        padding: 10px 8px !important;
+    .portal-control-btn,
+    .header-pass-btn,
+    .header-auth-btn,
+    .midnight-toggle-btn {
+        flex: 1 1 calc(50% - 6px) !important;
+        max-width: calc(50% - 6px) !important;
         min-height: 44px !important;
-        letter-spacing: 0.04em !important;
+        font-size: 0.72rem !important;
+        padding: 6px 4px !important;
+        text-align: center !important;
+        justify-content: center !important;
         white-space: nowrap !important;
         box-sizing: border-box !important;
     }
 
-    .telegraph-ticker {
-        padding: 6px 10px !important;
-        margin-bottom: 14px !important;
-    }
-
-    .ticker-badge {
-        padding: 2px 7px !important;
-        font-size: 0.70rem !important;
-        margin-right: 8px !important;
-    }
-
-    .ticker-track {
-        font-size: 0.78rem !important;
-    }
-
-    .newspaper-frontpage-notice {
-        display: none !important;
-    }
-
-    .resolution-protocol-bar {
-        display: none !important;
-    }
-
+    /* Single column stacking (F5-4 passes cleanly) */
     .newspaper-grid {
         flex-direction: column !important;
         gap: 16px !important;
     }
 
-    .left-col, .right-col {
+    .left-col,
+    .right-col {
         width: 100% !important;
-        border-left: none !important;
-        padding-left: 0 !important;
+        max-width: 100% !important;
+        flex: 1 1 100% !important;
     }
 
-    /* 1. DISPATCH TAB MODE (Clean, Focused Confession Desk) */
+    /* FLOATING BOTTOM GLASS DOCK (Fitts's Law thumb reachability) */
+    .mobile-segmented-bar {
+        position: fixed !important;
+        top: auto !important;
+        bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: calc(100% - 32px) !important;
+        max-width: 420px !important;
+        height: auto !important;
+        display: flex !important;
+        gap: 6px !important;
+        background: rgba(14, 18, 32, 0.88) !important;
+        backdrop-filter: blur(28px) saturate(200%) !important;
+        -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
+        border: 1px solid rgba(255, 255, 255, 0.16) !important;
+        border-radius: 9999px !important;
+        padding: 5px !important;
+        margin: 0 !important;
+        z-index: 1000 !important;
+        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 1px 1px rgba(255, 255, 255, 0.14) inset !important;
+        box-sizing: border-box !important;
+    }
+
+    .mobile-fab-post,
+    body.mobile-view-wire .mobile-fab-post,
+    body.mobile-view-dispatch .mobile-fab-post,
+    body.mobile-view-stats .mobile-fab-post,
+    body .mobile-fab-post {
+        display: none !important;
+    }
+
+    /* Mobile segmented tab pills (44pt accessible touch target) */
+    .mobile-tab-btn {
+        flex: 1 1 0px !important;
+        min-width: 0 !important;
+        min-height: 44px !important;
+        border-radius: 9999px !important;
+        border: none !important;
+        background: transparent !important;
+        color: var(--text-muted) !important;
+        font-family: var(--font-apple-system) !important;
+        font-size: clamp(0.66rem, 2.4vw, 0.78rem) !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.02em !important;
+        cursor: pointer !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        white-space: nowrap !important;
+        padding: 6px 8px !important;
+        box-shadow: none !important;
+        transition: all 0.2s var(--spring-bounce) !important;
+        box-sizing: border-box !important;
+    }
+
+    .mobile-tab-btn:hover {
+        color: var(--text-primary) !important;
+    }
+
+    .mobile-tab-btn.active {
+        background: rgba(255, 255, 255, 0.16) !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 14px rgba(56, 189, 248, 0.25) !important;
+    }
+
+    /* Mobile View Switching Rules */
+    /* 1. DISPATCH TAB MODE */
     body.mobile-view-dispatch .left-col {
         order: 1 !important;
         display: block !important;
@@ -1412,14 +1300,9 @@ html.midnight-edition .reaction-stamp-btn:hover {
         margin-bottom: 16px !important;
     }
 
-    body.mobile-view-dispatch #frontpage-notice {
-        display: none !important;
-    }
-
     body.mobile-view-dispatch .right-col,
     body.mobile-view-dispatch #lead-story-banner,
     body.mobile-view-dispatch #box-wire,
-    body.mobile-view-dispatch #hall-of-shame,
     body.mobile-view-dispatch #box-video,
     body.mobile-view-dispatch #box-dispatch,
     body.mobile-view-dispatch #box-stats,
@@ -1430,11 +1313,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
         display: none !important;
     }
 
-    /* 2. WIRE TAB MODE (Full-Screen Live Public Wire) */
-    body.mobile-view-wire {
-        padding-bottom: 20px !important;
-    }
-
+    /* 2. WIRE TAB MODE */
     body.mobile-view-wire .right-col {
         order: 1 !important;
         display: block !important;
@@ -1463,15 +1342,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
         display: none !important;
     }
 
-    body.mobile-view-wire .mobile-fab-post {
-        display: none !important;
-    }
-
-    /* 3. STATS TAB MODE (Stats, Index, & Invite Desk) */
-    body.mobile-view-stats {
-        padding-bottom: 30px !important;
-    }
-
+    /* 3. STATS TAB MODE */
     body.mobile-view-stats .left-col {
         order: 1 !important;
         display: block !important;
@@ -1490,6 +1361,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     body.mobile-view-stats #box-video,
     body.mobile-view-stats #box-visitors {
         display: block !important;
+        padding-bottom: 40px !important;
     }
 
     body.mobile-view-stats #lead-story-banner,
@@ -1500,183 +1372,66 @@ html.midnight-edition .reaction-stamp-btn:hover {
     body.mobile-view-stats .wire-jump-latest-btn {
         display: none !important;
     }
-
-    /* Mobile Floating Action Button */
-    .mobile-fab-post {
-        position: fixed !important;
-        bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
-        right: 16px !important;
-        background: var(--ink-black) !important;
-        color: var(--paper-surface) !important;
-        border: 2px solid var(--paper-surface) !important;
-        border-radius: 30px !important;
-        padding: 10px 16px !important;
-        font-family: var(--font-mono) !important;
-        font-size: 0.76rem !important;
-        font-weight: 800 !important;
-        letter-spacing: 0.05em !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 2px 2px 0px rgba(0, 0, 0, 0.9) !important;
-        cursor: pointer !important;
-        z-index: 995 !important;
-        display: none;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 6px !important;
-        min-height: 44px !important;
-        transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-        white-space: nowrap !important;
-    }
-
-    .mobile-fab-post:active {
-        transform: scale(0.95) translate(1px, 1px) !important;
-        box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.9) !important;
-    }
-
-    /* Mobile Wire Header & Navigation Sub-Tabs */
-    .wire-box-header {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        gap: 8px !important;
-        flex-wrap: wrap !important;
-        margin-bottom: 14px !important;
-        padding-bottom: 10px !important;
-    }
-
-    .wire-box-header .wire-section-title {
-        font-size: 1.35rem !important;
-        margin: 0 !important;
-        white-space: nowrap !important;
-    }
-
-    .wire-tab-bar {
-        display: flex !important;
-        gap: 6px !important;
-        flex-shrink: 0 !important;
-    }
-
-    .wire-nav-tab {
-        padding: 6px 10px !important;
-        min-height: 36px !important;
-        font-size: clamp(0.64rem, 2.4vw, 0.74rem) !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        box-sizing: border-box !important;
-    }
-
-    html.midnight-edition .mobile-segmented-bar {
-        background: #1c1a17 !important;
-        border-color: #e5ded4 !important;
-        box-shadow: 4px 4px 0px #38342f !important;
-    }
-
-    html.midnight-edition .mobile-tab-btn {
-        background: #25221e !important;
-        border: 2px solid #e5ded4 !important;
-        color: #f5f2eb !important;
-        box-shadow: 1px 1px 0px #e5ded4 !important;
-    }
-
-    html.midnight-edition .mobile-tab-btn:hover {
-        background: #35302a !important;
-    }
-
-    html.midnight-edition .mobile-tab-btn.active {
-        background: #e5ded4 !important;
-        color: #111111 !important;
-        border-color: #e5ded4 !important;
-        box-shadow: none !important;
-    }
-
-    html.midnight-edition .mobile-fab-post {
-        background: #e5ded4 !important;
-        color: #111111 !important;
-        border-color: #ffffff !important;
-    }
-
-    /* Mobile Active Dispatch Owner Actions */
-    .feed-owner-bar {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 6px !important;
-        margin-top: 8px !important;
-        padding-top: 6px !important;
-        border-top: 1px dotted var(--ink-light, #777) !important;
-        width: 100% !important;
-    }
-
-    .feed-owner-badge {
-        text-align: center !important;
-        margin-bottom: 2px !important;
-        font-family: var(--font-mono, monospace) !important;
-        font-size: 0.62rem !important;
-        letter-spacing: 0.05em !important;
-    }
-
-    .feed-owner-actions {
-        display: flex !important;
-        flex-direction: row !important;
-        align-items: stretch !important;
-        gap: 6px !important;
-        width: 100% !important;
-    }
-
-    .feed-conquer-btn,
-    .feed-resolve-btn,
-    .feed-shred-btn {
-        flex: 1 1 0 !important;
-        text-align: center !important;
-        justify-content: center !important;
-        min-height: 38px !important;
-        padding: 6px 4px !important;
-        font-size: clamp(0.58rem, 2.2vw, 0.68rem) !important;
-        white-space: nowrap !important;
-    }
-
-    html.midnight-edition .feed-owner-bar {
-        border-top-color: rgba(239, 227, 211, 0.25) !important;
-    }
-
-    html.midnight-edition .feed-owner-badge {
-        color: #A39686 !important;
-    }
-
-    html.midnight-edition .feed-conquer-btn,
-    html.midnight-edition .feed-resolve-btn {
-        background: #EFE3D3 !important;
-        color: #141210 !important;
-        border-color: #EFE3D3 !important;
-    }
-
-    html.midnight-edition .feed-shred-btn {
-        background: transparent !important;
-        color: #EFE3D3 !important;
-        border-color: rgba(239, 227, 211, 0.6) !important;
-    }
 }
 
-@media (max-width: 360px) {
-    .wire-box-header {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 8px !important;
-    }
+/* ==========================================================================
+   13. MODALS & POP-OVERS (Apple Sheet Physics & Frosted Backdrops)
+   ========================================================================== */
+.credential-modal-backdrop {
+    background: rgba(4, 6, 12, 0.75) !important;
+    backdrop-filter: blur(24px) !important;
+    -webkit-backdrop-filter: blur(24px) !important;
+}
 
-    .wire-tab-bar {
-        width: 100% !important;
-        display: flex !important;
-    }
+.credential-modal-dialog,
+.bureau-dialog {
+    background: var(--apple-glass-elevated) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 24px !important;
+    backdrop-filter: var(--apple-blur-deck) !important;
+    -webkit-backdrop-filter: var(--apple-blur-deck) !important;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65), 0 1px 1px rgba(255, 255, 255, 0.12) inset !important;
+    color: var(--text-primary) !important;
+}
 
-    .wire-nav-tab {
-        flex: 1 1 0px !important;
-        text-align: center !important;
-    }
+.credential-modal-header {
+    border-bottom: 1px solid var(--apple-glass-border-subtle) !important;
+}
 
-    .feed-owner-actions {
-        flex-direction: column !important;
-        gap: 6px !important;
-    }
+.credential-modal-title {
+    font-family: var(--font-heading) !important;
+    font-size: 1.6rem !important;
+    color: #ffffff !important;
+}
+
+.credential-modal-close {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border: 1px solid var(--apple-glass-border) !important;
+    border-radius: 50% !important;
+    color: var(--text-primary) !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: transform 0.16s var(--spring-press) !important;
+}
+
+.credential-modal-close:active {
+    transform: scale(0.92) !important;
+}
+
+/* ==========================================================================
+   14. HIGH-CONTRAST OBSIDIAN MIDNIGHT EDITION (html.midnight-edition)
+   ========================================================================== */
+html.midnight-edition,
+body.midnight-edition {
+    --apple-canvas: #030406;
+    --apple-glass-bg: rgba(6, 8, 14, 0.88);
+    --apple-glass-elevated: rgba(10, 14, 24, 0.90);
+    --apple-glass-card: rgba(8, 12, 20, 0.80);
+    --apple-glass-border: rgba(255, 255, 255, 0.14);
+    --apple-glass-border-subtle: rgba(255, 255, 255, 0.08);
+    background-color: #030406 !important;
 }

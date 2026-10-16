@@ -172,6 +172,7 @@
         harmonizeLegacyAudio();
         setupHeaderAudioControl();
         setupAudioEventListeners();
+        setupAppleMicroInteractions();
         applyHumaneLabels();
 
         // Enforce labels cleanly without infinite mutation loops
@@ -258,6 +259,53 @@
                 }, 20);
             });
         }
+    }
+
+    // Apple HIG Micro-interactions: Elastic Textarea, Radial Ring, and Tactile Haptics
+    function setupAppleMicroInteractions() {
+        const taskInput = document.getElementById('task-input');
+        const charRing = document.getElementById('char-ring-fill');
+
+        if (taskInput) {
+            const adjustHeightAndRing = () => {
+                // Elastic height expansion up to comfortable maximum
+                taskInput.style.height = 'auto';
+                const nextHeight = Math.max(72, Math.min(taskInput.scrollHeight, 220));
+                taskInput.style.height = nextHeight + 'px';
+
+                // Radial progress ring animation
+                if (charRing) {
+                    const len = taskInput.value.length;
+                    const circumference = 56.5;
+                    const progress = Math.min(len / 150, 1);
+                    charRing.style.strokeDashoffset = (circumference * (1 - progress)).toString();
+                    if (len >= 145) {
+                        charRing.style.stroke = 'var(--rose-starlight)';
+                    } else if (len >= 120) {
+                        charRing.style.stroke = 'var(--warm-starlight)';
+                    } else {
+                        charRing.style.stroke = 'var(--starlight-cyan)';
+                    }
+                }
+            };
+
+            taskInput.addEventListener('input', adjustHeightAndRing);
+            adjustHeightAndRing();
+        }
+
+        // Apple Stamp Bounce & Haptics delegation
+        document.addEventListener('click', (e) => {
+            const stampBtn = e.target.closest('.reaction-stamp-btn');
+            if (stampBtn) {
+                if (navigator.vibrate) {
+                    try { navigator.vibrate(10); } catch(err) {}
+                }
+                stampBtn.classList.remove('apple-bounced');
+                void stampBtn.offsetWidth; // Force reflow
+                stampBtn.classList.add('apple-bounced');
+                setTimeout(() => stampBtn.classList.remove('apple-bounced'), 360);
+            }
+        });
     }
 
     // Apply Humane, Relatable Portal Copy
