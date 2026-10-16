@@ -60,6 +60,9 @@ body, html {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
 }
 
 /* Disable Cosmic Particles & Horizon in Newspaper Mode */
@@ -567,7 +570,7 @@ html.midnight-edition .ring-fill {
     padding: 4px 8px !important;
     border-radius: 2px !important;
     cursor: pointer !important;
-    transition: all 0.15s ease !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
 }
 
 .chip-btn:hover {
@@ -624,7 +627,7 @@ html.midnight-edition .ring-fill {
     border-radius: 6px !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
     cursor: pointer !important;
-    transition: all 0.15s ease !important;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
     width: 100% !important;
     display: flex !important;
     align-items: center !important;
@@ -657,7 +660,7 @@ html.midnight-edition .ring-fill {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    transition: all 0.15s ease !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
 }
 
 .btn-panic-clean:hover, #panic-btn:hover {
@@ -719,7 +722,7 @@ html.midnight-edition .ring-fill {
     padding: 6px 12px !important;
     border-radius: 6px !important;
     cursor: pointer !important;
-    transition: all 0.15s ease !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -746,6 +749,8 @@ html.midnight-edition .ring-fill {
     max-height: 1320px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
+    overscroll-behavior-y: contain !important;
+    -webkit-overflow-scrolling: touch !important;
     scrollbar-width: thin !important;
     scrollbar-color: var(--ink-rule) transparent !important;
 }
@@ -886,7 +891,7 @@ html.midnight-edition .accomplished-feed-container::-webkit-scrollbar-thumb {
     border-radius: 6px !important;
     cursor: pointer !important;
     box-shadow: none !important;
-    transition: all 0.15s ease !important;
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1062,7 +1067,7 @@ html.midnight-edition .accomplished-feed-container::-webkit-scrollbar-thumb {
     display: inline-flex !important;
     align-items: center !important;
     gap: 6px !important;
-    transition: all 0.15s ease !important;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
     text-transform: uppercase !important;
 }
 
@@ -1912,7 +1917,7 @@ html.midnight-edition .midnight-toggle-btn:hover {
         white-space: nowrap !important;
         padding: 4px 6px !important;
         box-shadow: none !important;
-        transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        transition: background 0.2s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         box-sizing: border-box !important;
     }
 
@@ -2196,6 +2201,7 @@ html.midnight-edition .midnight-toggle-btn:hover {
         gap: 6px !important;
         opacity: 0 !important;
         pointer-events: none !important;
+        will-change: transform, opacity !important;
         transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.12s ease !important;
         white-space: nowrap !important;
     }
