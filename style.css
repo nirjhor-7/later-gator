@@ -1321,8 +1321,8 @@ button {
 
 /* Feed */
 .feed-container {
-    height: 850px;
-    max-height: 850px;
+    height: 1320px;
+    max-height: 1320px;
     overflow-y: auto;
     overscroll-behavior-y: contain;
     padding: 18px 20px;
