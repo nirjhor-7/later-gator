@@ -303,6 +303,17 @@ html, body {
     margin: 0 6px !important;
 }
 
+.masthead-explainer {
+    text-align: center !important;
+    font-family: var(--font-apple-system) !important;
+    font-size: clamp(0.80rem, 1.2vw, 0.94rem) !important;
+    font-weight: 400 !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.45 !important;
+    max-width: 600px !important;
+    margin: 6px auto 0 !important;
+}
+
 .tagline-short { display: none !important; }
 .tagline-full { display: inline !important; }
 
@@ -1141,10 +1152,15 @@ html, body {
 
 @media (max-width: 768px) {
     .page-border {
-        margin: 10px auto 20px !important;
-        padding: 16px 14px 110px !important;
-        border-radius: 20px !important;
+        margin: 8px auto 20px !important;
+        padding: 12px 12px calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+        border-radius: 18px !important;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    }
+
+    .masthead {
+        padding: 0 0 10px 0 !important;
+        margin-bottom: 12px !important;
     }
 
     .masthead-meta {
@@ -1153,12 +1169,7 @@ html, body {
         box-shadow: none !important;
         padding: 0 !important;
         flex-direction: column !important;
-        gap: 6px !important;
-    }
-
-    .masthead h1 {
-        font-size: 3.4rem !important;
-        letter-spacing: 1px !important;
+        gap: 4px !important;
     }
 
     .meta-col-left {
@@ -1168,7 +1179,7 @@ html, body {
         gap: 4px !important;
         font-size: clamp(0.56rem, 2.2vw, 0.65rem) !important;
         width: 100% !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 2px !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
         white-space: nowrap !important;
@@ -1183,34 +1194,96 @@ html, body {
         display: none !important;
     }
 
+    /* Single-row sleek Apple Control Capsule on Mobile */
     .meta-col-right {
         display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: center !important;
-        gap: 6px !important;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 4px !important;
         width: 100% !important;
-        margin-top: 6px !important;
+        margin: 4px 0 6px 0 !important;
+        background: rgba(255, 255, 255, 0.04) !important;
+        padding: 3px !important;
+        border-radius: 9999px !important;
+        border: 1px solid var(--apple-glass-border-subtle) !important;
+        box-sizing: border-box !important;
     }
 
     .portal-control-btn,
     .header-pass-btn,
     .header-auth-btn,
     .midnight-toggle-btn {
-        flex: 1 1 calc(50% - 6px) !important;
-        max-width: calc(50% - 6px) !important;
-        min-height: 44px !important;
-        font-size: 0.72rem !important;
-        padding: 6px 4px !important;
+        flex: 1 1 0px !important;
+        min-width: 0 !important;
+        min-height: 34px !important;
+        font-size: clamp(0.50rem, 2.0vw, 0.68rem) !important;
+        font-weight: 600 !important;
+        padding: 4px 1px !important;
+        border-radius: 9999px !important;
         text-align: center !important;
         justify-content: center !important;
         white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
         box-sizing: border-box !important;
+    }
+
+    #portal-audio-btn::before {
+        display: none !important;
+    }
+
+    .eyebrow-full { display: none !important; }
+    .eyebrow-short { display: inline !important; }
+    .lead-story-ornament { display: none !important; }
+    .lead-story-eyebrow {
+        font-size: 0.65rem !important;
+        padding: 3px 10px !important;
+        white-space: nowrap !important;
+    }
+
+    .masthead h1 {
+        font-size: clamp(2.3rem, 10vw, 3.2rem) !important;
+        line-height: 1 !important;
+        letter-spacing: -0.02em !important;
+        margin: 6px 0 2px 0 !important;
+    }
+
+    .masthead-sub {
+        font-size: clamp(0.68rem, 2.4vw, 0.76rem) !important;
+        letter-spacing: 0.10em !important;
+        margin: 4px 0 2px 0 !important;
+    }
+
+    .masthead-tagline {
+        font-size: clamp(0.64rem, 2.2vw, 0.70rem) !important;
+        margin-top: 2px !important;
+    }
+
+    .masthead-explainer {
+        font-size: clamp(0.74rem, 2.6vw, 0.84rem) !important;
+        line-height: 1.4 !important;
+        margin: 4px auto 6px !important;
+    }
+
+    /* Sleek Ticker Capsule */
+    .telegraph-ticker {
+        height: 32px !important;
+        margin-bottom: 12px !important;
+        border-radius: 9999px !important;
+        padding: 2px 4px !important;
+    }
+
+    .ticker-badge {
+        padding: 2px 8px !important;
+        font-size: 0.65rem !important;
+        border-radius: 9999px !important;
     }
 
     /* Single column stacking (F5-4 passes cleanly) */
     .newspaper-grid {
         flex-direction: column !important;
-        gap: 16px !important;
+        gap: 14px !important;
     }
 
     .left-col,
@@ -1224,23 +1297,24 @@ html, body {
     .mobile-segmented-bar {
         position: fixed !important;
         top: auto !important;
-        bottom: calc(16px + env(safe-area-inset-bottom, 0px)) !important;
+        bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: calc(100% - 32px) !important;
-        max-width: 420px !important;
-        height: auto !important;
+        width: calc(100% - 24px) !important;
+        max-width: 380px !important;
+        height: 52px !important;
         display: flex !important;
-        gap: 6px !important;
-        background: rgba(14, 18, 32, 0.88) !important;
+        align-items: center !important;
+        gap: 4px !important;
+        background: rgba(14, 18, 32, 0.90) !important;
         backdrop-filter: blur(28px) saturate(200%) !important;
         -webkit-backdrop-filter: blur(28px) saturate(200%) !important;
         border: 1px solid rgba(255, 255, 255, 0.16) !important;
         border-radius: 9999px !important;
-        padding: 5px !important;
+        padding: 4px !important;
         margin: 0 !important;
         z-index: 1000 !important;
-        box-shadow: 0 14px 40px rgba(0, 0, 0, 0.65), 0 1px 1px rgba(255, 255, 255, 0.14) inset !important;
+        box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 1px 1px rgba(255, 255, 255, 0.14) inset !important;
         box-sizing: border-box !important;
     }
 
@@ -1262,8 +1336,8 @@ html, body {
         background: transparent !important;
         color: var(--text-muted) !important;
         font-family: var(--font-apple-system) !important;
-        font-size: clamp(0.66rem, 2.4vw, 0.78rem) !important;
-        font-weight: 600 !important;
+        font-size: clamp(0.68rem, 2.4vw, 0.78rem) !important;
+        font-weight: 700 !important;
         letter-spacing: 0.02em !important;
         cursor: pointer !important;
         display: flex !important;
@@ -1271,9 +1345,9 @@ html, body {
         justify-content: center !important;
         gap: 4px !important;
         white-space: nowrap !important;
-        padding: 6px 8px !important;
+        padding: 6px 4px !important;
         box-shadow: none !important;
-        transition: all 0.2s var(--spring-bounce) !important;
+        transition: all 0.22s var(--spring-bounce) !important;
         box-sizing: border-box !important;
     }
 
@@ -1282,9 +1356,81 @@ html, body {
     }
 
     .mobile-tab-btn.active {
-        background: rgba(255, 255, 255, 0.16) !important;
+        background: rgba(255, 255, 255, 0.18) !important;
         color: #ffffff !important;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3), 0 0 14px rgba(56, 189, 248, 0.25) !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35), 0 0 14px rgba(56, 189, 248, 0.28) !important;
+    }
+
+    /* Mobile Quick Chips Reel */
+    .quick-chips {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        padding: 4px 2px 8px !important;
+        gap: 6px !important;
+        scrollbar-width: none !important;
+    }
+    .quick-chips::-webkit-scrollbar {
+        display: none !important;
+    }
+    .chip-btn {
+        flex: 0 0 auto !important;
+        padding: 6px 12px !important;
+        font-size: 0.72rem !important;
+        min-height: 38px !important;
+        border-radius: 9999px !important;
+    }
+
+    /* Mobile Textarea & Byline */
+    #task-input {
+        min-height: 85px !important;
+        font-size: 0.95rem !important;
+        padding: 12px !important;
+        border-radius: 14px !important;
+    }
+
+    .byline-input-row {
+        height: 38px !important;
+        border-radius: 9999px !important;
+    }
+
+    .action-buttons {
+        flex-direction: column !important;
+        gap: 8px !important;
+        margin-top: 10px !important;
+    }
+
+    .btn-heavy, .btn-outline {
+        width: 100% !important;
+        min-height: 48px !important;
+        border-radius: 9999px !important;
+        font-size: 0.82rem !important;
+    }
+
+    /* Mobile Feed Cards & Reactions */
+    .feed-card {
+        padding: 12px 12px 10px !important;
+        border-radius: 14px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .feed-reactions {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+        width: 100% !important;
+        margin-top: 8px !important;
+    }
+
+    .reaction-stamp-btn {
+        min-height: 42px !important;
+        min-width: 44px !important;
+        padding: 4px 2px !important;
+        font-size: 0.68rem !important;
+        justify-content: center !important;
+        text-align: center !important;
+        border-radius: 9999px !important;
     }
 
     /* Mobile View Switching Rules */
@@ -1293,6 +1439,11 @@ html, body {
         order: 1 !important;
         display: block !important;
         width: 100% !important;
+    }
+
+    body.mobile-view-dispatch #telegraph-ticker,
+    body.mobile-view-dispatch .masthead-explainer {
+        display: none !important;
     }
 
     body.mobile-view-dispatch #box-input {
@@ -1320,7 +1471,40 @@ html, body {
         width: 100% !important;
     }
 
-    body.mobile-view-wire #lead-story-banner,
+    body.mobile-view-wire #lead-story-banner {
+        display: block !important;
+        padding: 12px 14px 10px !important;
+        margin-bottom: 12px !important;
+        border-radius: 16px !important;
+    }
+
+    body.mobile-view-wire .lead-story-header {
+        margin-bottom: 4px !important;
+        font-size: 0.65rem !important;
+    }
+
+    body.mobile-view-wire .lead-story-headline {
+        font-size: clamp(1.1rem, 4.5vw, 1.35rem) !important;
+        line-height: 1.3 !important;
+        margin: 4px 0 6px 0 !important;
+    }
+
+    body.mobile-view-wire .lead-story-meta {
+        font-size: 0.65rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    body.mobile-view-wire .lead-stamp-prompt {
+        display: none !important;
+    }
+
+    body.mobile-view-wire .lead-reactions {
+        display: grid !important;
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+
     body.mobile-view-wire #box-wire,
     body.mobile-view-wire #box-video {
         display: block !important;
@@ -1329,7 +1513,7 @@ html, body {
     body.mobile-view-wire .feed-container,
     body.mobile-view-wire .accomplished-feed-container,
     body.mobile-view-wire #box-wire {
-        padding-bottom: 110px !important;
+        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
     body.mobile-view-wire .left-col,
@@ -1347,6 +1531,11 @@ html, body {
         order: 1 !important;
         display: block !important;
         width: 100% !important;
+    }
+
+    body.mobile-view-stats #telegraph-ticker,
+    body.mobile-view-stats .masthead-explainer {
+        display: none !important;
     }
 
     body.mobile-view-stats .right-col {
