@@ -457,7 +457,7 @@ html.midnight-edition .ring-fill {
 .newspaper-grid {
     display: flex !important;
     gap: 32px !important;
-    align-items: flex-start !important;
+    align-items: stretch !important;
 }
 
 .left-col {
@@ -468,6 +468,11 @@ html.midnight-edition .ring-fill {
     gap: 24px !important;
 }
 
+.left-col #box-visitors,
+.left-col .visitor-footer {
+    margin-top: auto !important;
+}
+
 .right-col {
     flex: 1 !important;
     min-width: 0 !important;
@@ -476,6 +481,10 @@ html.midnight-edition .ring-fill {
     display: flex !important;
     flex-direction: column !important;
     gap: 24px !important;
+}
+
+.right-col #box-video {
+    margin-top: auto !important;
 }
 
 /* Article Boxes Base */
@@ -745,8 +754,8 @@ html.midnight-edition .ring-fill {
     padding: 0 !important;
     padding-right: 4px !important;
     box-shadow: none !important;
-    height: 1320px !important;
-    max-height: 1320px !important;
+    height: 1480px !important;
+    max-height: 1480px !important;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     overscroll-behavior-y: contain !important;
@@ -781,8 +790,8 @@ html.midnight-edition .accomplished-feed-container::-webkit-scrollbar-thumb {
 @media (min-width: 769px) and (max-width: 1100px) {
     .feed-container,
     .accomplished-feed-container {
-        height: 1480px !important;
-        max-height: 1480px !important;
+        height: 1560px !important;
+        max-height: 1560px !important;
     }
 }
 

@@ -448,10 +448,69 @@
         });
     }
 
+    /**
+     * Automatic Dual-Column Baseline Balancer
+     * Mathematically balances the editorial stream container so left and right columns
+     * terminate on the exact same horizontal baseline without voids on either side.
+     */
+    function balanceBroadsheetColumns() {
+        if (typeof window === 'undefined' || window.innerWidth <= 768) {
+            const feedEls = document.querySelectorAll('.feed-container, .accomplished-feed-container');
+            feedEls.forEach(el => {
+                el.style.removeProperty('height');
+                el.style.removeProperty('max-height');
+            });
+            return;
+        }
+
+        const leftCol = document.querySelector('.left-col');
+        const rightCol = document.querySelector('.right-col');
+        const feedContainer = document.getElementById('feed-container');
+        const accomplishedContainer = document.getElementById('accomplished-feed-container');
+
+        if (!leftCol || !rightCol || !feedContainer) return;
+
+        const activeFeed = (accomplishedContainer && accomplishedContainer.style.display !== 'none')
+            ? accomplishedContainer
+            : feedContainer;
+
+        const nonFeedHeight = rightCol.offsetHeight - activeFeed.offsetHeight;
+        const leftHeight = leftCol.offsetHeight;
+        const targetHeight = Math.max(700, leftHeight - nonFeedHeight);
+
+        feedContainer.style.setProperty('height', `${targetHeight}px`, 'important');
+        feedContainer.style.setProperty('max-height', `${targetHeight}px`, 'important');
+
+        if (accomplishedContainer) {
+            accomplishedContainer.style.setProperty('height', `${targetHeight}px`, 'important');
+            accomplishedContainer.style.setProperty('max-height', `${targetHeight}px`, 'important');
+        }
+    }
+
     // Initialize
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initPortal);
+        document.addEventListener('DOMContentLoaded', () => {
+            initPortal();
+            balanceBroadsheetColumns();
+        });
     } else {
         initPortal();
+        balanceBroadsheetColumns();
+    }
+
+    window.addEventListener('resize', balanceBroadsheetColumns);
+
+    if (typeof ResizeObserver !== 'undefined') {
+        window.addEventListener('DOMContentLoaded', () => {
+            const leftCol = document.querySelector('.left-col');
+            if (leftCol) {
+                let timer = null;
+                const ro = new ResizeObserver(() => {
+                    if (timer) cancelAnimationFrame(timer);
+                    timer = requestAnimationFrame(balanceBroadsheetColumns);
+                });
+                ro.observe(leftCol);
+            }
+        });
     }
 })();
