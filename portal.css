@@ -763,8 +763,6 @@ html.midnight-edition .ring-fill {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
     box-sizing: border-box !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-    content-visibility: auto;
-    contain-intrinsic-size: 0 130px;
 }
 
 .feed-item:hover, .feed-card:hover {
@@ -2122,7 +2120,7 @@ html.midnight-edition .midnight-toggle-btn:hover {
     body.mobile-view-wire .feed-container,
     body.mobile-view-wire .accomplished-feed-container,
     body.mobile-view-wire #box-wire {
-        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: 0 !important;
     }
 
     /* Mobile Jump to Latest Capsule - Positioned cleanly ABOVE the bottom dock */
@@ -2269,7 +2267,7 @@ html.midnight-edition .midnight-toggle-btn:hover {
     body.mobile-view-dispatch #box-input,
     body.mobile-view-stats .left-col,
     body.mobile-view-stats #box-visitors {
-        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: 0 !important;
     }
 
     .eyebrow-full { display: none !important; }
