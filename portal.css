@@ -1035,6 +1035,71 @@ html.midnight-edition .ring-fill {
 }
 
 /* ==========================================================================
+   8.5 FLOATING WIRE JUMP TO LATEST DISPATCH BUTTON (DESKTOP)
+   ========================================================================== */
+.wire-jump-latest-btn {
+    position: fixed !important;
+    bottom: 28px !important;
+    right: 28px !important;
+    left: auto !important;
+    height: 38px !important;
+    padding: 0 16px !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    border-radius: 9999px !important;
+    background: var(--paper-surface) !important;
+    color: var(--ink-black) !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10) !important;
+    z-index: 990 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    cursor: pointer !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(8px) scale(0.95) !important;
+    transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), background 0.12s ease, color 0.12s ease !important;
+    user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    touch-action: manipulation !important;
+    box-sizing: border-box !important;
+}
+
+.wire-jump-latest-btn.visible {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) scale(1) !important;
+}
+
+.wire-jump-latest-btn:hover {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16) !important;
+}
+
+.wire-jump-latest-btn:active {
+    transform: translateY(0) scale(0.97) !important;
+}
+
+html.midnight-edition .wire-jump-latest-btn {
+    background: #1c1a17 !important;
+    border-color: rgba(229, 222, 212, 0.3) !important;
+    color: #f5f2eb !important;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45) !important;
+}
+
+html.midnight-edition .wire-jump-latest-btn:hover {
+    background: #e5ded4 !important;
+    border-color: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+/* ==========================================================================
    8.5 COMMERCIAL BREAK VIDEO BOX
    ========================================================================== */
 .video-box {
@@ -2060,6 +2125,61 @@ html.midnight-edition .midnight-toggle-btn:hover {
         padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
+    /* Mobile Jump to Latest Capsule - Positioned cleanly ABOVE the bottom dock */
+    .wire-jump-latest-btn {
+        position: fixed !important;
+        top: auto !important;
+        bottom: calc(72px + env(safe-area-inset-bottom, 0px)) !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) translateY(12px) scale(0.94) !important;
+        height: 36px !important;
+        padding: 0 16px !important;
+        border-radius: 9999px !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        background: rgba(245, 242, 235, 0.96) !important;
+        backdrop-filter: blur(16px) !important;
+        -webkit-backdrop-filter: blur(16px) !important;
+        color: var(--ink-black) !important;
+        font-family: var(--font-mono) !important;
+        font-size: 0.70rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.05em !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14) !important;
+        z-index: 999 !important;
+        display: none !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background 0.12s ease !important;
+        white-space: nowrap !important;
+    }
+
+    body.mobile-view-wire .wire-jump-latest-btn.visible {
+        display: inline-flex !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        transform: translateX(-50%) translateY(0) scale(1) !important;
+    }
+
+    body.mobile-view-wire .wire-jump-latest-btn:active {
+        transform: translateX(-50%) translateY(1px) scale(0.96) !important;
+    }
+
+    html.midnight-edition .wire-jump-latest-btn {
+        background: rgba(24, 22, 20, 0.96) !important;
+        border-color: rgba(229, 222, 212, 0.35) !important;
+        color: #f5f2eb !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5) !important;
+    }
+
+    html.midnight-edition .wire-jump-latest-btn:hover {
+        background: #e5ded4 !important;
+        color: #111111 !important;
+    }
+
     body.mobile-view-wire .left-col,
     body.mobile-view-wire #box-input,
     body.mobile-view-wire #box-stats,
@@ -2205,4 +2325,39 @@ html.midnight-edition .midnight-toggle-btn:hover {
         padding: 3px 6px !important;
         font-size: 0.55rem !important;
     }
+}
+
+/* ==========================================================================
+   11. FLUID INTERACTION PHYSICS & SYSTEM VELOCITY
+   ========================================================================== */
+html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html {
+        scroll-behavior: auto !important;
+    }
+}
+
+*, *::before, *::after {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Tactile Spring Press Physics on Interactive Elements */
+button:active,
+.mobile-tab-btn:active,
+.reaction-stamp-btn:active,
+.chip-btn:active,
+.portal-control-btn:active,
+.wire-nav-tab:active,
+.feed-clip-btn:active,
+.lead-clip-btn:active,
+.action-btn:active,
+.header-auth-btn:active,
+.header-pass-btn:active,
+.midnight-toggle-btn:active {
+    transform: scale(0.97) !important;
+    transition: transform 0.08s ease !important;
 }
