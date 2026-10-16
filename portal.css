@@ -72,15 +72,14 @@ body::before,
 .page-border {
     position: relative !important;
     z-index: 1 !important;
-    max-width: 1200px !important;
-    margin: 30px auto 50px !important;
-    padding: 28px 32px 40px !important;
+    max-width: 1140px !important;
+    margin: 24px auto 44px !important;
+    padding: 28px 36px 40px !important;
     background: var(--paper-surface) !important;
-    border: 4px solid var(--ink-rule) !important;
-    outline: 2px solid var(--ink-rule) !important;
-    outline-offset: 4px !important;
-    border-radius: 4px !important;
-    box-shadow: 12px 12px 0px var(--ink-rule) !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    outline: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 36px rgba(0, 0, 0, 0.07), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
     box-sizing: border-box !important;
 }
 
@@ -90,7 +89,7 @@ body::before,
 .masthead {
     background: transparent !important;
     border: none !important;
-    border-bottom: 4px double var(--ink-rule) !important;
+    border-bottom: 2px solid var(--ink-rule) !important;
     padding: 0 0 16px 0 !important;
     margin-bottom: 20px !important;
     border-radius: 0 !important;
@@ -147,33 +146,39 @@ body::before,
 }
 
 .meta-col-right {
-    display: flex !important;
-    align-items: center !important;
+    display: inline-flex !important;
+    align-items: stretch !important;
     justify-content: flex-end !important;
-    gap: 6px !important;
+    background: var(--paper-surface) !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
     flex-shrink: 0 !important;
     white-space: nowrap !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
 }
 
-/* Header Action Pills */
+/* Header Action Segmented Controls */
 .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
-    width: 104px !important;
+    min-width: 90px !important;
     height: 32px !important;
     box-sizing: border-box !important;
-    background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
+    background: transparent !important;
+    border: none !important;
+    border-right: 1px solid rgba(17, 17, 17, 0.2) !important;
     color: var(--ink-black) !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.67rem !important;
+    font-size: 0.68rem !important;
     font-weight: 700 !important;
-    letter-spacing: 0.02em !important;
+    letter-spacing: 0.04em !important;
     line-height: 1 !important;
-    padding: 0 4px !important;
+    padding: 0 10px !important;
     margin: 0 !important;
-    border-radius: 2px !important;
+    border-radius: 0 !important;
     cursor: pointer !important;
-    box-shadow: 2px 2px 0px var(--ink-rule) !important;
-    transition: all 0.15s ease !important;
+    box-shadow: none !important;
+    transition: background 0.15s ease, color 0.15s ease !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -183,16 +188,18 @@ body::before,
     overflow: hidden !important;
 }
 
+.meta-col-right button:last-child,
+.header-auth-btn {
+    border-right: none !important;
+}
+
 .portal-control-btn:hover, .header-pass-btn:hover, .header-auth-btn:hover, .midnight-toggle-btn:hover {
     background: var(--ink-black) !important;
     color: var(--paper-surface) !important;
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 3px 3px 0px var(--ink-rule) !important;
 }
 
 .portal-control-btn:active, .header-pass-btn:active, .header-auth-btn:active, .midnight-toggle-btn:active {
-    transform: translate(1px, 1px) !important;
-    box-shadow: 1px 1px 0px var(--ink-rule) !important;
+    opacity: 0.8 !important;
 }
 
 #midnight-toggle-btn {
@@ -310,13 +317,13 @@ html.midnight-edition .ring-fill {
    ========================================================================== */
 .telegraph-ticker {
     background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 8px 14px !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    border-radius: 6px !important;
+    padding: 7px 12px !important;
     margin-bottom: 24px !important;
     display: flex !important;
     align-items: center !important;
-    box-shadow: 3px 3px 0px var(--ink-rule) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03) !important;
     box-sizing: border-box !important;
 }
 
@@ -324,24 +331,26 @@ html.midnight-edition .ring-fill {
     background: var(--ink-black) !important;
     color: var(--paper-surface) !important;
     border: 1px solid var(--ink-black) !important;
-    border-radius: 2px !important;
+    border-radius: 4px !important;
     padding: 3px 8px !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.74rem !important;
+    font-size: 0.72rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.08em !important;
     margin-right: 12px !important;
     flex-shrink: 0 !important;
+    z-index: 2 !important;
 }
 
 .ticker-window {
     overflow: hidden !important;
     flex: 1 !important;
+    margin-left: 4px !important;
 }
 
 .ticker-track {
     font-family: var(--font-mono) !important;
-    font-size: 0.85rem !important;
+    font-size: 0.82rem !important;
     font-weight: 700 !important;
     color: var(--ink-black) !important;
     white-space: nowrap !important;
@@ -351,12 +360,12 @@ html.midnight-edition .ring-fill {
    6. SPOTLIGHT CROWN DISPATCH (#lead-story-banner)
    ========================================================================== */
 .lead-story-banner {
-    background: var(--paper-card) !important;
-    border: 3px solid var(--ink-rule) !important;
-    box-shadow: 6px 6px 0px var(--ink-rule) !important;
-    border-radius: 4px !important;
+    background: var(--paper-surface) !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+    border-radius: 10px !important;
     padding: 24px !important;
-    margin-bottom: 26px !important;
+    margin-bottom: 24px !important;
     position: relative !important;
     box-sizing: border-box !important;
     text-align: center !important;
@@ -375,10 +384,11 @@ html.midnight-edition .ring-fill {
     font-size: 0.74rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.12em !important;
-    background: var(--ink-black) !important;
-    color: var(--paper-surface) !important;
+    background: rgba(185, 28, 28, 0.06) !important;
+    color: var(--stamp-red) !important;
+    border: 1px solid var(--stamp-red) !important;
     padding: 3px 12px !important;
-    border-radius: 2px !important;
+    border-radius: 9999px !important;
     text-transform: uppercase !important;
     display: inline-block !important;
 }
@@ -458,7 +468,7 @@ html.midnight-edition .ring-fill {
 .right-col {
     flex: 1 !important;
     min-width: 0 !important;
-    border-left: 2px solid var(--ink-rule) !important;
+    border-left: 1.5px solid var(--ink-rule) !important;
     padding-left: 32px !important;
     display: flex !important;
     flex-direction: column !important;
@@ -468,10 +478,10 @@ html.midnight-edition .ring-fill {
 /* Article Boxes Base */
 .article-box {
     background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    box-shadow: 6px 6px 0px var(--ink-rule) !important;
-    border-radius: 4px !important;
-    padding: 22px !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+    border-radius: 8px !important;
+    padding: 24px !important;
     position: relative !important;
     box-sizing: border-box !important;
 }
@@ -490,7 +500,7 @@ html.midnight-edition .ring-fill {
     letter-spacing: 1px !important;
     text-transform: uppercase !important;
     color: var(--ink-black) !important;
-    border-bottom: 2px solid var(--ink-rule) !important;
+    border-bottom: 1.5px solid var(--ink-rule) !important;
     padding-bottom: 6px !important;
     margin: 0 0 16px 0 !important;
     display: flex !important;
@@ -501,9 +511,9 @@ html.midnight-edition .ring-fill {
 /* Input Desk */
 .task-input-wrap {
     position: relative !important;
-    border: 2px solid var(--ink-rule) !important;
+    border: 1.5px solid var(--ink-rule) !important;
     background: #fafafa !important;
-    border-radius: 2px !important;
+    border-radius: 6px !important;
 }
 
 #task-input {
@@ -604,15 +614,15 @@ html.midnight-edition .ring-fill {
 .btn-post-wire, #later-btn {
     background: var(--ink-black) !important;
     color: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
+    border: 1.5px solid var(--ink-black) !important;
     font-family: var(--font-heading) !important;
-    font-size: 1.55rem !important;
+    font-size: 1.45rem !important;
     font-weight: 900 !important;
-    letter-spacing: 1.5px !important;
+    letter-spacing: 1.2px !important;
     text-transform: uppercase !important;
     padding: 12px 20px !important;
-    border-radius: 2px !important;
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.35) !important;
+    border-radius: 6px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
     cursor: pointer !important;
     transition: all 0.15s ease !important;
     width: 100% !important;
@@ -623,25 +633,25 @@ html.midnight-edition .ring-fill {
 
 .btn-post-wire:hover, #later-btn:hover {
     background: #2b2b2b !important;
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.4) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18) !important;
 }
 
 .btn-post-wire:active, #later-btn:active {
-    transform: translate(1px, 1px) !important;
-    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.3) !important;
+    transform: translateY(1px) !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12) !important;
 }
 
 .btn-panic-clean, #panic-btn {
     background: transparent !important;
     color: var(--stamp-red) !important;
-    border: 2px solid var(--stamp-red) !important;
+    border: 1.5px solid var(--stamp-red) !important;
     font-family: var(--font-mono) !important;
-    font-size: 0.82rem !important;
+    font-size: 0.80rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
     padding: 10px 14px !important;
-    border-radius: 2px !important;
+    border-radius: 6px !important;
     cursor: pointer !important;
     width: 100% !important;
     display: flex !important;
@@ -675,31 +685,41 @@ html.midnight-edition .ring-fill {
 }
 
 .wire-nav-tab {
-    background: var(--paper-card) !important;
-    border: 2px solid var(--ink-rule) !important;
+    background: transparent !important;
+    border: 1.5px solid var(--ink-rule) !important;
     color: var(--ink-muted) !important;
     font-family: var(--font-mono) !important;
     font-size: 0.76rem !important;
     font-weight: 700 !important;
     letter-spacing: 0.05em !important;
-    padding: 6px 12px !important;
-    border-radius: 2px !important;
+    padding: 6px 14px !important;
+    border-radius: 6px !important;
     cursor: pointer !important;
+    transition: all 0.15s ease !important;
 }
 
 .wire-nav-tab.active {
     background: var(--ink-black) !important;
     color: var(--paper-surface) !important;
-    box-shadow: 2px 2px 0px var(--ink-rule) !important;
+    border-color: var(--ink-black) !important;
+    box-shadow: none !important;
+}
+
+.feed-container,
+.accomplished-feed-container {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
 }
 
 .feed-item, .feed-card, .accomplished-item {
     background: var(--paper-surface) !important;
-    border: 2px solid var(--ink-rule) !important;
-    border-radius: 3px !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    border-radius: 8px !important;
     padding: 16px 20px !important;
-    margin-bottom: 16px !important;
-    box-shadow: 4px 4px 0px var(--ink-rule) !important;
+    margin-bottom: 14px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
     box-sizing: border-box !important;
     transition: transform 0.15s ease, box-shadow 0.15s ease !important;
     content-visibility: auto;
@@ -707,8 +727,8 @@ html.midnight-edition .ring-fill {
 }
 
 .feed-item:hover, .feed-card:hover {
-    transform: translate(-1px, -1px) !important;
-    box-shadow: 5px 5px 0px var(--ink-rule) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
 }
 
 .feed-item-meta, .feed-card-header {
@@ -865,10 +885,10 @@ html.midnight-edition, body.midnight-edition {
 }
 
 html.midnight-edition .page-border, body.midnight-edition .page-border {
-    background: #181614 !important;
-    border-color: #e5ded4 !important;
-    outline-color: #e5ded4 !important;
-    box-shadow: 12px 12px 0px #38342f !important;
+    background: #141416 !important;
+    border-color: rgba(229, 222, 212, 0.3) !important;
+    outline: none !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5) !important;
 }
 
 html.midnight-edition .masthead, body.midnight-edition .masthead {
@@ -936,8 +956,8 @@ html.midnight-edition .resolution-protocol-bar {
 
 html.midnight-edition .telegraph-ticker {
     background: #1c1a17 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 3px 3px 0px #38342f !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
 }
 
 html.midnight-edition .ticker-badge {
@@ -951,8 +971,8 @@ html.midnight-edition .ticker-track {
 
 html.midnight-edition .lead-story-banner {
     background: #1e1b18 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 6px 6px 0px #38342f !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 html.midnight-edition .lead-story-eyebrow {
@@ -975,13 +995,13 @@ html.midnight-edition .lead-story-badge {
 }
 
 html.midnight-edition .right-col {
-    border-left-color: #e5ded4 !important;
+    border-left-color: rgba(229, 222, 212, 0.2) !important;
 }
 
 html.midnight-edition .article-box {
     background: #181614 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 6px 6px 0px #38342f !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
 html.midnight-edition .article-box.wire-box {
@@ -990,15 +1010,23 @@ html.midnight-edition .article-box.wire-box {
     box-shadow: none !important;
 }
 
+html.midnight-edition .feed-container,
+html.midnight-edition .accomplished-feed-container {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
 html.midnight-edition .section-title {
     color: #ffffff !important;
-    border-bottom-color: #e5ded4 !important;
+    border-bottom-color: rgba(229, 222, 212, 0.2) !important;
 }
 
 html.midnight-edition .task-input-wrap,
 html.midnight-edition .byline-input-row {
     background: #201e1a !important;
-    border-color: #e5ded4 !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
 }
 
 html.midnight-edition #task-input,
@@ -1017,7 +1045,7 @@ html.midnight-edition .chips-label {
 
 html.midnight-edition .chip-btn {
     background: #25221e !important;
-    border-color: #e5ded4 !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
     color: #f5f2eb !important;
 }
 
@@ -1031,33 +1059,36 @@ html.midnight-edition #later-btn {
     background: #e5ded4 !important;
     color: #111111 !important;
     border-color: #ffffff !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
 }
 
 html.midnight-edition .btn-post-wire:hover,
 html.midnight-edition #later-btn:hover {
     background: #ffffff !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3) !important;
 }
 
 html.midnight-edition .wire-box-header {
-    border-bottom-color: #e5ded4 !important;
+    border-bottom-color: rgba(229, 222, 212, 0.2) !important;
 }
 
 html.midnight-edition .wire-nav-tab {
-    background: #25221e !important;
-    border-color: #e5ded4 !important;
+    background: transparent !important;
+    border-color: rgba(229, 222, 212, 0.3) !important;
     color: #c2bab0 !important;
 }
 
 html.midnight-edition .wire-nav-tab.active {
     background: #e5ded4 !important;
     color: #111111 !important;
+    border-color: #e5ded4 !important;
 }
 
 html.midnight-edition .feed-item,
 html.midnight-edition .feed-card {
     background: #1c1a17 !important;
-    border-color: #e5ded4 !important;
-    box-shadow: 4px 4px 0px #38342f !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
 }
 
 html.midnight-edition .feed-item-text,
@@ -1067,17 +1098,39 @@ html.midnight-edition .card-headline {
 
 html.midnight-edition .feed-item-footer,
 html.midnight-edition .feed-card-footer {
-    border-top-color: #38342f !important;
+    border-top-color: rgba(229, 222, 212, 0.15) !important;
 }
 
 html.midnight-edition .reaction-stamp-btn {
     background: #25221e !important;
-    border-color: #e5ded4 !important;
+    border-color: rgba(229, 222, 212, 0.3) !important;
     color: #f5f2eb !important;
-    box-shadow: 2px 2px 0px #e5ded4 !important;
+    box-shadow: none !important;
 }
 
 html.midnight-edition .reaction-stamp-btn:hover {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .meta-col-right {
+    background: #181614 !important;
+    border-color: rgba(229, 222, 212, 0.35) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+}
+
+html.midnight-edition .portal-control-btn,
+html.midnight-edition .header-pass-btn,
+html.midnight-edition .header-auth-btn,
+html.midnight-edition .midnight-toggle-btn {
+    border-right: 1px solid rgba(229, 222, 212, 0.2) !important;
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .portal-control-btn:hover,
+html.midnight-edition .header-pass-btn:hover,
+html.midnight-edition .header-auth-btn:hover,
+html.midnight-edition .midnight-toggle-btn:hover {
     background: #e5ded4 !important;
     color: #111111 !important;
 }
@@ -1098,7 +1151,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
 }
 
 /* ==========================================================================
-   10. MOBILE VIEWPORT ADAPTATIONS & FLUID ERGONOMICS (<= 768px)
+   10. MOBILE VIEWPORT ADAPTATIONS & PRECISION ERGONOMICS (<= 768px)
    ========================================================================== */
 .mobile-segmented-bar {
     display: none !important;
@@ -1113,23 +1166,34 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
 @media (max-width: 768px) {
     .page-border {
-        margin: 8px auto 20px !important;
-        padding: 12px 12px calc(90px + env(safe-area-inset-bottom, 0px)) !important;
-        border-radius: 4px !important;
-        box-shadow: 6px 6px 0px var(--ink-rule) !important;
-        outline-offset: 2px !important;
+        margin: 6px auto 16px !important;
+        padding: 12px 12px calc(80px + env(safe-area-inset-bottom, 0px)) !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05) !important;
+        outline: none !important;
+    }
+
+    html.midnight-edition .page-border {
+        border-color: rgba(229, 222, 212, 0.3) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
     }
 
     .masthead {
-        padding: 0 0 10px 0 !important;
-        margin-bottom: 12px !important;
+        padding: 0 0 8px 0 !important;
+        margin-bottom: 10px !important;
+        border-bottom: 1.5px solid var(--ink-rule) !important;
+    }
+
+    html.midnight-edition .masthead {
+        border-bottom-color: rgba(229, 222, 212, 0.3) !important;
     }
 
     .masthead h1 {
         font-size: clamp(2.3rem, 10vw, 3.2rem) !important;
         line-height: 1 !important;
-        letter-spacing: 1px !important;
-        margin: 6px 0 2px 0 !important;
+        letter-spacing: 0.5px !important;
+        margin: 4px 0 2px 0 !important;
     }
 
     .meta-col-left {
@@ -1146,8 +1210,9 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     #masthead-vol {
-        padding: 2px 5px !important;
+        padding: 1px 5px !important;
         font-size: inherit !important;
+        border-radius: 2px !important;
     }
 
     .meta-col-center {
@@ -1158,43 +1223,48 @@ html.midnight-edition .reaction-stamp-btn:hover {
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 6px !important;
         padding-bottom: 6px !important;
-        border-bottom: 1px solid var(--ink-rule) !important;
+        border-bottom: 1px dashed rgba(17, 17, 17, 0.2) !important;
     }
 
-    /* Single-Row Newsprint Control Capsule on Mobile */
+    html.midnight-edition .masthead-meta {
+        border-bottom-color: rgba(229, 222, 212, 0.2) !important;
+    }
+
+    /* Precision-Engineered Segmented Control Capsule */
     .meta-col-right {
         display: flex !important;
         flex-wrap: nowrap !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        gap: 4px !important;
+        justify-content: stretch !important;
+        align-items: stretch !important;
         width: 100% !important;
         margin: 4px 0 2px 0 !important;
-        background: var(--paper-alt) !important;
-        padding: 3px !important;
-        border-radius: 9999px !important;
+        background: var(--paper-surface) !important;
         border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 8px !important;
+        overflow: hidden !important;
+        padding: 0 !important;
         box-sizing: border-box !important;
     }
 
     html.midnight-edition .meta-col-right {
-        background: #1e1b18 !important;
-        border-color: #e5ded4 !important;
+        background: #181614 !important;
+        border-color: rgba(229, 222, 212, 0.35) !important;
     }
 
     .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
         flex: 1 1 0px !important;
         min-width: 0 !important;
-        height: 34px !important;
-        min-height: 34px !important;
+        height: 35px !important;
+        min-height: 35px !important;
         font-family: var(--font-mono) !important;
-        font-size: clamp(0.52rem, 2.0vw, 0.68rem) !important;
+        font-size: clamp(0.54rem, 2.0vw, 0.68rem) !important;
         font-weight: 700 !important;
-        padding: 4px 1px !important;
-        border-radius: 9999px !important;
-        border: 1px solid transparent !important;
+        padding: 0 2px !important;
+        border: none !important;
+        border-right: 1px solid rgba(17, 17, 17, 0.2) !important;
+        border-radius: 0 !important;
         background: transparent !important;
         color: var(--ink-black) !important;
         display: inline-flex !important;
@@ -1205,17 +1275,23 @@ html.midnight-edition .reaction-stamp-btn:hover {
         text-overflow: ellipsis !important;
         box-sizing: border-box !important;
         text-align: center !important;
+        cursor: pointer !important;
+        transition: background 0.15s ease !important;
+    }
+
+    .meta-col-right button:last-child {
+        border-right: none !important;
     }
 
     .portal-control-btn:hover, .header-pass-btn:hover, .header-auth-btn:hover, .midnight-toggle-btn:hover {
-        background: var(--paper-surface) !important;
-        border-color: var(--ink-rule) !important;
+        background: var(--paper-alt) !important;
     }
 
     html.midnight-edition .portal-control-btn,
     html.midnight-edition .header-pass-btn,
     html.midnight-edition .header-auth-btn,
     html.midnight-edition .midnight-toggle-btn {
+        border-right-color: rgba(229, 222, 212, 0.2) !important;
         color: #f5f2eb !important;
     }
 
@@ -1223,8 +1299,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     html.midnight-edition .header-pass-btn:hover,
     html.midnight-edition .header-auth-btn:hover,
     html.midnight-edition .midnight-toggle-btn:hover {
-        background: #2b2723 !important;
-        border-color: #e5ded4 !important;
+        background: #25221e !important;
     }
 
     #portal-audio-btn::before {
@@ -1249,7 +1324,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .masthead-sub {
-        font-size: clamp(0.58rem, 2.8vw, 0.80rem) !important;
+        font-size: clamp(0.58rem, 2.8vw, 0.78rem) !important;
         letter-spacing: 0.04em !important;
         white-space: nowrap !important;
         margin: 4px 0 2px 0 !important;
@@ -1258,7 +1333,7 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .masthead-tagline {
-        font-size: clamp(0.52rem, 2.4vw, 0.70rem) !important;
+        font-size: clamp(0.52rem, 2.4vw, 0.68rem) !important;
         letter-spacing: 0.02em !important;
         white-space: nowrap !important;
         margin-top: 2px !important;
@@ -1267,29 +1342,36 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     .masthead-explainer {
-        font-size: clamp(0.72rem, 2.4vw, 0.82rem) !important;
+        font-size: clamp(0.70rem, 2.4vw, 0.80rem) !important;
         line-height: 1.4 !important;
-        margin: 4px auto 6px !important;
+        margin: 4px auto 4px !important;
     }
 
-    /* Sleek Ticker Capsule */
+    /* Clean Ticker */
     .telegraph-ticker {
-        height: 34px !important;
-        margin-bottom: 12px !important;
-        border: 2px solid var(--ink-rule) !important;
-        box-shadow: 2px 2px 0px var(--ink-rule) !important;
+        height: 32px !important;
+        margin-bottom: 10px !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 6px !important;
+        box-shadow: none !important;
+        padding: 2px 4px !important;
+    }
+
+    html.midnight-edition .telegraph-ticker {
+        border-color: rgba(229, 222, 212, 0.3) !important;
     }
 
     .ticker-badge {
-        padding: 2px 8px !important;
-        font-size: 0.65rem !important;
+        padding: 2px 6px !important;
+        font-size: 0.62rem !important;
         font-family: var(--font-mono) !important;
+        border-radius: 4px !important;
     }
 
     /* Single Column Stacking */
     .newspaper-grid {
         flex-direction: column !important;
-        gap: 14px !important;
+        gap: 12px !important;
     }
 
     .left-col,
@@ -1299,35 +1381,35 @@ html.midnight-edition .reaction-stamp-btn:hover {
         flex: 1 1 100% !important;
     }
 
-    /* FLOATING BOTTOM NEWSPRINT DOCK */
+    /* FLOATING BOTTOM DOCK */
     .mobile-segmented-bar {
         position: fixed !important;
         top: auto !important;
-        bottom: calc(14px + env(safe-area-inset-bottom, 0px)) !important;
+        bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: calc(100% - 24px) !important;
-        max-width: 380px !important;
-        height: 52px !important;
+        max-width: 360px !important;
+        height: 50px !important;
         display: flex !important;
         align-items: center !important;
         gap: 4px !important;
-        background: rgba(245, 242, 235, 0.96) !important;
-        backdrop-filter: blur(16px) !important;
-        -webkit-backdrop-filter: blur(16px) !important;
-        border: 2px solid var(--ink-rule) !important;
+        background: rgba(255, 255, 255, 0.95) !important;
+        backdrop-filter: blur(20px) !important;
+        -webkit-backdrop-filter: blur(20px) !important;
+        border: 1.5px solid var(--ink-rule) !important;
         border-radius: 9999px !important;
         padding: 4px !important;
         margin: 0 !important;
         z-index: 1000 !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 3px 3px 0px var(--ink-rule) !important;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04) !important;
         box-sizing: border-box !important;
     }
 
     html.midnight-edition .mobile-segmented-bar {
-        background: rgba(24, 22, 20, 0.96) !important;
-        border: 2px solid #e5ded4 !important;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 3px 3px 0px #e5ded4 !important;
+        background: rgba(20, 20, 22, 0.95) !important;
+        border: 1.5px solid rgba(229, 222, 212, 0.35) !important;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5) !important;
     }
 
     .mobile-fab-post,
@@ -1341,11 +1423,11 @@ html.midnight-edition .reaction-stamp-btn:hover {
     .mobile-tab-btn {
         flex: 1 1 0px !important;
         min-width: 0 !important;
-        min-height: 44px !important;
+        min-height: 42px !important;
         border-radius: 9999px !important;
         border: none !important;
         background: transparent !important;
-        color: var(--ink-dim) !important;
+        color: var(--ink-muted) !important;
         font-family: var(--font-heading) !important;
         font-size: 1.15rem !important;
         font-weight: 900 !important;
@@ -1354,9 +1436,9 @@ html.midnight-edition .reaction-stamp-btn:hover {
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        gap: 4px !important;
+        gap: 5px !important;
         white-space: nowrap !important;
-        padding: 6px 4px !important;
+        padding: 4px 6px !important;
         box-shadow: none !important;
         transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
         box-sizing: border-box !important;
@@ -1368,18 +1450,18 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
     .mobile-tab-btn.active {
         background: var(--ink-black) !important;
-        color: var(--paper-surface) !important;
-        box-shadow: 2px 2px 0px var(--ink-rule) !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
     }
 
     html.midnight-edition .mobile-tab-btn {
-        color: #a39686 !important;
+        color: #8c8275 !important;
     }
 
     html.midnight-edition .mobile-tab-btn.active {
         background: #e5ded4 !important;
         color: #111111 !important;
-        box-shadow: 2px 2px 0px #e5ded4 !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
     }
 
     /* Mobile Quick Chips Swipe Reel */
@@ -1400,19 +1482,20 @@ html.midnight-edition .reaction-stamp-btn:hover {
         font-family: var(--font-mono) !important;
         padding: 6px 12px !important;
         font-size: 0.72rem !important;
-        min-height: 38px !important;
-        border: 2px solid var(--ink-rule) !important;
+        font-weight: 700 !important;
+        min-height: 36px !important;
+        border: 1.5px solid var(--ink-rule) !important;
         border-radius: 9999px !important;
         background: var(--paper-surface) !important;
         color: var(--ink-black) !important;
-        box-shadow: 2px 2px 0px var(--ink-rule) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+        transition: transform 0.15s ease, background 0.15s ease !important;
     }
 
     html.midnight-edition .chip-btn {
-        background: #211f1c !important;
-        border-color: #e5ded4 !important;
+        background: #1e1b18 !important;
+        border-color: rgba(229, 222, 212, 0.35) !important;
         color: #f5f2eb !important;
-        box-shadow: 2px 2px 0px #e5ded4 !important;
     }
 
     /* Mobile Textarea & Byline */
@@ -1421,14 +1504,14 @@ html.midnight-edition .reaction-stamp-btn:hover {
         font-family: var(--font-mono) !important;
         font-size: 0.95rem !important;
         padding: 12px !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 4px !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 6px !important;
     }
 
     .byline-input-row {
         height: 38px !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 4px !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 6px !important;
     }
 
     .action-buttons {
@@ -1437,23 +1520,39 @@ html.midnight-edition .reaction-stamp-btn:hover {
         margin-top: 10px !important;
     }
 
-    .btn-heavy, .btn-outline {
+    .btn-heavy {
         width: 100% !important;
         min-height: 48px !important;
         font-family: var(--font-heading) !important;
         font-size: 1.35rem !important;
         letter-spacing: 0.04em !important;
-        border: 3px solid var(--ink-rule) !important;
-        box-shadow: 4px 4px 0px var(--ink-rule) !important;
+        background: var(--ink-black) !important;
+        color: var(--paper-surface) !important;
+        border: 2px solid var(--ink-rule) !important;
+        border-radius: 9999px !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    .btn-outline {
+        width: 100% !important;
+        min-height: 40px !important;
+        font-family: var(--font-mono) !important;
+        font-size: 0.72rem !important;
+        border-radius: 9999px !important;
     }
 
     /* Mobile Feed Cards & Reactions */
     .feed-card {
-        padding: 12px 12px 10px !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 4px !important;
-        box-shadow: 4px 4px 0px var(--ink-rule) !important;
+        padding: 14px 14px 12px !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
         margin-bottom: 12px !important;
+    }
+
+    html.midnight-edition .feed-card {
+        border-color: rgba(229, 222, 212, 0.25) !important;
+        background: #181614 !important;
     }
 
     .feed-reactions {
@@ -1473,11 +1572,11 @@ html.midnight-edition .reaction-stamp-btn:hover {
         font-weight: 700 !important;
         justify-content: center !important;
         text-align: center !important;
-        border: 2px solid var(--ink-rule) !important;
-        border-radius: 4px !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 6px !important;
         background: var(--paper-surface) !important;
         color: var(--ink-black) !important;
-        box-shadow: 2px 2px 0px var(--ink-rule) !important;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
         box-sizing: border-box !important;
     }
 
@@ -1485,16 +1584,10 @@ html.midnight-edition .reaction-stamp-btn:hover {
         animation: appleStampBounce 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
-    html.midnight-edition .feed-card {
-        border-color: #e5ded4 !important;
-        box-shadow: 4px 4px 0px #38342f !important;
-    }
-
     html.midnight-edition .reaction-stamp-btn {
-        background: #211f1c !important;
-        border-color: #e5ded4 !important;
+        background: #1e1b18 !important;
+        border-color: rgba(229, 222, 212, 0.3) !important;
         color: #f5f2eb !important;
-        box-shadow: 2px 2px 0px #e5ded4 !important;
     }
 
     /* Mobile View Switching Rules */
@@ -1512,7 +1605,11 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
     body.mobile-view-dispatch #box-input {
         display: block !important;
-        margin-bottom: 16px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 4px 0 24px 0 !important;
+        margin-bottom: 0 !important;
     }
 
     body.mobile-view-dispatch .right-col,
@@ -1537,11 +1634,16 @@ html.midnight-edition .reaction-stamp-btn:hover {
 
     body.mobile-view-wire #lead-story-banner {
         display: block !important;
-        padding: 12px 14px 10px !important;
+        padding: 14px 14px 12px !important;
         margin-bottom: 12px !important;
-        border: 3px double var(--ink-rule) !important;
-        border-radius: 4px !important;
-        box-shadow: 4px 4px 0px var(--ink-rule) !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 8px !important;
+        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    html.midnight-edition body.mobile-view-wire #lead-story-banner {
+        border-color: rgba(229, 222, 212, 0.3) !important;
+        background: #181614 !important;
     }
 
     body.mobile-view-wire .lead-story-header {
@@ -1572,15 +1674,18 @@ html.midnight-edition .reaction-stamp-btn:hover {
         width: 100% !important;
     }
 
-    body.mobile-view-wire #box-wire,
-    body.mobile-view-wire #box-video {
+    body.mobile-view-wire #box-wire {
         display: block !important;
+    }
+
+    body.mobile-view-wire #box-video {
+        display: none !important;
     }
 
     body.mobile-view-wire .feed-container,
     body.mobile-view-wire .accomplished-feed-container,
     body.mobile-view-wire #box-wire {
-        padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)) !important;
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
     body.mobile-view-wire .left-col,
@@ -1606,20 +1711,59 @@ html.midnight-edition .reaction-stamp-btn:hover {
     }
 
     body.mobile-view-stats .right-col {
-        order: 2 !important;
-        display: block !important;
-        width: 100% !important;
+        display: none !important;
     }
 
     body.mobile-view-stats #box-stats,
     body.mobile-view-stats #box-index,
-    body.mobile-view-stats #box-dispatch,
-    body.mobile-view-stats #box-video,
     body.mobile-view-stats #box-visitors {
         display: block !important;
-        padding-bottom: 40px !important;
+        margin-bottom: 16px !important;
     }
 
+    .stats-section {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        padding: 4px 0 !important;
+    }
+
+    .stat-group {
+        padding: 14px 8px !important;
+        text-align: center !important;
+        border: 1.5px solid var(--ink-rule) !important;
+        border-radius: 6px !important;
+        background: var(--paper-surface) !important;
+    }
+
+    .stat-value {
+        font-family: var(--font-heading) !important;
+        font-size: 2.2rem !important;
+        font-weight: 900 !important;
+        line-height: 1 !important;
+        color: var(--ink-black) !important;
+    }
+
+    .stat-label {
+        font-family: var(--font-mono) !important;
+        font-size: 0.65rem !important;
+        font-weight: 700 !important;
+        color: var(--ink-muted) !important;
+        letter-spacing: 0.04em !important;
+        margin-top: 4px !important;
+    }
+
+    html.midnight-edition .stat-group {
+        border-color: rgba(229, 222, 212, 0.25) !important;
+        background: #1c1a17 !important;
+    }
+
+    html.midnight-edition .stat-value {
+        color: #ffffff !important;
+    }
+
+    body.mobile-view-stats #box-dispatch,
+    body.mobile-view-stats #box-video,
     body.mobile-view-stats #lead-story-banner,
     body.mobile-view-stats #box-input,
     body.mobile-view-stats #box-wire,
@@ -1627,6 +1771,13 @@ html.midnight-edition .reaction-stamp-btn:hover {
     body.mobile-view-stats .mobile-fab-post,
     body.mobile-view-stats .wire-jump-latest-btn {
         display: none !important;
+    }
+
+    body.mobile-view-dispatch .left-col,
+    body.mobile-view-dispatch #box-input,
+    body.mobile-view-stats .left-col,
+    body.mobile-view-stats #box-visitors {
+        padding-bottom: calc(85px + env(safe-area-inset-bottom, 0px)) !important;
     }
 
     .eyebrow-full { display: none !important; }
@@ -1637,5 +1788,32 @@ html.midnight-edition .reaction-stamp-btn:hover {
         font-size: 0.65rem !important;
         padding: 3px 10px !important;
         white-space: nowrap !important;
+    }
+}
+
+/* Precision Responsive Tweaks for Narrow Viewports (<= 360px, e.g. iPhone SE) */
+@media (max-width: 360px) {
+    .meta-journal-title .meta-title-short {
+        display: none !important;
+    }
+
+    .meta-sep.meta-mobile-sep {
+        display: none !important;
+    }
+
+    .meta-mobile-date {
+        font-size: 0.54rem !important;
+    }
+
+    .portal-control-btn, .header-pass-btn, .header-auth-btn, .midnight-toggle-btn {
+        font-size: 0.52rem !important;
+        letter-spacing: 0px !important;
+        padding: 0 1px !important;
+    }
+
+    .lead-story-badge {
+        font-size: 0.55rem !important;
+        padding: 2px 4px !important;
+        letter-spacing: 0px !important;
     }
 }
