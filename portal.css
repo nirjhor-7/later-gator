@@ -679,6 +679,13 @@ html.midnight-edition .ring-fill {
     border-bottom: 2px solid var(--ink-rule) !important;
 }
 
+.wire-box-header .wire-section-title {
+    border-bottom: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+}
+
 .wire-tab-bar {
     display: flex !important;
     gap: 8px !important;
@@ -1611,6 +1618,64 @@ html.midnight-edition .midnight-toggle-btn:hover {
         width: 100% !important;
         max-width: 100% !important;
         flex: 1 1 100% !important;
+        border-left: none !important;
+        border-right: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    html.midnight-edition .left-col,
+    html.midnight-edition .right-col {
+        border-left: none !important;
+        border-right: none !important;
+    }
+
+    .wire-box-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        margin-bottom: 14px !important;
+        padding-bottom: 8px !important;
+        border-bottom: 1.5px solid var(--ink-rule) !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
+    }
+
+    .wire-box-header .wire-section-title {
+        border-bottom: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: clamp(1.2rem, 5vw, 1.5rem) !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    .wire-tab-bar {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .wire-nav-tab {
+        padding: 4px 8px !important;
+        font-size: clamp(0.58rem, 2.2vw, 0.68rem) !important;
+        border-radius: 6px !important;
+        white-space: nowrap !important;
+    }
+
+    .feed-item, .feed-card, .accomplished-item {
+        padding: 14px !important;
+        margin-bottom: 12px !important;
+        border-radius: 8px !important;
+        box-sizing: border-box !important;
+        width: 100% !important;
     }
 
     /* FLOATING BOTTOM DOCK */
@@ -1862,6 +1927,14 @@ html.midnight-edition .midnight-toggle-btn:hover {
         order: 1 !important;
         display: block !important;
         width: 100% !important;
+        max-width: 100% !important;
+        border-left: none !important;
+        border-right: none !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
     }
 
     body.mobile-view-wire #lead-story-banner {
@@ -2047,5 +2120,22 @@ html.midnight-edition .midnight-toggle-btn:hover {
         font-size: 0.55rem !important;
         padding: 2px 4px !important;
         letter-spacing: 0px !important;
+    }
+
+    .wire-box-header {
+        gap: 4px !important;
+    }
+
+    .wire-box-header .wire-section-title {
+        font-size: 1.15rem !important;
+    }
+
+    .wire-tab-bar {
+        gap: 4px !important;
+    }
+
+    .wire-nav-tab {
+        padding: 3px 6px !important;
+        font-size: 0.55rem !important;
     }
 }
