@@ -832,6 +832,173 @@ html.midnight-edition .ring-fill {
 }
 
 /* ==========================================================================
+   8.4 REDEMPTION DISPATCH CARDS (.accomplished-item)
+   ========================================================================== */
+.accomplished-item {
+    background: var(--paper-surface) !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    border-radius: 8px !important;
+    padding: 18px 22px !important;
+    margin-bottom: 14px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+    box-sizing: border-box !important;
+    transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.accomplished-item:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.accomplished-header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+}
+
+.accomplished-tag {
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: var(--paper-surface) !important;
+    background: var(--ink-black) !important;
+    border: 1px solid var(--ink-black) !important;
+    padding: 3px 8px !important;
+    border-radius: 3px !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+}
+
+.accomplished-time {
+    font-family: var(--font-mono) !important;
+    font-size: 0.70rem !important;
+    font-weight: 700 !important;
+    color: var(--ink-muted) !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+}
+
+.accomplished-headline {
+    font-family: var(--font-heading) !important;
+    font-size: 1.45rem !important;
+    font-weight: 900 !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
+    color: var(--ink-black) !important;
+    margin: 6px 0 10px 0 !important;
+    word-break: break-word !important;
+}
+
+.accomplished-headline strong {
+    font-weight: 900 !important;
+    color: var(--ink-black) !important;
+}
+
+.accomplished-task-quote {
+    font-family: var(--font-heading) !important;
+    font-size: 1.25rem !important;
+    font-weight: 900 !important;
+    letter-spacing: 0.5px !important;
+    color: var(--ink-black) !important;
+    border-left: 3px solid var(--stamp-red, #dc2626) !important;
+    padding-left: 12px !important;
+    margin: 8px 0 12px 0 !important;
+    line-height: 1.25 !important;
+    text-transform: uppercase !important;
+    word-break: break-word !important;
+}
+
+.accomplished-calculus-bar {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    border-top: 1px dashed rgba(17, 17, 17, 0.2) !important;
+    border-bottom: 1px dashed rgba(17, 17, 17, 0.2) !important;
+    border-left: none !important;
+    border-right: none !important;
+    padding: 8px 0 !important;
+    margin: 10px 0 !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.72rem !important;
+    color: var(--ink-black) !important;
+    flex-wrap: wrap !important;
+}
+
+.accomplished-calculus-bar .calc-lbl {
+    color: var(--ink-muted) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+.accomplished-calculus-bar .calc-val {
+    color: var(--ink-black) !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+}
+
+.accomplished-merit-row {
+    margin: 10px 0 !important;
+}
+
+.accomplished-merit {
+    display: inline-block !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    color: var(--ink-black) !important;
+    background: rgba(17, 17, 17, 0.05) !important;
+    border: 1px solid var(--ink-rule) !important;
+    border-radius: 4px !important;
+    padding: 4px 10px !important;
+    letter-spacing: 0.05em !important;
+    text-transform: uppercase !important;
+    word-break: break-word !important;
+}
+
+.accomplished-reactions {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+    padding-top: 10px !important;
+    border-top: 1px solid var(--ink-rule) !important;
+    flex-wrap: wrap !important;
+}
+
+.triumph-react-btn {
+    background: var(--paper-surface) !important;
+    border: 1.5px solid var(--ink-rule) !important;
+    border-radius: 6px !important;
+    padding: 6px 12px !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.68rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.05em !important;
+    color: var(--ink-black) !important;
+    cursor: pointer !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    transition: all 0.15s ease !important;
+    text-transform: uppercase !important;
+}
+
+.triumph-react-btn:hover {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+}
+
+.triumph-react-btn.reacted {
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    border-color: var(--ink-black) !important;
+}
+
+/* ==========================================================================
    8.5 COMMERCIAL BREAK VIDEO BOX
    ========================================================================== */
 .video-box {
@@ -1085,10 +1252,75 @@ html.midnight-edition .wire-nav-tab.active {
 }
 
 html.midnight-edition .feed-item,
-html.midnight-edition .feed-card {
+html.midnight-edition .feed-card,
+html.midnight-edition .accomplished-item {
     background: #1c1a17 !important;
     border-color: rgba(229, 222, 212, 0.25) !important;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35) !important;
+}
+
+html.midnight-edition .accomplished-tag {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+    border-color: #e5ded4 !important;
+}
+
+html.midnight-edition .accomplished-time {
+    color: #a8a096 !important;
+}
+
+html.midnight-edition .accomplished-headline {
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .accomplished-headline strong {
+    color: #ffffff !important;
+}
+
+html.midnight-edition .accomplished-task-quote {
+    color: #ffffff !important;
+    border-left-color: #ef4444 !important;
+}
+
+html.midnight-edition .accomplished-calculus-bar {
+    border-color: rgba(229, 222, 212, 0.2) !important;
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .accomplished-calculus-bar .calc-lbl {
+    color: #a8a096 !important;
+}
+
+html.midnight-edition .accomplished-calculus-bar .calc-val {
+    color: #ffffff !important;
+}
+
+html.midnight-edition .accomplished-merit {
+    background: #25221e !important;
+    border-color: rgba(229, 222, 212, 0.25) !important;
+    color: #f5f2eb !important;
+}
+
+html.midnight-edition .accomplished-reactions {
+    border-top-color: rgba(229, 222, 212, 0.15) !important;
+}
+
+html.midnight-edition .triumph-react-btn {
+    background: #25221e !important;
+    border-color: rgba(229, 222, 212, 0.3) !important;
+    color: #f5f2eb !important;
+    box-shadow: none !important;
+}
+
+html.midnight-edition .triumph-react-btn:hover {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+}
+
+html.midnight-edition .triumph-react-btn.reacted {
+    background: #e5ded4 !important;
+    color: #111111 !important;
+    border-color: #e5ded4 !important;
 }
 
 html.midnight-edition .feed-item-text,
