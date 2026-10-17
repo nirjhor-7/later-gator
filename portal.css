@@ -2415,7 +2415,182 @@ button:active,
 .action-btn:active,
 .header-auth-btn:active,
 .header-pass-btn:active,
-.midnight-toggle-btn:active {
+.midnight-toggle-btn:active,
+.feed-conquer-btn:active,
+.feed-shred-btn:active {
     transform: scale(0.97) !important;
     transition: transform 0.08s ease !important;
+}
+
+/* ==========================================================================
+   12. ACTIVE WIRE DISPATCH OWNER BAR & DUAL RESOLUTION CONTROLS
+   ========================================================================== */
+.feed-owner-bar {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    margin-top: 10px !important;
+    padding-top: 10px !important;
+    border-top: 1px dashed var(--ink-rule) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+}
+
+.feed-owner-badge {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    width: 100% !important;
+    font-family: var(--font-mono) !important;
+    font-size: 0.65rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    color: var(--ink-muted) !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+}
+
+.feed-owner-actions {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+.feed-conquer-btn,
+.feed-resolve-btn,
+.feed-ididit-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    min-height: 40px !important;
+    width: 100% !important;
+    padding: 6px 4px !important;
+    font-family: var(--font-mono) !important;
+    font-size: clamp(0.62rem, 2.2vw, 0.70rem) !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    background: var(--ink-black) !important;
+    color: var(--paper-surface) !important;
+    border: 1.5px solid var(--ink-black) !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+    transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+}
+
+.feed-conquer-btn:hover,
+.feed-resolve-btn:hover,
+.feed-ididit-btn:hover {
+    background: #059669 !important;
+    border-color: #059669 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+.feed-shred-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    text-align: center !important;
+    min-height: 40px !important;
+    width: 100% !important;
+    padding: 6px 4px !important;
+    font-family: var(--font-mono) !important;
+    font-size: clamp(0.62rem, 2.2vw, 0.70rem) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+    background: transparent !important;
+    color: var(--ink-black) !important;
+    border: 1.5px dashed var(--ink-rule) !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-sizing: border-box !important;
+    transition: transform 0.1s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease !important;
+}
+
+.feed-shred-btn:hover {
+    background: #dc2626 !important;
+    border-color: #dc2626 !important;
+    border-style: solid !important;
+    color: #ffffff !important;
+    transform: translateY(-1px) !important;
+}
+
+@media (min-width: 821px) {
+    .feed-owner-bar {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 12px !important;
+    }
+    .feed-owner-badge {
+        justify-content: flex-start !important;
+        text-align: left !important;
+        width: auto !important;
+    }
+    .feed-owner-actions {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: auto !important;
+    }
+    .feed-conquer-btn,
+    .feed-shred-btn {
+        width: auto !important;
+        min-width: 120px !important;
+        padding: 6px 14px !important;
+    }
+}
+
+@media (max-width: 330px) {
+    .feed-owner-actions {
+        grid-template-columns: 1fr !important;
+        gap: 6px !important;
+    }
+}
+
+/* Midnight Edition Overrides */
+html.midnight-edition .feed-owner-bar,
+body.midnight-edition .feed-owner-bar {
+    border-top-color: rgba(229, 222, 212, 0.2) !important;
+}
+html.midnight-edition .feed-owner-badge,
+body.midnight-edition .feed-owner-badge {
+    color: #A39686 !important;
+}
+html.midnight-edition .feed-conquer-btn,
+body.midnight-edition .feed-conquer-btn {
+    background: #f5f2eb !important;
+    color: #141210 !important;
+    border-color: #f5f2eb !important;
+}
+html.midnight-edition .feed-conquer-btn:hover,
+body.midnight-edition .feed-conquer-btn:hover {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #141210 !important;
+}
+html.midnight-edition .feed-shred-btn,
+body.midnight-edition .feed-shred-btn {
+    background: transparent !important;
+    color: #f5f2eb !important;
+    border-color: rgba(229, 222, 212, 0.35) !important;
+}
+html.midnight-edition .feed-shred-btn:hover,
+body.midnight-edition .feed-shred-btn:hover {
+    background: #ef4444 !important;
+    border-color: #ef4444 !important;
+    border-style: solid !important;
+    color: #ffffff !important;
 }

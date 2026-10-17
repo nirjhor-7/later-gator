@@ -4380,24 +4380,45 @@ body.sepia-edition .footer-credit {
 
     .feed-owner-bar {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-        gap: 6px;
-        margin-top: 8px;
-        padding-top: 6px;
-        border-top: 1px dotted var(--ink-light, #777);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px dashed var(--ink-light, rgba(0, 0, 0, 0.2));
         width: 100%;
         box-sizing: border-box;
     }
 
     .feed-owner-badge {
-        font-size: 0.60rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 100%;
+        font-size: 0.65rem;
+        letter-spacing: 0.06em;
     }
 
-    .feed-ididit-btn {
-        font-size: 0.65rem;
-        padding: 4px 8px;
+    .feed-owner-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .feed-ididit-btn,
+    .feed-resolve-btn,
+    .feed-conquer-btn,
+    .feed-shred-btn {
+        width: 100%;
+        min-height: 40px;
+        font-size: clamp(0.62rem, 2.2vw, 0.70rem);
+        padding: 6px 4px;
+        text-align: center;
+        justify-content: center;
+        box-sizing: border-box;
     }
 
     .wire-box-header {
@@ -7451,49 +7472,59 @@ body.sepia-edition .btn-shred-guilt:hover {
 /* User's Own Wire Post: Dedicated Broadsheet Action Bar & Dual Action buttons */
 .feed-owner-bar {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: stretch;
     gap: 8px;
-    margin-top: 8px;
-    padding-top: 6px;
-    border-top: 1px dotted var(--ink-light, #777);
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--ink-light, rgba(0, 0, 0, 0.2));
     box-sizing: border-box;
     width: 100%;
 }
 
 .feed-owner-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: 'Space Mono', monospace;
     font-size: 0.65rem;
     font-weight: 700;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--ink-light, #555);
+    text-align: center;
     white-space: nowrap;
 }
 
 .feed-owner-actions {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    align-items: stretch;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .feed-ididit-btn, .feed-resolve-btn, .feed-conquer-btn {
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: clamp(0.62rem, 2.2vw, 0.70rem);
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     background: var(--ink, #111);
     color: var(--paper, #FAF6EE);
-    border: 1px solid var(--ink, #111);
-    padding: 4px 10px;
+    border: 1.5px solid var(--ink, #111);
+    padding: 6px 4px;
+    min-height: 40px;
     cursor: pointer;
     white-space: nowrap;
-    border-radius: 0;
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
     transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
@@ -7510,17 +7541,23 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .feed-shred-btn {
     font-family: 'Space Mono', monospace;
-    font-size: 0.68rem;
+    font-size: clamp(0.62rem, 2.2vw, 0.70rem);
     font-weight: 700;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     background: transparent;
     color: var(--ink, #222);
-    border: 1px dashed var(--ink, #222);
-    padding: 4px 10px;
+    border: 1.5px dashed var(--ink, #222);
+    padding: 6px 4px;
+    min-height: 40px;
     cursor: pointer;
     white-space: nowrap;
-    border-radius: 0;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-sizing: border-box;
     transition: transform 0.1s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
@@ -7534,6 +7571,39 @@ body.sepia-edition .btn-shred-guilt:hover {
 
 .feed-shred-btn:active {
     transform: scale(0.96);
+}
+
+@media (min-width: 821px) {
+    .feed-owner-bar {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+    }
+    .feed-owner-badge {
+        justify-content: flex-start;
+        text-align: left;
+        width: auto;
+    }
+    .feed-owner-actions {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: auto;
+    }
+    .feed-conquer-btn,
+    .feed-shred-btn {
+        width: auto;
+        min-width: 120px;
+        padding: 6px 14px;
+    }
+}
+
+@media (max-width: 330px) {
+    .feed-owner-actions {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
 }
 
 /* Redemption Feed Container & Broadhseet Dispatches */
