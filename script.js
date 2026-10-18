@@ -588,7 +588,10 @@ document.addEventListener('DOMContentLoaded', () => {
         timeEls.forEach(el => {
             const createdAt = el.getAttribute('data-created-at');
             if (createdAt) {
-                el.textContent = timeAgo(createdAt);
+                const formatted = timeAgo(createdAt);
+                if (el.textContent !== formatted) {
+                    el.textContent = formatted;
+                }
             }
         });
     };
@@ -771,9 +774,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const validEl = reactionsEl.querySelector('[data-type="valid"] .reaction-count');
             const ripEl = reactionsEl.querySelector('[data-type="rip"] .reaction-count');
 
-            if (sameEl) sameEl.textContent = Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0);
-            if (validEl) validEl.textContent = Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0);
-            if (ripEl) ripEl.textContent = Math.max(task.rip_count != null ? task.rip_count : 0, myStamp === 'rip' ? 1 : 0);
+            const targetSame = String(Math.max(task.same_count != null ? task.same_count : 0, myStamp === 'same' ? 1 : 0));
+            const targetValid = String(Math.max(task.valid_count != null ? task.valid_count : 0, myStamp === 'valid' ? 1 : 0));
+            const targetRip = String(Math.max(task.rip_count != null ? task.rip_count : 0, myStamp === 'rip' ? 1 : 0));
+
+            if (sameEl && sameEl.textContent !== targetSame) sameEl.textContent = targetSame;
+            if (validEl && validEl.textContent !== targetValid) validEl.textContent = targetValid;
+            if (ripEl && ripEl.textContent !== targetRip) ripEl.textContent = targetRip;
         });
     };
 
@@ -1168,10 +1175,24 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    let jumpVisibilityRaf = null;
+    const scheduleJumpLatestVisibility = (forceHide = false) => {
+        if (forceHide) {
+            updateJumpLatestVisibility(true);
+            return;
+        }
+        if (!jumpVisibilityRaf) {
+            jumpVisibilityRaf = requestAnimationFrame(() => {
+                updateJumpLatestVisibility(false);
+                jumpVisibilityRaf = null;
+            });
+        }
+    };
+
     if (feedContainer) {
-        feedContainer.addEventListener('scroll', () => updateJumpLatestVisibility(false), { passive: true });
+        feedContainer.addEventListener('scroll', () => scheduleJumpLatestVisibility(false), { passive: true });
     }
-    window.addEventListener('scroll', () => updateJumpLatestVisibility(false), { passive: true });
+    window.addEventListener('scroll', () => scheduleJumpLatestVisibility(false), { passive: true });
 
     if (wireJumpLatestBtn) {
         wireJumpLatestBtn.addEventListener('click', (e) => {
@@ -1219,13 +1240,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    let cachedLeadTaskId = null;
+    let cachedLeadScore = -1;
+    let cachedLeadMyStamp = null;
+    let cachedLeadSame = -1;
+    let cachedLeadValid = -1;
+    let cachedLeadRip = -1;
+
     const renderLeadStory = (tasks = []) => {
         if (!leadStoryBanner || !leadHeadline) return;
 
         if (!tasks || tasks.length === 0) {
-            leadHeadline.textContent = '"AWAITING TODAY\'S CHIEF TRANSMISSIONS FROM THE WIRE..."';
-            leadByline.textContent = 'DISPATCHED BY: ANONYMOUS IN PARTS UNKNOWN';
-            leadBadge.textContent = '★ AWAITING TRANSMISSIONS';
+            if (cachedLeadTaskId !== 'empty') {
+                cachedLeadTaskId = 'empty';
+                leadHeadline.textContent = '"AWAITING TODAY\'S CHIEF TRANSMISSIONS FROM THE WIRE..."';
+                leadByline.textContent = 'DISPATCHED BY: ANONYMOUS IN PARTS UNKNOWN';
+                leadBadge.textContent = '★ AWAITING TRANSMISSIONS';
+            }
             return;
         }
 
@@ -1261,73 +1292,98 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!topTask) return;
         allKnownTasks.set(Number(topTask.id), topTask);
 
-        // Populate headline
-        let choreText = (topTask.text || '').trim();
-        choreText = choreText.replace(/^\[PANIC\]\s*/, '');
-        choreText = censorNsfwText(choreText.replace(/[\r\n]+/g, ' '));
-        leadHeadline.textContent = `"${choreText.toUpperCase()}"`;
-
-        // Populate byline
-        const rawAuthor = (topTask.city || 'Anonymous').trim();
-        const country = (topTask.country || 'Parts Unknown').toUpperCase();
-        let displayName = rawAuthor;
-        let rankFlair = '';
-        const flairMatch = rawAuthor.match(/^\[(.*?)\]\s*(.*)$/);
-        if (flairMatch) {
-            rankFlair = `[${flairMatch[1].toUpperCase()}] `;
-            displayName = flairMatch[2] || 'Anonymous';
-        }
-        leadByline.textContent = `DISPATCHED BY: ${rankFlair}${displayName.toUpperCase()} IN ${country}`;
-
-        // Populate badge
-        if (highestScore > 0) {
-            leadBadge.textContent = `★ ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED ★`;
-        } else {
-            leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION ★`;
-        }
-
-        // Populate reaction buttons
-        leadReactions.setAttribute('data-task-id', topTask.id);
-        if (leadClipBtn) {
-            leadClipBtn.setAttribute('data-task-id', topTask.id);
-        }
-
         const myStamp = userStamps[topTask.id] || userStamps[String(topTask.id)] || userStamps[Number(topTask.id)] || null;
-        const defaultRot = ((topTask.id * 17) % 7 - 3.2).toFixed(2);
         const sameCount = Math.max(topTask.same_count != null ? topTask.same_count : 0, myStamp === 'same' ? 1 : 0);
         const validCount = Math.max(topTask.valid_count != null ? topTask.valid_count : 0, myStamp === 'valid' ? 1 : 0);
         const ripCount = Math.max(topTask.rip_count != null ? topTask.rip_count : 0, myStamp === 'rip' ? 1 : 0);
 
+        // Blazing-fast memoization: Skip DOM thrashing if lead state is unchanged
+        if (
+            cachedLeadTaskId === topTask.id &&
+            cachedLeadScore === highestScore &&
+            cachedLeadMyStamp === myStamp &&
+            cachedLeadSame === sameCount &&
+            cachedLeadValid === validCount &&
+            cachedLeadRip === ripCount
+        ) {
+            return;
+        }
+
+        const taskChanged = cachedLeadTaskId !== topTask.id;
+        cachedLeadTaskId = topTask.id;
+        cachedLeadScore = highestScore;
+        cachedLeadMyStamp = myStamp;
+        cachedLeadSame = sameCount;
+        cachedLeadValid = validCount;
+        cachedLeadRip = ripCount;
+
+        if (taskChanged) {
+            // Populate headline
+            let choreText = (topTask.text || '').trim();
+            choreText = choreText.replace(/^\[PANIC\]\s*/, '');
+            choreText = censorNsfwText(choreText.replace(/[\r\n]+/g, ' '));
+            leadHeadline.textContent = `"${choreText.toUpperCase()}"`;
+
+            // Populate byline
+            const rawAuthor = (topTask.city || 'Anonymous').trim();
+            const country = (topTask.country || 'Parts Unknown').toUpperCase();
+            let displayName = rawAuthor;
+            let rankFlair = '';
+            const flairMatch = rawAuthor.match(/^\[(.*?)\]\s*(.*)$/);
+            if (flairMatch) {
+                rankFlair = `[${flairMatch[1].toUpperCase()}] `;
+                displayName = flairMatch[2] || 'Anonymous';
+            }
+            leadByline.textContent = `DISPATCHED BY: ${rankFlair}${displayName.toUpperCase()} IN ${country}`;
+
+            // Populate badge
+            if (highestScore > 0) {
+                leadBadge.textContent = `★ ${highestScore} ENGAGEMENT PTS • #1 MOST SYMPATHIZED ★`;
+            } else {
+                leadBadge.textContent = `★ TODAY'S FRONT-PAGE SELECTION ★`;
+            }
+
+            // Populate reaction buttons container attributes
+            leadReactions.setAttribute('data-task-id', topTask.id);
+            if (leadClipBtn) {
+                leadClipBtn.setAttribute('data-task-id', topTask.id);
+            }
+        }
+
+        const defaultRot = ((topTask.id * 17) % 7 - 3.2).toFixed(2);
         const sameBtn = leadReactions.querySelector('[data-type="same"]');
         const validBtn = leadReactions.querySelector('[data-type="valid"]');
         const ripBtn = leadReactions.querySelector('[data-type="rip"]');
         const isRecentLeadStamp = (Date.now() - (recentLocalStamps.get(Number(topTask.id)) || 0)) < 5000;
 
         if (sameBtn) {
-            sameBtn.className = `reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}`;
+            const targetCls = `reaction-stamp-btn ${myStamp === 'same' ? 'stamped' : ''}`;
+            if (sameBtn.className !== targetCls) sameBtn.className = targetCls;
             if (myStamp === 'same') sameBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
             else sameBtn.style.removeProperty('--stamp-rot');
             if (!isRecentLeadStamp) {
                 const c = sameBtn.querySelector('.reaction-count');
-                if (c) c.textContent = sameCount;
+                if (c && c.textContent != sameCount) c.textContent = sameCount;
             }
         }
         if (validBtn) {
-            validBtn.className = `reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}`;
+            const targetCls = `reaction-stamp-btn ${myStamp === 'valid' ? 'stamped' : ''}`;
+            if (validBtn.className !== targetCls) validBtn.className = targetCls;
             if (myStamp === 'valid') validBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
             else validBtn.style.removeProperty('--stamp-rot');
             if (!isRecentLeadStamp) {
                 const c = validBtn.querySelector('.reaction-count');
-                if (c) c.textContent = validCount;
+                if (c && c.textContent != validCount) c.textContent = validCount;
             }
         }
         if (ripBtn) {
-            ripBtn.className = `reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}`;
+            const targetCls = `reaction-stamp-btn ${myStamp === 'rip' ? 'stamped' : ''}`;
+            if (ripBtn.className !== targetCls) ripBtn.className = targetCls;
             if (myStamp === 'rip') ripBtn.style.setProperty('--stamp-rot', `${defaultRot}deg`);
             else ripBtn.style.removeProperty('--stamp-rot');
             if (!isRecentLeadStamp) {
                 const c = ripBtn.querySelector('.reaction-count');
-                if (c) c.textContent = ripCount;
+                if (c && c.textContent != ripCount) c.textContent = ripCount;
             }
         }
     };

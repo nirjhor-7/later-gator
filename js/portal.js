@@ -341,11 +341,11 @@
         const chipsLabel = document.querySelector('.chips-label');
         if (chipsLabel) chipsLabel.textContent = 'TOO TIRED TO THINK? CHOOSE AN AVOIDED TASK:';
 
-        // Lead Story Eyebrow
+        // Lead Story Eyebrow (Concise & Diamond-Free)
         const leadEyebrow = document.querySelector('.eyebrow-full');
-        if (leadEyebrow) leadEyebrow.textContent = "✦ TODAY'S MOST SYMPATHIZED CONFESSION ✦";
+        if (leadEyebrow) leadEyebrow.textContent = "TODAY'S MOST SYMPATHIZED CONFESSION";
         const leadEyebrowShort = document.querySelector('.eyebrow-short');
-        if (leadEyebrowShort) leadEyebrowShort.textContent = '✦ CHIEF CONFESSION ✦';
+        if (leadEyebrowShort) leadEyebrowShort.textContent = 'CHIEF CONFESSION';
 
         const leadPrompt = document.querySelector('.lead-stamp-prompt');
         if (leadPrompt) leadPrompt.textContent = 'CAST SOLIDARITY:';
@@ -453,8 +453,11 @@
      * Mathematically balances the editorial stream container so left and right columns
      * terminate on the exact same horizontal baseline without voids on either side.
      */
+    let lastBalancedHeight = null;
+
     function balanceBroadsheetColumns() {
         if (typeof window === 'undefined' || window.innerWidth <= 768) {
+            lastBalancedHeight = null;
             const feedEls = document.querySelectorAll('.feed-container, .accomplished-feed-container');
             feedEls.forEach(el => {
                 el.style.removeProperty('height');
@@ -484,6 +487,9 @@
         const nonFeedHeight = wireHeaderHeight + gap + videoHeight;
         const targetHeight = Math.max(700, Math.round(leftHeight - nonFeedHeight));
 
+        if (targetHeight === lastBalancedHeight) return;
+        lastBalancedHeight = targetHeight;
+
         feedContainer.style.setProperty('height', `${targetHeight}px`, 'important');
         feedContainer.style.setProperty('max-height', `${targetHeight}px`, 'important');
 
@@ -504,16 +510,25 @@
         balanceBroadsheetColumns();
     }
 
-    window.addEventListener('resize', balanceBroadsheetColumns);
+    let resizeRafId = null;
+    const throttledBalanceColumns = () => {
+        if (resizeRafId) cancelAnimationFrame(resizeRafId);
+        resizeRafId = requestAnimationFrame(() => {
+            balanceBroadsheetColumns();
+            resizeRafId = null;
+        });
+    };
+
+    window.addEventListener('resize', throttledBalanceColumns, { passive: true });
 
     if (typeof ResizeObserver !== 'undefined') {
         window.addEventListener('DOMContentLoaded', () => {
             const leftCol = document.querySelector('.left-col');
             if (leftCol) {
-                let timer = null;
+                let roTimer = null;
                 const ro = new ResizeObserver(() => {
-                    if (timer) cancelAnimationFrame(timer);
-                    timer = requestAnimationFrame(balanceBroadsheetColumns);
+                    if (roTimer) cancelAnimationFrame(roTimer);
+                    roTimer = requestAnimationFrame(balanceBroadsheetColumns);
                 });
                 ro.observe(leftCol);
             }
