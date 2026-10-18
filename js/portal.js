@@ -318,8 +318,8 @@
         if (tagline) {
             const tFull = tagline.querySelector('.tagline-full');
             const tShort = tagline.querySelector('.tagline-short');
-            if (tFull) tFull.textContent = 'THE OFFICIAL RECORD OF DELAYS';
-            if (tShort) tShort.textContent = 'THE OFFICIAL RECORD OF DELAYS';
+            if (tFull) tFull.textContent = 'GLOBAL RECORDS OF PROCRASTINATION';
+            if (tShort) tShort.textContent = 'GLOBAL RECORDS OF PROCRASTINATION';
         }
 
         // Ticker Badge

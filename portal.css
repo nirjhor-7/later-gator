@@ -242,9 +242,10 @@ body::before,
     font-family: var(--font-mono) !important;
     font-size: clamp(0.65rem, 1.0vw, 0.85rem) !important;
     color: var(--ink-muted) !important;
-    letter-spacing: 0.04em !important;
-    margin-top: 4px !important;
+    letter-spacing: 0.05em !important;
+    margin: 6px 0 4px 0 !important;
     white-space: nowrap !important;
+    text-transform: uppercase !important;
 }
 
 .tagline-ornament {
