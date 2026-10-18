@@ -464,19 +464,25 @@
         }
 
         const leftCol = document.querySelector('.left-col');
-        const rightCol = document.querySelector('.right-col');
+        const boxWire = document.getElementById('box-wire');
+        const boxVideo = document.getElementById('box-video');
         const feedContainer = document.getElementById('feed-container');
         const accomplishedContainer = document.getElementById('accomplished-feed-container');
 
-        if (!leftCol || !rightCol || !feedContainer) return;
+        if (!leftCol || !boxWire || !feedContainer) return;
 
         const activeFeed = (accomplishedContainer && accomplishedContainer.style.display !== 'none')
             ? accomplishedContainer
             : feedContainer;
 
-        const nonFeedHeight = rightCol.offsetHeight - activeFeed.offsetHeight;
         const leftHeight = leftCol.offsetHeight;
-        const targetHeight = Math.max(700, leftHeight - nonFeedHeight);
+        const wireHeader = boxWire.querySelector('.wire-box-header');
+        const wireHeaderHeight = wireHeader ? wireHeader.offsetHeight : 57;
+        const videoHeight = boxVideo ? boxVideo.offsetHeight : 0;
+        const gap = 24; // standard editorial flex gap between wire and video
+
+        const nonFeedHeight = wireHeaderHeight + gap + videoHeight;
+        const targetHeight = Math.max(700, Math.round(leftHeight - nonFeedHeight));
 
         feedContainer.style.setProperty('height', `${targetHeight}px`, 'important');
         feedContainer.style.setProperty('max-height', `${targetHeight}px`, 'important');
