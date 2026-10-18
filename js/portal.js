@@ -395,7 +395,7 @@
         if (footerQuote) footerQuote.textContent = '"The stars have existed for billions of years. Your deadline can wait twenty minutes."';
 
         const footerCredit = document.querySelector('.footer-credit');
-        if (footerCredit) footerCredit.textContent = '// BUILT BY NIRJHOR INSTEAD OF SLEEPING • A TRANQUIL SANCTUARY FOR PROCRASTINATORS';
+        if (footerCredit) footerCredit.textContent = '// BUILT BY NIRJHOR INSTEAD OF SLEEPING';
 
         // Share button
         const shareBtn = document.getElementById('footer-share-btn');

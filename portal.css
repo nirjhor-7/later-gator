@@ -357,6 +357,11 @@ html.midnight-edition .ring-fill {
     font-weight: 700 !important;
     color: var(--ink-black) !important;
     white-space: nowrap !important;
+    animation: tickerCrawl 260s linear infinite !important;
+}
+
+.ticker-track:hover {
+    animation-play-state: paused !important;
 }
 
 /* ==========================================================================

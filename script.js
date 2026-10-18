@@ -1457,6 +1457,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Duplicate the string for seamless 0% -> -50% continuous marquee loop
         tickerTrack.innerHTML = html + html;
+
+        // Calibrate telegraph crawl velocity to a balanced, comfortable reading speed (~48 px/s)
+        requestAnimationFrame(() => {
+            const halfWidth = tickerTrack.scrollWidth / 2;
+            if (halfWidth > 0) {
+                const balancedDuration = Math.max(40, Math.round(halfWidth / 48));
+                tickerTrack.style.setProperty('animation-duration', `${balancedDuration}s`, 'important');
+            }
+        });
     };
 
     // Initial placeholder until dispatches load

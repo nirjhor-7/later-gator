@@ -259,7 +259,7 @@ h2, h3, .btn-heavy, .stat-value {
     display: flex;
     white-space: nowrap;
     will-change: transform;
-    animation: tickerCrawl 110s linear infinite;
+    animation: tickerCrawl 260s linear infinite;
 }
 
 .ticker-track:hover {
@@ -3607,7 +3607,7 @@ body.sepia-edition .footer-credit {
     }
 
     .ticker-track {
-        animation-duration: 90s;
+        animation-duration: 260s;
     }
 
     /* Front-Page Lead Story of the Day (Condensed Editorial Bulletin) */
