@@ -469,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let lastTopTaskId = null;
     let renderedTopId = null;
     let renderedCount = 0;
+    let isBootstrapActive = false;
     const allKnownTasks = new Map();
     let refreshClippingTheme = () => {};
 
@@ -476,8 +477,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (task && task.id) {
             allKnownTasks.set(Number(task.id), task);
         }
-        const userName = task.city || 'Anonymous';
-        const userCountry = task.country || 'Parts Unknown';
+        const userName = task.city || task.alias || 'Anonymous';
+        const userCountry = task.country || task.location || 'Parts Unknown';
         
         let displayName = userName;
         let rankFlairHtml = '';
@@ -686,8 +687,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetOldestId = (tasks.length > 0 && tasks[tasks.length - 1]?.id) ? Number(tasks[tasks.length - 1].id) : null;
         const missingHistorical = currentDomBottomId !== null && targetOldestId !== null && currentDomBottomId > targetOldestId;
 
-        // 1. Initial Load, reset when empty, or rehydrate when server returns full history beyond local cache
-        if (existingItems.length === 0 || renderedTopId === null || missingHistorical) {
+        // 1. Initial Load, reset when empty, bootstrap replacement, or rehydrate when server returns full history beyond local cache
+        if (isBootstrapActive || existingItems.length === 0 || renderedTopId === null || missingHistorical) {
+            isBootstrapActive = false;
             const prevScrollTop = feedContainer.scrollTop;
             const isScrolled = prevScrollTop > 20;
 
@@ -1325,8 +1327,8 @@ document.addEventListener('DOMContentLoaded', () => {
             leadHeadline.textContent = `"${choreText.toUpperCase()}"`;
 
             // Populate byline
-            const rawAuthor = (topTask.city || 'Anonymous').trim();
-            const country = (topTask.country || 'Parts Unknown').toUpperCase();
+            const rawAuthor = (topTask.city || topTask.alias || 'Anonymous').trim();
+            const country = (topTask.country || topTask.location || 'Parts Unknown').toUpperCase();
             let displayName = rawAuthor;
             let rankFlair = '';
             const flairMatch = rawAuthor.match(/^\[(.*?)\]\s*(.*)$/);
@@ -1643,10 +1645,18 @@ document.addEventListener('DOMContentLoaded', () => {
         fetchTasks();
         fetchStats();
 
-        // Tier 2: Accomplished feed & secondary widgets (parallelized via HTTP/2 multiplexing)
-        fetchTriumphs();
-        fetchWeeklyStats();
-        fetchCountries();
+        // Tier 2: Accomplished feed & secondary widgets (deferred to idle thread)
+        const fetchSecondary = () => {
+            fetchTriumphs();
+            fetchWeeklyStats();
+            fetchCountries();
+        };
+
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(fetchSecondary);
+        } else {
+            setTimeout(fetchSecondary, 300);
+        }
 
         // Tier 3: Heartbeat presence tracking (deferred to idle thread)
         if ('requestIdleCallback' in window) {
@@ -4941,6 +4951,61 @@ document.addEventListener('DOMContentLoaded', () => {
         }, { once: true });
     };
 
+    const DEFAULT_BOOTSTRAP_TASKS = [
+        {
+            id: 101,
+            text: 'Going to sleep before 3am challenge (impossible)',
+            city: 'Tired Earthling',
+            country: 'EARTH SANCTUARY',
+            alias: 'Tired Earthling',
+            location: 'EARTH SANCTUARY',
+            created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+            same_count: 88,
+            valid_count: 65,
+            rip_count: 24,
+            category: 'sleep'
+        },
+        {
+            id: 102,
+            text: 'Filing 2024 taxes by staring blankly at income forms',
+            city: 'Fritz',
+            country: 'BERLIN, GERMANY',
+            alias: 'Fritz',
+            location: 'BERLIN, GERMANY',
+            created_at: new Date(Date.now() - 1000 * 60 * 35).toISOString(),
+            same_count: 42,
+            valid_count: 31,
+            rip_count: 19,
+            category: 'taxes'
+        },
+        {
+            id: 103,
+            text: 'The clean laundry has lived on the bedroom chair for 9 days',
+            city: 'Chloe',
+            country: 'TORONTO, CANADA',
+            alias: 'Chloe',
+            location: 'TORONTO, CANADA',
+            created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
+            same_count: 55,
+            valid_count: 40,
+            rip_count: 12,
+            category: 'chores'
+        },
+        {
+            id: 104,
+            text: 'Replying to 47 unread stakeholder emails and urgent pings',
+            city: 'Sarah',
+            country: 'LONDON, UK',
+            alias: 'Sarah',
+            location: 'LONDON, UK',
+            created_at: new Date(Date.now() - 1000 * 60 * 95).toISOString(),
+            same_count: 112,
+            valid_count: 94,
+            rip_count: 51,
+            category: 'burnout'
+        }
+    ];
+
     // Stale-While-Revalidate bootstrap from localStorage (instant 0ms first render)
     const restoreCachedData = () => {
         try {
@@ -4957,6 +5022,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statVisitors && stats.totalVisitors != null) {
                     updateStat('stat-visitors', stats.totalVisitors.toString().padStart(4, '0'));
                 }
+            } else {
+                if (statCurrent) updateStat('stat-current', '42');
+                if (statTotal) updateStat('stat-total', '12,840');
+                if (statVisitors) updateStat('stat-visitors', '0894');
             }
             // 2. Feed & ticker
             const cachedTasks = localStorage.getItem('lg_cached_tasks');
@@ -4967,6 +5036,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderTicker(tasks);
                     renderLeadStory(tasks);
                 }
+            } else {
+                isBootstrapActive = true;
+                renderFeed(DEFAULT_BOOTSTRAP_TASKS);
+                renderTicker(DEFAULT_BOOTSTRAP_TASKS);
+                renderLeadStory(DEFAULT_BOOTSTRAP_TASKS);
             }
             // 3. Weekly shame
             const cachedWeekly = localStorage.getItem('lg_cached_weekly');
@@ -4999,6 +5073,25 @@ document.addEventListener('DOMContentLoaded', () => {
                         `;
                     }).join('');
                 }
+            } else if (countryLeaderboard) {
+                const defaultCountries = [
+                    { country: 'UNITED STATES', count: 412 },
+                    { country: 'UNITED KINGDOM', count: 289 },
+                    { country: 'GERMANY', count: 194 },
+                    { country: 'CANADA', count: 167 },
+                    { country: 'AUSTRALIA', count: 128 }
+                ];
+                countryLeaderboard.innerHTML = defaultCountries.map((c, index) => {
+                    const rank = String(index + 1).padStart(2, '0');
+                    return `
+                    <div class="leaderboard-row">
+                        <span class="leaderboard-rank">${rank}.</span>
+                        <span class="leaderboard-country" title="${c.country}">${c.country}</span>
+                        <span class="leaderboard-dots"></span>
+                        <span class="leaderboard-count">${c.count}</span>
+                    </div>
+                    `;
+                }).join('');
             }
             // 5. Operative Dossier
             const cachedDossier = localStorage.getItem('lg_cached_dossier');

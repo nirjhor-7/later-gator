@@ -1,6 +1,5 @@
 const crypto = require('crypto');
 const { createClient } = require('@supabase/supabase-js');
-const geoip = require('geoip-lite');
 
 const HARDCODED_BANNED_IPS = new Set([
     '119.40.93.246',
@@ -291,7 +290,7 @@ async function handler(req, res) {
 
     // Handle HEAD probes gracefully
     if (req.method === 'HEAD') {
-        res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+        res.setHeader('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=120');
         return res.status(200).end();
     }
 
@@ -300,7 +299,7 @@ async function handler(req, res) {
             if (req.query._t) {
                 res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
             } else {
-                res.setHeader('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59');
+                res.setHeader('Cache-Control', 'public, s-maxage=15, stale-while-revalidate=120');
             }
             let queryLimit = 150;
             if (req.query.limit) {
@@ -495,14 +494,8 @@ async function handler(req, res) {
             
             const finalName = cleanName !== '' ? cleanName : 'Anonymous';
             
-            // Auto-detect country: 1. Vercel edge header, 2. geoip-lite fallback
-            let countryCode = req.headers['x-vercel-ip-country'];
-            if (!countryCode && clientIp !== 'unknown') {
-                try {
-                    const geo = geoip.lookup(clientIp);
-                    if (geo && geo.country) countryCode = geo.country;
-                } catch (e) {}
-            }
+            // Auto-detect country from edge network headers (Vercel / Cloudflare / Proxies)
+            let countryCode = req.headers['x-vercel-ip-country'] || req.headers['cf-ipcountry'] || req.headers['x-country-code'] || null;
 
             let finalCountry = 'Parts Unknown';
             if (countryCode) {
