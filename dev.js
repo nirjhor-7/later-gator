@@ -39,14 +39,21 @@ const server = http.createServer((req, res) => {
     if (pathname.startsWith('/api/')) {
         const targetUrl = new URL(pathname + parsedUrl.search, PROD_API);
         const headers = { ...req.headers, host: targetUrl.host };
-        delete headers['content-length'];
+        if (req.method === 'GET' || req.method === 'HEAD') {
+            delete headers['content-length'];
+        }
 
         const proxyReq = https.request(targetUrl, {
             method: req.method,
-            headers
+            headers,
+            timeout: 12000
         }, (proxyRes) => {
             res.writeHead(proxyRes.statusCode, proxyRes.headers);
             proxyRes.pipe(res);
+        });
+
+        proxyReq.on('timeout', () => {
+            proxyReq.destroy(new Error('Proxy request timed out'));
         });
 
         proxyReq.on('error', (err) => {
@@ -57,6 +64,23 @@ const server = http.createServer((req, res) => {
             } else {
                 res.destroy();
             }
+        });
+
+        req.on('aborted', () => {
+            proxyReq.destroy();
+        });
+
+        res.on('close', () => {
+            if (!proxyResComplete) {
+                proxyReq.destroy();
+            }
+        });
+
+        let proxyResComplete = false;
+        proxyReq.on('response', (pr) => {
+            pr.on('end', () => {
+                proxyResComplete = true;
+            });
         });
 
         req.pipe(proxyReq);

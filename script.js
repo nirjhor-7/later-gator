@@ -346,8 +346,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-    // Post box placeholder left empty to avoid redundancy with the 'WHAT ARE YOU AVOIDING?' header
-    taskInput.placeholder = "";
+    // Post box placeholder initialized with ambient prompt
+    if (taskInput && !taskInput.value) {
+        taskInput.placeholder = AMBIENT_PROMPTS[0];
+    }
 
     const evasionVerbs = [
         "POSTPONED",
@@ -971,6 +973,9 @@ document.addEventListener('DOMContentLoaded', () => {
         requestAnimationFrame(() => {
             btn.classList.add('stamp-slam');
             btn.classList.add('apple-bounced');
+            setTimeout(() => {
+                btn.classList.remove('apple-bounced');
+            }, 400);
         });
 
         const prevActiveType = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
@@ -4045,8 +4050,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
         }
-        if (taskInput) {
-            taskInput.placeholder = "";
+        if (taskInput && !taskInput.value) {
+            taskInput.placeholder = AMBIENT_PROMPTS[ambientPromptIdx || 0];
         }
         try {
             localStorage.setItem('lg_sepia_mode', enable ? 'true' : 'false');
@@ -4071,8 +4076,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (midnightBtnText) midnightBtnText.textContent = 'MIDNIGHT: ON';
             if (mastheadVol) mastheadVol.textContent = 'MIDNIGHT ED.';
             if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
-            if (taskInput) {
-                taskInput.placeholder = "";
+            if (taskInput && !taskInput.value) {
+                taskInput.placeholder = AMBIENT_PROMPTS[ambientPromptIdx || 0];
             }
         } else {
             document.body.classList.remove('midnight-edition');
@@ -4085,8 +4090,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (mastheadVol) mastheadVol.textContent = 'VOL. 1';
                 if (mastheadSub) mastheadSub.textContent = 'PUBLISHED DAILY (EVENTUALLY)';
             }
-            if (taskInput) {
-                taskInput.placeholder = "";
+            if (taskInput && !taskInput.value) {
+                taskInput.placeholder = AMBIENT_PROMPTS[ambientPromptIdx || 0];
             }
         }
 
