@@ -279,7 +279,35 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // Ambient rotating inspiration prompts (gentle, zero clutter)
+    const AMBIENT_PROMPTS = [
+        "Type what you're supposed to be doing right now...",
+        "Filing taxes by staring blankly at income forms...",
+        "The clean laundry has lived on the chair for 9 days...",
+        "Replying to 47 unread stakeholder emails...",
+        "Going to bed before 3 AM challenge (impossible)...",
+        "Cleaning the bottom refrigerator drawer with mystery liquid...",
+        "Calling the doctor after ignoring 4 voicemail reminders...",
+        "Emptying the dishwasher before ordering takeout..."
+    ];
+    let ambientPromptIdx = 0;
+    setInterval(() => {
+        if (!taskInput || document.activeElement === taskInput || taskInput.value.trim().length > 0) return;
+        ambientPromptIdx = (ambientPromptIdx + 1) % AMBIENT_PROMPTS.length;
+        taskInput.placeholder = AMBIENT_PROMPTS[ambientPromptIdx];
+    }, 4500);
+
     if (taskInput) {
+        taskInput.addEventListener('focus', () => {
+            if (taskInput.value.trim().length === 0) {
+                taskInput.placeholder = "Type what you're supposed to be doing right now...";
+            }
+        });
+        taskInput.addEventListener('blur', () => {
+            if (taskInput.value.trim().length === 0) {
+                taskInput.placeholder = AMBIENT_PROMPTS[ambientPromptIdx];
+            }
+        });
         taskInput.addEventListener('input', () => {
             updateCharCount();
             updateTaskReactiveButtons(taskInput.value);
@@ -939,8 +967,10 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.style.setProperty('--stamp-rot', `${rot}deg`);
 
         btn.classList.remove('stamp-slam');
+        btn.classList.remove('apple-bounced');
         requestAnimationFrame(() => {
             btn.classList.add('stamp-slam');
+            btn.classList.add('apple-bounced');
         });
 
         const prevActiveType = userStamps[taskId] || userStamps[String(taskId)] || userStamps[Number(taskId)] || null;
